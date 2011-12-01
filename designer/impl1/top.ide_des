@@ -1,0 +1,9 @@
+KEY IDE_DES_TOOL "Ide"
+KEY IDE_DES_ADB_PATH "C:\fpga\test02\designer\impl1\top.adb"
+LIST SOURCE_FILES
+VALUE "C:\fpga\test02\constraint\top_pins.pdc;pdc"
+ENDLIST
+LIST OPTIONAL_FILES
+ENDLIST
+LIST VCD_FILES
+ENDLIST

@@ -1,0 +1,188 @@
+# Actel Physical design constraints file
+# Generated file
+
+# Version: 9.0 9.0.0.15
+# Family: IGLOO , Die: AGLN250V2 , Package: 100 VQFP
+# Date generated: Tue May 11 23:59:35 2010 
+
+
+# 
+# IO banks setting
+# 
+
+
+# 
+# I/O constraints
+# 
+
+set_io {buttons[0]}   \
+    -pinname 26       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {buttons[1]}   \
+    -pinname 28       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {buttons[2]}   \
+    -pinname 29       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {buttons[3]}   \
+    -pinname 30       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {buttons[4]}   \
+    -pinname 31       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {buttons[5]}   \
+    -pinname 32       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {buttons[6]}   \
+    -pinname 33       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {buttons[7]}   \
+    -pinname 34       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io clock          \
+    -pinname 15       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {leds[0]}       \
+    -pinname 35        \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io {leds[1]}       \
+    -pinname 36        \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io {leds[2]}       \
+    -pinname 40        \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io {leds[3]}       \
+    -pinname 41        \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io {leds[4]}       \
+    -pinname 42        \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io {leds[5]}       \
+    -pinname 43        \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io {leds[6]}       \
+    -pinname 44        \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io {leds[7]}       \
+    -pinname 45        \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io {pushsw[0]}    \
+    -pinname 20       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {pushsw[1]}    \
+    -pinname 21       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {pushsw[2]}    \
+    -pinname 22       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {pushsw[3]}    \
+    -pinname 23       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io pwmoutleft      \
+    -pinname 2         \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+set_io pwmoutright     \
+    -pinname 3         \
+    -fixed yes         \
+    -DIRECTION Output
+
+
+
+#
+# Non IO constraints
+#
+
+
+#
+# Old IO constraints, commented out for reference
+#
+
+# set_io {buttons[0]} -pinname 26 -fixed yes -DIRECTION Input 
+# set_io {buttons[1]} -pinname 28 -fixed yes -DIRECTION Input 
+# set_io {buttons[2]} -pinname 29 -fixed yes -DIRECTION Input 
+# set_io {buttons[3]} -pinname 30 -fixed yes -DIRECTION Input 
+# set_io {buttons[4]} -pinname 31 -fixed yes -DIRECTION Input 
+# set_io {buttons[5]} -pinname 32 -fixed yes -DIRECTION Input 
+# set_io {buttons[6]} -pinname 33 -fixed yes -DIRECTION Input 
+# set_io {buttons[7]} -pinname 34 -fixed yes -DIRECTION Input 
+# set_io clock -pinname 15 -fixed yes -DIRECTION Input 
+# set_io {leds[0]} -pinname 35 -fixed yes -DIRECTION Output 
+# set_io {leds[1]} -pinname 36 -fixed yes -DIRECTION Output 
+# set_io {leds[2]} -pinname 40 -fixed yes -DIRECTION Output 
+# set_io {leds[3]} -pinname 41 -fixed yes -DIRECTION Output 
+# set_io {leds[4]} -pinname 42 -fixed yes -DIRECTION Output 
+# set_io {leds[5]} -pinname 43 -fixed yes -DIRECTION Output 
+# set_io {leds[6]} -pinname 44 -fixed yes -DIRECTION Output 
+# set_io {leds[7]} -pinname 45 -fixed yes -DIRECTION Output 
+# set_io {pushsw[0]} -pinname 20 -fixed yes -DIRECTION Input 
+# set_io {pushsw[1]} -pinname 21 -fixed yes -DIRECTION Input 
+# set_io {pushsw[2]} -pinname 22 -fixed yes -DIRECTION Input 
+# set_io {pushsw[3]} -pinname 23 -fixed yes -DIRECTION Input 
+# set_io pwmoutleft -pinname 2 -fixed yes -DIRECTION Output 
+# set_io pwmoutright -pinname 3 -fixed yes -DIRECTION Output 
