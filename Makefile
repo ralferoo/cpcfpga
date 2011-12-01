@@ -10,10 +10,19 @@ VHD_FILES = $(wildcard hdl/*.vhd)
 PDC_FILES = $(wildcard constraint/*.pdc)
 
 EDN_NAME = $(TOP_NAME).edn
-PDC_NAME = constraint/top_pins.pdc
 PDB_NAME = $(TOP_NAME).pdb
 
 all: $(PDB_NAME)
+
+clean:
+	c:\\cygwin\\bin\\rm -rf build/
+
+program: $(PDB_NAME) $(TOP_NAME).pro
+	flashpro $(TOP_NAME).pro
+
+syn: build/$(EDN_NAME)
+
+pdb: $(PDB_NAME)
 
 build/$(TOP_NAME).prj: Makefile $(VHD_FILES)
 	@echo Rebuilding $@
@@ -33,24 +42,11 @@ build/$(TOP_NAME).prj: Makefile $(VHD_FILES)
 	@echo project -run -fg synthesis >>$@
 	@echo project -close >>$@
 
-test: build/$(TOP_NAME).prj
-	@cat build/$(TOP_NAME).prj
-
-program: $(PDB_NAME) $(TOP_NAME).pro
-	flashpro $(TOP_NAME).pro
-
-clean:
-	c:\\cygwin\\bin\\rm -rf build/
-
 build/$(EDN_NAME): build/$(TOP_NAME).prj
 	-@mkdir -p $(dir $@)
 	-C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe -product synplify_pro build/$(TOP_NAME).prj
 
-syn: build/$(EDN_NAME)
-
-pdb: $(PDB_NAME)
-
-$(PDB_NAME): build/$(TOP_NAME)_build.tcl build/$(EDN_NAME) $(PDC_NAME)
+$(PDB_NAME): build/$(TOP_NAME)_build.tcl build/$(EDN_NAME) $(PDC_FILES)
 	designer SCRIPT:$(notdir $<) SCRIPT_DIR:$(dir $<) LOGFILE:$(notdir $<).log
 
 build/$(TOP_NAME)_build.tcl: Makefile
@@ -76,7 +72,7 @@ build/$(TOP_NAME)_build.tcl: Makefile
     		-format edif \
     		-edif_flavor GENERIC $(EDN_NAME) \
     		-format pdc \
-    		-abort_on_error yes ../$(PDC_NAME) \
+    		-abort_on_error yes $(patsubst %,../%,$(PDC_FILES)) \
     		-merge_physical no \
     		-merge_timing yes >>$@
 	@echo save_design $(TOP_NAME)_build.adb >>$@
