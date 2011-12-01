@@ -3,7 +3,7 @@ library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
-use work.pwm.all;
+--use work.pwm.all;
 
 entity top is
 port(
@@ -22,3 +22,4 @@ begin
     leds <= buttons(3 downto 0) & pushsw;
 
 end DEF_ARCH;
+
