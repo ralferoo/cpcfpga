@@ -16,10 +16,10 @@ program: $(PDB_NAME) $(TOP_NAME).pro
 	flashpro $(TOP_NAME).pro
 
 clean:
-	c:\cygwin\bin\rm -f synthesis/top.edn
+	c:\\cygwin\\bin\\rm -f synthesis/top.edn
 
 $(EDN_NAME): hdl/top.vhd
-	-C:\Actel\Libero_v9.1\Synopsys\synplify_E201009A-1\bin\mbin\synplify.exe -product synplify_pro manual_syn.prj
+	-C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe -product synplify_pro manual_syn.prj
 
 syn: $(EDN_NAME)
 
