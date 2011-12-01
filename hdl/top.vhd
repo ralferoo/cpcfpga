@@ -19,7 +19,7 @@ end top;
 architecture DEF_ARCH of top is
 begin
 
-    leds <= buttons(3 downto 0) & pushsw;
+    leds <= (buttons(7) xor clock ) & buttons(6 downto 4) & (buttons(3 downto 0) xor pushsw);
 
 end DEF_ARCH;
 
