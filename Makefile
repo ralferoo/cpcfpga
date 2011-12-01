@@ -19,7 +19,7 @@ clean:
 	c:\\cygwin\\bin\\rm -f synthesis/top.edn
 
 $(EDN_NAME): hdl/top.vhd
-	@mkdir -p $(dir $@)
+	-@mkdir -p $(dir $@)
 	-C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe -product synplify_pro manual_syn.prj
 
 syn: $(EDN_NAME)
@@ -31,7 +31,7 @@ $(PDB_NAME): build/$(TOP_NAME)_build.tcl
 
 build/$(TOP_NAME)_build.tcl: $(EDN_NAME) $(PDC_NAME)
 	@echo Rebuilding $@
-	@mkdir -p $(dir $@)
+	-@mkdir -p $(dir $@)
 	@echo # autogen >$@
 	@echo new_design \
     		-name $(TOP_NAME) \
