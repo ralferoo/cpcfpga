@@ -6,30 +6,54 @@ VOLTAGE		= 1.5
 IOSTD		= LVTTL
 
 TOP_NAME = top
-EDN_NAME = build/$(TOP_NAME).edn
+VHD_FILES = $(wildcard hdl/*.vhd)
+PDC_FILES = $(wildcard constraint/*.pdc)
+
+EDN_NAME = $(TOP_NAME).edn
 PDC_NAME = constraint/top_pins.pdc
 PDB_NAME = $(TOP_NAME).pdb
 
 all: $(PDB_NAME)
 
+build/$(TOP_NAME).prj: Makefile $(VHD_FILES)
+	@echo Rebuilding $@
+	-@mkdir -p $(dir $@)
+	@echo add_file -vhdl $(patsubst %,../%,$(VHD_FILES)) >$@
+	@echo set_option -top_module work.top >>$@
+#device options
+	@echo set_option -technology $(FAMILY) >>$@
+	@echo set_option -part $(PART) >>$@
+#compilation/mapping options
+	@echo set_option -symbolic_fsm_compiler true >>$@
+#compilation/mapping options
+	@echo set_option -frequency 20.000 >>$@
+#simulation options
+	@echo impl -active synthesis >>$@
+	@echo project -result_file $(EDN_NAME) >>$@
+	@echo project -run -fg synthesis >>$@
+	@echo project -close >>$@
+
+test: build/$(TOP_NAME).prj
+	@cat build/$(TOP_NAME).prj
+
 program: $(PDB_NAME) $(TOP_NAME).pro
 	flashpro $(TOP_NAME).pro
 
 clean:
-	c:\\cygwin\\bin\\rm -f synthesis/top.edn
+	c:\\cygwin\\bin\\rm -rf build/
 
-$(EDN_NAME): hdl/top.vhd
+build/$(EDN_NAME): build/$(TOP_NAME).prj
 	-@mkdir -p $(dir $@)
-	-C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe -product synplify_pro manual_syn.prj
+	-C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe -product synplify_pro build/$(TOP_NAME).prj
 
-syn: $(EDN_NAME)
+syn: build/$(EDN_NAME)
 
 pdb: $(PDB_NAME)
 
-$(PDB_NAME): build/$(TOP_NAME)_build.tcl
+$(PDB_NAME): build/$(TOP_NAME)_build.tcl build/$(EDN_NAME) $(PDC_NAME)
 	designer SCRIPT:$(notdir $<) SCRIPT_DIR:$(dir $<) LOGFILE:$(notdir $<).log
 
-build/$(TOP_NAME)_build.tcl: $(EDN_NAME) $(PDC_NAME)
+build/$(TOP_NAME)_build.tcl: Makefile
 	@echo Rebuilding $@
 	-@mkdir -p $(dir $@)
 	@echo # autogen >$@
@@ -50,13 +74,12 @@ build/$(TOP_NAME)_build.tcl: $(EDN_NAME) $(PDC_NAME)
     		-voltrange COM >>$@
 	@echo import_source \
     		-format edif \
-    		-edif_flavor GENERIC ../$(EDN_NAME) \
+    		-edif_flavor GENERIC $(EDN_NAME) \
     		-format pdc \
     		-abort_on_error yes ../$(PDC_NAME) \
     		-merge_physical no \
     		-merge_timing yes >>$@
 	@echo save_design $(TOP_NAME)_build.adb >>$@
-	@echo puts "about to compile..." >>$@
 	@echo compile \
     		-pdc_abort_on_error on \
     		-pdc_eco_display_unmatched_objects off \
@@ -73,7 +96,6 @@ build/$(TOP_NAME)_build.tcl: $(EDN_NAME) $(PDC_NAME)
     		-delete_buffer_tree_max_fanout 12 \
     		-report_high_fanout_nets_limit 10 >>$@
 	@echo save_design $(TOP_NAME)_build.adb >>$@
-	@echo puts "about to layout..." >>$@
 	@echo layout \
     		-timing_driven \
     		-run_placer on \
@@ -82,7 +104,6 @@ build/$(TOP_NAME)_build.tcl: $(EDN_NAME) $(PDC_NAME)
     		-route_incremental OFF \
     		-placer_high_effort off >>$@
 	@echo save_design $(TOP_NAME)_build.adb >>$@
-	@echo puts "about to export..." >>$@
 	@echo export \
     		-format pdb \
     		-feature prog_fpga \
