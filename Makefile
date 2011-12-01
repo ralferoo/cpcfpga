@@ -12,21 +12,36 @@ PDC_FILES = $(wildcard constraint/*.pdc)
 EDN_NAME = $(TOP_NAME).edn
 PDB_NAME = $(TOP_NAME).pdb
 
+FLASHPRO	= flashpro
+SYNPLIFY	= C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe
+DESIGNER	= designer
+RM		= c:\\cygwin\\bin\\rm
+
 all: $(PDB_NAME)
 
 clean:
-	c:\\cygwin\\bin\\rm -rf build/
+	$(RM) -rf build/ $(PDB_NAME) stdout.log $(PDB_NAME).depends
 
 program: $(PDB_NAME) $(TOP_NAME).pro
-	flashpro $(TOP_NAME).pro
+	$(FLASHPRO) $(TOP_NAME).pro
+
+build/$(EDN_NAME): build/$(TOP_NAME).prj
+	-$(SYNPLIFY) -product synplify_pro build/$(TOP_NAME).prj
+
+$(PDB_NAME): build/$(TOP_NAME)_build.tcl build/$(EDN_NAME) $(PDC_FILES)
+	$(DESIGNER) SCRIPT:$(notdir $<) SCRIPT_DIR:$(dir $<) LOGFILE:$(notdir $<).log
 
 syn: build/$(EDN_NAME)
 
-pdb: $(PDB_NAME)
+#############################################################################
 
-build/$(TOP_NAME).prj: Makefile $(VHD_FILES)
+# alternative to using touch so it works with mingw make and cygwin make
+build/.dummy:
+	-@mkdir build
+	@echo dummy >$@
+
+build/$(TOP_NAME).prj: Makefile $(VHD_FILES) build/.dummy
 	@echo Rebuilding $@
-	-@mkdir -p $(dir $@)
 	@echo add_file -vhdl $(patsubst %,../%,$(VHD_FILES)) >$@
 	@echo set_option -top_module work.top >>$@
 #device options
@@ -42,16 +57,8 @@ build/$(TOP_NAME).prj: Makefile $(VHD_FILES)
 	@echo project -run -fg synthesis >>$@
 	@echo project -close >>$@
 
-build/$(EDN_NAME): build/$(TOP_NAME).prj
-	-@mkdir -p $(dir $@)
-	-C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe -product synplify_pro build/$(TOP_NAME).prj
-
-$(PDB_NAME): build/$(TOP_NAME)_build.tcl build/$(EDN_NAME) $(PDC_FILES)
-	designer SCRIPT:$(notdir $<) SCRIPT_DIR:$(dir $<) LOGFILE:$(notdir $<).log
-
-build/$(TOP_NAME)_build.tcl: Makefile
+build/$(TOP_NAME)_build.tcl: Makefile build/.dummy
 	@echo Rebuilding $@
-	-@mkdir -p $(dir $@)
 	@echo # autogen >$@
 	@echo new_design \
     		-name $(TOP_NAME) \
