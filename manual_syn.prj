@@ -15,7 +15,7 @@ set_option -frequency 100.000
 
 #simulation options
 impl -active "synthesis"
-project -result_file "C:/fpga/test02/synthesis/top.edn"
+project -result_file "C:/fpga/test02/build/top.edn"
 project -run -fg synthesis 
 project -close
 
