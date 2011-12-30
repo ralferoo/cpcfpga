@@ -1,13 +1,18 @@
+#TOP_NAME = cpc
+TOP_NAME = uart_expt
+
 FAMILY		= IGLOO
 PART		= AGLN250V2
 PACKAGE		= VQFP100
 SPEED		= STD
-VOLTAGE		= 1.5
+VOLTAGE		= 1.2
 IOSTD		= LVTTL
 
-TOP_NAME = top
-VHD_FILES = $(wildcard hdl/*.vhd)
-PDC_FILES = $(wildcard constraint/*.pdc)
+VHD_FILES = $(wildcard hdl/*.vhd) $(wildcard smartgen/*/*.vhd)
+
+PDC_FILES =constraint/$(TOP_NAME)_pins.pdc
+SDC_FILES =$(wildcard constraint/$(TOP_NAME)_sdc.sdc)
+#PDC_FILES = $(wildcard constraint/*.pdc)
 
 EDN_NAME = $(TOP_NAME).edn
 PDB_NAME = $(TOP_NAME).pdb
@@ -19,14 +24,30 @@ RM		= c:\\cygwin\\bin\\rm
 
 all: $(PDB_NAME)
 
+pdb: $(PDB_NAME)
+
 clean:
 	$(RM) -rf build/ $(PDB_NAME) stdout.log $(PDB_NAME).depends
 
-program: $(PDB_NAME) $(TOP_NAME).pro
+edn: build/$(EDN_NAME)
+
+log:
+	less build/$(TOP_NAME).srr
+
+program: build/$(TOP_NAME)_fp.tcl $(PDB_NAME)
+	@echo Flashing device...
+	-@rm -rf build/$(TOP_NAME)_fpro
+	$(FLASHPRO) script:$<
+
+progui: $(PDB_NAME) $(TOP_NAME).pro
 	$(FLASHPRO) $(TOP_NAME).pro
 
 build/$(EDN_NAME): build/$(TOP_NAME).prj
+	-@rm -f build/$(EDN_NAME)
+	-@rm -f build/$(TOP_NAME).s*
 	-$(SYNPLIFY) -product synplify_pro build/$(TOP_NAME).prj
+	@cp build/$(EDN_NAME) build/$(EDN_NAME).tmp
+#	@mv build/_$(EDN_NAME) build/$(EDN_NAME)
 
 $(PDB_NAME): build/$(TOP_NAME)_build.tcl build/$(EDN_NAME) $(PDC_FILES)
 	$(DESIGNER) SCRIPT:$(notdir $<) SCRIPT_DIR:$(dir $<) LOGFILE:$(notdir $<).log
@@ -40,10 +61,20 @@ build/.dummy:
 	-@mkdir build
 	@echo dummy >$@
 
-build/$(TOP_NAME).prj: Makefile $(VHD_FILES) build/.dummy
+build/$(TOP_NAME)_fp.tcl: build/.dummy Makefile
+	@echo Rebuilding $@
+	@echo new_project \
+         -name {$(TOP_NAME)_fpro} \
+         -location {$(TOP_NAME)_fpro} \
+         -mode {single} >$@
+	@echo set_programming_file -file {../$(TOP_NAME).pdb} >>$@
+	@echo run_selected_actions >>$@
+
+build/$(TOP_NAME).prj: Makefile $(VHD_FILES) $(SDC_FILES) build/.dummy
 	@echo Rebuilding $@
 	@echo add_file -vhdl $(patsubst %,../%,$(VHD_FILES)) >$@
-	@echo set_option -top_module work.top >>$@
+	@echo add_file -constraint $(patsubst %,../%,$(SDC_FILES)) >>$@
+	@echo set_option -top_module work.$(TOP_NAME) >>$@
 #device options
 	@echo set_option -technology $(FAMILY) >>$@
 	@echo set_option -part $(PART) >>$@
@@ -59,11 +90,10 @@ build/$(TOP_NAME).prj: Makefile $(VHD_FILES) build/.dummy
 
 build/$(TOP_NAME)_build.tcl: Makefile build/.dummy
 	@echo Rebuilding $@
-	@echo # autogen >$@
 	@echo new_design \
     		-name $(TOP_NAME) \
     		-family $(FAMILY) \
-    		-path . >>$@
+    		-path . >$@
 	@echo set_device \
     		-die $(PART) \
     		-package $(PACKAGE) \

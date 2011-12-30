@@ -10,13 +10,13 @@ KEY VendorTechnology_Package "vq100"
 KEY ProjectLocation "C:\fpga\barefpga"
 KEY SimulationType "VHDL"
 KEY Vendor "Actel"
-KEY ActiveRoot "top::work"
+KEY ActiveRoot "cpc::work"
 LIST REVISIONS
 VALUE="Impl1",NUM=1
 CURREV=1
 ENDLIST
 LIST FileManager
-VALUE "<project>\constraint\top_pins.pdc,pdc"
+VALUE "<project>\constraint\cpc_pins.pdc,pdc"
 STATE="utd"
 TIME="1322747529"
 SIZE="3961"
@@ -25,7 +25,7 @@ TOOL_CONSTRAINT_TYPE="ideDESIGNER"
 END_USE_CONSTRAINT
 USE_FOR_ANY_TOOL="FALSE"
 ENDFILE
-VALUE "<project>\hdl\top.vhd,hdl"
+VALUE "<project>\hdl\cpc.vhd,hdl"
 STATE="utd"
 TIME="1322747529"
 SIZE="587"
@@ -34,18 +34,18 @@ ENDLIST
 LIST UsedFile
 ENDLIST
 LIST NewModulesInfo
-LIST "top::work"
-FILE "<project>\hdl\top.vhd,hdl"
+LIST "cpc::work"
+FILE "<project>\hdl\cpc.vhd,hdl"
 LIST Other_Association
-VALUE "<project>\constraint\top_pins.pdc,pdc"
+VALUE "<project>\constraint\cpc_pins.pdc,pdc"
 ENDLIST
 ENDLIST
 ENDLIST
 LIST AssociatedStimulus
 ENDLIST
 LIST Other_Association
-LIST top
-VALUE "<project>\constraint\top_pins.pdc,pdc"
+LIST cpc
+VALUE "<project>\constraint\cpc_pins.pdc,pdc"
 ENDLIST
 ENDLIST
 LIST SimulationOptions
@@ -56,7 +56,7 @@ RunTime=1000ns
 Resolution=1ps
 VsimOpt=
 EntityName=testbench
-TopInstanceName=<top>_0
+TopInstanceName=<cpc>_0
 DoFileName=
 DoFileName2=wave.do
 DoFileParams=
