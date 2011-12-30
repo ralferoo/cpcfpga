@@ -66,7 +66,7 @@ architecture impl of cpc is
 	signal A								: std_logic_vector(15 downto 0);
 	signal DI, DO, XXX							: std_logic_vector(7 downto 0);
 
---    signal DI_from_mem	: std_logic_vector(7 downto 0);
+    signal DI_from_mem	: std_logic_vector(7 downto 0);
 --    signal DI_from_iorq	: std_logic_vector(7 downto 0);
 --    signal DI_is_from_iorq : std_logic;
 
@@ -127,29 +127,34 @@ architecture impl of cpc is
         BUSRQ_n <= '1'; --pushsw(3);
 
         -- memory
---        memory : memory_mux port map ( nrst=>nRESET, clk=>clk16, 
---            MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, A=>A, DI=>DI_from_mem, DO=>DO,
---            sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
+        memory : memory_mux port map ( nrst=>nRESET, clk=>clk16, 
+            MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, A=>A, DI=>DI_from_mem, DO=>DO,
+            sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
 
-	sram_address	<= (others=>'0');
-	sram_data		<= (others=>'0');
-	sram_we			<= '1';
-	sram_ce			<= '1';
-	sram_oe			<= '1';
+	    DI <= DI_from_mem;
+	    --DI <= DI_from_iorq when DI_is_from_iorq='1' else DI_from_mem;
 
-	process(clk16,MREQ_n,RD_n)
+	process(cpuclk,MREQ_n,RD_n)
 	begin
-		if rising_edge(clk16) then
+		if rising_edge(cpuclk) then
 			if MREQ_n = '0' and RD_n = '0' then
-				DI <= (others=>'0'); -- nops for now
---	DI <= DI_from_iorq when DI_is_from_iorq='1' else DI_from_mem;
-
---                    DI <= testrom_data;
-				leds <= not A(7 downto 0);
+--				DI <= (others=>'0'); -- nops for now
+--				leds <= not A(7 downto 0);
 			end if;
 		end if;
 	end process;
 
+        -- add LED output to port #fade
+        process(nRESET,cpuclk,IORQ_n,WR_n,A)
+        begin
+            if nRESET = '0' then
+                leds <= (others=>'0');
+            
+            elsif rising_edge(cpuclk) and IORQ_n = '0' and WR_n = '0' and A(15 downto 0) = x"FADE" then
+                leds <= not DO(7 downto 0);
+            end if;
+        end process;
+	
         -- use dummy pins
         dummy <= dipsw   (0) xor dipsw   (1) xor dipsw   (2) xor dipsw   (3) xor dipsw   (4) xor dipsw   (5) xor dipsw   (6) xor dipsw   (7) xor 
                  pushsw  (0) xor pushsw  (1) xor pushsw  (2) xor pushsw  (3) xor

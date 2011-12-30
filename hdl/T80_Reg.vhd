@@ -79,6 +79,10 @@ architecture rtl of T80_Reg is
 	signal	RegsH	: Register_Image(0 to 7);
 	signal	RegsL	: Register_Image(0 to 7);
 
+	-- the following is needed to stop actel putting this into a RAM block!
+	attribute syn_ramstyle : string;
+	attribute syn_ramstyle of RegsH, RegsL : signal is "registers";
+
 begin
 
 	process (Clk)
