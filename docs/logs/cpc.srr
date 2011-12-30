@@ -1,0 +1,1987 @@
+#Build: Synplify Pro E-2010.09A-1, Build 006R, Oct  6 2010
+#install: C:\Actel\Libero_v9.1\Synopsys\synplify_E201009A-1
+#OS:  6.0
+#Hostname: JOB
+
+#Implementation: build
+
+#Fri Dec 30 23:44:44 2011
+
+$ Start of Compile
+#Fri Dec 30 23:44:44 2011
+
+Synopsys VHDL Compiler, version comp520rcp1, Build 028R, built Sep 23 2010
+@N|Running in 32-bit mode
+Copyright (C) 1994-2010, Synopsys Inc.  All Rights Reserved
+
+@N: CD720 :"C:\Actel\Libero_v9.1\Synopsys\synplify_E201009A-1\lib\vhd\std.vhd":123:18:123:21|Setting time resolution to ns
+@N:"C:\fpga\cpcfpga\hdl\cpc.vhd":7:7:7:9|Top entity is set to cpc.
+VHDL syntax check successful!
+@N: CD630 :"C:\fpga\cpcfpga\hdl\cpc.vhd":7:7:7:9|Synthesizing work.cpc.impl 
+@W: CD638 :"C:\fpga\cpcfpga\hdl\cpc.vhd":67:16:67:18|Signal xxx is undriven 
+@N: CD630 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":10:7:10:16|Synthesizing work.memory_mux.impl 
+@W: CG296 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":52:4:52:10|Incomplete sensitivity list - assuming completeness
+@W: CG290 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":64:72:64:73|Referenced variable do is not in sensitivity list
+@W: CG290 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":64:46:64:46|Referenced variable a is not in sensitivity list
+@N: CD630 :"C:\fpga\cpcfpga\hdl\testrom.vhd":7:7:7:13|Synthesizing work.testrom.impl 
+Post processing for work.testrom.impl
+Post processing for work.memory_mux.impl
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Pruning Register sram_data_cl_5(7)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Pruning Register sram_data_cl_5(6)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Pruning Register sram_data_cl_5(5)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Pruning Register sram_data_cl_5(4)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Pruning Register sram_data_cl_5(3)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Pruning Register sram_data_cl_5(2)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Pruning Register sram_data_cl_5(1)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Pruning Register sram_data_cl_5(0)  
+@W: CL111 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|All reachable assignments to ram_11(0) assign '1', register removed by optimization
+@W: CL111 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|All reachable assignments to ram_11(1) assign '1', register removed by optimization
+@W: CL117 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Latch generated from process for signal ram_11(2 downto 0), probably caused by a missing assignment in an if or case stmt
+@W: CL117 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Latch generated from process for signal ram_10(2 downto 0), probably caused by a missing assignment in an if or case stmt
+@W: CL117 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Latch generated from process for signal ram_01(2 downto 0), probably caused by a missing assignment in an if or case stmt
+@W: CL117 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Latch generated from process for signal ram_00(2 downto 0), probably caused by a missing assignment in an if or case stmt
+@W: CL111 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|All reachable assignments to sram_address(16) assign '0', register removed by optimization
+@W: CL111 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|All reachable assignments to sram_address(17) assign '0', register removed by optimization
+@W: CL111 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|All reachable assignments to sram_address(18) assign '0', register removed by optimization
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":104:8:104:9|Feedback mux created for signal sram_address[15:0]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data_e. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data[0:0]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data_e. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data[1:1]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data_e. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data[2:2]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data_e. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data[3:3]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data_e. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data[4:4]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data_e. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data[5:5]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data_e. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data[6:6]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data_e. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@A:"C:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Feedback mux created for signal sram_data[7:7]. Did you forget the set/reset assignment for this signal? Specifying a reset value will improve timing and area
+@W: CL260 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Pruning Register bit 2 of ram_01(2 downto 1)  
+@W: CL260 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Pruning Register bit 2 of ram_00(2 downto 0)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Pruning Register ram_10(2)  
+@W: CL169 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Pruning Register ram_11(2)  
+@N: CD630 :"C:\fpga\cpcfpga\hdl\T80s.vhd":73:7:73:10|Synthesizing work.t80s.rtl 
+@W: CD326 :"C:\fpga\cpcfpga\hdl\T80s.vhd":115:1:115:2|Port stop of entity work.t80 is unconnected
+@W: CD326 :"C:\fpga\cpcfpga\hdl\T80s.vhd":115:1:115:2|Port inte of entity work.t80 is unconnected
+@N: CD630 :"C:\fpga\cpcfpga\hdl\T80.vhd":75:7:75:9|Synthesizing work.t80.rtl 
+@W: CD434 :"C:\fpga\cpcfpga\hdl\T80.vhd":799:42:799:47|Signal wait_n in the sensitivity list is not used in the process
+@N: CD630 :"C:\fpga\cpcfpga\hdl\T80_Reg.vhd":56:7:56:13|Synthesizing work.t80_reg.rtl 
+Post processing for work.t80_reg.rtl
+@N: CL134 :"C:\fpga\cpcfpga\hdl\T80_Reg.vhd":80:8:80:12|Found RAM regsl, depth=8, width=8
+@N: CL134 :"C:\fpga\cpcfpga\hdl\T80_Reg.vhd":79:8:79:12|Found RAM regsh, depth=8, width=8
+@N: CL134 :"C:\fpga\cpcfpga\hdl\T80_Reg.vhd":80:8:80:12|Found RAM regsl, depth=8, width=8
+@N: CL134 :"C:\fpga\cpcfpga\hdl\T80_Reg.vhd":79:8:79:12|Found RAM regsh, depth=8, width=8
+@N: CL134 :"C:\fpga\cpcfpga\hdl\T80_Reg.vhd":80:8:80:12|Found RAM regsl, depth=8, width=8
+@N: CL134 :"C:\fpga\cpcfpga\hdl\T80_Reg.vhd":79:8:79:12|Found RAM regsh, depth=8, width=8
+@N: CD630 :"C:\fpga\cpcfpga\hdl\T80_ALU.vhd":62:7:62:13|Synthesizing work.t80_alu.rtl 
+Post processing for work.t80_alu.rtl
+@N: CD630 :"C:\fpga\cpcfpga\hdl\T80_MCode.vhd":68:7:68:15|Synthesizing work.t80_mcode.rtl 
+Post processing for work.t80_mcode.rtl
+Post processing for work.t80.rtl
+Post processing for work.t80s.rtl
+@N: CD630 :"C:\fpga\cpcfpga\smartgen\PLL16mhz\PLL16mhz.vhd":8:7:8:14|Synthesizing work.pll16mhz.def_arch 
+@N: CD630 :"C:\Actel\Libero_v9.1\Synopsys\synplify_E201009A-1\lib\proasic\igloo.vhd":3473:10:3473:12|Synthesizing igloo.pll.syn_black_box 
+Post processing for igloo.pll.syn_black_box
+@N: CD630 :"C:\Actel\Libero_v9.1\Synopsys\synplify_E201009A-1\lib\proasic\igloo.vhd":406:10:406:15|Synthesizing igloo.pllint.syn_black_box 
+Post processing for igloo.pllint.syn_black_box
+@N: CD630 :"C:\Actel\Libero_v9.1\Synopsys\synplify_E201009A-1\lib\proasic\igloo.vhd":1787:10:1787:12|Synthesizing igloo.gnd.syn_black_box 
+Post processing for igloo.gnd.syn_black_box
+@N: CD630 :"C:\Actel\Libero_v9.1\Synopsys\synplify_E201009A-1\lib\proasic\igloo.vhd":2722:10:2722:12|Synthesizing igloo.vcc.syn_black_box 
+Post processing for igloo.vcc.syn_black_box
+Post processing for work.pll16mhz.def_arch
+Post processing for work.cpc.impl
+@W: CL265 :"C:\fpga\cpcfpga\hdl\cpc.vhd":100:12:100:13|Pruning bit 22 of clk_divider(22 downto 0) - not in use ... 
+@W: CL265 :"C:\fpga\cpcfpga\hdl\cpc.vhd":100:12:100:13|Pruning bit 21 of clk_divider(22 downto 0) - not in use ... 
+@W: CL265 :"C:\fpga\cpcfpga\hdl\cpc.vhd":100:12:100:13|Pruning bit 20 of clk_divider(22 downto 0) - not in use ... 
+@W: CL265 :"C:\fpga\cpcfpga\hdl\cpc.vhd":100:12:100:13|Pruning bit 19 of clk_divider(22 downto 0) - not in use ... 
+@W: CL113 :"C:\fpga\cpcfpga\hdl\cpc.vhd":150:12:150:13|Feedback mux created for signal leds[7:0].
+@W: CL246 :"C:\fpga\cpcfpga\hdl\T80_MCode.vhd":84:2:84:2|Input port bits 5 to 3 of f(7 downto 0) are unused 
+@W: CL247 :"C:\fpga\cpcfpga\hdl\T80_MCode.vhd":84:2:84:2|Input port bit 1 of f(7 downto 0) is unused 
+@W: CL246 :"C:\fpga\cpcfpga\hdl\testrom.vhd":9:8:9:11|Input port bits 13 to 4 of addr(13 downto 0) are unused 
+@W: CL260 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Pruning Register bit 1 of ram_00(1 downto 0)  
+@N: CL177 :"C:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Sharing sequential element ram_00.
+@END
+Process took 0h:00m:07s realtime, 0h:00m:06s cputime
+# Fri Dec 30 23:44:51 2011
+
+###########################################################]
+Synopsys Actel Technology Mapper, Version mapact, Build 023R, Built Sep 29 2010 09:29:00
+Copyright (C) 1994-2010, Synopsys Inc.  All Rights Reserved
+Product Version E-2010.09A-1
+Reading constraint file: C:\fpga\cpcfpga\constraint\cpc_sdc.sdc
+@W: BM100 : Clock n:clk_divider[4] too slow at 0.5 Mhz, resetting it to 1MHz(1000ns)
+@W: BM100 : Clock n:clk_divider[5] too slow at 0.25 Mhz, resetting it to 1MHz(1000ns)
+@W: BM100 : Clock n:clk_divider[6] too slow at 0.125 Mhz, resetting it to 1MHz(1000ns)
+@W: BM100 : Clock n:clk_divider[7] too slow at 0.0625 Mhz, resetting it to 1MHz(1000ns)
+@W: BM100 : Clock n:clk_divider[8] too slow at 0.03125 Mhz, resetting it to 1MHz(1000ns)
+@W: BM100 : Clock n:clk_divider[9] too slow at 0.015625 Mhz, resetting it to 1MHz(1000ns)
+@N: MF249 |Running in 32-bit mode.
+@N: MF258 |Gated clock conversion disabled 
+
+@W: MO171 :"c:\fpga\cpcfpga\hdl\memory_mux.vhd":55:8:55:9|Sequential instance memory.ram_10[0] has been reduced to a combinational gate by constant propagation 
+@W: MO161 :"c:\fpga\cpcfpga\hdl\t80.vhd":937:2:937:3|Register bit NMI_s is always 0, optimizing ...
+@W: MO161 :"c:\fpga\cpcfpga\hdl\t80.vhd":963:2:963:3|Register bit IntCycle is always 0, optimizing ...
+@W: MO161 :"c:\fpga\cpcfpga\hdl\t80.vhd":963:2:963:3|Register bit NMICycle is always 0, optimizing ...
+@N: BN116 :"c:\fpga\cpcfpga\hdl\t80.vhd":963:2:963:3|Removing sequential instance Auto_Wait_t2 of view:PrimLib.dffre(prim) because there are no references to its outputs 
+@N: BN116 :"c:\fpga\cpcfpga\hdl\t80.vhd":347:2:347:3|Removing sequential instance IStatus[1:0] of view:PrimLib.dffre(prim) because there are no references to its outputs 
+@N: BN116 :"c:\fpga\cpcfpga\hdl\t80.vhd":937:2:937:3|Removing sequential instance oldnmi_n of view:PrimLib.dffre(prim) because there are no references to its outputs 
+@W: BN132 :"c:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Removing sequential instance memory.sram_data_e_7,  because it is equivalent to instance memory.sram_data_e_6
+@W: BN132 :"c:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Removing sequential instance memory.sram_data_e_6,  because it is equivalent to instance memory.sram_data_e_5
+@W: BN132 :"c:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Removing sequential instance memory.sram_data_e_5,  because it is equivalent to instance memory.sram_data_e_4
+@W: BN132 :"c:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Removing sequential instance memory.sram_data_e_4,  because it is equivalent to instance memory.sram_data_e_3
+@W: BN132 :"c:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Removing sequential instance memory.sram_data_e_3,  because it is equivalent to instance memory.sram_data_e_2
+@W: BN132 :"c:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Removing sequential instance memory.sram_data_e_2,  because it is equivalent to instance memory.sram_data_e_1
+@W: BN132 :"c:\fpga\cpcfpga\hdl\memory_mux.vhd":111:14:111:23|Removing sequential instance memory.sram_data_e_1,  because it is equivalent to instance memory.sram_data_e
+
+Available hyper_sources - for debug and ip models
+	None Found
+
+@W: MT453 |clock period is too big for clock clk_divider[4], changing period from 2000.0 to 1000.0 ns, rise from 0.0 ns to 0.0 ns, and fall from 1000.0 ns to 500.0 ns. 
+@W: MT453 |clock period is too big for clock clk_divider[5], changing period from 4000.0 to 1000.0 ns, rise from 0.0 ns to 0.0 ns, and fall from 2000.0 ns to 500.0 ns. 
+@W: MT453 |clock period is too big for clock clk_divider[6], changing period from 8000.0 to 1000.0 ns, rise from 0.0 ns to 0.0 ns, and fall from 4000.0 ns to 500.0 ns. 
+@W: MT453 |clock period is too big for clock clk_divider[7], changing period from 16000.0 to 1000.0 ns, rise from 0.0 ns to 0.0 ns, and fall from 8000.0 ns to 500.0 ns. 
+@W: MT453 |clock period is too big for clock clk_divider[8], changing period from 32000.0 to 1000.0 ns, rise from 0.0 ns to 0.0 ns, and fall from 16000.0 ns to 500.0 ns. 
+@W: MT453 |clock period is too big for clock clk_divider[9], changing period from 64000.0 to 1000.0 ns, rise from 0.0 ns to 0.0 ns, and fall from 32000.0 ns to 500.0 ns. 
+@W:"c:\fpga\cpcfpga\hdl\memory_mux.vhd":69:14:69:91|Net memory/un24_iorq_n appears to be a clock source which was not identfied. Assuming default frequency. 
+Finished RTL optimizations (Time elapsed 0h:00m:02s; Memory used current: 59MB peak: 61MB)
+
+@N: MF238 :"c:\fpga\cpcfpga\hdl\cpc.vhd":101:31:101:45|Found 19 bit incrementor, 'un2_clk_divider_0[18:0]'
+@N: MF238 :"c:\fpga\cpcfpga\hdl\cpc.vhd":101:31:101:45|Found 12 bit incrementor, 'un2_clk_divider_1[11:0]'
+@N: MF238 :"c:\fpga\cpcfpga\hdl\cpc.vhd":101:31:101:45|Found 18 bit incrementor, 'un2_clk_divider[17:0]'
+@N: MF135 :"c:\fpga\cpcfpga\hdl\t80_reg.vhd":80:8:80:12|Found RAM, 'Regs.regsl_2[7:0]', 8 words by 8 bits 
+@N: MF135 :"c:\fpga\cpcfpga\hdl\t80_reg.vhd":80:8:80:12|Found RAM, 'Regs.regsl_1[7:0]', 8 words by 8 bits 
+@N: MF135 :"c:\fpga\cpcfpga\hdl\t80_reg.vhd":79:8:79:12|Found RAM, 'Regs.regsh_2[7:0]', 8 words by 8 bits 
+@N: MF135 :"c:\fpga\cpcfpga\hdl\t80_reg.vhd":79:8:79:12|Found RAM, 'Regs.regsh_1[7:0]', 8 words by 8 bits 
+@W: BN132 :"c:\fpga\cpcfpga\hdl\t80_reg.vhd":80:8:80:12|Removing sequential instance z80.u0.Regs.regsl_2[7:0],  because it is equivalent to instance z80.u0.Regs.regsl_1[7:0]
+@W: BN132 :"c:\fpga\cpcfpga\hdl\t80_reg.vhd":80:8:80:12|Removing sequential instance z80.u0.Regs.regsl_1[7:0],  because it is equivalent to instance z80.u0.Regs.regsh_2[7:0]
+@W: BN132 :"c:\fpga\cpcfpga\hdl\t80_reg.vhd":79:8:79:12|Removing sequential instance z80.u0.Regs.regsh_2[7:0],  because it is equivalent to instance z80.u0.Regs.regsh_1[7:0]
+@N: BN116 :"c:\fpga\cpcfpga\hdl\t80_reg.vhd":79:8:79:12|Removing sequential instance Regs.regsh_1[7:0] of view:PrimLib.ram1(prim) because there are no references to its outputs 
+@N: MF239 :"c:\fpga\cpcfpga\hdl\t80.vhd":402:4:402:5|Found 16 bit decrementor, 'un1_SP_1[15:0]'
+@N: MF238 :"c:\fpga\cpcfpga\hdl\t80.vhd":510:30:510:50|Found 16 bit incrementor, 'un1_TmpAddr_0[16:1]'
+@N: MF238 :"c:\fpga\cpcfpga\hdl\t80.vhd":402:4:402:5|Found 16 bit incrementor, 'un1_SP_0_inc[15:0]'
+@N: MF176 |Default generator successful 
+@N: MF176 |Default generator successful 
+@N: MF238 :"c:\fpga\cpcfpga\hdl\t80.vhd":406:24:406:41|Found 7 bit incrementor, 'un3_r[6:0]'
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":1484:3:1484:6|Found ROM, 'Special_LD_2[2:0]', 252 words by 3 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":1484:3:1484:6|Found ROM, 'MCycles_19[2:0]', 252 words by 3 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":1484:3:1484:6|Found ROM, 'IMode_2[1:0]', 252 words by 2 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":1484:3:1484:6|Found ROM, 'Read_To_Acc_6', 252 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'Prefix_4[1:0]', 254 words by 2 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'SetEI_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'SetDI_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'LDSPHL_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'JumpXY_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'I_SCF_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'I_CPL_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'I_CCF_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'Halt_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'ExchangeRp_2', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'ExchangeRS_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'ExchangeDH_1', 254 words by 1 bits 
+@N: MO106 :"c:\fpga\cpcfpga\hdl\t80_mcode.vhd":257:2:257:5|Found ROM, 'ExchangeAF_1', 254 words by 1 bits 
+@N: MF176 |Default generator successful 
+@N: MF176 |Default generator successful 
+@N: MF176 |Default generator successful 
+@N: MF176 |Default generator successful 
+Auto Dissolve of z80 (inst of view:work.T80s(rtl))
+Finished factoring (Time elapsed 0h:00m:08s; Memory used current: 80MB peak: 81MB)
+
+@N: BN116 :"c:\fpga\cpcfpga\hdl\t80.vhd":906:2:906:3|Removing sequential instance z80.u0.RFSH_n of view:PrimLib.dffs(prim) because there are no references to its outputs 
+@A: BN291 :"c:\fpga\cpcfpga\hdl\t80.vhd":906:2:906:3|Boundary register z80.u0.RFSH_n has been packed into a complex cell. To disable this register packing, set syn_keep=1 on the net between the register and the complex cell. 
+@N: BN116 :"c:\fpga\cpcfpga\hdl\t80.vhd":963:2:963:3|Removing sequential instance z80.u0.IntE_FF1 of view:PrimLib.dffr(prim) because there are no references to its outputs 
+@A: BN291 :"c:\fpga\cpcfpga\hdl\t80.vhd":963:2:963:3|Boundary register z80.u0.IntE_FF1 has been packed into a complex cell. To disable this register packing, set syn_keep=1 on the net between the register and the complex cell. 
+@N: BN116 :"c:\fpga\cpcfpga\hdl\t80.vhd":963:2:963:3|Removing sequential instance z80.u0.M1_n of view:PrimLib.dffs(prim) because there are no references to its outputs 
+@A: BN291 :"c:\fpga\cpcfpga\hdl\t80.vhd":963:2:963:3|Boundary register z80.u0.M1_n has been packed into a complex cell. To disable this register packing, set syn_keep=1 on the net between the register and the complex cell. 
+Finished gated-clock and generated-clock conversion (Time elapsed 0h:00m:08s; Memory used current: 79MB peak: 81MB)
+
+Finished generic timing optimizations - Pass 1 (Time elapsed 0h:00m:11s; Memory used current: 70MB peak: 85MB)
+
+Starting Early Timing Optimization (Time elapsed 0h:00m:11s; Memory used current: 72MB peak: 85MB)
+
+Finished Early Timing Optimization (Time elapsed 0h:00m:54s; Memory used current: 75MB peak: 85MB)
+
+Finished generic timing optimizations - Pass 2 (Time elapsed 0h:00m:54s; Memory used current: 73MB peak: 85MB)
+
+Finished preparing to map (Time elapsed 0h:00m:58s; Memory used current: 85MB peak: 86MB)
+
+
+High Fanout Net Report
+**********************
+
+Driver Instance / Pin Name                  Fanout, notes                   
+----------------------------------------------------------------------------
+z80.DI_Reg[7] / Q                           29                              
+z80.u0.IR[0] / Q                            26                              
+z80.u0.IR[1] / Q                            26                              
+z80.u0.IR[2] / Q                            45                              
+z80.u0.IR[3] / Q                            45                              
+z80.u0.IR[4] / Q                            41                              
+z80.u0.IR[5] / Q                            55                              
+z80.u0.IR[6] / Q                            35                              
+z80.u0.IR[7] / Q                            25                              
+z80.u0.ISet[1] / Q                          82                              
+z80.u0.mcode.IncDec[3] / Y                  44                              
+z80.u0.RegAddrC[1] / Q                      32                              
+z80.u0.RegAddrC[2] / Q                      64                              
+z80.u0.un1_t_res_NE / Y                     35                              
+nRESET_pad / Y                              208 : 197 asynchronous set/reset
+z80.u0.IR_0_sqmuxa_1_1 / Y                  27                              
+z80.u0.mcode.Set_BusB_To[0] / Y             32                              
+z80.u0.F_25_sn_m1 / Y                       32                              
+z80.u0.un7[8] / Y                           27                              
+z80.u0.un20_clken / Y                       36                              
+z80.u0.op_eq.un9_incdec_16 / Y              30                              
+z80.u0.RegAddrA_0_N_3_i_0 / Y               50                              
+z80.u0.RegAddrA_0[1] / Y                    35                              
+z80.u0.RegAddrA[2] / Y                      32                              
+z80.u0.RegAddrB[1] / Y                      32                              
+z80.u0.RegAddrB[0] / Y                      64                              
+z80.un1_mcycle / Y                          43                              
+z80.u0.mcode.RstP_1_sqmuxa_m1_e_0 / Y       55                              
+d_m1_0_a2_a0_1_0 / Y                        152                             
+z80.u0.mcode.MCycles_0_sqmuxa_5_s_0 / Y     47                              
+============================================================================
+
+@N: FP130 |Promoting Net nRESET_c on CLKBUF  nRESET_pad 
+@N: FP130 |Promoting Net cpuclk on CLKINT  I_136 
+@N: FP130 |Promoting Net d_m1_0_a2_a0_1_0 on CLKINT  I_137 
+@N: FP130 |Promoting Net z80.u0.ISet[1] on CLKINT  I_138 
+@N: FP130 |Promoting Net z80.u0.RegAddrC[2] on CLKINT  I_139 
+Replicating Combinational Instance z80.u0.mcode.MCycles_0_sqmuxa_5_s_0, fanout 47 segments 2
+Replicating Combinational Instance z80.u0.mcode.RstP_1_sqmuxa_m1_e_0, fanout 55 segments 3
+Replicating Combinational Instance z80.un1_mcycle, fanout 43 segments 2
+Replicating Combinational Instance z80.u0.RegAddrB[0], fanout 64 segments 3
+Replicating Combinational Instance z80.u0.RegAddrB[1], fanout 32 segments 2
+Replicating Combinational Instance z80.u0.RegAddrA[2], fanout 32 segments 2
+Replicating Combinational Instance z80.u0.RegAddrA_0[1], fanout 35 segments 2
+Replicating Combinational Instance z80.u0.RegAddrA_0_N_3_i_0, fanout 50 segments 3
+Replicating Combinational Instance z80.u0.op_eq.un9_incdec_16, fanout 30 segments 2
+Replicating Combinational Instance z80.u0.un20_clken, fanout 36 segments 2
+Replicating Combinational Instance z80.u0.un7[8], fanout 27 segments 2
+Replicating Combinational Instance z80.u0.F_25_sn_m1, fanout 32 segments 2
+Replicating Combinational Instance z80.u0.mcode.Set_BusB_To[0], fanout 32 segments 2
+Replicating Combinational Instance z80.u0.IR_0_sqmuxa_1_1, fanout 27 segments 2
+Replicating Combinational Instance z80.u0.un1_t_res_NE, fanout 35 segments 2
+Replicating Sequential Instance z80.u0.RegAddrC[1], fanout 32 segments 2
+Replicating Combinational Instance z80.u0.mcode.IncDec[3], fanout 44 segments 2
+Replicating Sequential Instance z80.u0.IR[7], fanout 25 segments 2
+Replicating Sequential Instance z80.u0.IR[6], fanout 35 segments 2
+Replicating Sequential Instance z80.u0.IR[5], fanout 55 segments 3
+Replicating Sequential Instance z80.u0.IR[4], fanout 41 segments 2
+Replicating Sequential Instance z80.u0.IR[3], fanout 46 segments 2
+Replicating Sequential Instance z80.u0.IR[2], fanout 45 segments 2
+Replicating Sequential Instance z80.u0.IR[1], fanout 26 segments 2
+Replicating Sequential Instance z80.u0.IR[0], fanout 26 segments 2
+Replicating Sequential Instance z80.DI_Reg[7], fanout 30 segments 2
+Finished technology mapping (Time elapsed 0h:01m:01s; Memory used current: 108MB peak: 111MB)
+
+Finished technology timing optimizations and critical path resynthesis (Time elapsed 0h:01m:01s; Memory used current: 108MB peak: 111MB)
+
+
+Added 0 Buffers
+Added 30 Cells via replication
+	Added 11 Sequential Cells via replication
+	Added 19 Combinational Cells via replication
+Finished restoring hierarchy (Time elapsed 0h:01m:01s; Memory used current: 108MB peak: 111MB)
+
+Writing Analyst data base C:\fpga\cpcfpga\build\cpc.srm
+Finished Writing Netlist Databases (Time elapsed 0h:01m:02s; Memory used current: 105MB peak: 111MB)
+
+Writing EDIF Netlist and constraint files
+E-2010.09A-1
+Finished Writing EDIF Netlist and constraint files (Time elapsed 0h:01m:04s; Memory used current: 108MB peak: 112MB)
+
+Found clock clock with period 50.00ns 
+@W: MT420 |Found inferred clock cpc|clk_divider_inferred_clock[18] with period 50.00ns. A user-defined clock should be declared on object "n:clk_divider[18]"
+
+@W: MT420 |Found inferred clock cpc|clk_divider_inferred_clock[11] with period 50.00ns. A user-defined clock should be declared on object "n:clk_divider[11]"
+
+Found clock clk16 with period 62.50ns 
+Found clock clk_divider[0] with period 125.00ns 
+Found clock clk_divider[1] with period 250.00ns 
+Found clock clk_divider[2] with period 500.00ns 
+Found clock clk_divider[3] with period 1000.00ns 
+Found clock clk_divider[4] with period 1000.00ns 
+Found clock clk_divider[5] with period 1000.00ns 
+Found clock clk_divider[6] with period 1000.00ns 
+Found clock clk_divider[7] with period 1000.00ns 
+Found clock clk_divider[8] with period 1000.00ns 
+Found clock clk_divider[9] with period 1000.00ns 
+Found clock external_clock_source with period 50.00ns 
+@W: MT420 |Found inferred clock memory_mux|un24_iorq_n_inferred_clock with period 50.00ns. A user-defined clock should be declared on object "n:memory.un24_iorq_n"
+
+
+
+##### START OF TIMING REPORT #####[
+# Timing Report written on Fri Dec 30 23:46:05 2011
+#
+
+
+Top view:               cpc
+Library name:           IGLOO_V2
+Operating conditions:   COMWCSTD ( T = 70.0, V = 1.14, P = 3.70, tree_type = balanced_tree )
+Requested Frequency:    1.0 MHz
+Wire load mode:         top
+Wire load model:        igloo
+Paths requested:        5
+Constraint File(s):    C:\fpga\cpcfpga\constraint\cpc_sdc.sdc
+                       
+@N: MT320 |This timing report estimates place and route data. Please look at the place and route timing report for final timing..
+
+@N: MT322 |Clock constraints cover only FF-to-FF paths associated with the clock..
+
+
+
+Performance Summary 
+*******************
+
+
+Worst slack in design: -50.076
+
+                                          Requested     Estimated     Requested     Estimated                 Clock        Clock              
+Starting Clock                            Frequency     Frequency     Period        Period        Slack       Type         Group              
+----------------------------------------------------------------------------------------------------------------------------------------------
+clk16                                     16.0 MHz      48.5 MHz      62.500        20.618        41.882      declared     default_clkgroup   
+clk_divider[0]                            8.0 MHz       NA            125.000       NA            NA          declared     default_clkgroup   
+clk_divider[1]                            4.0 MHz       10.0 MHz      250.000       100.076       42.387      declared     default_clkgroup   
+clk_divider[2]                            2.0 MHz       NA            500.000       NA            NA          declared     default_clkgroup   
+clk_divider[3]                            1.0 MHz       NA            1000.000      NA            NA          declared     default_clkgroup   
+clk_divider[4]                            1.0 MHz       NA            1000.000      NA            NA          declared     default_clkgroup   
+clk_divider[5]                            1.0 MHz       NA            1000.000      NA            NA          declared     default_clkgroup   
+clk_divider[6]                            1.0 MHz       NA            1000.000      NA            NA          declared     default_clkgroup   
+clk_divider[7]                            1.0 MHz       NA            1000.000      NA            NA          declared     default_clkgroup   
+clk_divider[8]                            1.0 MHz       NA            1000.000      NA            NA          declared     default_clkgroup   
+clk_divider[9]                            1.0 MHz       2.5 MHz       1000.000      400.305       42.387      declared     default_clkgroup   
+clock                                     20.0 MHz      NA            50.000        NA            NA          declared     default_clkgroup   
+cpc|clk_divider_inferred_clock[11]        20.0 MHz      10.0 MHz      50.000        100.076       -50.076     inferred     Inferred_clkgroup_0
+cpc|clk_divider_inferred_clock[18]        20.0 MHz      10.0 MHz      50.000        100.076       -50.076     inferred     Inferred_clkgroup_1
+external_clock_source                     20.0 MHz      NA            50.000        NA            NA          declared     default_clkgroup   
+memory_mux|un24_iorq_n_inferred_clock     20.0 MHz      NA            50.000        NA            NA          inferred     Inferred_clkgroup_2
+==============================================================================================================================================
+
+
+
+
+
+Clock Relationships
+*******************
+
+Clocks                                                                        |    rise  to  rise     |    fall  to  fall   |    rise  to  fall   |    fall  to  rise 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Starting                               Ending                                 |  constraint  slack    |  constraint  slack  |  constraint  slack  |  constraint  slack
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+clk16                                  clk16                                  |  62.500      41.882   |  No paths    -      |  No paths    -      |  No paths    -    
+clk16                                  clk_divider[1]                         |  62.500      55.513   |  No paths    -      |  No paths    -      |  No paths    -    
+clk16                                  clk_divider[9]                         |  62.500      55.513   |  No paths    -      |  No paths    -      |  No paths    -    
+clk16                                  cpc|clk_divider_inferred_clock[11]     |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+clk16                                  cpc|clk_divider_inferred_clock[18]     |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[1]                         clk16                                  |  62.500      42.387   |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[1]                         clk_divider[1]                         |  250.000     149.924  |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[1]                         clk_divider[9]                         |  250.000     149.924  |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[1]                         cpc|clk_divider_inferred_clock[11]     |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[1]                         cpc|clk_divider_inferred_clock[18]     |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[1]                         memory_mux|un24_iorq_n_inferred_clock  |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[9]                         clk16                                  |  62.500      42.387   |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[9]                         clk_divider[1]                         |  250.000     149.924  |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[9]                         clk_divider[9]                         |  1000.000    899.924  |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[9]                         cpc|clk_divider_inferred_clock[11]     |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[9]                         cpc|clk_divider_inferred_clock[18]     |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+clk_divider[9]                         memory_mux|un24_iorq_n_inferred_clock  |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[11]     clk16                                  |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[11]     clk_divider[1]                         |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[11]     clk_divider[9]                         |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[11]     cpc|clk_divider_inferred_clock[11]     |  50.000      -50.076  |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[11]     cpc|clk_divider_inferred_clock[18]     |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[11]     memory_mux|un24_iorq_n_inferred_clock  |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[18]     clk16                                  |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[18]     clk_divider[1]                         |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[18]     clk_divider[9]                         |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[18]     cpc|clk_divider_inferred_clock[11]     |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[18]     cpc|clk_divider_inferred_clock[18]     |  50.000      -50.076  |  No paths    -      |  No paths    -      |  No paths    -    
+cpc|clk_divider_inferred_clock[18]     memory_mux|un24_iorq_n_inferred_clock  |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+memory_mux|un24_iorq_n_inferred_clock  clk16                                  |  Diff grp    -        |  No paths    -      |  No paths    -      |  No paths    -    
+======================================================================================================================================================================
+ Note: 'No paths' indicates there are no paths in the design for that pair of clock edges.
+       'Diff grp' indicates that paths exist but the starting clock and ending clock are in different clock groups.
+
+
+
+Interface Information 
+*********************
+
+		No IO constraint found 
+
+
+
+====================================
+Detailed Report for Clock: clk16
+====================================
+
+
+
+Starting Points with Worst Slack
+********************************
+
+                   Starting                                            Arrival           
+Instance           Reference     Type     Pin     Net                  Time        Slack 
+                   Clock                                                                 
+-----------------------------------------------------------------------------------------
+clk_divider[1]     clk16         DFN1     Q       clk_divider_i[1]     1.771       41.882
+clk_divider[0]     clk16         DFN1     Q       clk_divider_i[0]     1.771       42.224
+clk_divider[2]     clk16         DFN1     Q       clk_divider_i[2]     1.771       42.391
+clk_divider[4]     clk16         DFN1     Q       clk_divider_i[4]     1.771       42.608
+clk_divider[3]     clk16         DFN1     Q       clk_divider_i[3]     1.771       42.705
+clk_divider[5]     clk16         DFN1     Q       clk_divider_i[5]     1.771       42.872
+clk_divider[8]     clk16         DFN1     Q       clk_divider_i[8]     1.771       44.513
+clk_divider[6]     clk16         DFN1     Q       clk_divider_i[6]     1.771       44.939
+clk_divider[7]     clk16         DFN1     Q       clk_divider_i[7]     1.771       44.943
+clk_divider[9]     clk16         DFN1     Q       clk_divider_i[9]     1.771       45.486
+=========================================================================================
+
+
+Ending Points with Worst Slack
+******************************
+
+                    Starting                                  Required           
+Instance            Reference     Type     Pin     Net        Time         Slack 
+                    Clock                                                        
+---------------------------------------------------------------------------------
+clk_divider[12]     clk16         DFN1     D       I_73       61.205       41.882
+clk_divider[13]     clk16         DFN1     D       I_77       61.205       42.275
+clk_divider[14]     clk16         DFN1     D       I_84       61.205       42.275
+clk_divider[15]     clk16         DFN1     D       I_91       61.205       42.275
+clk_divider[16]     clk16         DFN1     D       I_98       61.205       42.275
+clk_divider[17]     clk16         DFN1     D       I_105      61.205       42.275
+clk_divider[9]      clk16         DFN1     D       I_52       61.205       44.375
+clk_divider[10]     clk16         DFN1     D       I_56       61.205       44.768
+clk_divider[4]      clk16         DFN1     D       I_20_0     61.205       46.417
+clk_divider[5]      clk16         DFN1     D       I_24_0     61.205       46.810
+=================================================================================
+
+
+
+Worst Path Information
+***********************
+
+
+Path information for path number 1: 
+      Requested Period:                      62.500
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         61.205
+
+    - Propagation time:                      19.323
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (non-critical) :                 41.882
+
+    Number of logic level(s):                4
+    Starting point:                          clk_divider[1] / Q
+    Ending point:                            clk_divider[12] / D
+    The start point is clocked by            clk16 [rising] on pin CLK
+    The end   point is clocked by            clk16 [rising] on pin CLK
+
+Instance / Net                                    Pin      Pin               Arrival     No. of    
+Name                                    Type      Name     Dir     Delay     Time        Fan Out(s)
+---------------------------------------------------------------------------------------------------
+clk_divider[1]                          DFN1      Q        Out     1.771     1.771       -         
+clk_divider_i[1]                        Net       -        -       3.667     -           7         
+un2_clk_divider.I_16                    AND3      B        In      -         5.438       -         
+un2_clk_divider.I_16                    AND3      Y        Out     1.458     6.895       -         
+un2_clk_divider.U1\.DWACT_FINC_E[0]     Net       -        -       3.667     -           7         
+un2_clk_divider.I_62                    AND3      A        In      -         10.562      -         
+un2_clk_divider.I_62                    AND3      Y        Out     1.115     11.677      -         
+un2_clk_divider.U1\.DWACT_FINC_E[6]     Net       -        -       3.420     -           6         
+un2_clk_divider.I_72                    NOR2B     B        In      -         15.097      -         
+un2_clk_divider.I_72                    NOR2B     Y        Out     1.508     16.605      -         
+un2_clk_divider.N_27                    Net       -        -       0.773     -           1         
+un2_clk_divider.I_73                    XOR2      A        In      -         17.377      -         
+un2_clk_divider.I_73                    XOR2      Y        Out     1.174     18.551      -         
+I_73                                    Net       -        -       0.773     -           1         
+clk_divider[12]                         DFN1      D        In      -         19.323      -         
+===================================================================================================
+Total path delay (propagation time + setup) of 20.618 is 8.319(40.3%) logic and 12.299(59.7%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+
+
+====================================
+Detailed Report for Clock: clk_divider[1]
+====================================
+
+
+
+Starting Points with Worst Slack
+********************************
+
+                 Starting                                           Arrival           
+Instance         Reference          Type         Pin     Net        Time        Slack 
+                 Clock                                                                
+--------------------------------------------------------------------------------------
+z80.u0.A[14]     clk_divider[1]     DFN1E0C0     Q       A[14]      1.771       42.387
+z80.u0.A[15]     clk_divider[1]     DFN1E0C0     Q       A[15]      1.771       42.721
+z80.u0.A[3]      clk_divider[1]     DFN1E0C0     Q       A[3]       1.771       42.963
+z80.u0.A[0]      clk_divider[1]     DFN1E0C0     Q       A[0]       1.395       43.769
+z80.u0.A[2]      clk_divider[1]     DFN1E0C0     Q       A[2]       1.771       44.776
+z80.u0.A[1]      clk_divider[1]     DFN1E0C0     Q       A[1]       1.771       44.993
+z80.MREQ_n       clk_divider[1]     DFN1P0       Q       MREQ_n     1.771       47.608
+z80.RD_n         clk_divider[1]     DFN1P0       Q       RD_n       1.771       48.952
+z80.WR_n         clk_divider[1]     DFN1P0       Q       WR_n       1.771       53.120
+z80.u0.DO[0]     clk_divider[1]     DFN1E0C0     Q       DO[0]      1.771       56.277
+======================================================================================
+
+
+Ending Points with Worst Slack
+******************************
+
+                              Starting                                                        Required           
+Instance                      Reference          Type       Pin     Net                       Time         Slack 
+                              Clock                                                                              
+-----------------------------------------------------------------------------------------------------------------
+memory.DI[2]                  clk_divider[1]     DFN1C0     D       N_11                      61.122       42.387
+memory.DI[1]                  clk_divider[1]     DFN1C0     D       N_9                       61.205       42.963
+memory.DI[6]                  clk_divider[1]     DFN1C0     D       N_19                      61.205       42.963
+memory.DI[7]                  clk_divider[1]     DFN1C0     D       N_21                      61.205       42.963
+memory.DI[3]                  clk_divider[1]     DFN1C0     D       N_13                      61.122       44.680
+memory.DI[4]                  clk_divider[1]     DFN1C0     D       N_15                      61.122       44.717
+memory.DI[5]                  clk_divider[1]     DFN1C0     D       N_17                      61.122       44.717
+memory.DI[0]                  clk_divider[1]     DFN1C0     D       N_7                       61.205       44.772
+memory.sram_address_1[15]     clk_divider[1]     DFN1E1     D       N_25                      61.122       47.190
+memory.sram_address_1[0]      clk_divider[1]     DFN1E1     E       sram_address_0_sqmuxa     61.456       51.550
+=================================================================================================================
+
+
+
+Worst Path Information
+***********************
+
+
+Path information for path number 1: 
+      Requested Period:                      62.500
+    - Setup time:                            1.378
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         61.122
+
+    - Propagation time:                      18.735
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (non-critical) :                 42.387
+
+    Number of logic level(s):                4
+    Starting point:                          z80.u0.A[14] / Q
+    Ending point:                            memory.DI[2] / D
+    The start point is clocked by            clk_divider[1] [rising] on pin CLK
+    The end   point is clocked by            clk16 [rising] on pin CLK
+
+Instance / Net                       Pin      Pin               Arrival     No. of    
+Name                    Type         Name     Dir     Delay     Time        Fan Out(s)
+--------------------------------------------------------------------------------------
+z80.u0.A[14]            DFN1E0C0     Q        Out     1.771     1.771       -         
+A[14]                   Net          -        -       3.074     -           5         
+memory.DI_6_i_o3[0]     OR2          B        In      -         4.845       -         
+memory.DI_6_i_o3[0]     OR2          Y        Out     1.554     6.398       -         
+N_27                    Net          -        -       5.220     -           16        
+memory.DI_RNO_2[2]      AO1D         C        In      -         11.618      -         
+memory.DI_RNO_2[2]      AO1D         Y        Out     1.520     13.139      -         
+DI_6_i_a2_0_0[2]        Net          -        -       0.773     -           1         
+memory.DI_RNO_0[2]      AO1D         C        In      -         13.911      -         
+memory.DI_RNO_0[2]      AO1D         Y        Out     1.520     15.431      -         
+DI_6_i_a2_0_1[2]        Net          -        -       0.773     -           1         
+memory.DI_RNO[2]        OA1B         B        In      -         16.204      -         
+memory.DI_RNO[2]        OA1B         Y        Out     1.758     17.962      -         
+N_11                    Net          -        -       0.773     -           1         
+memory.DI[2]            DFN1C0       D        In      -         18.735      -         
+======================================================================================
+Total path delay (propagation time + setup) of 20.113 is 9.501(47.2%) logic and 10.612(52.8%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+
+
+====================================
+Detailed Report for Clock: clk_divider[9]
+====================================
+
+
+
+Starting Points with Worst Slack
+********************************
+
+                 Starting                                           Arrival           
+Instance         Reference          Type         Pin     Net        Time        Slack 
+                 Clock                                                                
+--------------------------------------------------------------------------------------
+z80.u0.A[14]     clk_divider[9]     DFN1E0C0     Q       A[14]      1.771       42.387
+z80.u0.A[15]     clk_divider[9]     DFN1E0C0     Q       A[15]      1.771       42.721
+z80.u0.A[3]      clk_divider[9]     DFN1E0C0     Q       A[3]       1.771       42.963
+z80.u0.A[0]      clk_divider[9]     DFN1E0C0     Q       A[0]       1.395       43.769
+z80.u0.A[2]      clk_divider[9]     DFN1E0C0     Q       A[2]       1.771       44.776
+z80.u0.A[1]      clk_divider[9]     DFN1E0C0     Q       A[1]       1.771       44.993
+z80.MREQ_n       clk_divider[9]     DFN1P0       Q       MREQ_n     1.771       47.608
+z80.RD_n         clk_divider[9]     DFN1P0       Q       RD_n       1.771       48.952
+z80.WR_n         clk_divider[9]     DFN1P0       Q       WR_n       1.771       53.120
+z80.u0.DO[0]     clk_divider[9]     DFN1E0C0     Q       DO[0]      1.771       56.277
+======================================================================================
+
+
+Ending Points with Worst Slack
+******************************
+
+                              Starting                                                        Required           
+Instance                      Reference          Type       Pin     Net                       Time         Slack 
+                              Clock                                                                              
+-----------------------------------------------------------------------------------------------------------------
+memory.DI[2]                  clk_divider[9]     DFN1C0     D       N_11                      61.122       42.387
+memory.DI[1]                  clk_divider[9]     DFN1C0     D       N_9                       61.205       42.963
+memory.DI[6]                  clk_divider[9]     DFN1C0     D       N_19                      61.205       42.963
+memory.DI[7]                  clk_divider[9]     DFN1C0     D       N_21                      61.205       42.963
+memory.DI[3]                  clk_divider[9]     DFN1C0     D       N_13                      61.122       44.680
+memory.DI[4]                  clk_divider[9]     DFN1C0     D       N_15                      61.122       44.717
+memory.DI[5]                  clk_divider[9]     DFN1C0     D       N_17                      61.122       44.717
+memory.DI[0]                  clk_divider[9]     DFN1C0     D       N_7                       61.205       44.772
+memory.sram_address_1[15]     clk_divider[9]     DFN1E1     D       N_25                      61.122       47.190
+memory.sram_address_1[0]      clk_divider[9]     DFN1E1     E       sram_address_0_sqmuxa     61.456       51.550
+=================================================================================================================
+
+
+
+Worst Path Information
+***********************
+
+
+Path information for path number 1: 
+      Requested Period:                      62.500
+    - Setup time:                            1.378
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         61.122
+
+    - Propagation time:                      18.735
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (non-critical) :                 42.387
+
+    Number of logic level(s):                4
+    Starting point:                          z80.u0.A[14] / Q
+    Ending point:                            memory.DI[2] / D
+    The start point is clocked by            clk_divider[9] [rising] on pin CLK
+    The end   point is clocked by            clk16 [rising] on pin CLK
+
+Instance / Net                       Pin      Pin               Arrival     No. of    
+Name                    Type         Name     Dir     Delay     Time        Fan Out(s)
+--------------------------------------------------------------------------------------
+z80.u0.A[14]            DFN1E0C0     Q        Out     1.771     1.771       -         
+A[14]                   Net          -        -       3.074     -           5         
+memory.DI_6_i_o3[0]     OR2          B        In      -         4.845       -         
+memory.DI_6_i_o3[0]     OR2          Y        Out     1.554     6.398       -         
+N_27                    Net          -        -       5.220     -           16        
+memory.DI_RNO_2[2]      AO1D         C        In      -         11.618      -         
+memory.DI_RNO_2[2]      AO1D         Y        Out     1.520     13.139      -         
+DI_6_i_a2_0_0[2]        Net          -        -       0.773     -           1         
+memory.DI_RNO_0[2]      AO1D         C        In      -         13.911      -         
+memory.DI_RNO_0[2]      AO1D         Y        Out     1.520     15.431      -         
+DI_6_i_a2_0_1[2]        Net          -        -       0.773     -           1         
+memory.DI_RNO[2]        OA1B         B        In      -         16.204      -         
+memory.DI_RNO[2]        OA1B         Y        Out     1.758     17.962      -         
+N_11                    Net          -        -       0.773     -           1         
+memory.DI[2]            DFN1C0       D        In      -         18.735      -         
+======================================================================================
+Total path delay (propagation time + setup) of 20.113 is 9.501(47.2%) logic and 10.612(52.8%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+
+
+====================================
+Detailed Report for Clock: cpc|clk_divider_inferred_clock[11]
+====================================
+
+
+
+Starting Points with Worst Slack
+********************************
+
+                     Starting                                                                  Arrival            
+Instance             Reference                              Type         Pin     Net           Time        Slack  
+                     Clock                                                                                        
+------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]         cpc|clk_divider_inferred_clock[11]     DFN1E0C0     Q       IR[2]         1.771       -50.076
+z80.u0.IR_0[3]       cpc|clk_divider_inferred_clock[11]     DFN1E0C0     Q       IR_0[3]       1.771       -49.705
+z80.u0.MCycle[2]     cpc|clk_divider_inferred_clock[11]     DFN1C0       Q       MCycle[2]     1.771       -49.658
+z80.u0.MCycle[0]     cpc|clk_divider_inferred_clock[11]     DFN1P0       Q       MCycle[0]     1.395       -49.500
+z80.u0.IR[0]         cpc|clk_divider_inferred_clock[11]     DFN1E0C0     Q       IR[0]         1.771       -49.454
+z80.u0.IR_0[7]       cpc|clk_divider_inferred_clock[11]     DFN1E0C0     Q       IR_0[7]       1.771       -49.220
+z80.u0.IR_0[6]       cpc|clk_divider_inferred_clock[11]     DFN1E0C0     Q       IR_0[6]       1.771       -49.016
+z80.u0.IR_0[0]       cpc|clk_divider_inferred_clock[11]     DFN1E0C0     Q       IR_0[0]       1.395       -48.962
+z80.u0.MCycle[1]     cpc|clk_divider_inferred_clock[11]     DFN1C0       Q       MCycle[1]     1.771       -48.898
+z80.u0.IR_0[4]       cpc|clk_divider_inferred_clock[11]     DFN1E0C0     Q       IR_0[4]       1.771       -48.707
+==================================================================================================================
+
+
+Ending Points with Worst Slack
+******************************
+
+                                              Starting                                                                Required            
+Instance                                      Reference                              Type       Pin     Net           Time         Slack  
+                                              Clock                                                                                       
+------------------------------------------------------------------------------------------------------------------------------------------
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram0_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram1_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram2_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram3_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram4_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram5_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram6_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram7_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_2.Regs.regsh_2_ram0_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_2.Regs.regsh_2_ram1_[7]     cpc|clk_divider_inferred_clock[11]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+==========================================================================================================================================
+
+
+
+Worst Path Information
+***********************
+
+
+Path information for path number 1: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram0_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram0_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+Path information for path number 2: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram7_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram7_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+Path information for path number 3: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram6_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram6_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+Path information for path number 4: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram5_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram5_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+Path information for path number 5: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram4_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[11] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram4_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+
+
+====================================
+Detailed Report for Clock: cpc|clk_divider_inferred_clock[18]
+====================================
+
+
+
+Starting Points with Worst Slack
+********************************
+
+                     Starting                                                                  Arrival            
+Instance             Reference                              Type         Pin     Net           Time        Slack  
+                     Clock                                                                                        
+------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]         cpc|clk_divider_inferred_clock[18]     DFN1E0C0     Q       IR[2]         1.771       -50.076
+z80.u0.IR_0[3]       cpc|clk_divider_inferred_clock[18]     DFN1E0C0     Q       IR_0[3]       1.771       -49.705
+z80.u0.MCycle[2]     cpc|clk_divider_inferred_clock[18]     DFN1C0       Q       MCycle[2]     1.771       -49.658
+z80.u0.MCycle[0]     cpc|clk_divider_inferred_clock[18]     DFN1P0       Q       MCycle[0]     1.395       -49.500
+z80.u0.IR[0]         cpc|clk_divider_inferred_clock[18]     DFN1E0C0     Q       IR[0]         1.771       -49.454
+z80.u0.IR_0[7]       cpc|clk_divider_inferred_clock[18]     DFN1E0C0     Q       IR_0[7]       1.771       -49.220
+z80.u0.IR_0[6]       cpc|clk_divider_inferred_clock[18]     DFN1E0C0     Q       IR_0[6]       1.771       -49.016
+z80.u0.IR_0[0]       cpc|clk_divider_inferred_clock[18]     DFN1E0C0     Q       IR_0[0]       1.395       -48.962
+z80.u0.MCycle[1]     cpc|clk_divider_inferred_clock[18]     DFN1C0       Q       MCycle[1]     1.771       -48.898
+z80.u0.IR_0[4]       cpc|clk_divider_inferred_clock[18]     DFN1E0C0     Q       IR_0[4]       1.771       -48.707
+==================================================================================================================
+
+
+Ending Points with Worst Slack
+******************************
+
+                                              Starting                                                                Required            
+Instance                                      Reference                              Type       Pin     Net           Time         Slack  
+                                              Clock                                                                                       
+------------------------------------------------------------------------------------------------------------------------------------------
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram0_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram1_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram2_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram3_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram4_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram5_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram6_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram7_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_2.Regs.regsh_2_ram0_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+z80.u0.Regs.regsh_2.Regs.regsh_2_ram1_[7]     cpc|clk_divider_inferred_clock[18]     DFN1E1     D       RegDIH[7]     48.705       -50.076
+==========================================================================================================================================
+
+
+
+Worst Path Information
+***********************
+
+
+Path information for path number 1: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram0_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram0_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+Path information for path number 2: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram7_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram7_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+Path information for path number 3: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram6_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram6_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+Path information for path number 4: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram5_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram5_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+Path information for path number 5: 
+      Requested Period:                      50.000
+    - Setup time:                            1.295
+    + Clock delay at ending point:           0.000 (ideal)
+    = Required time:                         48.705
+
+    - Propagation time:                      98.782
+    - Clock delay at starting point:         0.000 (ideal)
+    = Slack (critical) :                     -50.076
+
+    Number of logic level(s):                27
+    Starting point:                          z80.u0.IR[2] / Q
+    Ending point:                            z80.u0.Regs.regsh_1.Regs.regsh_1_ram4_[7] / D
+    The start point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+    The end   point is clocked by            cpc|clk_divider_inferred_clock[18] [rising] on pin CLK
+
+Instance / Net                                                        Pin      Pin               Arrival     No. of    
+Name                                                     Type         Name     Dir     Delay     Time        Fan Out(s)
+-----------------------------------------------------------------------------------------------------------------------
+z80.u0.IR[2]                                             DFN1E0C0     Q        Out     1.771     1.771       -         
+IR[2]                                                    Net          -        -       5.788     -           22        
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         A        In      -         7.559       -         
+z80.u0.mcode.un1_ir_3_1_i                                OR2B         Y        Out     1.236     8.795       -         
+N_45                                                     Net          -        -       3.420     -           6         
+z80.u0.mcode.set_busb_to175_5                            OR2          B        In      -         12.216      -         
+z80.u0.mcode.set_busb_to175_5                            OR2          Y        Out     1.236     13.452      -         
+un1_ir_12_4                                              Net          -        -       0.927     -           2         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         B        In      -         14.379      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e_0_0                      OR2A         Y        Out     1.236     15.615      -         
+Call_2_sqmuxa_m2_e_0                                     Net          -        -       0.773     -           1         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         A        In      -         16.388      -         
+z80.u0.mcode.Call_2_sqmuxa_m2_e                          NOR2         Y        Out     0.873     17.261      -         
+Call_2_sqmuxa                                            Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         C        In      -         20.105      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1_0                     AO1A         Y        Out     1.520     21.625      -         
+un1_Call_1_sqmuxa_1_1_0                                  Net          -        -       0.773     -           1         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         A        In      -         22.398      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_1                       NOR2         Y        Out     1.219     23.617      -         
+un1_Call_1_sqmuxa_1_1                                    Net          -        -       2.844     -           4         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         C        In      -         26.461      -         
+z80.u0.mcode.un1_Call_1_sqmuxa_1_5                       OR3C         Y        Out     1.599     28.061      -         
+un1_Call_1_sqmuxa_1_5                                    Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         B        In      -         28.833      -         
+z80.u0.un30_regaddra_m2_e_2_2                            NOR2         Y        Out     1.554     30.387      -         
+un30_regaddra_m2_e_2_2                                   Net          -        -       0.773     -           1         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         A        In      -         31.159      -         
+z80.u0.un30_regaddra_m2_e_2                              OR2B         Y        Out     1.174     32.333      -         
+un30_regaddra_m2_e_2                                     Net          -        -       3.667     -           7         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          C        In      -         36.000      -         
+z80.u0.RegAddrA_1_m2_e_0                                 OR3          Y        Out     1.804     37.804      -         
+RegAddrA_1_m2_e_0                                        Net          -        -       0.927     -           2         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        A        In      -         38.731      -         
+z80.u0.mcode.IncDeck_0_a2_0[0]                           NOR2A        Y        Out     1.508     40.239      -         
+N_1723_i                                                 Net          -        -       0.773     -           1         
+z80.u0.mcode.IncDec[0]                                   MX2          B        In      -         41.011      -         
+z80.u0.mcode.IncDec[0]                                   MX2          Y        Out     1.374     42.385      -         
+IncDec_16[0]                                             Net          -        -       3.420     -           6         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         C        In      -         45.806      -         
+z80.u0.TState_RNISAP6K4[0]                               AOI1         Y        Out     1.261     47.067      -         
+un30_regaddra                                            Net          -        -       3.938     -           8         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         B        In      -         51.005      -         
+z80.u0.TState_RNI7HPGH7[0]                               MX2C         Y        Out     1.407     52.412      -         
+N_1060_i_0                                               Net          -        -       3.074     -           5         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        B        In      -         55.486      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram1__RNISIDIH7[1]      XNOR2        Y        Out     2.251     57.737      -         
+r_N_2_4_i                                                Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         B        In      -         58.510      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNISLN4IE[1]      MX2C         Y        Out     1.407     59.917      -         
+N_1941                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          A        In      -         60.690      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNI14EFI61[1]     MX2          Y        Out     1.391     62.081      -         
+N_1957                                                   Net          -        -       0.773     -           1         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          A        In      -         62.853      -         
+z80.u0.Regs.regsl_2.Regs.regsl_2_ram0__RNIIRL6DQ2[1]     MX2          Y        Out     1.391     64.244      -         
+RegBusA[1]                                               Net          -        -       3.074     -           5         
+z80.u0.ID16.I_6                                          AND2         A        In      -         67.318      -         
+z80.u0.ID16.I_6                                          AND2         Y        Out     1.236     68.554      -         
+DWACT_ADD_CI_0_g_array_0_1[0]                            Net          -        -       0.773     -           1         
+z80.u0.ID16.I_83                                         AO1          C        In      -         69.326      -         
+z80.u0.ID16.I_83                                         AO1          Y        Out     1.520     70.847      -         
+DWACT_ADD_CI_0_g_array_1_3[0]                            Net          -        -       1.938     -           3         
+z80.u0.ID16.I_86                                         AO1          B        In      -         72.784      -         
+z80.u0.ID16.I_86                                         AO1          Y        Out     1.437     74.221      -         
+DWACT_ADD_CI_0_g_array_2[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_71                                         AO1          B        In      -         77.065      -         
+z80.u0.ID16.I_71                                         AO1          Y        Out     1.437     78.502      -         
+DWACT_ADD_CI_0_g_array_3[0]                              Net          -        -       2.844     -           4         
+z80.u0.ID16.I_75                                         AO1          B        In      -         81.346      -         
+z80.u0.ID16.I_75                                         AO1          Y        Out     1.437     82.782      -         
+DWACT_ADD_CI_0_g_array_10[0]                             Net          -        -       1.938     -           3         
+z80.u0.ID16.I_90                                         AO1          B        In      -         84.720      -         
+z80.u0.ID16.I_90                                         AO1          Y        Out     1.437     86.157      -         
+DWACT_ADD_CI_0_g_array_11_2[0]                           Net          -        -       0.927     -           2         
+z80.u0.ID16.I_88                                         AO1          B        In      -         87.084      -         
+z80.u0.ID16.I_88                                         AO1          Y        Out     1.437     88.520      -         
+DWACT_ADD_CI_0_g_array_12_6[0]                           Net          -        -       0.773     -           1         
+z80.u0.ID16.I_66                                         XOR2         B        In      -         89.293      -         
+z80.u0.ID16.I_66                                         XOR2         Y        Out     2.251     91.544      -         
+ID16[15]                                                 Net          -        -       0.927     -           2         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         B        In      -         92.471      -         
+z80.u0.RegBusA_r_RNI481VU7[15]                           AO1B         Y        Out     1.090     93.561      -         
+RegDIH[7]                                                Net          -        -       5.220     -           16        
+z80.u0.Regs.regsh_1.Regs.regsh_1_ram4_[7]                DFN1E1       D        In      -         98.782      -         
+=======================================================================================================================
+Total path delay (propagation time + setup) of 100.076 is 41.787(41.8%) logic and 58.289(58.2%) route.
+Path delay compensated for clock skew. Clock skew is added to clock-to-out value, and is subtracted from setup time value
+
+
+
+##### END OF TIMING REPORT #####]
+
+--------------------------------------------------------------------------------
+Target Part: AGLN250V2_VQFP100_Std
+Report for cell cpc.impl
+  Core Cell usage:
+              cell count     area count*area
+              AND2    74      1.0       74.0
+              AND3    69      1.0       69.0
+               AO1    51      1.0       51.0
+              AO13     5      1.0        5.0
+              AO18     9      1.0        9.0
+              AO1A    30      1.0       30.0
+              AO1B    40      1.0       40.0
+              AO1C    41      1.0       41.0
+              AO1D    26      1.0       26.0
+              AOI1    21      1.0       21.0
+             AOI1B    78      1.0       78.0
+               AX1     1      1.0        1.0
+              AX1A     2      1.0        2.0
+              AX1B     2      1.0        2.0
+              AX1C     3      1.0        3.0
+              AX1D     2      1.0        2.0
+              AX1E     8      1.0        8.0
+              AXO2     1      1.0        1.0
+            CLKINT     4      0.0        0.0
+               GND     9      0.0        0.0
+               INV    10      1.0       10.0
+              MAJ3     5      1.0        5.0
+            MAJ3XI     8      1.0        8.0
+              MIN3     2      1.0        2.0
+               MX2   426      1.0      426.0
+              MX2A    34      1.0       34.0
+              MX2B    44      1.0       44.0
+              MX2C   220      1.0      220.0
+             NAND2    16      1.0       16.0
+              NOR2   145      1.0      145.0
+             NOR2A   199      1.0      199.0
+             NOR2B   154      1.0      154.0
+              NOR3    38      1.0       38.0
+             NOR3A    89      1.0       89.0
+             NOR3B    90      1.0       90.0
+             NOR3C   153      1.0      153.0
+               OA1    19      1.0       19.0
+              OA1A   101      1.0      101.0
+              OA1B    29      1.0       29.0
+              OA1C    26      1.0       26.0
+              OAI1    41      1.0       41.0
+               OR2   141      1.0      141.0
+              OR2A   230      1.0      230.0
+              OR2B   302      1.0      302.0
+               OR3    55      1.0       55.0
+              OR3A    57      1.0       57.0
+              OR3B    66      1.0       66.0
+              OR3C    85      1.0       85.0
+               PLL     1      0.0        0.0
+            PLLINT     1      0.0        0.0
+               VCC     9      0.0        0.0
+               XA1    10      1.0       10.0
+              XA1A     1      1.0        1.0
+              XA1B     1      1.0        1.0
+              XA1C     1      1.0        1.0
+             XAI1A     5      1.0        5.0
+             XNOR2    38      1.0       38.0
+             XNOR3    17      1.0       17.0
+               XO1     3      1.0        3.0
+              XO1A     2      1.0        2.0
+              XOR2   159      1.0      159.0
+              XOR3    23      1.0       23.0
+
+
+              DFN1    54      1.0       54.0
+            DFN1C0    56      1.0       56.0
+            DFN1E0     8      1.0        8.0
+          DFN1E0C0    67      1.0       67.0
+          DFN1E0P0     8      1.0        8.0
+            DFN1E1   281      1.0      281.0
+          DFN1E1C0    26      1.0       26.0
+          DFN1E1P0    16      1.0       16.0
+            DFN1P0    31      1.0       31.0
+            DLN1C0     1      1.0        1.0
+            DLN1P0     2      1.0        2.0
+                   -----          ----------
+             TOTAL  4082              4058.0
+
+
+  IO Cell usage:
+              cell count
+             BIBUF     8
+            CLKBUF     1
+             INBUF    14
+            OUTBUF    41
+                   -----
+             TOTAL    64
+
+
+Core Cells         : 4058 of 6144 (66%)
+IO Cells           : 64
+
+  RAM/ROM Usage Summary
+Block Rams : 0 of 8 (0%)
+
+Mapper successful!
+Process took 0h:01m:11s realtime, 0h:01m:05s cputime
+# Fri Dec 30 23:46:05 2011
+
+###########################################################]

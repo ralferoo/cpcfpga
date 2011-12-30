@@ -1,0 +1,292 @@
+Actel Designer Software
+Version: 9.1.0.18
+Release: v9.1
+
+Created a new design.
+
+ Netlist Reading Time = 0.0 seconds
+Imported the files:
+   C:\fpga\cpcfpga\build\cpc.edn
+   C:\fpga\cpcfpga\constraint\cpc_pins.pdc
+
+The Import command succeeded ( 00:00:04 )
+Design saved to file cpc_build.adb.
+=====================================================================
+Parameters used to run compile:
+===============================
+
+Family      : IGLOO
+Device      : AGLN250V2
+Package     : 100 VQFP
+Source      : C:\fpga\cpcfpga\build\cpc.edn
+              C:\fpga\cpcfpga\constraint\cpc_pins.pdc
+Format      : EDIF
+Topcell     : cpc
+Speed grade : STD
+Temp        : 0:25:70
+Voltage     : 1.26:1.20:1.14
+
+Keep Existing Physical Constraints : No
+Keep Existing Timing Constraints   : Yes
+
+pdc_abort_on_error                 : Yes
+pdc_eco_display_unmatched_objects  : No
+pdc_eco_max_warnings               : 10000
+
+demote_globals                     : No
+promote_globals                    : No
+localclock_max_shared_instances    : 12
+localclock_buffer_tree_max_fanout  : 12
+
+combine_register                   : No
+delete_buffer_tree                 : No
+
+report_high_fanout_nets_limit      : 10
+
+=====================================================================
+Compile starts ...
+
+Warning: CMP201: Net PLL16mhz_component/Core_GLB drives no load.
+Warning: CMP201: Net PLL16mhz_component/Core_GLC drives no load.
+Warning: CMP201: Net PLL16mhz_component/clklock drives no load.
+Warning: CMP201: Net PLL16mhz_component/Core_YB drives no load.
+Warning: CMP201: Net PLL16mhz_component/Core_YC drives no load.
+
+Netlist Optimization Report
+===========================
+
+Optimized macros:
+  - Dangling net drivers:   0
+  - Buffers:                1
+  - Inverters:              0
+  - Tieoff:                 0
+  - Logic combining:        183
+
+    Total macros optimized  184
+
+There were 0 error(s) and 5 warning(s) in this design.
+=====================================================================
+
+Reading user pdc (Physical Design Constraints) file(s) postcompile
+
+
+There were 0 error(s) and 0 warning(s) in reading the user pdc.
+
+=====================================================================
+Compile report:
+===============
+
+    CORE                       Used:   3875  Total:   6144   (63.07%)
+    IO (W/ clocks)             Used:     64  Total:     68   (94.12%)
+    GLOBAL (Chip+Quadrant)     Used:      6  Total:     18   (33.33%)
+    PLL                        Used:      1  Total:      1   (100.00%)
+    RAM/FIFO                   Used:      0  Total:      8   (0.00%)
+    Low Static ICC             Used:      0  Total:      1   (0.00%)
+    FlashROM                   Used:      0  Total:      1   (0.00%)
+    User JTAG                  Used:      0  Total:      1   (0.00%)
+
+Global Information:
+
+    Type            | Used   | Total
+    ----------------|--------|--------------
+    Chip global     | 6      | 6  (100.00%)*
+    Quadrant global | 0      | 12 (0.00%)
+
+    (*) Chip globals may be assigned to Quadrant globals using the Multi-View Navigator (MVN)
+        or Physical Design Constraints (PDC).
+        They may also be assigned to Quadrant globals automatically during Layout.
+
+Core Information:
+
+    Type    | Instances    | Core tiles
+    --------|--------------|-----------
+    COMB    | 3325         | 3325
+    SEQ     | 550          | 550
+
+I/O Function:
+
+    Type                          | w/o register  | w/ register  | w/ DDR register
+    ------------------------------|---------------|--------------|----------------
+    Input I/O                     | 15            | 0            | 0
+    Output I/O                    | 41            | 0            | 0
+    Bidirectional I/O             | 8             | 0            | 0
+    Differential Input I/O Pairs  | 0             | 0            | 0
+    Differential Output I/O Pairs | 0             | 0            | 0
+
+I/O Technology:
+
+                                    |   Voltages    |             I/Os
+    --------------------------------|-------|-------|-------|--------|--------------
+    I/O Standard(s)                 | Vcci  | Vref  | Input | Output | Bidirectional
+    --------------------------------|-------|-------|-------|--------|--------------
+    LVTTL                           | 3.30v | N/A   | 15    | 41     | 8
+
+I/O Placement:
+
+    Locked  :  64 ( 100.00% )
+    Placed  :   0
+    UnPlaced:   0
+
+Net information report:
+=======================
+
+The following nets have been assigned to a chip global resource:
+    Fanout  Type          Name
+    --------------------------
+    493     CLK_NET       Net   : cpuclk
+                          Driver: dipsw_pad_RNIMONB1_0[6]
+                          Source: NETLIST
+    218     SET/RESET_NET Net   : nRESET_c
+                          Driver: nRESET_pad
+                          Source: NETLIST
+    152     INT_NET       Net   : z80/u0/d_m1_0_a2_a0_1_0
+                          Driver: z80/u0/ISet_RNIP8IA_2[0]
+                          Source: NETLIST
+    83      INT_NET       Net   : z80/u0/ISet[1]
+                          Driver: z80/u0/ISet_RNID695[1]
+                          Source: NETLIST
+    64      INT_NET       Net   : z80/u0/RegAddrC[2]
+                          Driver: z80/u0/RegAddrC_RNID6U4[2]
+                          Source: NETLIST
+    54      CLK_NET       Net   : clk16
+                          Driver: PLL16mhz_component/Core
+                          Source: ESSENTIAL
+
+High fanout nets in the post compile netlist:
+    Fanout  Type          Name
+    --------------------------
+    24      INT_NET       Net   : z80/u0/un55_regaddra
+                          Driver: z80/u0/TState_RNINOQD1_0[0]
+    24      INT_NET       Net   : z80/u0/inc_pc9_0
+                          Driver: z80/u0/mcode/MCycles_0_sqmuxa_5_s_0_0
+    24      INT_NET       Net   : z80/u0/ALU_Op_r[3]
+                          Driver: z80/u0/ALU_Op_r[3]
+    24      INT_NET       Net   : z80/u0/un14_nextis_xy_fetch_1
+                          Driver: z80/u0/IR_RNI1FP6[0]
+    23      INT_NET       Net   : z80/u0/IR_0[2]
+                          Driver: z80/u0/IR_0[2]
+    23      INT_NET       Net   : z80/u0/IR_0[3]
+                          Driver: z80/u0/IR_0[3]
+    23      INT_NET       Net   : z80/u0/inc_pc9
+                          Driver: z80/u0/mcode/MCycles_0_sqmuxa_5_s_0
+    23      INT_NET       Net   : z80/u0/IR[3]
+                          Driver: z80/u0/IR[3]
+    22      INT_NET       Net   : z80.u0.mcode.N_1547
+                          Driver: z80/u0/mcode/G_2
+    22      INT_NET       Net   : z80/N_85
+                          Driver: z80/u0/MCycle_RNI5F6N_0[2]
+
+Nets that are candidates for clock assignment and the resulting fanout:
+    Fanout  Type          Name
+    --------------------------
+    24      INT_NET       Net   : z80/u0/un55_regaddra
+                          Driver: z80/u0/TState_RNINOQD1_0[0]
+    24      INT_NET       Net   : z80/u0/inc_pc9_0
+                          Driver: z80/u0/mcode/MCycles_0_sqmuxa_5_s_0_0
+    24      INT_NET       Net   : z80/u0/ALU_Op_r[3]
+                          Driver: z80/u0/ALU_Op_r[3]
+    24      INT_NET       Net   : z80/u0/un14_nextis_xy_fetch_1
+                          Driver: z80/u0/IR_RNI1FP6[0]
+    23      INT_NET       Net   : z80/u0/IR_0[2]
+                          Driver: z80/u0/IR_0[2]
+    23      INT_NET       Net   : z80/u0/IR_0[3]
+                          Driver: z80/u0/IR_0[3]
+    23      INT_NET       Net   : z80/u0/inc_pc9
+                          Driver: z80/u0/mcode/MCycles_0_sqmuxa_5_s_0
+    23      INT_NET       Net   : z80/u0/IR[3]
+                          Driver: z80/u0/IR[3]
+    22      INT_NET       Net   : z80.u0.mcode.N_1547
+                          Driver: z80/u0/mcode/G_2
+    22      INT_NET       Net   : z80/N_85
+                          Driver: z80/u0/MCycle_RNI5F6N_0[2]
+====================
+Flash*Freeze report:
+====================
+
+The design does not use the Flash*Freeze feature.
+
+====================
+
+The Compile command succeeded ( 00:00:10 )
+Design saved to file cpc_build.adb.
+***** Layout Variables *********************************************
+
+Mode: TIMING_DRIVEN
+Power-driven Layout: OFF
+Incremental Placement: OFF
+Incremental Route: OFF
+
+
+
+Running I/O Bank Assigner.
+
+I/O Bank Assigner completed successfully.
+ 
+
+Planning global net placement...
+
+
+Global net placement completed successfully.
+
+                        o - o - o - o - o - o
+
+Timing-driven Placer Started: Fri Dec 30 23:46:48 2011
+
+Placer Finished: Fri Dec 30 23:47:55 2011
+Total Placer CPU Time:     00:01:07
+
+                        o - o - o - o - o - o
+
+While analyzing gated clock network, ambiguities have been found on gates
+clk_divider_inferred_clock_RNIBKMI[18]:Y, clk_divider_inferred_clock_RNISNLI[11]:Y,
+dipsw_pad_RNIMONB1[6]:Y.
+The timing models of these gates have been simplified for Static Timing Analysis.
+
+Timing-driven Router 
+Design: cpc_build                       Started: Fri Dec 30 23:48:03 2011
+
+While analyzing gated clock network, ambiguities have been found on gates
+clk_divider_inferred_clock_RNIBKMI[18]:Y,
+clk_divider_inferred_clock_RNISNLI[11]:Y, dipsw_pad_RNIMONB1[6]:Y.
+The timing models of these gates have been simplified for Static Timing
+Analysis.
+ 
+While analyzing gated clock network, ambiguities have been found on gates
+clk_divider_inferred_clock_RNIBKMI[18]:Y,
+clk_divider_inferred_clock_RNISNLI[11]:Y, dipsw_pad_RNIMONB1[6]:Y.
+The timing models of these gates have been simplified for Static Timing
+Analysis.
+While analyzing gated clock network, ambiguities have been found on gates
+clk_divider_inferred_clock_RNIBKMI[18]:Y,
+clk_divider_inferred_clock_RNISNLI[11]:Y, dipsw_pad_RNIMONB1[6]:Y.
+The timing models of these gates have been simplified for Static Timing
+Analysis.
+
+Timing-driven Router completed successfully.
+
+Design: cpc_build                       
+Finished: Fri Dec 30 23:48:43 2011
+Total CPU Time:     00:00:40            Total Elapsed Time: 00:00:40
+                        o - o - o - o - o - o
+
+Loading the Timing data for the design.
+While analyzing gated clock network, ambiguities have been found on gates
+clk_divider_inferred_clock_RNIBKMI[18]:Y, clk_divider_inferred_clock_RNISNLI[11]:Y,
+dipsw_pad_RNIMONB1[6]:Y.
+The timing models of these gates have been simplified for Static Timing Analysis.
+Finished loading the Timing data.
+
+The Layout command succeeded ( 00:02:13 )
+Design saved to file cpc_build.adb.
+
+The Export-map command succeeded ( 00:00:15 )
+Warning: Overwriting the existing file: C:\fpga\cpcfpga\cpc.pdb.
+Wrote to the file: C:\fpga\cpcfpga\cpc.pdb
+CHECKSUM: A4C6
+
+The Generate programming file command succeeded ( 00:00:17 )
+Design saved to file cpc_build.adb.
+
+The Execute Script command succeeded ( 00:03:05 )
+Design closed.
+
