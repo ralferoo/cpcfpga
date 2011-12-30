@@ -102,9 +102,9 @@ architecture impl of cpc is
             end if;
         end process;
 	cpuclk <=    clk_divider(1) when dipsw(7 downto 6)="00"
-		else clk_divider(7) when dipsw(7 downto 6)="01"
-		else clk_divider(9) when dipsw(7 downto 6)="10"
-		else clk_divider(11);
+		else clk_divider(9) when dipsw(7 downto 6)="01"
+		else clk_divider(11) when dipsw(7 downto 6)="10"
+		else clk_divider(18);
 	clk4 <= clk_divider(1);
 	clk1 <= clk_divider(3);
 
@@ -145,7 +145,7 @@ architecture impl of cpc is
 --	DI <= DI_from_iorq when DI_is_from_iorq='1' else DI_from_mem;
 
 --                    DI <= testrom_data;
-				leds <= not DI;
+				leds <= not A(7 downto 0);
 			end if;
 		end if;
 	end process;
