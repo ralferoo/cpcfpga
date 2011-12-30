@@ -1,0 +1,59 @@
+yellow
+
+20		comp in
+
+white
+
+7		blue in
+
+black
+
+11		green in
+15		red in
+6		left in
+16		fast blank
+
+
+yellow
+
+20	**
+
+x19	*	c video out
+5	g	blue video gnd
+9	g	green video gnd
+
+
+white
+
+19	**
+3	**
+1	**
+
+7	*	blue video in
+17	g	composite gnd
+x20	*	composite
+18	g	fast blank gnd
+2	*	r.audio in
+4	g	audio gnd
+6	*	l.audio in
+
+black
+
+6	**	l audio in
+
+
+x1		r.aud out
+x3		l.aud out
+11	*	green video in
+13	g	red video gnd
+15	*	red video in
+
+8		switching
+10		data
+12		data
+14	g	data gnd
+16	*	fast blank signal
+
+open
+
+21	g	ground

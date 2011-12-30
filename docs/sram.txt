@@ -1,0 +1,105 @@
+writing:
+
+cycle 0:
+	set address lines
+	pull CE# low
+	pull WE# low (tAS = 0)
+	[set data lines hi-Z]
+
+cycle 1:
+	tWHZ > 20ns
+	set data lines
+
+cycle 2:
+	tDW > 25ns
+	pull WE# high
+
+	pull CE# high
+	set data lines hi-Z
+	tCW > 50ns
+	tAW > 50ns
+	tWP > 45ns
+
+	tOW > 5ns - provides safety margin
+
+16MHz clock -> 62.5ns per cycle
+
+
+
+read:
+
+if OE already low:
+
+cycle 0:
+	write address line
+
+cycle 1:
+	tRC > 55ns
+	read data
+
+	set next address line (data remains valid for tOH = 10ns)
+
+
+if OE is being used:
+
+cycle 0:
+	write address lines
+	pull CE# and OE# low
+
+cycle 1:
+	tAA > 55ns
+	tACE > 55ns
+	tOE > 30ns
+	read data
+	pull OE# high
+
+	[set next address line]
+	
+cycle 2:
+	tOHZ > 20ns
+	tCHZ > 20ns
+
+
+
+optimised:
+
+CE# always low
+
+read:
+	[0] set address lines, OE# low
+	[1] data available, set next address
+
+write:
+	[0] set address lines, pull WE# low, OE# high
+	[1] set data lines (tWHZ > 20ns)
+	[2] pull WE# high (tDW > 25ns)
+	[3] set next address
+
+
+or even:
+
+CE# always low
+OE# always low
+
+read:
+	[0] set address lines
+	[1] data available, set next address
+
+write:
+	[0] set address lines, pull WE# low
+	[1] set data lines (tWHZ > 20ns)
+	[2] pull WE# high (tDW > 25ns)
+	[3] set next address
+
+
+
+
+mapping:
+
+we have a15-a0 from CPU, cpc uses 16kb banks, so a15/a14 + a13-a0
+pass a13-a0 straight through, so we need a mapping from a15/a14 -> a18->a14
+
+
+
+
+

@@ -1,0 +1,40 @@
+SRAM chip is 4Mbit = 512KB, flash chip is 4Mbit = 512KB or 16Mbit = 2MB
+
+512KB = 8 x 64KB or 32 x 16KB
+
+RAM layout:
+
+    64K base CPC RAM
+    64K alt system RAM (for menus etc)
+8 x 16K 8 ROM images
+   256K RAM expansion, as per DK tronics
+
+ROM layout:
+
+7 x 64K ROM / disk image space
+    64K standard ROM and boot image space
+
+A25L040 has protection on block 7 (protected area 0x70000-0x7FFFF)
+    16K firmware image
+    16K BASIC image
+    16K AMSDOS image
+    16K boot image
+
+S25FL016K has a much more flexible system, enabling any power of 2 from 4KB
+upwards from either top or bottom to be protected. It's also really cheap, so
+it makes sense to just use it. :)
+
+
+FPGA RAM translation table from "disk" sectors to SD card sectors:
+
+40 tracks, 2 sides, 11 SPT = 880 sectors
+
+      6 bits track
+      1 bit side
+      8 bytes sector ID
+     32 bits per sector address 	-9 for sector xlat (4GB card max)
+     --
+     47 bits, 6 bytes per sector	-> 36 bits per sector
+
+So, we could index the base addresses of 1024 sectors with arbitrary ids
+as we have 8 * 4608 RAM blocks
