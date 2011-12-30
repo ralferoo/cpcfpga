@@ -1,5 +1,5 @@
-#TOP_NAME = cpc
-TOP_NAME = uart_expt
+TOP_NAME = cpc
+#TOP_NAME = uart_expt
 
 FAMILY		= IGLOO
 PART		= AGLN250V2

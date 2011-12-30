@@ -1,3 +1,8 @@
+*.ide_des
+*.orig
+*.rej
+.*.swp
+*~
 build/
 *.log
 *.dat
@@ -22,3 +27,5 @@ constraint/data
 *.depends
 *.tmp
 simulation/modelsim.ini.sav
+designer/impl1/*.tcl
+designer/impl1/*.adb

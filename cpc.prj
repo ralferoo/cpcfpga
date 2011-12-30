@@ -7,7 +7,7 @@ KEY HDLTechnology "VHDL"
 KEY VendorTechnology_Family "IGLOO"
 KEY VendorTechnology_Die "UM4X4M1NLPLV"
 KEY VendorTechnology_Package "vq100"
-KEY ProjectLocation "C:\fpga\barefpga"
+KEY ProjectLocation "C:\fpga\cpcfpga"
 KEY SimulationType "VHDL"
 KEY Vendor "Actel"
 KEY ActiveRoot "cpc::work"
@@ -18,7 +18,7 @@ ENDLIST
 LIST FileManager
 VALUE "<project>\constraint\cpc_pins.pdc,pdc"
 STATE="utd"
-TIME="1322747529"
+TIME="1325284593"
 SIZE="3961"
 BEGIN_USE_CONSTRAINT
 TOOL_CONSTRAINT_TYPE="ideDESIGNER"
@@ -27,8 +27,53 @@ USE_FOR_ANY_TOOL="FALSE"
 ENDFILE
 VALUE "<project>\hdl\cpc.vhd,hdl"
 STATE="utd"
-TIME="1322747529"
+TIME="1325284593"
 SIZE="587"
+ENDFILE
+VALUE "<project>\hdl\T80.vhd,hdl"
+STATE="utd"
+TIME="1038145888"
+SIZE="28911"
+ENDFILE
+VALUE "<project>\hdl\T80a.vhd,hdl"
+STATE="utd"
+TIME="1038145888"
+SIZE="6560"
+ENDFILE
+VALUE "<project>\hdl\T80s.vhd,hdl"
+STATE="utd"
+TIME="1035164216"
+SIZE="5249"
+ENDFILE
+VALUE "<project>\hdl\T80se.vhd,hdl"
+STATE="utd"
+TIME="1035164216"
+SIZE="5202"
+ENDFILE
+VALUE "<project>\hdl\T80_ALU.vhd,hdl"
+STATE="utd"
+TIME="1038145432"
+SIZE="10637"
+ENDFILE
+VALUE "<project>\hdl\T80_MCode.vhd,hdl"
+STATE="utd"
+TIME="1035164216"
+SIZE="50680"
+ENDFILE
+VALUE "<project>\hdl\T80_Pack.vhd,hdl"
+STATE="utd"
+TIME="1035164216"
+SIZE="6709"
+ENDFILE
+VALUE "<project>\hdl\T80_Reg.vhd,hdl"
+STATE="utd"
+TIME="1035725476"
+SIZE="3474"
+ENDFILE
+VALUE "<project>\hdl\testrom.vhd,hdl"
+STATE="utd"
+TIME="1325285027"
+SIZE="8104"
 ENDFILE
 ENDLIST
 LIST UsedFile
@@ -126,4 +171,7 @@ ENDLIST
 LIST UserCustomizedFileList
 ENDLIST
 LIST OpenedFileList
+DESIGNFLOW:
+FILE:<project>\hdl\cpc.vhd,hdl
+ACTIVE_VIEW:1
 ENDLIST
