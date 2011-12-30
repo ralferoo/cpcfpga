@@ -1,9 +1,15 @@
 # Actel Physical design constraints file
 # Generated file
 
-# Version: 9.0 9.0.0.15
+# Version: 9.1 9.1.0.18
 # Family: IGLOO , Die: AGLN250V2 , Package: 100 VQFP
-# Date generated: Tue May 11 23:59:35 2010 
+# Date generated: Fri Dec 16 21:20:34 2011 
+
+
+
+
+# assign_quadrant_clock -net clk128 -quadrant LL
+
 
 
 # 
@@ -15,56 +21,122 @@
 # I/O constraints
 # 
 
-set_io {buttons[0]}   \
-    -pinname 26       \
+
+set_io {video_r2[1]}  -pinname 2 -fixed yes -SLEW Low -DIRECTION Output
+set_io {video_r2[0]}  -pinname 3 -fixed yes -SLEW Low -DIRECTION Output
+
+set_io {video_g2[1]}  -pinname 4 -fixed yes -SLEW Low -DIRECTION Output
+set_io {video_g2[0]}  -pinname 5 -fixed yes -SLEW Low -DIRECTION Output
+
+set_io {video_b2[1]}  -pinname 6 -fixed yes -SLEW Low -DIRECTION Output
+set_io {video_b2[0]}  -pinname 7 -fixed yes -SLEW Low -DIRECTION Output
+
+set_io {video_sync2[1]}  -pinname  8 -fixed yes -SLEW Low -DIRECTION Output
+set_io {video_sync2[0]}  -pinname 11 -fixed yes -SLEW Low -DIRECTION Output
+
+set_io video_sound -pinname 13 -fixed yes -DIRECTION Output
+
+
+
+set_io {sram_address[18]}  	-pinname 94 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[15]}  	-pinname 93 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[17]}  	-pinname 92 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_we} 	 		-pinname 91 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[13]}  	-pinname 90 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[8]}  	-pinname 86 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[9]}  	-pinname 85 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[11]}  	-pinname 84 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_oe}		  	-pinname 83 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[10]}  	-pinname 82 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_ce}		  	-pinname 81 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_data[7]}	  	-pinname 80 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_data[6]}	  	-pinname 79 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_data[5]}	  	-pinname 78 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_data[4]}	  	-pinname 77 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_data[3]}	  	-pinname 76 -fixed yes -SLEW Low -DIRECTION Output
+
+set_io {sram_address[16]}  	-pinname 73 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[14]}  	-pinname 72 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[12]}  	-pinname 71 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[7]}  	-pinname 70 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[6]}  	-pinname 69 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[5]}  	-pinname 65 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[4]}  	-pinname 64 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[3]}  	-pinname 63 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[2]}  	-pinname 62 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[1]}  	-pinname 61 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_address[0]}  	-pinname 60 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_data[0]}	  	-pinname 59 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_data[1]}	  	-pinname 58 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_data[2]}	  	-pinname 57 -fixed yes -SLEW Low -DIRECTION Output
+
+
+set_io uart_rx          \
+    -pinname 16       \
     -fixed yes        \
     -DIRECTION Input
 
-
-set_io {buttons[1]}   \
-    -pinname 28       \
+set_io uart_tx          \
+    -pinname 19       \
     -fixed yes        \
-    -DIRECTION Input
+    -DIRECTION Output
 
-
-set_io {buttons[2]}   \
-    -pinname 29       \
-    -fixed yes        \
-    -DIRECTION Input
-
-
-set_io {buttons[3]}   \
-    -pinname 30       \
-    -fixed yes        \
-    -DIRECTION Input
-
-
-set_io {buttons[4]}   \
-    -pinname 31       \
-    -fixed yes        \
-    -DIRECTION Input
-
-
-set_io {buttons[5]}   \
-    -pinname 32       \
-    -fixed yes        \
-    -DIRECTION Input
-
-
-set_io {buttons[6]}   \
-    -pinname 33       \
-    -fixed yes        \
-    -DIRECTION Input
-
-
-set_io {buttons[7]}   \
-    -pinname 34       \
+set_io nRESET         \
+    -pinname 10       \
     -fixed yes        \
     -DIRECTION Input
 
 
 set_io clock          \
     -pinname 15       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {dipsw[0]}     \
+    -pinname 26       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {dipsw[1]}     \
+    -pinname 28       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {dipsw[2]}     \
+    -pinname 29       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {dipsw[3]}     \
+    -pinname 30       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {dipsw[4]}     \
+    -pinname 31       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {dipsw[5]}     \
+    -pinname 32       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {dipsw[6]}     \
+    -pinname 33       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io {dipsw[7]}     \
+    -pinname 34       \
     -fixed yes        \
     -DIRECTION Input
 
@@ -117,6 +189,8 @@ set_io {leds[7]}       \
     -DIRECTION Output
 
 
+
+
 set_io {pushsw[0]}    \
     -pinname 20       \
     -fixed yes        \
@@ -141,16 +215,15 @@ set_io {pushsw[3]}    \
     -DIRECTION Input
 
 
-set_io pwmoutleft      \
-    -pinname 2         \
+
+
+set_io dummy          \
+    -pinname 27        \
     -fixed yes         \
     -DIRECTION Output
 
 
-set_io pwmoutright     \
-    -pinname 3         \
-    -fixed yes         \
-    -DIRECTION Output
+
 
 
 
@@ -163,15 +236,23 @@ set_io pwmoutright     \
 # Old IO constraints, commented out for reference
 #
 
-# set_io {buttons[0]} -pinname 26 -fixed yes -DIRECTION Input 
-# set_io {buttons[1]} -pinname 28 -fixed yes -DIRECTION Input 
-# set_io {buttons[2]} -pinname 29 -fixed yes -DIRECTION Input 
-# set_io {buttons[3]} -pinname 30 -fixed yes -DIRECTION Input 
-# set_io {buttons[4]} -pinname 31 -fixed yes -DIRECTION Input 
-# set_io {buttons[5]} -pinname 32 -fixed yes -DIRECTION Input 
-# set_io {buttons[6]} -pinname 33 -fixed yes -DIRECTION Input 
-# set_io {buttons[7]} -pinname 34 -fixed yes -DIRECTION Input 
 # set_io clock -pinname 15 -fixed yes -DIRECTION Input 
+# set_io nRESET -pinname 10 -fixed yes -DIRECTION Input 
+# set_io sound1 -pinname 78 -fixed yes -DIRECTION Output 
+# set_io sound2 -pinname 77 -fixed yes -DIRECTION Output 
+# set_io sound3 -pinname 76 -fixed yes -DIRECTION Output 
+# set_io {pushsw[0]} -pinname 20 -fixed yes -DIRECTION Input 
+# set_io {pushsw[1]} -pinname 21 -fixed yes -DIRECTION Input 
+# set_io {pushsw[2]} -pinname 22 -fixed yes -DIRECTION Input 
+# set_io {pushsw[3]} -pinname 23 -fixed yes -DIRECTION Input 
+# set_io {dipsw[0]} -pinname 26 -fixed yes -DIRECTION Input 
+# set_io {dipsw[1]} -pinname 28 -fixed yes -DIRECTION Input 
+# set_io {dipsw[2]} -pinname 29 -fixed yes -DIRECTION Input 
+# set_io {dipsw[3]} -pinname 30 -fixed yes -DIRECTION Input 
+# set_io {dipsw[4]} -pinname 31 -fixed yes -DIRECTION Input 
+# set_io {dipsw[5]} -pinname 32 -fixed yes -DIRECTION Input 
+# set_io {dipsw[6]} -pinname 33 -fixed yes -DIRECTION Input 
+# set_io {dipsw[7]} -pinname 34 -fixed yes -DIRECTION Input 
 # set_io {leds[0]} -pinname 35 -fixed yes -DIRECTION Output 
 # set_io {leds[1]} -pinname 36 -fixed yes -DIRECTION Output 
 # set_io {leds[2]} -pinname 40 -fixed yes -DIRECTION Output 
@@ -180,9 +261,8 @@ set_io pwmoutright     \
 # set_io {leds[5]} -pinname 43 -fixed yes -DIRECTION Output 
 # set_io {leds[6]} -pinname 44 -fixed yes -DIRECTION Output 
 # set_io {leds[7]} -pinname 45 -fixed yes -DIRECTION Output 
-# set_io {pushsw[0]} -pinname 20 -fixed yes -DIRECTION Input 
-# set_io {pushsw[1]} -pinname 21 -fixed yes -DIRECTION Input 
-# set_io {pushsw[2]} -pinname 22 -fixed yes -DIRECTION Input 
-# set_io {pushsw[3]} -pinname 23 -fixed yes -DIRECTION Input 
-# set_io pwmoutleft -pinname 2 -fixed yes -DIRECTION Output 
-# set_io pwmoutright -pinname 3 -fixed yes -DIRECTION Output 
+# set_io video_sync_outpin -pinname 97 -fixed yes -DIRECTION Output 
+# set_io video_blank_outpin -pinname 98 -fixed yes -DIRECTION Output 
+# set_io video_r_outpin -pinname 94 -fixed yes -DIRECTION Output 
+# set_io video_g_outpin -pinname 93 -fixed yes -DIRECTION Output 
+# set_io video_b_outpin -pinname 92 -fixed yes -DIRECTION Output 
