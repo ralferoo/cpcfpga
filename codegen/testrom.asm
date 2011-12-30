@@ -1,6 +1,15 @@
 
 	org #0000
 
+flash:
+	ld bc,#fade
+	out (c),a
+
+	add a,5
+	jr flash
+
+	end
+
 start:
 
 
