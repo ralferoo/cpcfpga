@@ -1,6 +1,35 @@
 
 	org #0000
 
+flash:
+	; led flash
+
+	ld bc,#fade
+	ld a,l
+	out (c),a
+	add a,5
+	ld l,a
+
+	; check serial port
+	dec c
+	in a,(c)
+
+	;and #80
+	;or l
+	;ld l,a
+
+	rla
+	jr nc,flash
+
+	; serial port not busy, send data
+	dec c
+	inc h
+	out (c),h
+
+	jr flash
+
+	end
+
 start:
 
 
@@ -20,26 +49,13 @@ loop:
 	ld a,(hl)
 	or a
 	jr z,restart
-
-	ld bc,#fadd
-busy1:	in a,(c)
-	rla
-	jr nc,busy1
-	dec c
-
-	ld a,(hl)
-	out (c),a
-
 	inc hl
+
+	ld bc,#fadc
+	out (c),a
 	jr loop
 
 restart:
-	inc c
-busy2:	in a,(c)
-	rla
-	jr nc,busy2
-	dec c
-
 	ld a,ixl
 
 	rra
@@ -53,12 +69,6 @@ busy2:	in a,(c)
 	adc a,#40
 	daa
 	out (c),a
-
-	inc c
-busy3:	in a,(c)
-	rla
-	jr nc,busy3
-	dec c
 
 	ld a,ixl
 
@@ -93,25 +103,8 @@ dump_memory:
 	and #f
 	jr nz,no_header
 
-	inc c
-busy4:	in a,(c)
-	rla
-	jr nc,busy4
-	dec c
 	out (c),d
-
-	inc c
-busy5:	in a,(c)
-	rla
-	jr nc,busy5
-	dec c
 	out (c),e
-
-	inc c
-busy6:	in a,(c)
-	rla
-	jr nc,busy6
-	dec c
 
 	ld a,l
 	rra
@@ -125,41 +118,13 @@ busy6:	in a,(c)
 	adc a,#40
 	daa
 	out (c),a
-
-	inc c
-busy7:	in a,(c)
-	rla
-	jr nc,busy7
-	dec c
-
 	ld a,'0'
 	out (c),a
-
-	inc c
-busy8:	in a,(c)
-	rla
-	jr nc,busy8
-	dec c
-
 	ld a,':'
 	out (c),a
-
-	inc c
-busy9:	in a,(c)
-	rla
-	jr nc,busy9
-	dec c
-
 	ld a,' '
 	out (c),a
 no_header:
-
-	inc c
-busya:	in a,(c)
-	rla
-	jr nc,busya
-	dec c
-
 	ld a,(hl)
 
 	rra
@@ -173,13 +138,6 @@ busya:	in a,(c)
 	adc a,#40
 	daa
 	out (c),a
-
-	inc c
-busyb:	in a,(c)
-	rla
-	jr nc,busyb
-	dec c
-
 
 	ld a,(hl)
 
@@ -193,7 +151,7 @@ donext:
 	inc l
 	ld a,l
 	or a
-	jp nz, dump_memory
+	jr nz, dump_memory
 
 	; output a counter
 
