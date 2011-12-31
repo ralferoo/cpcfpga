@@ -51,7 +51,8 @@ begin
 			if clkcount /= 0 then
 				clkcount	:= clkcount - 1;
 			else
-				clkcount	:= CONV_STD_LOGIC_VECTOR(1666,11);       -- 16MHz/9600 = 1666.67
+				--clkcount	:= CONV_STD_LOGIC_VECTOR(1666,11);       -- 16MHz/  9600 = 1666.67
+				clkcount	:= CONV_STD_LOGIC_VECTOR( 139,11);       -- 16MHz/115200 =  138.88
 				shift		:= '1' & shift(9 downto 1);
 
 				if bits /= "0000" then
