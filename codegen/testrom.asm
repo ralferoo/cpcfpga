@@ -3,11 +3,9 @@
 
 	ld ix,0
 	ld sp,#fffe
-	ld a,'#'
-	call outchar
 
 start:
-	ld hl,#8000
+	ld hl,#4000
 fill:	ld (hl),#bd
 	inc hl
 	ld a,l
@@ -45,7 +43,7 @@ modify_loop:
 
 	inc ix
 
-	ld hl,#3000
+	ld hl,#0000
 
 dump_memory:
 	ld bc,#fade
@@ -77,8 +75,22 @@ no_header:
 
 donext:
 	inc hl
-	ld a,l
-	or h
+
+	ld a,h
+	cp #4
+	jr z,skip
+	cp #42
+	jr nz,noskip
+	ld h,#ff
+skipped:
+	ld a,#d
+	call outchar
+	ld a,#a
+	call outchar
+	ld a,'*'
+	call outchar
+noskip:
+	or l
 	jp nz, dump_memory
 
 	; jp repeat
@@ -88,6 +100,10 @@ donext:
 	in a,(c)
 	push af
 	call repeat
+
+skip:
+	ld h,#3f
+	jr skipped
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -114,13 +130,17 @@ outhexnibble:
 
 outchar:
 	push bc
-outcharbusy:
 	ld bc,#fadd
-	in c,(c)
-	rl c
-	jr nc,outcharbusy
+outcharbusy:
+	defb #ed,#70	;in f,(c)
+	jp p,outcharbusy
+	dec c
 
-	ld bc,#fadc
+;	in c,(c)
+;	rl c
+;	jr nc,outcharbusy
+;	ld bc,#fadc
+
 	out (c),a
 	pop bc
 	ret
