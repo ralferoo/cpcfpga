@@ -78,9 +78,9 @@ modify_loop:
 	inc hl
 	djnz modify_loop
 
-	inc ixl
+	inc ix
 
-	ld hl,#8000
+	ld hl,#3000
 	ld de,#d0a
 
 dump_memory:
@@ -113,6 +113,44 @@ busy6:	in a,(c)
 	jr nc,busy6
 	dec c
 
+
+; output hight byte of address
+
+	ld a,h
+	rra
+	rra
+	rra
+	rra
+
+	and #f
+	add a,#90
+	daa
+	adc a,#40
+	daa
+	out (c),a
+
+	inc c
+busy7h:	in a,(c)
+	rla
+	jr nc,busy7h
+	dec c
+
+	ld a,h
+	and #f
+	add a,#90
+	daa
+	adc a,#40
+	daa
+	out (c),a
+
+	inc c
+busy8l:	in a,(c)
+	rla
+	jr nc,busy8l
+	dec c
+
+; output low byte of address
+
 	ld a,l
 	rra
 	rra
@@ -141,8 +179,12 @@ busy8:	in a,(c)
 	jr nc,busy8
 	dec c
 
+; continue with output
+
 	ld a,':'
 	out (c),a
+
+no_header:
 
 	inc c
 busy9:	in a,(c)
@@ -152,7 +194,6 @@ busy9:	in a,(c)
 
 	ld a,' '
 	out (c),a
-no_header:
 
 	inc c
 busya:	in a,(c)
@@ -190,16 +231,21 @@ busyb:	in a,(c)
 	daa
 	out (c),a
 donext:
-	inc l
+	inc hl
 	ld a,l
-	or a
+	or h
 	jp nz, dump_memory
 
 	; output a counter
 
+	; jp repeat
 
+	push ix				; corrupt the stack a bit
+	ld bc,#fadd
+	in a,(c)
+	push af
+	call repeat
 
-	jp repeat
 
 
 string:
