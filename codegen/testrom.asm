@@ -13,6 +13,11 @@ flash:
 	; check serial port
 	dec c
 	in a,(c)
+
+	;and #80
+	;or l
+	;ld l,a
+
 	rla
 	jr nc,flash
 

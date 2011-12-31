@@ -49,7 +49,7 @@ begin
     memory_testrom : testrom port map( addr=>A(13 downto 0), data=>testrom_data );
 
     -- rom selection
-    process(nrst,IORQ_n,WR_n)
+    process(nrst,IORQ_n,WR_n,A,DO)
     begin
         -- state on reset
         if nrst='0' then
@@ -105,6 +105,8 @@ begin
         	sram_we <= '1';
         	sram_oe <= '1';
 		DI <= (others=>'0');
+		sram_address <= (others=>'0');
+        	sram_data <= (others=>'Z');
 
         elsif rising_edge(clk) then
 	   DI <= (others=>'0');

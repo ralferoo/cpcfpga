@@ -64,7 +64,7 @@ architecture impl of cpc is
 	signal WAIT_n, INT_n, NMI_n, BUSRQ_n					: std_logic;       --  in to   CPU
 	signal M1_n, MREQ_n, IORQ_n, RD_n, WR_n, RFSH_n, HALT_n, BUSAK_n	: std_logic;       -- out from CPU
 	signal A								: std_logic_vector(15 downto 0);
-	signal DI, DO, XXX							: std_logic_vector(7 downto 0);
+	signal DI, DO								: std_logic_vector(7 downto 0);
 
     signal DI_from_mem	: std_logic_vector(7 downto 0);
     signal DI_from_iorq	: std_logic_vector(7 downto 0);
@@ -118,9 +118,9 @@ architecture impl of cpc is
             end if;
         end process;
 	cpuclk <=    clk_divider(1) when dipsw(7 downto 6)="00"
-		else clk_divider(9) when dipsw(7 downto 6)="01"
+		else clk_divider(7) when dipsw(7 downto 6)="01"
 		else clk_divider(11) when dipsw(7 downto 6)="10"
-		else clk_divider(18);
+		else clk_divider(15);
 	clk4 <= clk_divider(1);
 	clk1 <= clk_divider(3);
 
@@ -214,6 +214,6 @@ architecture impl of cpc is
 
         -- uart echo
         my_tx  : my_uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>my_uart_tx_txd , load=>my_uart_tx_load , data=>my_uart_tx_data , empty=>my_uart_tx_empty );
-        uart_tx <= uart_rx;
+        uart_tx <= my_uart_tx_txd;
 
 end impl;
