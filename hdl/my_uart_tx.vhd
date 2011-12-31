@@ -19,8 +19,8 @@ end entity;
 architecture impl of my_uart_tx is
 begin
 	process(clk16mhz, nrst)
-		variable	clkcount	: std_logic_vector(10 downto 0);
-		variable	shift		: std_logic_vector(9 downto 0);
+		variable	clkcount	: std_logic_vector(7 downto 0);
+		variable	shift		: std_logic_vector(8 downto 0);
 
 		variable	last		: std_logic;
 		variable	isempty		: std_logic;
@@ -37,6 +37,7 @@ begin
 			reqd		:= '0';
 			shift		:= (others=>'1');
 			bits		:= "0000";
+			cached		:= (others=>'0');
 
 			txd		<= '1';
 			empty		<= '1';
@@ -52,14 +53,14 @@ begin
 				clkcount	:= clkcount - 1;
 			else
 				--clkcount	:= CONV_STD_LOGIC_VECTOR(1666,11);       -- 16MHz/  9600 = 1666.67
-				clkcount	:= CONV_STD_LOGIC_VECTOR( 139,11);       -- 16MHz/115200 =  138.88
-				shift		:= '1' & shift(9 downto 1);
+				clkcount	:= CONV_STD_LOGIC_VECTOR( 139,8);        -- 16MHz/115200 =  138.88
+				shift		:= '1' & shift(8 downto 1);
 
-				if bits /= "0000" then
+				if bits /= 0 then
 					bits	:= bits - 1;
 				elsif reqd = '1' then
 					bits	:= "1010";
-					shift	:= '1' & cached & '0';
+					shift	:= cached & '0';			-- stop bit '1' can be optimised away
 					reqd	:= '0';
 					isempty := '0';
 				else

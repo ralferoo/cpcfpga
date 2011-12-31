@@ -35,7 +35,7 @@ architecture impl of cpc is
 	end component;
 	signal clklock          : std_logic;
 	signal clk16            : std_logic;
-	signal clk_divider      : std_logic_vector(22 downto 0);        -- (0)=8mhz, (1)=4mhz, (2)=2mhz, (3)=1mhz
+	signal clk_divider      : std_logic_vector(15 downto 0);        -- (0)=8mhz, (1)=4mhz, (2)=2mhz, (3)=1mhz
 	signal clk4,clk1        : std_logic;
 	signal cpuclk           : std_logic;
 
@@ -65,6 +65,7 @@ architecture impl of cpc is
 	signal M1_n, MREQ_n, IORQ_n, RD_n, WR_n, RFSH_n, HALT_n, BUSAK_n	: std_logic;       -- out from CPU
 	signal A								: std_logic_vector(15 downto 0);
 	signal DI, DO								: std_logic_vector(7 downto 0);
+	signal IORD_n, IOWR_n							: std_logic;
 
     signal DI_from_mem	: std_logic_vector(7 downto 0);
     signal DI_from_iorq	: std_logic_vector(7 downto 0);
@@ -107,6 +108,30 @@ architecture impl of cpc is
 	signal my_uart_tx_data                                      : std_logic_vector(7 downto 0); 
 	signal my_uart_tx_txd                                       : std_logic;
 
+	-- crtc
+	component crtc is port(
+		nRESET			: in	std_logic;
+		MA			: out	std_logic_vector(13 downto 0);
+		DE			: out	std_logic;
+		CLK			: in	std_logic;				-- CCLK (1mhz from gate array)
+		RW			: in	std_logic;				-- A9
+		E			: in	std_logic;				-- IORD' nor IOWR'
+		RS			: in	std_logic;				-- A8
+		nCS			: in	std_logic;				-- A14
+		DIN			: in	std_logic_vector(7 downto 0);
+		DOUT			: out	std_logic_vector(7 downto 0);		-- D conflated to DIN and DOUT
+		RA			: out	std_logic_vector(3 downto 0);
+		HSYNC, VSYNC		: out	std_logic);
+	end component;
+	signal	crtc_E			: 	std_logic;				-- IORD' nor IOWR'
+	signal	crtc_CLK		: 	std_logic;
+	signal	crtc_DOUT		: 	std_logic_vector(7 downto 0);
+
+	signal	crtc_DE			: 	std_logic;
+	signal	crtc_MA			: 	std_logic_vector(13 downto 0);
+	signal	crtc_RA			: 	std_logic_vector(3 downto 0);
+	signal	crtc_HSYNC, crtc_VSYNC	: 	std_logic;
+
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
 	-- generate the master clock
@@ -136,11 +161,20 @@ architecture impl of cpc is
                               WAIT_n=>WAIT_n, INT_n=>INT_n, NMI_n=>NMI_n, BUSRQ_n=>BUSRQ_n,
                               M1_n=>M1_n, MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, RFSH_n=>RFSH_n, HALT_n=>HALT_n, BUSAK_n=>BUSAK_n,
                               A=>A, DI=>DI, DO=>DO );
+	IORD_n <= IORQ_n AND RD_n;
+	IOWR_n <= IORQ_n AND WR_n;
 
         WAIT_n <=  '1'; --pushsw(0) and (nWAIT_uart_tx or not pushsw(3));
         INT_n <=   '1'; --pushsw(1);
         NMI_n <=   '1'; --pushsw(2);
         BUSRQ_n <= '1'; --pushsw(3);
+
+	-- crtc
+	crtc_0 : crtc port map( nRESET=>nRESET, MA=>crtc_MA, DE=>crtc_DE, CLK=>crtc_CLK,
+				RW=>A(9), E=>crtc_E, RS=>A(8), nCS=>A(14),
+				DIN=>DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
+	crtc_E	 <= IORD_n nor IOWR_n;
+	crtc_CLK <= clk_divider(1);
 
         -- memory
         memory : memory_mux port map ( nrst=>nRESET, clk=>clk16, 
@@ -180,6 +214,9 @@ architecture impl of cpc is
 			    DI_from_iorq(3 downto 0) <= not pushsw(3 downto 0);
 	    		    DI_is_from_iorq <= '1';
 
+		    	elsif A(14)='0' then
+			    DI_from_iorq <= crtc_DOUT;
+	    		    DI_is_from_iorq <= '1';
 			end if;
 		end if;
             end if;
