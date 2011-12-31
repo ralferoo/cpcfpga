@@ -142,3 +142,19 @@ build/$(TOP_NAME)_build.tcl: Makefile build/.dummy
     		-feature prog_fpga \
     		../$(PDB_NAME) >>$@
 	@echo save_design $(TOP_NAME)_build.adb >>$@
+
+##########################################################################
+
+codegen: hdl/testrom.vhd
+
+hdl/jingle.vhd: codegen/jingle.py
+	codegen/jingle.py >$@
+
+hdl/notelookup.vhd: codegen/notes.py
+	codegen/notes.py >$@
+
+hdl/testrom.vhd: codegen/testrom.py codegen/testrom.bin
+	codegen/testrom.py codegen/testrom.bin >$@
+
+%.bin: %.asm
+	pasmo $< $@ $*.sym

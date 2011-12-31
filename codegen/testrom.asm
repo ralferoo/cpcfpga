@@ -2,10 +2,25 @@
 	org #0000
 
 flash:
-	ld bc,#fade
-	out (c),a
+	; led flash
 
+	ld bc,#fade
+	ld a,l
+	out (c),a
 	add a,5
+	ld l,a
+
+	; check serial port
+	dec c
+	in a,(c)
+	rla
+	jr nc,flash
+
+	; serial port not busy, send data
+	dec c
+	inc h
+	out (c),h
+
 	jr flash
 
 	end

@@ -67,8 +67,8 @@ architecture impl of cpc is
 	signal DI, DO, XXX							: std_logic_vector(7 downto 0);
 
     signal DI_from_mem	: std_logic_vector(7 downto 0);
---    signal DI_from_iorq	: std_logic_vector(7 downto 0);
---    signal DI_is_from_iorq : std_logic;
+    signal DI_from_iorq	: std_logic_vector(7 downto 0);
+    signal DI_is_from_iorq : std_logic;
 
 	-- my ram code
 	component memory_mux is port(
@@ -90,6 +90,22 @@ architecture impl of cpc is
 
 		clk			: in std_logic);
 	end component;
+	
+	-- uart tx
+	component my_uart_tx is port (
+		nrst       : in std_logic;
+		clk16mhz   : in std_logic;
+
+		load       : in std_logic;                                         -- triggered on rising edge
+		data       : in std_logic_vector(7 downto 0);                      -- must be latchable as load goes high
+		empty      : out std_logic;
+			
+		txd        : out std_logic);
+	end component;
+
+	signal my_uart_tx_empty, my_uart_tx_load : std_logic;
+	signal my_uart_tx_data                                      : std_logic_vector(7 downto 0); 
+	signal my_uart_tx_txd                                       : std_logic;
 
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
@@ -131,8 +147,7 @@ architecture impl of cpc is
             MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, A=>A, DI=>DI_from_mem, DO=>DO,
             sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
 
-	    DI <= DI_from_mem;
-	    --DI <= DI_from_iorq when DI_is_from_iorq='1' else DI_from_mem;
+	    DI <= DI_from_iorq when DI_is_from_iorq='1' else DI_from_mem;
 
 	process(cpuclk,MREQ_n,RD_n)
 	begin
@@ -144,14 +159,51 @@ architecture impl of cpc is
 		end if;
 	end process;
 
+        -- add switch input to port #fade
+        process(nRESET,cpuclk,IORQ_n,RD_n,A)
+        begin
+            if nRESET = '0' then
+	    	DI_is_from_iorq <= '0';
+    	        DI_from_iorq <= (others=>'0');
+            
+	    elsif rising_edge(cpuclk) then
+	    	DI_is_from_iorq <= '0';
+    	        DI_from_iorq <= (others=>'0');
+	    	if IORQ_n = '0' and RD_n = '0' then
+
+			if    A(15 downto 0) = x"FADE" then
+			    DI_from_iorq <= not dipsw(7 downto 0);
+	    		    DI_is_from_iorq <= '1';
+
+		    	elsif A(15 downto 0) = x"FADD" then
+			    DI_from_iorq(7) <= my_uart_tx_empty;          		-- latch the empty flag data
+			    DI_from_iorq(3 downto 0) <= not pushsw(3 downto 0);
+	    		    DI_is_from_iorq <= '1';
+
+			end if;
+		end if;
+            end if;
+        end process;
+	
         -- add LED output to port #fade
         process(nRESET,cpuclk,IORQ_n,WR_n,A)
         begin
             if nRESET = '0' then
-                leds <= (others=>'0');
+                leds		<= (others=>'0');
+		my_uart_tx_data	<= (others=>'0');
+		my_uart_tx_load <= '0';
             
-            elsif rising_edge(cpuclk) and IORQ_n = '0' and WR_n = '0' and A(15 downto 0) = x"FADE" then
-                leds <= not DO(7 downto 0);
+	    elsif rising_edge(cpuclk) then
+		my_uart_tx_load <= '0';
+
+		    if IORQ_n = '0' and WR_n = '0' and A(15 downto 0) = x"FADC" then
+			my_uart_tx_data	<= DO;
+	    		my_uart_tx_load <= '1';
+            
+	         elsif IORQ_n = '0' and WR_n = '0' and A(15 downto 0) = x"FADE" then
+		        leds <= not DO(7 downto 0);
+
+		end if;
             end if;
         end process;
 	
@@ -161,6 +213,7 @@ architecture impl of cpc is
                  uart_rx xor nRESET;
 
         -- uart echo
+        my_tx  : my_uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>my_uart_tx_txd , load=>my_uart_tx_load , data=>my_uart_tx_data , empty=>my_uart_tx_empty );
         uart_tx <= uart_rx;
 
 end impl;
