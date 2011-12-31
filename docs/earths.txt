@@ -1,0 +1,75 @@
+				Extensible
+				Artchitecture for
+				Renderering
+				Triangles at
+				High
+				Speed
+
+
+So, key idea is:
+
+Base FPGA to put instructions on the bus and retrieve them from the other end.
+
+Board that can plug into that socket to provide extra power and itself has
+a socket to be plugged into.
+
+Goals:
+
+* simply add a new board to increase maximal triangle count
+* possibly support hot insertion / removal - it's not too hard!
+* explicitly doesn't support transparency, this must be done through models
+
+Master:
+
+* provides reference clock (16MHz or the pixel clock?)
+* instruction / data bus
+* dummy pixel data bus (i.e. default background / HUD)
+* generates hsync, vsync
+* bus updated on rising edge of reference clock
+
+Link:
+
+* listens to its upstream port
+* has its own PLL to higher than reference clock
+* samples data on falling edge of reference clock
+* passes on or modifies the data on its downstream port
+* if there is something downstream, copies its return port to own return port
+* if there is nothing downstream, passes its own data back on its return port
+
+Master:
+
+* uses clock from first modules's return port to receive data
+* reclock the "instruction" data to system clock for answers to queries
+* uses pixel data bus to calculate pixel value (e.g. texture lookup)
+* uses pixel data together with hsync, vsync from return port to display
+
+Overall latency is increased with each module, but this latency should be a
+fixed function of the board's capabilites, so the final image will follow
+the main clock my some number of clock cycles. Since it contains the sync
+pulses delayed by the same amount, that's fine.
+
+
+
+
+Acronyms:
+
+	Extensible
+	Artchitecture for
+	Renderering
+	Triangles at
+	High
+	Speed
+
+	Modular
+	Open
+	O
+	Node
+
+	Processor
+	Loader
+	And
+	N
+	Extraction of
+	Triangles
+
+
