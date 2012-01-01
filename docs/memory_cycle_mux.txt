@@ -6,10 +6,28 @@ The emulated Z80 core is running at 4MHz, the memory chip can easily be run
 at 16MHz (AS6C4008: tAA,tACE=55ns, tOE=0ns, 16MHz cycle is 62.5ns long)
 
 As I want to implement a support Z80 for SD card access, etc, it makes sense
-to think about multiplexing this so that the Z80 sees one cycle in 4.
+to think about multiplexing this so that the Z80 sees one cycle in 4 anyway.
 
 In any case, this analysis will benefit reverse engineering the CPC muxing
-used for video memory access.
+used for video memory access as the video needs 2 of 4 cycles for itself.
+
+It's important to also remember that the Z80 owns its bus and its signals
+at all times. The gate array can see the bus via a 74LS244 (buffer) and
+present data onto the bus via a 74LS373 (latch/buffer).
+
+The Z80 data bus is permanently attached to the data in of the 4764 RAM,
+so it must write the data immediately rather than latching it.
+
+If the GA enables the '244, it can spy on the Z80 databus (for setting GA
+registers).
+
+If the GA enables the latch of the '373, it can record the output of the
+RAM chip (or output from the GA or latch the current Z80 bus, neither of
+which happen - and so the GA databus is readonly).
+
+If the GA enables the output of the '373 it can present latched data from
+the RAM to the Z80 even when the RAM is now being used for video.
+
 
 Instruction read behaviour
 --------------------------
@@ -139,5 +157,71 @@ and deasserting on r/T2a, so it can be sampled on f/T2.
 
 Cycles T1, T2a and T3 don't need to use memory even though the CPU signals
 are valid.
+
+
+IO behaviour
+------------
+
+Not important to us... we are only concerned about concurrency on the Z80 bus.
+
+
+Our timings
+-----------
+
+	Z80					US
+
+r / T1
+	Address put on bus
+	M1 asserted on instruction cycles
+						*** RAM bus available
+f \ T1
+	MREQ, RD asserted
+
+r / T2
+						We assert WAIT=0 if M1=1
+						*** RAM bus used for CPU
+						Set address lines 
+						Start latching RAM output
+						Assert WE# if MREQ=0,RD=1
+							(tAS=0, this is OK!)
+						Set OE on latch if MREQ=0,RD=0
+f \ T2
+	CPU checks WAIT to add wait state in M1=1
+
+r / T3
+	CPU reads data from bus if M1 was 0
+	Deasserts MREQ,RD if M1 was 0
+	Asserts RFSH if M1 was 0
+						We deassert WAIT
+	CPU checks WAIT, if M1 was 1, continue
+						Stop latching RAM output
+						    (or latch on this edge)
+						Deassert WE# if we were writing
+						Keep OE on latch if MREQ=0,RD=0
+						*** RAM bus available
+f \ T3
+	Asserts MREQ if M1 was 0
+
+r / T4
+	Nothing
+						*** RAM bus available
+f \ T4
+	CPU reads data from bus if M1 was 1, RD=0
+	Deasserts MREQ,RD
+
+r / T1
+	Deasserts M1 (unless next read is also an instruction)
+
+
+
+Bus Request / Ack
+-----------------
+
+Not used in CPC design
+
+
+
+Int Request / Ack
+-----------------
 
 
