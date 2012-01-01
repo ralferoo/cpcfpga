@@ -1,6 +1,6 @@
 KEY LIBERO "9.1"
 KEY CAPTURE "9.1.0.18"
-KEY DEFAULT_IMPORT_LOC "C:\Users\ralf\Desktop\clocks\hdl"
+KEY DEFAULT_IMPORT_LOC "C:\fpga\cpcfpga\hdl"
 KEY DEFAULT_OPEN_LOC ""
 KEY ProjectID "08d998c3-60e9-49ba-bc3f-fc34a399011f"
 KEY HDLTechnology "VHDL"
@@ -27,18 +27,28 @@ USE_FOR_ANY_TOOL="FALSE"
 ENDFILE
 VALUE "<project>\constraint\cpc_sdc.sdc,sdc"
 STATE="utd"
-TIME="1325285358"
-SIZE="733"
+TIME="1325356736"
+SIZE="944"
 ENDFILE
 VALUE "<project>\hdl\cpc.vhd,hdl"
 STATE="utd"
-TIME="1325288180"
-SIZE="5712"
+TIME="1325384158"
+SIZE="8830"
+ENDFILE
+VALUE "<project>\hdl\crtc.vhd,hdl"
+STATE="utd"
+TIME="1325385792"
+SIZE="11776"
 ENDFILE
 VALUE "<project>\hdl\memory_mux.vhd,hdl"
 STATE="utd"
-TIME="1325287874"
-SIZE="5176"
+TIME="1325302389"
+SIZE="5252"
+ENDFILE
+VALUE "<project>\hdl\my_uart_tx.vhd,hdl"
+STATE="utd"
+TIME="1325356541"
+SIZE="1851"
 ENDFILE
 VALUE "<project>\hdl\T80.vhd,hdl"
 STATE="utd"
@@ -82,8 +92,13 @@ SIZE="3647"
 ENDFILE
 VALUE "<project>\hdl\testrom.vhd,hdl"
 STATE="utd"
-TIME="1325288533"
-SIZE="846"
+TIME="1325351095"
+SIZE="9714"
+ENDFILE
+VALUE "<project>\simulation\run.do,do"
+STATE="utd"
+TIME="1325384164"
+SIZE="1315"
 ENDFILE
 VALUE "<project>\smartgen\PLL16mhz\PLL16mhz.cxf,actgen_cxf"
 STATE="utd"
@@ -211,5 +226,5 @@ DESIGNFLOW:
 FILE:<project>\hdl\cpc.vhd,hdl
 FILE:<project>\smartgen\PLL16mhz\PLL16mhz.vhd,hdl
 FILE:<project>\hdl\memory_mux.vhd,hdl
-ACTIVE_VIEW:1
+ACTIVE_VIEW:0
 ENDLIST

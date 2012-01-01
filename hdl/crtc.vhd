@@ -196,7 +196,7 @@ begin
 			n_hsync			:= v_hsync;
 
 			n_vsynccount		:= v_vsynccount;
-			n_vsync			:= v_hsync;
+			n_vsync			:= v_vsync;
 			n_vsync_out		:= v_vsync_out;
 			n_inadjust		:= v_inadjust;
 
@@ -220,7 +220,6 @@ begin
 				end if;
 
 			else -- reached horiz total
-				n_hpos			:= (others=>'0');			-- reset the horiz count to 0
 
 				-- determine end row of this character line
 				if n_inadjust ='1' then
@@ -242,6 +241,10 @@ begin
 					n_ma_this_line	:= n_ma;				-- instead, update the "start of line" ma with our current value
 				end if;
 
+				-- reset counters
+				n_hpos			:= (others=>'0');			-- reset the horiz count to 0
+				n_hdisp			:= '1';					-- re-enable horiz output
+
 				-- count down the pulses in the vsync pulse
 				n_vsynccount	:= n_vsynccount - 1;
 				if n_vsynccount = 0 then
@@ -259,7 +262,7 @@ begin
 						islastline	:= '1';
 					end if;
 
-					if  n_inadjust ='1' or (islastline='1' and r_vtotaladjust/=0) then
+					if  n_inadjust ='1' or (islastline='1' and r_vtotaladjust=0) then
 						n_inadjust	:= '0';				-- clear adjust flag
 						n_vdisp		:= '1';				-- re-enable vertical display
 						n_vpos		:= (others=>'0');		-- go back to character line
@@ -308,7 +311,7 @@ begin
 			v_hsync			:= n_hsync;
 
 			v_vsynccount		:= n_vsynccount;
-			v_vsync			:= n_hsync;
+			v_vsync			:= n_vsync;
 			v_vsync_out		:= n_vsync_out;
 			v_inadjust		:= n_inadjust;
 
