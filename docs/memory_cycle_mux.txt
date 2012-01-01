@@ -167,7 +167,7 @@ Not important to us... we are only concerned about concurrency on the Z80 bus.
 LIES! The CPC does also seem to stretch IO requests. Probably a bug!
 
 IN A,(nn)	3 on CPC	4,3,4		expected, but I think because T1 of last gets pushed forward
-OUT (nn),A	3 on CPC
+OUT (nn),A	3 on CPC			instr+mem(nn)+in(5)
 
 IN r,(C)	4 on CPC	4,4,4
 OUT (C),r	4 on CPC
@@ -368,25 +368,96 @@ IORQ, M1, RD, MREQ
 
 	state	mode	M1	MREQ	IORQ	RD	WR	WAIT	newmode
 	--------------------------------------------------	---------------
+	T2	idle	1	1	1	x	x	no	idle	idle bus (or io coming)
+	T3	idle	x	1	1	x	x	no	idle	idle bus
+	T4	idle	x	1	1	x	x	no	idle	idle bus (or delayed io)
+	T1	idle	x	1	1	x	x	no	idle	idle bus
+	
 	T2	idle	0	0	x	x	x	no	mem	instruction fetch		(1)
 	T2	idle	1	0	x	x	x	yes	mem	read/write, add wait state	(1)
 
-	T2	idle	x	1	0	x	x		io	io a cycle early
-	T2	idle	0	1	1	x	x		intrq	intreq coming
-	T2	idle	1	1	1	x	x		idle	idle or io coming
+	T3	mem	x	0 (x)	x	x	x	no	mem	latch data			(2)
+	T4	mem	x	x	x	x	x	no	mem	data for read is latched
+	T1	mem	x	1	1	1	1	no	idle	bus should be returned to normal
 
-	T3	idle	1	1	1	x	x	no	idle	idle bus
-	T4	idle	1	1	1	x	x	no	idle	idle bus
-	T1	idle	1	1	1	x	x	no	idle	idle bus
+	T3	idle	x	0	x	x	x	yes	idle	memory request out of place
+	T4	idle	x	0	x	x	x	yes	idle	memory request out of place
+	T1	idle	x	0	x	x	x	yes	idle	memory request out of place
 
-	T3	mem	x	0	x	x	x	mem	latch data
-	
-(1)
-	WAIT=not M1
+	T3	idle	x	1	0	x	x	yes	idle	io request out of place		CHECK
+	T4	idle	x	1	0	x	x	yes	idle	io request out of place		CHECK
+	T1	idle	x	1	0	x	x	yes	idle	io request out of place		CHECK
+
+	T2	idle	x	1	0	x	x	yes	io	io that's been delayed 3 cycles already! (3)
+	T3	io	x	1	0	x	x	no	io	io that's been delayed 4 cycles (4)
+	T4	io	x	1	0	x	x	no	io	io that's been delayed 4 cycles (5)
+	T4	io	x	1	1	x	x	no	idle	bus should be back to normal
+
+	T2	idle	0	1	1	x	x	no	intreq	intreq coming
+	T3	intreq	0	1	1	x	x	no	intreq	intreq coming (6)
+	T4	intreq	0	1	0	x	x	yes	intreq	int vector request (7)
+	T1	intreq	0	1	0	x	x	yes	intreq	int vector request (8)
+
+	T2	intreq	0	1	0	x	x	no	intreq	int vector request (9)
+	T3	intreq	0	0	1	1	x	no	irfrsh	1st refresh cycle (10)
+	T4	irfrsh	x	0	1	1	x	no	irfrsh	2nd refresh cycle
+	T1	irfrsh	x	1	1	1	1	no	idle	bus should be returned to normal
+
+basically, all the rules boil down to:	
+	if mode=IDLE and (IORQ=0 or MREQ=0):
+		if state=T2, WAIT=not M1, nextmode=NOTIDLE
+		else,  WAIT=0
+	if mode=NOTIDLE:
+		if state=T1, nextmode=IDLE
+		WAIT=1
+
+	state	mode	miorq		wait	nextmode
+	T2	IDLE	yes		!m1	NOTIDLE
+	*	IDLE	yes		yes	IDLE
+
+	T1	NOTIDLE	*		miorq	IDLE
+	*	NOTIDLE	*		miorq	NOTIDLE
+	T2	NOTIDLE	error!		miorq	NOTIDLE
+
+
+
+(1)	WAIT=not M1
 	ram.addr=z80.addr
 	ram.din=z80.dout
-	ram.we=not z80.rd	(as wr not yet asserted)
+	ram.we=not z80.rd	(as WR not yet asserted)
 	ram.WE#=0,ram.din=z80.dout if MREQ=0,RD=1
+
+(2)	WAIT=1
+	z80.din=ram.dout
+	ram.we=1
+	CAN USE THE RAM FOR VIDEO
+
+(3)	this rising edge of T2 is really a very delayed TW rising edge
+	not entirely sure why it gets further delayed on CPC, we don't need the CPU bus for video!
+	io.din=z80.dout
+
+(4)	this rising edge of T3 is a rising edge of the 2nd TW in zilog language
+	trigger IO processing on this edge... so it's not clock loaded on (3)
+
+(5)	this rising edge of T4 is a rising edge of T3 in zilog language
+	z80.din=io.dout
+
+(6)	this is the first TW in zilog language
+
+(7)	this is like T1 of an instruction fetch, (2nd TW and deferrable) so defer it 2 cycles
+
+(8)	this is like T1 of an instruction fetch, (2nd TW and deferrable) so defer it 2 cycles
+
+(9)	this is like T2 of an instruction fetch, (2nd TW in zilog language) except iorq brought low instead of mreq
+
+(10)	this is like T3 of an instruction fetch, except iorq brought low instead of mreq
+
+
+
+
+
+
+
 
 M1	MREQ	IORQ	RD	WR
 
