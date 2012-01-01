@@ -117,6 +117,7 @@ begin
 	                when "01"               => sram_address(16 downto 14) <= ram_01;
         	        when "10"               => sram_address(16 downto 14) <= ram_10;
                 	when "11"               => sram_address(16 downto 14) <= ram_11;
+                	when others             => sram_address(16 downto 14) <= "000";
 	            end case;
         	    sram_address(13 downto 0) <= A(13 downto 0);
 	            sram_address(18 downto 16) <= (others=>'0');
