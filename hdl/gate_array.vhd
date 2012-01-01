@@ -40,7 +40,18 @@ entity gate_array is
 end gate_array;
 
 architecture impl of gate_array is
+
+	-- evil hacky code for bootstrapping
+	component testrom is port(
+		addr				: in std_logic_vector(13 downto 0);
+		data				: out std_logic_vector(7 downto 0)
+        );
+	end component;
+	signal testrom_data : std_logic_vector(7 downto 0);
+
 begin
+	-- evil hacky code for bootstrapping
+	memory_testrom : testrom port map( addr=>z80_a(13 downto 0), data=>testrom_data );
 
 	process(nRESET,clk16) is
 
@@ -184,6 +195,11 @@ begin
 				elsif tstate="01" and z80_mreq_n='0' and n_z80_bus_is_idle='0' then
 					if z80_rd_n='0' then						-- get result of memory read
 						n_out_z80_din	:= sram_data;
+
+						-- evil hacky code for bootstrapping
+						if z80_a(15 downto 14)="00" then
+							n_out_z80_din	:= testrom_data;
+						end if;
 					end if;
 					n_out_sram_ce		:= '1';					-- in any case, disable the chip
 					n_out_sram_oe		:= '1';
