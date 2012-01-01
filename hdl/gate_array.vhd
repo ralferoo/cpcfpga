@@ -30,6 +30,8 @@ entity gate_array is
 		crtc_hsync, crtc_vsync		: in  std_logic;				-- sync pulses from crtc
 		crtc_de				: in  std_logic;				-- display enable from crtc
 
+		video_data			: out std_logic_vector(7 downto 0);
+		
 		-- sram interface
 		sram_address			: out std_logic_vector(18 downto 0);
 		sram_data			: inout std_logic_vector(7 downto 0);
@@ -105,7 +107,7 @@ begin
 		variable		out_sram_oe		: std_logic;
 
 		variable		out_video_byte_data	: std_logic_vector(7 downto 0);
-		variable		out_video_byte_clock	: std_logic_vector;
+		variable		out_video_byte_clock	: std_logic;
 
 		procedure init_current_cycle is
 		begin
@@ -136,7 +138,7 @@ begin
 			variable	n_out_sram_oe		: std_logic;
 
 			variable	n_out_video_byte_data	: std_logic_vector(7 downto 0);
-			variable	n_out_video_byte_clock	: std_logic_vector;
+			variable	n_out_video_byte_clock	: std_logic;
 		begin
 
 			-- update variables
@@ -235,6 +237,8 @@ begin
 			sram_we			<= out_sram_we;
 			sram_ce			<= out_sram_ce;
 			sram_oe			<= out_sram_oe;
+
+			video_data		<= out_video_byte_data;
 		end procedure update_ports_current_cycle;
 
 		------------------------------------------------------------------------------------------------------------

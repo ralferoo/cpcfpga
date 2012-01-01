@@ -17,6 +17,11 @@ define_clock -name {n:clk_divider[10]} -freq 1
 define_clock -name {n:clk_divider[11]} -freq 1
 define_clock -name {n:clk_divider[15]} -freq 1
 
+define_clock -name {n:gate_array_0.current_cycle[0]} -freq 8
+define_clock -name {n:gate_array_0.current_cycle[1]} -freq 4
+define_clock -name {n:gate_array_0.current_cycle[2]} -freq 2
+define_clock -name {n:gate_array_0.current_cycle[3]} -freq 1
+
 # this isn't a clock at all, but can't be driven faster than the cpu clock!
 define_clock -name {n:crtc_e} -freq 4
 
