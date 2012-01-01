@@ -1,0 +1,93 @@
+
+Multiplexing the Z80 bus
+------------------------
+
+The emulated Z80 core is running at 4MHz, the memory chip can easily be run
+at 16MHz (AS6C4008: tAA,tACE=55ns, tOE=0ns, 16MHz cycle is 62.5ns long)
+
+As I want to implement a support Z80 for SD card access, etc, it makes sense
+to think about multiplexing this so that the Z80 sees one cycle in 4.
+
+In any case, this analysis will benefit reverse engineering the CPC muxing
+used for video memory access.
+
+Instruction read behaviour
+--------------------------
+
+r / T1
+	Address put on bus
+	M1 asserted
+f \ T1
+	MREQ, RD asserted
+
+r / T2
+	GA chooses not to assert WAIT (because M1 low)
+f \ T2
+	CPU checks WAIT, not asserted next state, so continue to T3
+
+r / T3
+	CPU reads data from bus
+	Deasserts MREQ,RD
+	Asserts RFSH
+f \ T3
+	Asserts MREQ
+
+r / T4
+	Nothing
+f \ T4
+	Deasserts MREQ
+
+r / T1
+	Deasserts M1 (unless next read is also an instruction)
+
+* In original CPC design, there are no WAITs introduced during an M1 read.
+
+Only T2 is critical. If we drive address, MREQ and RD on rising edge of T2, the
+data will be available on rising edge of T3 even on a 16MHz cycle.
+
+Cycles T1, T3 and T4 don't need to use the bus even though the CPU signals are
+valid.
+
+
+
+Memory read behaviour
+---------------------
+
+r / T1
+	Address put on bus
+f \ T1
+	MREQ, RD asserted
+
+r / T2
+	GA chooses to assert WAIT (because M1 high)
+f \ T2
+	CPU checks WAIT, if asserted next state is T2 again
+
+r / T2a
+	GA deasserts WAIT
+f \ T2a
+	CPU checks WAIT, not asserted next state, so continue to T3
+
+r / T3
+	Nothing
+f \ T3
+	CPU reads data from bus
+	Deasserts MREQ,RD
+
+* In original CPC design, there is 1 WAIT introduced during this read.
+
+T2 and T3 are critical to get right.  If we drive address, MREQ and RD on
+rising edge of T2, the data will be available on rising edge of T3 even on a
+16MHz cycle.
+
+If we latch the data on the rising edge of T2a, we don't need the data bus
+any more, even though the CPU signals are still valid.
+
+We need to insert a single wait state, which we can do by asserting on r/T2
+and deasserting on r/T2a, so it can be sampled on f/T2.
+
+Cycles T1, T2a and T3 don't need to use the bus even though the CPU signals are
+valid.
+
+
+
