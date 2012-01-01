@@ -224,4 +224,36 @@ Not used in CPC design
 Int Request / Ack
 -----------------
 
+MREQ stays high, even though M1 is low..
+
+WAIT sampled at f/T4, not yet sure if we'd want to add any wait states...
+
+Interrupt vector sampled from data bus at r/T5, presumably this is floating
+on a GA triggered interrupt...
+
+IORQ and M1 goes high at r/T5, MREQ goes low at f/T5.
+Presumably regular 2 cycles of refresh
+
+
+So, we have a 6 cycle thing which needs an extra 2 wait states to get back
+to normal, but I've read some places that these aren't always added...
+
+TODO: investigate this further!
+
+
+NMI Request / Ack
+-----------------
+
+pp 37 and 38 - suggest that a dummy instruction cycle is issued for the fetch
+that would have happened anyway but the value is ignored. Presumably it then
+continues with push pc / jp #66 as normal cycles.
+
+
+HALT
+----
+
+HALT is asserted before r/T1 of the next instruction.
+A normal instruction cycle occurs, but the data is ignored and treated as 0.
+At r/T4, if an interrupt request has happened, HALT is deasserted at f/T4.
+The PC then continues as normal.
 
