@@ -164,6 +164,18 @@ IO behaviour
 
 Not important to us... we are only concerned about concurrency on the Z80 bus.
 
+LIES! The CPC does also seem to stretch IO requests. Probably a bug!
+
+IN A,(nn)	3 on CPC	4,3,4		expected, but I think because T1 of last gets pushed forward
+OUT (nn),A	3 on CPC
+
+IN r,(C)	4 on CPC	4,4,4
+OUT (C),r	4 on CPC
+
+IN[ID]		5		4,5,3,4		so, due to 2nd overrunning
+CP[ID]R		5,6	
+IN[ID]R		5,6		4,5,3,4 [,5]	2nd overrunning, bus???
+OT[ID]R		5,6
 
 Our timings
 -----------
@@ -276,4 +288,114 @@ HALT is asserted before r/T1 of the next instruction.
 A normal instruction cycle occurs, but the data is ignored and treated as 0.
 At r/T4, if an interrupt request has happened, HALT is deasserted at f/T4.
 The PC then continues as normal.
+
+
+
+IMPLEMENTATION
+--------------
+
+This is approaching it from the external to CPU perspective...
+
+In T1, we have no information about what's going on. But we do have full use
+of the RAM.
+
+At the rising edge of T2, the following can be true:
+	
+M1	MREQ	IORQ	RD	WR
+
+0	0	1	0	1	instruction read coming (4 cycles)
+1	0	1	0	1	memory read coming	(3 cycles)
+1	0	1	1	1	memory write coming	(3 cycles)
+
+1	1	1	1	1	io coming / bus idle	(4 cycles)
+0	1	1	1	1	interrupt request	(5 cycles)
+
+Note, we can't yet do anything about the IO request...
+
+All the cases we can deal with, in fact, are when MREQ=0.
+r_T2:
+MREQ=0 =>
+	set WAIT=not M1
+	set address lines
+	ram.WE#=0,ram.din=z80.dout if MREQ=0,RD=1
+	continue to r_T3
+MREQ=1 =>
+	continue to r_idle_T3
+
+
+r_T3:
+	set WAIT=1
+	z80.dIN = ram.dout if MREQ=0,RD=0
+	set ram.WE#=1
+	CAN USE THE RAM FOR VIDEO
+	continue to r_T4
+
+r_T4:
+	continue to r_T1
+
+r_T1:
+	CAN USE THE RAM FOR VIDEO
+	continue to r_T2
+
+r_idle_T3:
+	-- we got here because the bus was idle, and IO is about to come or we're processing an interrupt request
+M1=0 =>
+	CAN USE THE RAM FOR VIDEO
+	continue to r_intreq_T4		-- nothing we can do here
+MREQ=0 =>
+	POTENTIAL COLLISION
+	WAIT=0
+	continue to r_collision_T4
+	CAN USE RAM FOR VIDEO
+IORQ=0 =>
+	DO WE ADD A WAIT CYCLE?
+	WAIT=0
+	continue to r_collision_T4
+	CAN USE RAM FOR VIDEO
+
+r_intreq_T4:
+	-- started the interrupt request phase
+IORQ=0 =>
+	COLLISION
+
+
+
+
+
+gate array inputs:
+
+IORQ, M1, RD, MREQ
+
+	state	mode	M1	MREQ	IORQ	RD	WR	WAIT	newmode
+	--------------------------------------------------	---------------
+	T2	idle	0	0	x	x	x	no	mem	instruction fetch		(1)
+	T2	idle	1	0	x	x	x	yes	mem	read/write, add wait state	(1)
+
+	T2	idle	x	1	0	x	x		io	io a cycle early
+	T2	idle	0	1	1	x	x		intrq	intreq coming
+	T2	idle	1	1	1	x	x		idle	idle or io coming
+
+	T3	idle	1	1	1	x	x	no	idle	idle bus
+	T4	idle	1	1	1	x	x	no	idle	idle bus
+	T1	idle	1	1	1	x	x	no	idle	idle bus
+
+	T3	mem	x	0	x	x	x	mem	latch data
+	
+(1)
+	WAIT=not M1
+	ram.addr=z80.addr
+	ram.din=z80.dout
+	ram.we=not z80.rd	(as wr not yet asserted)
+	ram.WE#=0,ram.din=z80.dout if MREQ=0,RD=1
+
+M1	MREQ	IORQ	RD	WR
+
+0	0	1	0	1	instruction read coming (4 cycles)
+1	0	1	0	1	memory read coming	(3 cycles)
+1	0	1	1	1	memory write coming	(3 cycles)
+
+1	1	1	1	1	io coming / bus idle	(4 cycles)
+0	1	1	1	1	interrupt request	(5 cycles)
+
+Note, we can't yet do anything about the IO request...
 
