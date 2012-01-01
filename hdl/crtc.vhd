@@ -47,6 +47,9 @@ architecture impl of crtc is
 	--cursor_h/l, lightpen_h/l							-- r14/r15, r16/r17
 
 begin
+	-- this process deals with the CPU side of things, clocked on E just because there's no point trying to do it
+	-- on a mclk boundary as that's the pixel clock not CPU clock and no point introducing the CPU clock to the
+	-- model as the data bus is guaranteed to be fine with E goes high
 	process(nRESET, E, RW, RS, nCS,DIN)
 		variable	sel_register	: std_logic_vector(4 downto 0);
 		variable	outvalue	: std_logic_vector(7 downto 0);
@@ -68,7 +71,10 @@ begin
 			r_startaddress_h	<= "100000";	-- r12
 			r_startaddress_l	<= x"00";	-- r13
 
+			DOUT 			<= (others=>'0');
+
 			sel_register		:= (others=>'0');
+
 		elsif rising_edge(E) then				-- even though we want to falling edge of IORQ, E is positive enable
 
 			if nCS='0' and RW='1' then			-- A14/A8
@@ -109,5 +115,212 @@ begin
 			end if;
 		end if;
 	end process;
+
+	-- this process is clocked on the pixel clock...
+	process(nRESET, CLK, r_startaddress_h, r_startaddress_l)
+		variable	v_hpos		: std_logic_vector(7 downto 0);		-- current char
+		variable	v_hdisp		: std_logic;				-- display enabled (horizontally)
+		variable	v_hsynccount	: std_logic_vector(3 downto 0);		-- counter before we turn off hsync
+		variable	v_hsync		: std_logic;				-- is the hsync enabled currently
+
+		variable	v_vpos		: std_logic_vector(6 downto 0);		-- current character line
+		variable	v_vdisp		: std_logic;				-- display enabled (vertically)
+
+		variable	v_rpos		: std_logic_vector(3 downto 0);		-- current row within a character
+
+		variable	v_ma		: std_logic_vector(13 downto 0);	-- current MA address
+		variable	v_ma_this_line	: std_logic_vector(13 downto 0);	-- MA address for the beginning of this line
+
+		variable	v_vsynccount	: std_logic_vector(3 downto 0);		-- counter before we turn off vsync
+		variable	v_vsync		: std_logic;				-- is the vsync enabled currently
+		variable	v_vsync_out	: std_logic;				-- vsync delayed until the next hsync
+
+		variable	v_inadjust	: std_logic;				-- in adjustment row
+
+		--- copy of the above, but for next value
+		variable	n_hpos		: std_logic_vector(7 downto 0);		-- current char
+		variable	n_hdisp		: std_logic;				-- display enabled (horizontally)
+		variable	n_vpos		: std_logic_vector(6 downto 0);		-- current character line
+		variable	n_vdisp		: std_logic;				-- display enabled (vertically)
+		variable	n_rpos		: std_logic_vector(3 downto 0);		-- current row within a character
+		variable	n_ma		: std_logic_vector(13 downto 0);	-- current MA address
+		variable	n_ma_this_line	: std_logic_vector(13 downto 0);	-- MA address for the beginning of this line
+
+		variable	n_hsynccount	: std_logic_vector(3 downto 0);		-- counter before we turn off hsync
+		variable	n_hsync		: std_logic;				-- is the hsync enabled currently
+
+		variable	n_vsynccount	: std_logic_vector(3 downto 0);		-- counter before we turn off vsync
+		variable	n_vsync		: std_logic;				-- is the vsync enabled currently
+		variable	n_vsync_out	: std_logic;				-- vsync delayed until the next hsync
+
+		variable	n_inadjust	: std_logic;				-- in adjustment row
+
+		variable	maxscanlinecount : std_logic_vector(4 downto 0);
+		variable	reached_maxscanlinecount : std_logic;
+		variable	islastline	: std_logic;
+			
+
+	begin
+		if nRESET='0' then
+			v_hpos			:= (others=>'0');
+			v_vpos			:= (others=>'0');
+			v_rpos			:= (others=>'0');
+			v_hdisp			:= '1';
+			v_vdisp			:= '1';
+			v_ma			:= r_startaddress_h & r_startaddress_l;
+			v_ma_this_line		:= v_ma;
+
+			v_hsynccount		:= (others=>'0');
+			v_hsync			:= '0';
+			v_vsynccount		:= (others=>'0');
+			v_vsync			:= '0';
+			v_vsync_out		:= '0';
+			v_inadjust		:= '0';
+
+			MA 			<= (others=>'0');
+			RA 			<= (others=>'0');
+			DE			<= '0';
+			HSYNC			<= '0';
+			VSYNC			<= '0';
+
+		elsif rising_edge(CLK) then
+			-- copy all signals locally, so we avoid latches
+			n_hpos			:= v_hpos;
+			n_hdisp			:= v_hdisp;
+			n_vpos			:= v_vpos;
+			n_vdisp			:= v_vdisp;
+			n_rpos			:= v_rpos;
+			n_ma			:= v_ma;
+			n_ma_this_line		:= v_ma_this_line;
+			n_hsynccount		:= v_hsynccount;
+			n_hsync			:= v_hsync;
+
+			n_vsynccount		:= v_vsynccount;
+			n_vsync			:= v_hsync;
+			n_vsync_out		:= v_vsync_out;
+			n_inadjust		:= v_inadjust;
+
+			-- if we're still in the middle of a line, process line contents
+			if n_hpos /= r_htotal then
+				n_hpos			:= n_hpos + 1;				-- update the character position
+				n_ma			:= n_ma + ("0"&n_hdisp);		-- only update if we're still display things though (we'll use this later)
+
+				-- check to see if we need to start a hsync
+				if n_hpos = r_hsyncpos then
+					n_hsync		:= '1';					-- start vsync
+					n_hsynccount	:= r_hsyncwidth;			-- repeat for this length
+					n_vsync_out	:= n_vsync;				-- delay vsync line so it transitions with the hsync
+				end if;
+
+				-- count down the hsync counter, clear hsync if it's zero
+				if n_hsynccount = 0 then
+					n_hsync		:= '0';					-- this order makes it so if sync width=0, no sync is generated
+				else
+					n_hsynccount	:= n_hsynccount - 1;
+				end if;
+
+			else -- reached horiz total
+				n_hpos			:= (others=>'0');			-- reset the horiz count to 0
+
+				-- determine end row of this character line
+				if n_inadjust ='1' then
+					maxscanlinecount	:= r_vtotaladjust;
+				else
+					maxscanlinecount	:= r_maxscanlinecount;
+				end if;
+
+				-- check to see if we are staying within a character line or progressing to the next
+				reached_maxscanlinecount := '0';
+				if n_rpos=maxscanlinecount then
+					reached_maxscanlinecount := '1';
+				end if;
+
+				-- update ma, or "start of line" ma if we've reached a new character row (and hit hdisp)
+				if (reached_maxscanlinecount='0' or n_hdisp='1') then
+					n_ma		:= n_ma_this_line;			-- reset ma back to the start of this character line
+				else
+					n_ma_this_line	:= n_ma;				-- instead, update the "start of line" ma with our current value
+				end if;
+
+				-- count down the pulses in the vsync pulse
+				n_vsynccount	:= n_vsynccount - 1;
+				if n_vsynccount = 0 then
+					n_vsync	:= '0';						-- clear the vsync pulse when it gets low enough
+				end if;
+
+				-- update row line counter
+				if reached_maxscanlinecount='0' then
+					n_rpos			:= n_rpos + 1;			-- increment character row count
+				else
+					n_rpos			:= (others=>'0');		-- reset the row count to 0
+
+					islastline		:= '0';
+					if n_vpos=r_vtotal then
+						islastline	:= '1';
+					end if;
+
+					if  n_inadjust ='1' or (islastline='1' and r_vtotaladjust/=0) then
+						n_inadjust	:= '0';				-- clear adjust flag
+						n_vdisp		:= '1';				-- re-enable vertical display
+						n_vpos		:= (others=>'0');		-- go back to character line
+
+						-- if r1>r0, WinCPC: repeats the same character line over and over, but continues doing character lines OK
+						--			however at the start of the frame, it resets MA to the values in r12&r13
+						--		i.e. out &bc00,1:out &bd00,65
+						-- on my 464 it keeps outputting the "current" line over and over, never re-reading r12&r13. not sure what crtc type.
+						--
+						-- i'm doing wincpc's behaviour, but can be fixed by moving the n_ma block above below here
+						n_ma_this_line	:= r_startaddress_h & r_startaddress_l;	-- start of screen
+						n_ma		:= r_startaddress_h & r_startaddress_l;	-- start of screen
+
+					else
+						n_inadjust	:= islastline;		-- set adjust flag if we have an adjustment line
+						n_vpos		:= n_vpos + 1;			-- progress to next line
+					end if;
+
+					-- do the vsync pulse if required
+					if n_vpos = r_vsyncpos then
+						n_vsync		:= '1';
+						n_vsynccount	:= (others=>'0');		-- later crtc use top of r3
+					end if;
+
+				end if;
+
+			end if;
+
+			-- check if still in visible region
+			if n_vpos = r_vdisp then
+				n_vdisp		:= '0';					-- no longer displaying data
+			end if;
+			if n_hpos = r_hdisp then
+				n_hdisp		:= '0';					-- no longer displaying data
+			end if;
+
+			-- commit new values of all signals
+			v_hpos			:= n_hpos;
+			v_hdisp			:= n_hdisp;
+			v_vpos			:= n_vpos;
+			v_vdisp			:= n_vdisp;
+			v_rpos			:= n_rpos;
+			v_ma			:= n_ma;
+			v_ma_this_line		:= n_ma_this_line;
+			v_hsynccount		:= n_hsynccount;
+			v_hsync			:= n_hsync;
+
+			v_vsynccount		:= n_vsynccount;
+			v_vsync			:= n_hsync;
+			v_vsync_out		:= n_vsync_out;
+			v_inadjust		:= n_inadjust;
+
+			-- and copy relevant things to the signals
+			MA 			<= n_ma;
+			RA 			<= n_rpos;
+			DE			<= n_vdisp and n_hdisp;
+			HSYNC			<= n_hsync;
+			VSYNC			<= n_vsync; --_out;			-- interestingly, i did the work for this but the real crtc doesn't do this!
+											-- actually, the vsync appears at hpos=r0 (arguably, I'd expect hpos=0)
+		end if;
+	end process;
+
 
 end impl;

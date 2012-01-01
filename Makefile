@@ -34,6 +34,9 @@ edn: build/$(EDN_NAME)
 log:
 	less build/$(TOP_NAME).srr
 
+error:
+	grep 'E:' build/$(TOP_NAME).srr
+
 program: build/$(TOP_NAME)_fp.tcl $(PDB_NAME)
 	@echo Flashing device...
 	-@rm -rf build/$(TOP_NAME)_fpro
