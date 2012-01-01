@@ -61,7 +61,7 @@ f \ T1
 r / T2
 	GA chooses to assert WAIT (because M1 high)
 f \ T2
-	CPU checks WAIT, if asserted next state is T2 again
+	CPU checks WAIT, is asserted so next state is T2 again
 
 r / T2a
 	GA deasserts WAIT
@@ -81,13 +81,63 @@ rising edge of T2, the data will be available on rising edge of T3 even on a
 16MHz cycle.
 
 If we latch the data on the rising edge of T2a, we don't need the data bus
-any more, even though the CPU signals are still valid.
+any more, even though the CPU signals are still valid. IT MUST BE AVAILABLE
+TO THE CPU ON THE RISING EDGE OF T3 READY TO BE SAMPLED ON FALLING EDGE OF T3!
 
 We need to insert a single wait state, which we can do by asserting on r/T2
 and deasserting on r/T2a, so it can be sampled on f/T2.
 
-Cycles T1, T2a and T3 don't need to use the bus even though the CPU signals are
-valid.
+Cycles T1, T2a and T3 don't need to use memory even though the CPU signals
+are valid.
 
+
+Memory write behaviour
+----------------------
+
+r / T1
+	Address put on bus
+f \ T1
+	Data put on bus
+	MREQ asserted
+
+r / T2
+	GA chooses to assert WAIT (because M1 high)
+f \ T2
+	CPU checks WAIT, is asserted so next state is T2 again
+	CPU asserts WR
+
+r / T2a
+	GA deasserts WAIT
+f \ T2a
+	CPU checks WAIT, not asserted next state, so continue to T3
+
+r / T3
+	Nothing
+f \ T3
+	CPU reads data from bus
+	Deasserts MREQ,WR
+
+* In original CPC design, there is 1 WAIT introduced during this write.
+
+This time, T2 is VERY different to the CPU ideas...
+
+So, in Z80 mindset, data is available, then we write it out...
+For the SRAM we should set WE# early to force the data pins to be high-Z,
+so use MREQ#=0,RD#=1 to enable WE#.  We could do this at the rising edge
+T2 whilst still having them high-Z for us.
+At the falling edge of T2, we output our data.
+At the rising edge of T2a, we deassert WE#. We can also put the bus back
+to high-Z because tDH=0,tWR means we don't need to maintain address or
+data after WE# goes back high. The chip takes tOW=5ns to start outputting
+again, but we won't need data any time soon so it doesn't matter.
+
+So, recap: we latch data at r/T2 and assert sram WE#, output data to sram
+at f/T2 and deassert sram WE# at r/T2a.
+
+We need to insert a single wait state, which we can do by asserting on r/T2
+and deasserting on r/T2a, so it can be sampled on f/T2.
+
+Cycles T1, T2a and T3 don't need to use memory even though the CPU signals
+are valid.
 
 
