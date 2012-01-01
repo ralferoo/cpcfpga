@@ -151,11 +151,6 @@ architecture impl of cpc is
 
         -- video
         video_sound <= '0';
---        video_sync2 <= "00";
---        video_r2 <= "00";
---        video_g2 <= "00";
---        video_b2 <= "00";
-
 	process(crtc_HSYNC, crtc_VSYNC, crtc_DE, crtc_MA, crtc_RA)
 	begin
 		if crtc_HSYNC='1' or crtc_VSYNC='1' then
