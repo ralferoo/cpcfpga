@@ -14,13 +14,14 @@ entity gate_array is
 		z80_din				: out std_logic_vector(7 downto 0);		-- data bus input to z80
 		z80_dout			: in  std_logic_vector(7 downto 0);		-- data bus output from z80
 		z80_a				: in  std_logic_vector(15 downto 0);		-- address bus output from z80
+		z80_wr_n			: in  std_logic;				-- used for gate array out
 
 		-- generation of wait states
 		z80_rd_n			: in  std_logic;				-- used in determining wait flag
 		z80_m1_n			: in  std_logic;				-- used in determining wait flag
 		z80_iorq_n			: in  std_logic;				-- used in determining wait flag
 		z80_mreq_n			: in  std_logic;				-- used in determining wait flag
-		z80_wait			: out std_logic;				-- determines in the CPU should be paused
+		z80_wait_n			: out std_logic;				-- determines in the CPU should be paused
 
 		-- crtc interface (for screen reading)
 		crtc_clk			: out std_logic;				-- generated crtc clock @ 4MHz
@@ -43,6 +44,8 @@ begin
 
 	process(nRESET,clk16) is
 
+		------------------------------------------------------------------------------------------------------------
+		--
 		-- calculate the wait signal
 		procedure calculate_wait(	iorq_n,mreq_n,m1_n	: in std_logic;
 						tstate			: in std_logic_vector(1 downto 0); 
@@ -50,7 +53,6 @@ begin
 						wait_n			: out std_logic) is
 		begin
 			wait_n	:= '1';
-
 			if idle='1' and (iorq_n='0' or mreq_n='0') then				-- we're in the idle state and IO/mem requested
 				if tstate="00" then
 					idle	:= '0';						-- from T2 we can transition into busy state
@@ -60,10 +62,20 @@ begin
 				end if;
 
 			elsif tstate="11" then							-- if we've reached T1, all signals should be normal
-				idle	:= '1';							-- and we can transition back to the idle state
-
+					idle	:= '1';						-- and we can transition back to the idle state
 			end if;
 		end procedure calculate_wait;
+
+		------------------------------------------------------------------------------------------------------------
+		--
+		-- calculate the sram address for a z80 address
+		procedure calculate_address(	address			: in std_logic_vector(15 downto 0);
+						real_address		: out std_logic_vector(18 downto 0);
+						rd_n			: in std_logic) is
+		begin
+			real_address := "000" & address;
+
+		end procedure calculate_address;
 
 		------------------------------------------------------------------------------------------------------------
 		--
@@ -72,7 +84,17 @@ begin
 		variable		z80_bus_is_idle		: std_logic;	
 
 		alias			out_z80_clock		: std_logic			is   current_cycle(1);
-		variable		out_z80_wait		: std_logic;
+		variable		out_z80_wait_n		: std_logic;
+		variable		out_z80_din		: std_logic_vector(7 downto 0);
+
+		variable		out_sram_address	: std_logic_vector(18 downto 0);
+		variable		out_sram_data		: std_logic_vector(7 downto 0);
+		variable		out_sram_we		: std_logic;
+		variable		out_sram_ce		: std_logic;				-- i might tie this low
+		variable		out_sram_oe		: std_logic;
+
+		variable		out_video_byte_data	: std_logic_vector(7 downto 0);
+		variable		out_video_byte_clock	: std_logic_vector;
 
 		procedure init_current_cycle is
 		begin
@@ -81,41 +103,123 @@ begin
 			current_cycle		:= (others=>'0');
 			z80_bus_is_idle		:= '1';
 			out_z80_clock		:= '0';
-			out_z80_wait		:= '0';
+			out_z80_wait_n		:= '1';
 
 		end procedure init_current_cycle;
 
 		procedure update_current_cycle is
---			alias		  current_tstate	: std_logic_vector(1 downto 0)	is   current_cycle(3 downto 2);
-
 			variable	n_current_cycle		: std_logic_vector(3 downto 0);
 			alias		n_out_z80_clock		: std_logic			is n_current_cycle(1);
---			alias		n_current_tstate	: std_logic_vector(1 downto 0)	is n_current_cycle(3 downto 2);
 			alias		tstate			: std_logic_vector(1 downto 0)	is n_current_cycle(3 downto 2);
+			alias		tstate_for_video	: std_logic			is n_current_cycle(2);
+			alias		lsb_of_video_address	: std_logic			is n_current_cycle(3);
 
 			variable	n_z80_bus_is_idle	: std_logic;	
-			variable	n_out_z80_wait		: std_logic;
+			variable	n_out_z80_wait_n	: std_logic;
+			variable	n_out_z80_din		: std_logic_vector(7 downto 0);
+
+			variable	n_out_sram_address	: std_logic_vector(18 downto 0);
+			variable	n_out_sram_data		: std_logic_vector(7 downto 0);
+			variable	n_out_sram_we		: std_logic;
+			variable	n_out_sram_ce		: std_logic;				-- i might tie this low
+			variable	n_out_sram_oe		: std_logic;
+
+			variable	n_out_video_byte_data	: std_logic_vector(7 downto 0);
+			variable	n_out_video_byte_clock	: std_logic_vector;
 		begin
 
 			-- update variables
 			n_current_cycle		:= current_cycle + 1;
 			n_z80_bus_is_idle	:= z80_bus_is_idle;
+			n_out_z80_din		:= out_z80_din;
+
+			n_out_sram_address	:= out_sram_address;
+			n_out_sram_data		:= out_sram_data;
+			n_out_sram_we		:= out_sram_we;
+			n_out_sram_ce		:= out_sram_ce;
+			n_out_sram_oe		:= out_sram_oe;
+
+			n_out_video_byte_clock	:= out_video_byte_clock;
+			n_out_video_byte_data	:= out_video_byte_data;
 
 			if n_out_z80_clock='0' and out_z80_clock='1' then		-- rising edge on current_tstate
+				-- first off, calculate the wait_n for the new tstate
 				calculate_wait( iorq_n	=> z80_iorq_n, 
 						mreq_n	=> z80_mreq_n,
 						m1_n	=> z80_m1_n,
 						tstate	=> tstate,
 						idle	=> n_z80_bus_is_idle,
-						wait_n 	=> n_out_z80_wait );
+						wait_n 	=> n_out_z80_wait_n );
+
+				-- handle video data transfer
+				if tstate_for_video='1' then				-- start video byte transfer in T1 or T3
+					n_out_sram_address	:= "000" & crtc_ma(13 downto 12) & crtc_ra(2 downto 0) & crtc_ma(9 downto 0) & lsb_of_video_address;
+					n_out_sram_data		:= (others=>'Z');
+					n_out_sram_we		:= '1';
+					n_out_sram_ce		:= '0';
+					n_out_sram_oe		:= '0';
+					n_out_video_byte_clock	:= '0';
+				else							-- and clock out the data in T2 or T4
+					n_out_video_byte_clock	:= '1';
+					n_out_video_byte_data	:= sram_data;
+					n_out_sram_ce		:= '1';
+					n_out_sram_oe		:= '1';
+				end if;
+
+				-- handle regular ram transfer
+				if tstate="00" and z80_mreq_n='0' and n_z80_bus_is_idle='0' then	-- start a memory read/write
+					calculate_address( z80_a, n_out_sram_address, z80_rd_n );
+
+					if z80_rd_n='0' then						-- memory read
+						n_out_sram_data	:= (others=>'Z');
+						n_out_sram_we	:= '1';
+						n_out_sram_oe	:= '0';
+					else								-- memory write
+						n_out_sram_data	:= z80_dout;
+						n_out_sram_we	:= '0';
+						n_out_sram_oe	:= '1';
+					end if;
+					n_out_sram_ce		:= '0';
+
+				elsif tstate="01" and z80_mreq_n='0' and n_z80_bus_is_idle='0' then
+					if z80_rd_n='0' then						-- get result of memory read
+						n_out_z80_din	:= sram_data;
+					end if;
+					n_out_sram_ce		:= '1';					-- in any case, disable the chip
+					n_out_sram_oe		:= '1';
+					n_out_sram_we		:= '1';
+				end if;
+
 			end if;
 
 			-- do all the assignments together
 			current_cycle		:= n_current_cycle;
 			z80_bus_is_idle		:= n_z80_bus_is_idle;
-			out_z80_wait		:= n_out_z80_wait;
+			out_z80_wait_n		:= n_out_z80_wait_n;
+			out_z80_din		:= n_out_z80_din;
 
+			out_sram_address	:= n_out_sram_address;
+			out_sram_data		:= n_out_sram_data;
+			out_sram_we		:= n_out_sram_we;
+			out_sram_ce		:= n_out_sram_ce;
+			out_sram_oe		:= n_out_sram_oe;
+
+			out_video_byte_clock	:= n_out_video_byte_clock;
+			out_video_byte_data	:= n_out_video_byte_data;
 		end procedure update_current_cycle;
+
+		procedure update_ports_current_cycle is
+		begin
+			z80_wait_n		<= out_z80_wait_n;
+			z80_clk			<= out_z80_clock;
+			z80_din			<= out_z80_din;
+
+			sram_address		<= out_sram_address;
+			sram_data		<= out_sram_data;
+			sram_we			<= out_sram_we;
+			sram_ce			<= out_sram_ce;
+			sram_oe			<= out_sram_oe;
+		end procedure update_ports_current_cycle;
 
 		------------------------------------------------------------------------------------------------------------
 		--
@@ -136,6 +240,7 @@ begin
 		-- updating for ports, once per clock or after initialisation
 		procedure update_ports is
 		begin
+			update_ports_current_cycle;
 		end procedure update_ports;
 
 		------------------------------------------------------------------------------------------------------------
