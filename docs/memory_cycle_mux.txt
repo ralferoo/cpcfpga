@@ -238,6 +238,26 @@ Presumably regular 2 cycles of refresh
 So, we have a 6 cycle thing which needs an extra 2 wait states to get back
 to normal, but I've read some places that these aren't always added...
 
+****** http://www.cpcwiki.eu/forum/programming/interrupt-wait/msg20283/#msg20283
+
+This suggests that the wait states are ignored if they happen at the end of an
+instruction that ends with a 2 T-state M-cycle. Question is, how does a long M-
+cycle happen???
+
+e.g. LD r,(IX+d) = 19(4,4,3,5,3) -> 4,4,4,4(this is a calc, so can can extra cycle for free),4  (this only takes 5)
+c.f. LD r,(HL)   =  7(4,3) ; so LD A,(HL) instr(7E)+mem -> LD A,(IX+n) instr(DD)+instr(7E)+mem(nn)+add(5)+mem
+	similarly AND,XOR,OR,CP (IX+nn)
+
+e.g. LD A,I = 2(4,5) instr(ED)+instr(57)+internal -> 3
+
+e.g. PUSH qq = 11(5,3,3) -> instr+mem+mem -> 4
+
+e.g. EX (SP),HL = 19(4,3,4,3,5) -> 6 on CPC
+
+
+**** INC ss - 6 cycles
+
+
 TODO: investigate this further!
 
 

@@ -17,6 +17,9 @@ define_clock -name {n:clk_divider[10]} -freq 1
 define_clock -name {n:clk_divider[11]} -freq 1
 define_clock -name {n:clk_divider[15]} -freq 1
 
+# this isn't a clock at all, but can't be driven faster than the cpu clock!
+define_clock -name {n:crtc_e} -freq 4
+
 create_clock  -name { external_clock_source } -period 50.000 -waveform { 0.000 25.000  }  { n:clock  }
 
 
