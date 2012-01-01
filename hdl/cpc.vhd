@@ -151,10 +151,30 @@ architecture impl of cpc is
 
         -- video
         video_sound <= '0';
-        video_sync2 <= "00";
-        video_r2 <= "00";
-        video_g2 <= "00";
-        video_b2 <= "00";
+--        video_sync2 <= "00";
+--        video_r2 <= "00";
+--        video_g2 <= "00";
+--        video_b2 <= "00";
+
+	process(crtc_HSYNC, crtc_VSYNC, crtc_DE, crtc_MA, crtc_RA)
+	begin
+		if crtc_HSYNC='1' or crtc_VSYNC='1' then
+			video_sync2	<= "00";
+			video_r2	<= "00";
+			video_g2	<= "00";
+			video_b2	<= "00";
+		elsif crtc_DE='0' then
+			video_sync2	<= dipsw(0) & (not dipsw(0));
+			video_r2	<= "00";
+			video_g2	<= "00";
+			video_b2	<= "00";
+		else
+			video_sync2	<= (crtc_MA(5) or crtc_MA(0)) & (crtc_MA(6) or not crtc_MA(0)); --dipsw(0) & (not dipsw(0));
+			video_r2	<= crtc_RA(2 downto 1);
+			video_g2	<= crtc_MA(2 downto 1);
+			video_b2	<= crtc_MA(4 downto 3);
+		end if;
+	end process;
 
         -- z80
         z80 : T80s port map ( RESET_n=>nRESET, CLK_n=>cpuclk, 
@@ -174,7 +194,7 @@ architecture impl of cpc is
 				RW=>A(9), E=>crtc_E, RS=>A(8), nCS=>A(14),
 				DIN=>DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
 	crtc_E	 <= IORD_n nor IOWR_n;
-	crtc_CLK <= clk_divider(1);
+	crtc_CLK <= clk1;
 
         -- memory
         memory : memory_mux port map ( nrst=>nRESET, clk=>clk16, 
