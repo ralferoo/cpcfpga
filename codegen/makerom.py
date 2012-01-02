@@ -10,6 +10,14 @@ def bin(x,len):
 		x = x >> 1
 	return ''.join(reversed(out))
 
+name=sys.argv[1]
+try:	name=name[name.rindex('\\')+1:]
+except: pass
+try:	name=name[name.rindex('/')+1:]
+except: pass
+try:	name=name[:name.rindex('.bin')]
+except: pass
+
 f=open(sys.argv[1], "rb")
 xdata=f.read(100000);
 f.close()
@@ -38,20 +46,20 @@ while x > 0:
 	size = size + 1
 	x = x >> 1
 
-print '''-- testrom.vhd
+print '''-- '''+name+'''.vhd
 library IEEE;
 use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use ieee.std_logic_arith.all;
 
-entity testrom is
+entity '''+name+''' is
     port(
         addr        : std_logic_vector(13 downto 0);
         data        : out std_logic_vector(7 downto 0)
     );
-end testrom;
+end '''+name+''';
 
-architecture impl of testrom is
+architecture impl of '''+name+''' is
 
 begin
 process (addr)
