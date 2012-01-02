@@ -51,12 +51,13 @@ architecture impl of gate_array is
         );
 	end component;
 	signal testrom_data : std_logic_vector(7 downto 0);
+	signal testrom_addr : std_logic_vector(13 downto 0);
 
 	signal d_tstate : std_logic_vector(1 downto 0);
 	signal d_idle   : std_logic;
 begin
 	-- evil hacky code for bootstrapping
-	memory_testrom : testrom port map( addr=>z80_a(13 downto 0), data=>testrom_data );
+	memory_testrom : testrom port map( addr=>testrom_addr, data=>testrom_data );
 
 	process(nRESET,clk16) is
 
@@ -120,7 +121,7 @@ begin
 		begin
 
 			-- init variables
-			current_cycle		:= (others=>'0');
+			current_cycle		:= "1000";	-- we want to make sure it's not "00"
 			z80_bus_is_idle		:= '1';
 			out_z80_clock		:= '0';
 			out_crtc_clock		:= '0';
@@ -154,6 +155,8 @@ begin
 			variable	n_out_video_byte_data	: std_logic_vector(7 downto 0);
 			variable	n_out_video_byte_clock	: std_logic;
 			variable	n_out_crtc_clock	: std_logic;
+
+			variable	n_out_read_next_cycle	: std_logic;
 		begin
 
 			-- update variables
@@ -239,14 +242,14 @@ begin
 					--report "Disabling memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
 					report "Memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
 
-					--if z80_rd_n='0' then						-- get result of memory read
+					if z80_iorq_n='1' then						-- get result of memory read
 						n_out_z80_din	:= sram_data;
 
 						-- evil hacky code for bootstrapping
-						if z80_a(15 downto 14)="00" then
+						if out_sram_address(15 downto 14)="00" then
 							n_out_z80_din	:= testrom_data;
 						end if;
-					--end if;
+					end if;
 
 					-- note, we don't actually want to disable the memory as we just scheduled a video read byte
 --					n_out_sram_ce		:= '1';					-- in any case, disable the chip
@@ -278,7 +281,7 @@ begin
 		procedure update_ports_current_cycle is
 		begin
 			z80_wait_n		<= out_z80_wait_n;
-			z80_clk			<= out_z80_clock_delayed;
+			z80_clk			<= out_z80_clock; --_delayed;
 			crtc_clk		<= out_crtc_clock;
 			z80_din			<= out_z80_din;
 
@@ -290,6 +293,7 @@ begin
 
 			video_data		<= out_video_byte_data;
 
+			testrom_addr		<= out_sram_address(13 downto 0);	-- because it could have been trashed by the refresh
 
 			d_tstate		<= current_cycle(3 downto 2);
 			d_idle			<= z80_bus_is_idle;

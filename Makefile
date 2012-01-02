@@ -87,7 +87,7 @@ build/$(TOP_NAME).prj: Makefile $(VHD_FILES) $(SDC_FILES) build/.dummy
 #compilation/mapping options
 	@echo set_option -symbolic_fsm_compiler true >>$@
 #compilation/mapping options
-	@echo set_option -frequency 20.000 >>$@
+	@echo set_option -frequency 16.000 >>$@
 #simulation options
 	@echo impl -active synthesis >>$@
 	@echo project -result_file $(EDN_NAME) >>$@
