@@ -1,6 +1,42 @@
 
 	org #0000
 
+
+flash:
+	; led flash
+
+	ld bc,#fade
+	ld a,l
+	out (c),a
+	add a,5
+	ld l,a
+
+	; check serial port
+	dec c
+	in a,(c)
+
+	;and #80
+	;or l
+	;ld l,a
+
+	rla
+	jr nc,flash
+
+	; serial port not busy, send data
+	dec c
+	inc h
+	out (c),h
+
+	jr flash
+
+	end
+
+
+
+
+
+
+
 	ld ix,0
 	ld sp,#fffe
 

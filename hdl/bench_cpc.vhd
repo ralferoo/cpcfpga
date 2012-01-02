@@ -4,6 +4,7 @@ library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 
 
 entity bench_cpc is
@@ -55,6 +56,7 @@ architecture behavioral of bench_cpc is
 	signal	video_sync2,video_r2,video_g2,video_b2      : std_logic_vector(1 downto 0);
 	signal	video_sound                                 : std_logic;
 
+	type memory is array(0 to 255) of std_logic_vector(7 downto 0);
 begin
 
     process
@@ -94,12 +96,27 @@ begin
 		video_sync2=>video_sync2,video_r2=>video_r2,video_g2=>video_g2,video_b2=>video_b2,
 		video_sound                                 => video_sound);
 
-	process(sram_oe)
+	process(NSYSRESET,sram_oe,sram_we,sram_address,sram_data)
+		variable fake_sram	:	memory;
+		variable init_seed	:	std_logic_vector(7 downto 0);
 	begin
+		if NSYSRESET='0' then
+			init_seed	:= (others=>'0');
+
+			for i in 255 downto 0 loop
+				fake_sram(i) := init_seed;
+				init_seed    := init_seed + i;		-- squares mod 256 should be randomish
+			end loop;
+		end if;
+
+		if rising_edge(sram_we) then
+			fake_sram(to_integer(ieee.numeric_std.unsigned(sram_address(7 downto 0)))) := sram_data;
+		end if;
+
 		if sram_oe='1' then
 			sram_data <= (others=>'Z');
 		else
-			sram_data <= x"18";
+			sram_data <= fake_sram(to_integer(ieee.numeric_std.unsigned(sram_address(7 downto 0))));
 		end if;
 	end process;
 

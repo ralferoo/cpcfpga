@@ -55,16 +55,16 @@ architecture impl of cpc is
 			DO		: out std_logic_vector(7 downto 0)
 		);
 	end component;
-	signal WAIT_n, INT_n, NMI_n, BUSRQ_n					: std_logic;       --  in to   CPU
-	signal M1_n, MREQ_n, IORQ_n, RD_n, WR_n, RFSH_n, HALT_n, BUSAK_n	: std_logic;       -- out from CPU
-	signal A								: std_logic_vector(15 downto 0);
-	signal DI, DO								: std_logic_vector(7 downto 0);
-	signal IORD_n, IOWR_n							: std_logic;
-	signal cpuclk           : std_logic;
+	signal z80_WAIT_n, z80_INT_n, z80_NMI_n, z80_BUSRQ_n					: std_logic;       --  in to   CPU
+	signal z80_M1_n, z80_MREQ_n, z80_IORQ_n, z80_RD_n, z80_WR_n, z80_RFSH_n, z80_HALT_n, z80_BUSAK_n	: std_logic;       -- out from CPU
+	signal z80_A								: std_logic_vector(15 downto 0);
+	signal z80_DI, z80_DO								: std_logic_vector(7 downto 0);
+	signal z80_IORD_n, z80_IOWR_n							: std_logic;
+	signal z80_clk           : std_logic;
 
-    signal DI_from_mem	: std_logic_vector(7 downto 0);
-    signal DI_from_iorq	: std_logic_vector(7 downto 0);
-    signal DI_is_from_iorq : std_logic;
+    signal z80_DI_from_mem	: std_logic_vector(7 downto 0);
+    signal z80_DI_from_iorq	: std_logic_vector(7 downto 0);
+    signal z80_DI_is_from_iorq : std_logic;
 
 
     	-- gate array
@@ -177,7 +177,7 @@ architecture impl of cpc is
 --                clk_divider <= clk_divider + 1;
 --            end if;
 --        end process;
---	cpuclk <=    clk_divider(1) when dipsw(7 downto 6)="00"
+--	z80_clk <=    clk_divider(1) when dipsw(7 downto 6)="00"
 --		else clk_divider(7) when dipsw(7 downto 6)="01"
 --		else clk_divider(11) when dipsw(7 downto 6)="10"
 --		else clk_divider(15);
@@ -210,23 +210,23 @@ architecture impl of cpc is
 	end process;
 
         -- z80
-        z80 : T80s port map ( RESET_n=>nRESET, CLK_n=>cpuclk, 
-                              WAIT_n=>WAIT_n, INT_n=>INT_n, NMI_n=>NMI_n, BUSRQ_n=>BUSRQ_n,
-                              M1_n=>M1_n, MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, RFSH_n=>RFSH_n, HALT_n=>HALT_n, BUSAK_n=>BUSAK_n,
-                              A=>A, DI=>DI, DO=>DO );
-	IORD_n <= IORQ_n OR RD_n;
-	IOWR_n <= IORQ_n OR WR_n;
+        z80 : T80s port map ( RESET_n=>nRESET, CLK_n=>z80_clk, 
+                              WAIT_n=>z80_WAIT_n, INT_n=>z80_INT_n, NMI_n=>z80_NMI_n, BUSRQ_n=>z80_BUSRQ_n,
+                              M1_n=>z80_M1_n, MREQ_n=>z80_MREQ_n, IORQ_n=>z80_IORQ_n, RD_n=>z80_RD_n, WR_n=>z80_WR_n, RFSH_n=>z80_RFSH_n, HALT_n=>z80_HALT_n, BUSAK_n=>z80_BUSAK_n,
+                              A=>z80_A, DI=>z80_DI, DO=>z80_DO );
+	z80_IORD_n <= z80_IORQ_n OR z80_RD_n;
+	z80_IOWR_n <= z80_IORQ_n OR z80_WR_n;
 
 --        WAIT_n <=  '1'; --pushsw(0) and (nWAIT_uart_tx or not pushsw(3));
-        INT_n <=   '1'; --pushsw(1);
-        NMI_n <=   '1'; --pushsw(2);
-        BUSRQ_n <= '1'; --pushsw(3);
+        z80_INT_n <=   '1'; --pushsw(1);
+        z80_NMI_n <=   '1'; --pushsw(2);
+        z80_BUSRQ_n <= '1'; --pushsw(3);
 
 	-- crtc
 	crtc_0 : crtc port map( nRESET=>nRESET, MA=>crtc_MA, DE=>crtc_DE, CLK=>crtc_CLK,
-				RW=>A(9), E=>crtc_E, RS=>A(8), nCS=>A(14),
-				DIN=>DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
-	crtc_E	 <= IORD_n nor IOWR_n;
+				RW=>z80_A(9), E=>crtc_E, RS=>z80_A(8), nCS=>z80_A(14),
+				DIN=>z80_DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
+	crtc_E	 <= z80_IORD_n nor z80_IOWR_n;
 --	crtc_CLK <= clk1;
 
 	-- gate array
@@ -235,18 +235,18 @@ architecture impl of cpc is
 			clk16				=> clk16, 
 	
 			-- z80 basic functionality
-			z80_clk				=> cpuclk,
-			z80_din				=> DI_from_mem,
-			z80_dout			=> DO,
-			z80_a				=> A,
-			z80_wr_n			=> WR_n,
+			z80_clk				=> z80_clk,
+			z80_din				=> z80_DI_from_mem,
+			z80_dout			=> z80_DO,
+			z80_a				=> z80_A,
+			z80_wr_n			=> z80_WR_n,
 	
 			-- generation of wait states
-			z80_rd_n			=> RD_n,
-			z80_m1_n			=> M1_n,
-			z80_iorq_n			=> IORQ_n,
-			z80_mreq_n			=> MREQ_n,
-			z80_wait_n			=> WAIT_n,
+			z80_rd_n			=> z80_RD_n,
+			z80_m1_n			=> z80_M1_n,
+			z80_iorq_n			=> z80_IORQ_n,
+			z80_mreq_n			=> z80_MREQ_n,
+			z80_wait_n			=> z80_WAIT_n,
 	
 			video_data			=> video_data,
 
@@ -266,12 +266,12 @@ architecture impl of cpc is
 --            MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, A=>A, DI=>DI_from_mem, DO=>DO,
 --            sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
 
-	    DI <= DI_from_iorq when DI_is_from_iorq='1' else DI_from_mem;
+	    z80_DI <= z80_DI_from_iorq when z80_DI_is_from_iorq='1' else z80_DI_from_mem;
 
-	process(cpuclk,MREQ_n,RD_n)
+	process(z80_clk,z80_MREQ_n,z80_RD_n)
 	begin
-		if rising_edge(cpuclk) then
-			if MREQ_n = '0' and RD_n = '0' then
+		if rising_edge(z80_clk) then
+			if z80_MREQ_n = '0' and z80_RD_n = '0' then
 --				DI <= (others=>'0'); -- nops for now
 --				leds <= not A(7 downto 0);
 			end if;
@@ -279,51 +279,51 @@ architecture impl of cpc is
 	end process;
 
         -- add switch input to port #fade
-        process(nRESET,cpuclk,IORQ_n,RD_n,A)
+        process(nRESET,z80_clk,z80_IORQ_n,z80_RD_n,z80_A)
         begin
             if nRESET = '0' then
-	    	DI_is_from_iorq <= '0';
-    	        DI_from_iorq <= (others=>'0');
+	    	z80_DI_is_from_iorq <= '0';
+    	        z80_DI_from_iorq <= (others=>'0');
             
-	    elsif rising_edge(cpuclk) then
-	    	DI_is_from_iorq <= '0';
-    	        DI_from_iorq <= (others=>'0');
-	    	if IORQ_n = '0' and RD_n = '0' then
+	    elsif rising_edge(z80_clk) then
+	    	z80_DI_is_from_iorq <= '0';
+    	        z80_DI_from_iorq <= (others=>'0');
+	    	if z80_IORQ_n = '0' and z80_RD_n = '0' then
 
-			if    A(15 downto 0) = x"FADE" then
-			    DI_from_iorq <= not dipsw(7 downto 0);
-	    		    DI_is_from_iorq <= '1';
+			if    z80_A(15 downto 0) = x"FADE" then
+			    z80_DI_from_iorq <= not dipsw(7 downto 0);
+	    		    z80_DI_is_from_iorq <= '1';
 
-		    	elsif A(15 downto 0) = x"FADD" then
-			    DI_from_iorq(7) <= my_uart_tx_empty;          		-- latch the empty flag data
-			    DI_from_iorq(3 downto 0) <= not pushsw(3 downto 0);
-	    		    DI_is_from_iorq <= '1';
+		    	elsif z80_A(15 downto 0) = x"FADD" then
+			    z80_DI_from_iorq(7) <= my_uart_tx_empty;          		-- latch the empty flag data
+			    z80_DI_from_iorq(3 downto 0) <= not pushsw(3 downto 0);
+	    		    z80_DI_is_from_iorq <= '1';
 
-		    	elsif A(14)='0' then
-			    DI_from_iorq <= crtc_DOUT;
-	    		    DI_is_from_iorq <= '1';
+		    	elsif z80_A(14)='0' then
+			    z80_DI_from_iorq <= crtc_DOUT;
+	    		    z80_DI_is_from_iorq <= '1';
 			end if;
 		end if;
             end if;
         end process;
 	
         -- add LED output to port #fade
-        process(nRESET,cpuclk,IORQ_n,WR_n,A)
+        process(nRESET,z80_clk,z80_IORQ_n,z80_WR_n,z80_A)
         begin
             if nRESET = '0' then
                 leds		<= (others=>'0');
 		my_uart_tx_data	<= (others=>'0');
 		my_uart_tx_load <= '0';
             
-	    elsif rising_edge(cpuclk) then
+	    elsif rising_edge(z80_clk) then
 		my_uart_tx_load <= '0';
 
-		    if IORQ_n = '0' and WR_n = '0' and A(15 downto 0) = x"FADC" then
-			my_uart_tx_data	<= DO;
+		    if z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADC" then
+			my_uart_tx_data	<= z80_DO;
 	    		my_uart_tx_load <= '1';
             
-	         elsif IORQ_n = '0' and WR_n = '0' and A(15 downto 0) = x"FADE" then
-		        leds <= not DO(7 downto 0);
+	         elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADE" then
+		        leds <= not z80_DO(7 downto 0);
 
 		end if;
             end if;

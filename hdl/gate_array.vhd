@@ -3,6 +3,7 @@ library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 
 entity gate_array is
 	port(
@@ -10,7 +11,7 @@ entity gate_array is
 		clk16				: in  std_logic;				-- master clock input @ 16 MHz
 
 		-- z80 basic functionality
-		z80_clk				: out std_logic;				-- generated Z80 clock @ 4 MHz
+		z80_clk				: out std_logic;				-- generated Z80 clock @ 4 MHz (16MHz behind)
 		z80_din				: out std_logic_vector(7 downto 0);		-- data bus input to z80
 		z80_dout			: in  std_logic_vector(7 downto 0);		-- data bus output from z80
 		z80_a				: in  std_logic_vector(15 downto 0);		-- address bus output from z80
@@ -100,6 +101,7 @@ begin
 
 		--alias			out_z80_clock		: std_logic			is   current_cycle(1);
 		variable		out_z80_clock		: std_logic;
+		variable		out_z80_clock_delayed	: std_logic;
 
 		variable		out_z80_wait_n		: std_logic;
 		variable		out_z80_din		: std_logic_vector(7 downto 0);
@@ -134,6 +136,7 @@ begin
 			--alias		lsb_of_video_address	: std_logic			is n_current_cycle(3);
 
 			variable	n_out_z80_clock		: std_logic;
+			variable	n_out_z80_clock_delayed	: std_logic;
 			variable	tstate			: std_logic_vector(1 downto 0);
 			variable	tstate_for_video	: std_logic;
 			variable	lsb_of_video_address	: std_logic;
@@ -169,8 +172,8 @@ begin
 			n_out_video_byte_data	:= out_video_byte_data;
 			n_out_crtc_clock	:= out_crtc_clock;
 
-			-- work around modelsim
-			n_out_z80_clock		:= n_current_cycle(1);
+			n_out_z80_clock_delayed	:= out_z80_clock;			--_delayed;
+			n_out_z80_clock		:= not n_current_cycle(1);
 			tstate			:= n_current_cycle(3 downto 2);
 			tstate_for_video	:= n_current_cycle(2);
 			lsb_of_video_address	:= n_current_cycle(3);
@@ -184,21 +187,34 @@ begin
 						idle	=> n_z80_bus_is_idle,
 						wait_n 	=> n_out_z80_wait_n );
 
+--				report "T-state " & std_logic'image(tstate(1)) & std_logic'image(tstate(0)) & ", wait_n="&std_logic'image(n_out_z80_wait_n)
+--					& " from iorq_n"&std_logic'image(z80_iorq_n)
+--					& ", mreq_n"&std_logic'image(z80_mreq_n)
+--					& ", m1_n"&std_logic'image(z80_m1_n)
+--					& ". idle now "&std_logic'image(n_z80_bus_is_idle);
+
 				-- handle video data transfer
-				if tstate_for_video='1' then				-- start video byte transfer in T1 or T3
+				if crtc_de='0' and crtc_de='1' then			-- just for neatness...
+				    if tstate_for_video='1' then				-- start video byte transfer in T1 or T3
 					n_out_sram_address	:= "000" & crtc_ma(13 downto 12) & crtc_ra(2 downto 0) & crtc_ma(9 downto 0) & lsb_of_video_address;
 					n_out_sram_data		:= (others=>'Z');
 					n_out_sram_we		:= '1';
 					n_out_sram_ce		:= '0';
 					n_out_sram_oe		:= '0';
 					n_out_video_byte_clock	:= '0';
-				else							-- and clock out the data in T2 or T4
+
+					report "Starting video byte transfer at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
+				    else							-- and clock out the data in T2 or T4
 					n_out_video_byte_clock	:= '1';
 					n_out_video_byte_data	:= sram_data;
 					n_out_sram_ce		:= '1';
 					n_out_sram_oe		:= '1';
-					n_out_crtc_clock	:= lsb_of_video_address;
+
+					report "Video byte transfer complete at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_video_byte_data)));
+				    end if;
 				end if;
+
+				n_out_crtc_clock		:= not lsb_of_video_address;
 
 				-- handle regular ram transfer
 				if tstate="00" and z80_mreq_n='0' and n_z80_bus_is_idle='0' then	-- start a memory read/write
@@ -208,14 +224,21 @@ begin
 						n_out_sram_data	:= (others=>'Z');
 						n_out_sram_we	:= '1';
 						n_out_sram_oe	:= '0';
+
+						report "Starting memory read at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
 					else								-- memory write
 						n_out_sram_data	:= z80_dout;
 						n_out_sram_we	:= '0';
 						n_out_sram_oe	:= '1';
+
+						report "Starting memory write at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(z80_dout)));
 					end if;
 					n_out_sram_ce		:= '0';
 
 				elsif tstate="01" then --and z80_mreq_n='0' and n_z80_bus_is_idle='0' then
+					--report "Disabling memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
+					report "Memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
+
 					--if z80_rd_n='0' then						-- get result of memory read
 						n_out_z80_din	:= sram_data;
 
@@ -224,9 +247,11 @@ begin
 							n_out_z80_din	:= testrom_data;
 						end if;
 					--end if;
-					n_out_sram_ce		:= '1';					-- in any case, disable the chip
-					n_out_sram_oe		:= '1';
-					n_out_sram_we		:= '1';
+
+					-- note, we don't actually want to disable the memory as we just scheduled a video read byte
+--					n_out_sram_ce		:= '1';					-- in any case, disable the chip
+--					n_out_sram_oe		:= '1';
+--					n_out_sram_we		:= '1';
 				end if;
 
 			end if;
@@ -237,6 +262,7 @@ begin
 			out_z80_wait_n		:= n_out_z80_wait_n;
 			out_z80_din		:= n_out_z80_din;
 			out_z80_clock		:= n_out_z80_clock;
+			out_z80_clock_delayed	:= n_out_z80_clock_delayed;
 
 			out_sram_address	:= n_out_sram_address;
 			out_sram_data		:= n_out_sram_data;
@@ -252,7 +278,7 @@ begin
 		procedure update_ports_current_cycle is
 		begin
 			z80_wait_n		<= out_z80_wait_n;
-			z80_clk			<= current_cycle(1); --out_z80_clock;
+			z80_clk			<= out_z80_clock_delayed;
 			crtc_clk		<= out_crtc_clock;
 			z80_din			<= out_z80_din;
 

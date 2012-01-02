@@ -151,7 +151,7 @@ build/$(TOP_NAME)_build.tcl: Makefile build/.dummy
 
 ##########################################################################
 
-codegen: hdl/testrom.vhd
+codegen: hdl/testrom.vhd hdl/evalboard.vhd
 
 hdl/jingle.vhd: codegen/jingle.py
 	codegen/jingle.py >$@
