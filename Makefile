@@ -159,11 +159,9 @@ hdl/jingle.vhd: codegen/jingle.py
 hdl/notelookup.vhd: codegen/notes.py
 	codegen/notes.py >$@
 
-hdl/%.vhd: build/%.bin codegen/makerom.py
-	codegen/makerom.py $< >$@
-
-build/%.bin: codegen/%.asm
-	pasmo $< $@ $*.sym
+hdl/%.vhd: codegen/%.asm codegen/makerom.py build/.dummy
+	pasmo $< build/$*.bin build/$*.sym
+	codegen/makerom.py $* build/$*.bin >$@
 
 hdl/evalboard.vhd: codegen/evalboard.pl hdl/$(TOP_NAME).vhd
 	codegen/evalboard.pl <hdl/$(TOP_NAME).vhd >$@

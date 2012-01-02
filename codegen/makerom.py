@@ -11,14 +11,7 @@ def bin(x,len):
 	return ''.join(reversed(out))
 
 name=sys.argv[1]
-try:	name=name[name.rindex('\\')+1:]
-except: pass
-try:	name=name[name.rindex('/')+1:]
-except: pass
-try:	name=name[:name.rindex('.bin')]
-except: pass
-
-f=open(sys.argv[1], "rb")
+f=open(sys.argv[2], "rb")
 xdata=f.read(100000);
 f.close()
 
