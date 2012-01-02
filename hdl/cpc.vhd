@@ -7,7 +7,7 @@ use ieee.std_logic_unsigned.all;
 entity cpc is
 	port(
 		nRESET			: in  std_logic;
-		clock			: in  std_logic;
+		clk16			: in  std_logic;
 		pushsw			: in  std_logic_vector(3 downto 0);
 		dipsw			: in  std_logic_vector(7 downto 0);
 
@@ -30,11 +30,6 @@ end cpc;
 
 architecture impl of cpc is
 	-- PLL
-	component PLL16mhz is
-		port(POWERDOWN, CLKA : in std_logic; LOCK, GLA : out std_logic);
-	end component;
-	signal clklock          : std_logic;
-	signal clk16            : std_logic;
 	signal clk_divider      : std_logic_vector(15 downto 0);        -- (0)=8mhz, (1)=4mhz, (2)=2mhz, (3)=1mhz
 	signal clk4,clk1        : std_logic;
 	signal cpuclk           : std_logic;
@@ -176,7 +171,6 @@ architecture impl of cpc is
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
 	-- generate the master clock
-	PLL16mhz_component : PLL16mhz port map ( CLKA => clock, POWERDOWN => '1', GLA => clk16, LOCK => clklock );
         process (clk16)
         begin
             if rising_edge(clk16) then

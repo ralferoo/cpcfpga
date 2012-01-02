@@ -18,7 +18,7 @@ ENDLIST
 LIST FileManager
 VALUE "<project>\constraint\cpc_pins.pdc,pdc"
 STATE="utd"
-TIME="1325422081"
+TIME="1325492998"
 SIZE="7877"
 BEGIN_USE_CONSTRAINT
 TOOL_CONSTRAINT_TYPE="ideDESIGNER"
@@ -27,23 +27,23 @@ USE_FOR_ANY_TOOL="FALSE"
 ENDFILE
 VALUE "<project>\constraint\cpc_sdc.sdc,sdc"
 STATE="utd"
-TIME="1325429478"
-SIZE="1062"
+TIME="1325456580"
+SIZE="1312"
 ENDFILE
 VALUE "<project>\hdl\cpc.vhd,hdl"
 STATE="utd"
-TIME="1325415062"
-SIZE="9290"
+TIME="1325467468"
+SIZE="11980"
 ENDFILE
 VALUE "<project>\hdl\crtc.vhd,hdl"
 STATE="utd"
-TIME="1325385792"
-SIZE="11776"
+TIME="1325455664"
+SIZE="11825"
 ENDFILE
 VALUE "<project>\hdl\memory_mux.vhd,hdl"
 STATE="utd"
-TIME="1325302389"
-SIZE="5252"
+TIME="1325458130"
+SIZE="5334"
 ENDFILE
 VALUE "<project>\hdl\my_uart_tx.vhd,hdl"
 STATE="utd"
@@ -222,10 +222,4 @@ ENDLIST
 LIST UserCustomizedFileList
 ENDLIST
 LIST OpenedFileList
-DESIGNFLOW:
-FILE:<project>\hdl\cpc.vhd,hdl
-FILE:<project>\smartgen\PLL16mhz\PLL16mhz.vhd,hdl
-FILE:<project>\hdl\memory_mux.vhd,hdl
-CE:C:\fpga\cpcfpga\constraint\cpc_pins.pdc;cpc::work
-ACTIVE_VIEW:4
 ENDLIST
