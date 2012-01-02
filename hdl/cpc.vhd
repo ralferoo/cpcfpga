@@ -30,9 +30,8 @@ end cpc;
 
 architecture impl of cpc is
 	-- PLL
-	signal clk_divider      : std_logic_vector(15 downto 0);        -- (0)=8mhz, (1)=4mhz, (2)=2mhz, (3)=1mhz
-	signal clk4,clk1        : std_logic;
-	signal cpuclk           : std_logic;
+--	signal clk_divider      : std_logic_vector(15 downto 0);        -- (0)=8mhz, (1)=4mhz, (2)=2mhz, (3)=1mhz
+	--signal clk4,clk1        : std_logic;
 
 	-- t80 from opencores.org
 	component T80s is
@@ -61,6 +60,7 @@ architecture impl of cpc is
 	signal A								: std_logic_vector(15 downto 0);
 	signal DI, DO								: std_logic_vector(7 downto 0);
 	signal IORD_n, IOWR_n							: std_logic;
+	signal cpuclk           : std_logic;
 
     signal DI_from_mem	: std_logic_vector(7 downto 0);
     signal DI_from_iorq	: std_logic_vector(7 downto 0);
@@ -171,18 +171,18 @@ architecture impl of cpc is
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
 	-- generate the master clock
-        process (clk16)
-        begin
-            if rising_edge(clk16) then
-                clk_divider <= clk_divider + 1;
-            end if;
-        end process;
+--        process (clk16)
+--        begin
+--            if rising_edge(clk16) then
+--                clk_divider <= clk_divider + 1;
+--            end if;
+--        end process;
 --	cpuclk <=    clk_divider(1) when dipsw(7 downto 6)="00"
 --		else clk_divider(7) when dipsw(7 downto 6)="01"
 --		else clk_divider(11) when dipsw(7 downto 6)="10"
 --		else clk_divider(15);
-	clk4 <= clk_divider(1);
-	clk1 <= clk_divider(3);
+	--clk4 <= clk_divider(1);
+	--clk1 <= clk_divider(3);
 
         -- video
         video_sound <= '0';

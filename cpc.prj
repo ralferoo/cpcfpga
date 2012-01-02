@@ -30,15 +30,25 @@ STATE="utd"
 TIME="1325456580"
 SIZE="1312"
 ENDFILE
+VALUE "<project>\hdl\bench_cpc.vhd,hdl"
+STATE="utd"
+TIME="1325501125"
+SIZE="3085"
+ENDFILE
 VALUE "<project>\hdl\cpc.vhd,hdl"
 STATE="utd"
-TIME="1325467468"
-SIZE="11980"
+TIME="1325498632"
+SIZE="11690"
 ENDFILE
 VALUE "<project>\hdl\crtc.vhd,hdl"
 STATE="utd"
 TIME="1325455664"
 SIZE="11825"
+ENDFILE
+VALUE "<project>\hdl\evalboard.vhd,hdl"
+STATE="utd"
+TIME="1325500987"
+SIZE="2233"
 ENDFILE
 VALUE "<project>\hdl\memory_mux.vhd,hdl"
 STATE="utd"
@@ -222,4 +232,9 @@ ENDLIST
 LIST UserCustomizedFileList
 ENDLIST
 LIST OpenedFileList
+DESIGNFLOW:
+FILE:<project>\hdl\cpc.vhd,hdl
+FILE:<project>\smartgen\PLL16mhz\PLL16mhz.vhd,hdl
+FILE:<project>\hdl\memory_mux.vhd,hdl
+ACTIVE_VIEW:1
 ENDLIST
