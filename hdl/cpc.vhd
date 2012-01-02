@@ -183,10 +183,10 @@ architecture impl of cpc is
                 clk_divider <= clk_divider + 1;
             end if;
         end process;
-	cpuclk <=    clk_divider(1) when dipsw(7 downto 6)="00"
-		else clk_divider(7) when dipsw(7 downto 6)="01"
-		else clk_divider(11) when dipsw(7 downto 6)="10"
-		else clk_divider(15);
+--	cpuclk <=    clk_divider(1) when dipsw(7 downto 6)="00"
+--		else clk_divider(7) when dipsw(7 downto 6)="01"
+--		else clk_divider(11) when dipsw(7 downto 6)="10"
+--		else clk_divider(15);
 	clk4 <= clk_divider(1);
 	clk1 <= clk_divider(3);
 
@@ -206,12 +206,12 @@ architecture impl of cpc is
 			video_b2	<= "00";
 		else
 			video_sync2	<= (crtc_MA(5) or crtc_MA(0)) & (crtc_MA(6) or not crtc_MA(0)); --dipsw(0) & (not dipsw(0));
---			video_r2	<= video_data(5 downto 4);
---			video_g2	<= video_data(3 downto 2);
---			video_b2	<= video_data(1 downto 0);
-			video_r2	<= crtc_RA(2 downto 1);
-			video_g2	<= crtc_MA(2 downto 1);
-			video_b2	<= crtc_MA(4 downto 3);
+			video_r2	<= video_data(5 downto 4);
+			video_g2	<= video_data(3 downto 2);
+			video_b2	<= video_data(1 downto 0);
+--			video_r2	<= crtc_RA(2 downto 1);
+--			video_g2	<= crtc_MA(2 downto 1);
+--			video_b2	<= crtc_MA(4 downto 3);
 		end if;
 	end process;
 
@@ -220,10 +220,10 @@ architecture impl of cpc is
                               WAIT_n=>WAIT_n, INT_n=>INT_n, NMI_n=>NMI_n, BUSRQ_n=>BUSRQ_n,
                               M1_n=>M1_n, MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, RFSH_n=>RFSH_n, HALT_n=>HALT_n, BUSAK_n=>BUSAK_n,
                               A=>A, DI=>DI, DO=>DO );
-	IORD_n <= IORQ_n AND RD_n;
-	IOWR_n <= IORQ_n AND WR_n;
+	IORD_n <= IORQ_n OR RD_n;
+	IOWR_n <= IORQ_n OR WR_n;
 
-        WAIT_n <=  '1'; --pushsw(0) and (nWAIT_uart_tx or not pushsw(3));
+--        WAIT_n <=  '1'; --pushsw(0) and (nWAIT_uart_tx or not pushsw(3));
         INT_n <=   '1'; --pushsw(1);
         NMI_n <=   '1'; --pushsw(2);
         BUSRQ_n <= '1'; --pushsw(3);
@@ -233,44 +233,44 @@ architecture impl of cpc is
 				RW=>A(9), E=>crtc_E, RS=>A(8), nCS=>A(14),
 				DIN=>DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
 	crtc_E	 <= IORD_n nor IOWR_n;
-	crtc_CLK <= clk1;
+--	crtc_CLK <= clk1;
 
 	-- gate array
---	gate_array_0 : gate_array port map (
---			nRESET				=> nRESET,
---			clk16				=> clk16, 
---	
---			-- z80 basic functionality
---			z80_clk				=> cpuclk,
---			z80_din				=> DI_from_mem,
---			z80_dout			=> DO,
---			z80_a				=> A,
---			z80_wr_n			=> WR_n,
---	
---			-- generation of wait states
---			z80_rd_n			=> RD_n,
---			z80_m1_n			=> M1_n,
---			z80_iorq_n			=> IORQ_n,
---			z80_mreq_n			=> MREQ_n,
---			z80_wait_n			=> WAIT_n,
---	
---			video_data			=> video_data,
---
---			-- crtc interface (for screen reading)
---			crtc_clk			=> crtc_CLK,
---			crtc_ma				=> crtc_MA,
---			crtc_ra				=> crtc_RA,
---			crtc_hsync			=> crtc_HSYNC,
---			crtc_vsync			=> crtc_VSYNC,
---			crtc_de				=> crtc_DE,
---	
---			-- sram interface
---			sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
+	gate_array_0 : gate_array port map (
+			nRESET				=> nRESET,
+			clk16				=> clk16, 
+	
+			-- z80 basic functionality
+			z80_clk				=> cpuclk,
+			z80_din				=> DI_from_mem,
+			z80_dout			=> DO,
+			z80_a				=> A,
+			z80_wr_n			=> WR_n,
+	
+			-- generation of wait states
+			z80_rd_n			=> RD_n,
+			z80_m1_n			=> M1_n,
+			z80_iorq_n			=> IORQ_n,
+			z80_mreq_n			=> MREQ_n,
+			z80_wait_n			=> WAIT_n,
+	
+			video_data			=> video_data,
+
+			-- crtc interface (for screen reading)
+			crtc_clk			=> crtc_CLK,
+			crtc_ma				=> crtc_MA,
+			crtc_ra				=> crtc_RA,
+			crtc_hsync			=> crtc_HSYNC,
+			crtc_vsync			=> crtc_VSYNC,
+			crtc_de				=> crtc_DE,
+	
+			-- sram interface
+			sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
 
         -- memory
-        memory : memory_mux port map ( nrst=>nRESET, clk=>clk16, 
-            MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, A=>A, DI=>DI_from_mem, DO=>DO,
-            sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
+--        memory : memory_mux port map ( nrst=>nRESET, clk=>clk16, 
+--            MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, A=>A, DI=>DI_from_mem, DO=>DO,
+--            sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
 
 	    DI <= DI_from_iorq when DI_is_from_iorq='1' else DI_from_mem;
 

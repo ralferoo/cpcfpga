@@ -51,6 +51,8 @@ architecture impl of gate_array is
 	end component;
 	signal testrom_data : std_logic_vector(7 downto 0);
 
+	signal d_tstate : std_logic_vector(1 downto 0);
+	signal d_idle   : std_logic;
 begin
 	-- evil hacky code for bootstrapping
 	memory_testrom : testrom port map( addr=>z80_a(13 downto 0), data=>testrom_data );
@@ -60,10 +62,10 @@ begin
 		------------------------------------------------------------------------------------------------------------
 		--
 		-- calculate the wait signal
-		procedure calculate_wait(	iorq_n,mreq_n,m1_n	: in std_logic;
-						tstate			: in std_logic_vector(1 downto 0); 
-						idle			: inout std_logic;
-						wait_n			: out std_logic) is
+		procedure calculate_wait(			iorq_n,mreq_n,m1_n	: in std_logic;
+						variable	tstate			: in std_logic_vector(1 downto 0); 
+						variable	idle			: inout std_logic;
+						variable	wait_n			: inout std_logic) is
 		begin
 			wait_n	:= '1';
 			if idle='1' and (iorq_n='0' or mreq_n='0') then				-- we're in the idle state and IO/mem requested
@@ -82,9 +84,9 @@ begin
 		------------------------------------------------------------------------------------------------------------
 		--
 		-- calculate the sram address for a z80 address
-		procedure calculate_address(	address			: in std_logic_vector(15 downto 0);
-						real_address		: out std_logic_vector(18 downto 0);
-						rd_n			: in std_logic) is
+		procedure calculate_address(			address			: in std_logic_vector(15 downto 0);
+						variable	real_address		: out std_logic_vector(18 downto 0);
+								rd_n			: in std_logic) is
 		begin
 			real_address := "000" & address;
 
@@ -96,7 +98,9 @@ begin
 		variable		current_cycle		: std_logic_vector(3 downto 0);	
 		variable		z80_bus_is_idle		: std_logic;	
 
-		alias			out_z80_clock		: std_logic			is   current_cycle(1);
+		--alias			out_z80_clock		: std_logic			is   current_cycle(1);
+		variable		out_z80_clock		: std_logic;
+
 		variable		out_z80_wait_n		: std_logic;
 		variable		out_z80_din		: std_logic_vector(7 downto 0);
 
@@ -108,6 +112,7 @@ begin
 
 		variable		out_video_byte_data	: std_logic_vector(7 downto 0);
 		variable		out_video_byte_clock	: std_logic;
+		variable		out_crtc_clock		: std_logic;
 
 		procedure init_current_cycle is
 		begin
@@ -116,16 +121,22 @@ begin
 			current_cycle		:= (others=>'0');
 			z80_bus_is_idle		:= '1';
 			out_z80_clock		:= '0';
+			out_crtc_clock		:= '0';
 			out_z80_wait_n		:= '1';
 
 		end procedure init_current_cycle;
 
 		procedure update_current_cycle is
 			variable	n_current_cycle		: std_logic_vector(3 downto 0);
-			alias		n_out_z80_clock		: std_logic			is n_current_cycle(1);
-			alias		tstate			: std_logic_vector(1 downto 0)	is n_current_cycle(3 downto 2);
-			alias		tstate_for_video	: std_logic			is n_current_cycle(2);
-			alias		lsb_of_video_address	: std_logic			is n_current_cycle(3);
+			--alias		n_out_z80_clock		: std_logic			is n_current_cycle(1);
+			--alias		tstate			: std_logic_vector(1 downto 0)	is n_current_cycle(3 downto 2);
+			--alias		tstate_for_video	: std_logic			is n_current_cycle(2);
+			--alias		lsb_of_video_address	: std_logic			is n_current_cycle(3);
+
+			variable	n_out_z80_clock		: std_logic;
+			variable	tstate			: std_logic_vector(1 downto 0);
+			variable	tstate_for_video	: std_logic;
+			variable	lsb_of_video_address	: std_logic;
 
 			variable	n_z80_bus_is_idle	: std_logic;	
 			variable	n_out_z80_wait_n	: std_logic;
@@ -139,12 +150,14 @@ begin
 
 			variable	n_out_video_byte_data	: std_logic_vector(7 downto 0);
 			variable	n_out_video_byte_clock	: std_logic;
+			variable	n_out_crtc_clock	: std_logic;
 		begin
 
 			-- update variables
 			n_current_cycle		:= current_cycle + 1;
 			n_z80_bus_is_idle	:= z80_bus_is_idle;
 			n_out_z80_din		:= out_z80_din;
+			n_out_z80_wait_n	:= out_z80_wait_n;
 
 			n_out_sram_address	:= out_sram_address;
 			n_out_sram_data		:= out_sram_data;
@@ -154,8 +167,15 @@ begin
 
 			n_out_video_byte_clock	:= out_video_byte_clock;
 			n_out_video_byte_data	:= out_video_byte_data;
+			n_out_crtc_clock	:= out_crtc_clock;
 
-			if n_out_z80_clock='0' and out_z80_clock='1' then		-- rising edge on current_tstate
+			-- work around modelsim
+			n_out_z80_clock		:= n_current_cycle(1);
+			tstate			:= n_current_cycle(3 downto 2);
+			tstate_for_video	:= n_current_cycle(2);
+			lsb_of_video_address	:= n_current_cycle(3);
+
+			if n_out_z80_clock='1' and out_z80_clock='0' then		-- rising edge on current_tstate
 				-- first off, calculate the wait_n for the new tstate
 				calculate_wait( iorq_n	=> z80_iorq_n, 
 						mreq_n	=> z80_mreq_n,
@@ -177,6 +197,7 @@ begin
 					n_out_video_byte_data	:= sram_data;
 					n_out_sram_ce		:= '1';
 					n_out_sram_oe		:= '1';
+					n_out_crtc_clock	:= lsb_of_video_address;
 				end if;
 
 				-- handle regular ram transfer
@@ -194,15 +215,15 @@ begin
 					end if;
 					n_out_sram_ce		:= '0';
 
-				elsif tstate="01" and z80_mreq_n='0' and n_z80_bus_is_idle='0' then
-					if z80_rd_n='0' then						-- get result of memory read
+				elsif tstate="01" then --and z80_mreq_n='0' and n_z80_bus_is_idle='0' then
+					--if z80_rd_n='0' then						-- get result of memory read
 						n_out_z80_din	:= sram_data;
 
 						-- evil hacky code for bootstrapping
 						if z80_a(15 downto 14)="00" then
 							n_out_z80_din	:= testrom_data;
 						end if;
-					end if;
+					--end if;
 					n_out_sram_ce		:= '1';					-- in any case, disable the chip
 					n_out_sram_oe		:= '1';
 					n_out_sram_we		:= '1';
@@ -215,6 +236,7 @@ begin
 			z80_bus_is_idle		:= n_z80_bus_is_idle;
 			out_z80_wait_n		:= n_out_z80_wait_n;
 			out_z80_din		:= n_out_z80_din;
+			out_z80_clock		:= n_out_z80_clock;
 
 			out_sram_address	:= n_out_sram_address;
 			out_sram_data		:= n_out_sram_data;
@@ -224,12 +246,14 @@ begin
 
 			out_video_byte_clock	:= n_out_video_byte_clock;
 			out_video_byte_data	:= n_out_video_byte_data;
+			out_crtc_clock		:= n_out_crtc_clock;
 		end procedure update_current_cycle;
 
 		procedure update_ports_current_cycle is
 		begin
 			z80_wait_n		<= out_z80_wait_n;
-			z80_clk			<= out_z80_clock;
+			z80_clk			<= current_cycle(1); --out_z80_clock;
+			crtc_clk		<= out_crtc_clock;
 			z80_din			<= out_z80_din;
 
 			sram_address		<= out_sram_address;
@@ -239,6 +263,10 @@ begin
 			sram_oe			<= out_sram_oe;
 
 			video_data		<= out_video_byte_data;
+
+
+			d_tstate		<= current_cycle(3 downto 2);
+			d_idle			<= z80_bus_is_idle;
 		end procedure update_ports_current_cycle;
 
 		------------------------------------------------------------------------------------------------------------
