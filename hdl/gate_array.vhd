@@ -197,8 +197,8 @@ begin
 --					& ". idle now "&std_logic'image(n_z80_bus_is_idle);
 
 				-- handle video data transfer
-				if crtc_de='0' and crtc_de='1' then			-- just for neatness...
-				    if tstate_for_video='1' then				-- start video byte transfer in T1 or T3
+				if tstate_for_video='1' then				-- start video byte transfer in T1 or T3
+--------				    if crtc_de='0' and crtc_de='1' then			-- just for neatness...
 					n_out_sram_address	:= "000" & crtc_ma(13 downto 12) & crtc_ra(2 downto 0) & crtc_ma(9 downto 0) & lsb_of_video_address;
 					n_out_sram_data		:= (others=>'Z');
 					n_out_sram_we		:= '1';
@@ -214,7 +214,7 @@ begin
 					n_out_sram_oe		:= '1';
 
 					report "Video byte transfer complete at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_video_byte_data)));
-				    end if;
+--------				    end if;
 				end if;
 
 				n_out_crtc_clock		:= not lsb_of_video_address;
