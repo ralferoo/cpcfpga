@@ -44,6 +44,10 @@ modify_loop:
 	ld b,c
 	djnz modify_loop2
 
+more_mods:
+	inc (hl)
+	djnz more_mods
+
 	inc ix
 
 	ld hl,#0000

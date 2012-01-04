@@ -17,6 +17,10 @@ define_clock -name {n:cpc_0.gate_array_0.out_crtc_clock} -freq 1
 # and this is the z80 clock, really it's at 4MHz but we want everything to finish as if it's 16MHz
 define_clock -name {n:cpc_0.gate_array_0.out_z80_clock_delayed} -freq 16
 
+# these are divisors of 16MHz
+define_clock -name {n:cpc_0.gate_array_0.current_cycle[0]} -freq 8
+define_clock -name {n:cpc_0.gate_array_0.current_cycle[1]} -freq 4
+
 # the real clock. not sure this actually works..
 create_clock  -name { external_clock_source } -period 50.000 -waveform { 0.000 25.000  }  { n:clock  }
 
