@@ -2,40 +2,6 @@
 	org #0000
 
 
-	ld hl,0
-	ld e,0
-
-flash:
-	; led flash
-
-	ld bc,#fade
-	inc hl
-	out (c),h
-
-	; check serial port
-	dec c
-	in a,(c)
-
-	;and #80
-	;or l
-	;ld l,a
-
-	rla
-	jr nc,flash
-
-	; serial port not busy, send data
-	dec c
-	inc e
-	out (c),e
-
-	jr flash
-
-	end
-
-
-
-
-
 
 
 	ld ix,0

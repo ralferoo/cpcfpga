@@ -140,6 +140,7 @@ begin
 		variable		out_latch_cpu_data	: std_logic;
 		variable		out_latch_boot_data	: std_logic;
 		variable		out_latch_video_data	: std_logic;
+		variable		out_latch_write_data	: std_logic;
 
 		procedure init_current_cycle is
 		begin
@@ -154,6 +155,7 @@ begin
 			out_latch_cpu_data	:= '0';
 			out_latch_boot_data	:= '0';
 			out_latch_video_data	:= '0';
+			out_latch_write_data	:= '0';
 
 		end procedure init_current_cycle;
 
@@ -190,6 +192,7 @@ begin
 			variable	n_out_latch_cpu_data	: std_logic;
 			variable	n_out_latch_boot_data	: std_logic;
 			variable	n_out_latch_video_data	: std_logic;
+			variable	n_out_latch_write_data	: std_logic;
 		begin
 
 			-- update variables
@@ -237,8 +240,15 @@ begin
 			end if;
 			n_out_latch_video_data		:= '0';
 
+			-- check the condition where we were writing and need ot stop it
+			if out_latch_write_data='1' then
+				n_out_sram_ce		:= '1';
+				n_out_sram_we		:= '1';
+			end if;
+			out_latch_write_data		:= '0';
 
-			if out_z80_clock='1' and n_out_z80_clock='0' then		-- falling edge on current_tstate
+
+			if out_z80_clock='1' and n_out_z80_clock='0' then		-- falling edge means change of tstate
 				-- first off, calculate the wait_n for the new tstate
 				calculate_wait( iorq_n	=> z80_iorq_n, 
 						mreq_n	=> z80_mreq_n,
@@ -246,12 +256,6 @@ begin
 						tstate	=> tstate,
 						idle	=> n_z80_bus_is_idle,
 						wait_n 	=> n_out_z80_wait_n );
-
---				report "T-state " & std_logic'image(tstate(1)) & std_logic'image(tstate(0)) & ", wait_n="&std_logic'image(n_out_z80_wait_n)
---					& " from iorq_n"&std_logic'image(z80_iorq_n)
---					& ", mreq_n"&std_logic'image(z80_mreq_n)
---					& ", m1_n"&std_logic'image(z80_m1_n)
---					& ". idle now "&std_logic'image(n_z80_bus_is_idle);
 
 				-- handle video data transfer
 				if tstate_for_video='1' then				-- start video byte transfer in T1 or T3
@@ -263,14 +267,7 @@ begin
 					n_out_video_byte_clock	:= '0';
 					n_out_latch_video_data	:= '1';
 
-					report "Starting video byte transfer at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
---				    else							-- and clock out the data in T2 or T4
---					n_out_video_byte_clock	:= '1';
---					n_out_video_byte_data	:= sram_data;
---					n_out_sram_ce		:= '1';
---					n_out_sram_oe		:= '1';
---
---					report "Video byte transfer complete at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_video_byte_data)));
+--					report "Starting video byte transfer at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
 				end if;
 
 				n_out_crtc_clock		:= lsb_of_video_address;
@@ -292,19 +289,21 @@ begin
 							n_out_latch_cpu_data	:= '1';
 						
 						report "Starting memory read at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
-					else								-- memory write
-						n_out_sram_data	:= z80_dout;
-						n_out_sram_we	:= '0';
-						n_out_sram_oe	:= '1';
-						n_out_sram_ce	:= '0';
+					elsif z80_wr_n='0' then					-- memory write
+						n_out_sram_data			:= z80_dout;
+						n_out_sram_we			:= '0';
+						n_out_sram_oe			:= '1';
+						n_out_sram_ce			:= '0';
+						out_latch_write_data		:= '1';
 
 						report "Starting memory write at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(z80_dout)));
+					else								-- memory write
+						report "Memory acces, neither read nor write at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(z80_dout)));
 					end if;
 					n_out_sram_ce		:= '0';
 
 				elsif tstate="01" then --and z80_mreq_n='0' and n_z80_bus_is_idle='0' then
-					--report "Disabling memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
-					report "Memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
+--					report "Memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
 
 --					if z80_iorq_n='1' then						-- get result of memory read
 --						n_out_z80_din	:= sram_data;

@@ -35,6 +35,11 @@ architecture impl of cpc is
 
 	-- t80 from opencores.org
 	component T80s is
+		generic(
+			Mode : integer := 0;	-- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
+			T2Write : integer := 0;	-- 0 => WR_n active in T3, /=0 => WR_n active in T2
+			IOWait : integer := 1	-- 0 => Single cycle I/O, 1 => Std I/O cycle
+		);
 		port(
 			RESET_n		: in std_logic;
 			CLK_n		: in std_logic;
@@ -210,7 +215,8 @@ architecture impl of cpc is
 	end process;
 
         -- z80
-        z80 : T80s port map ( RESET_n=>nRESET, CLK_n=>z80_clk, 
+        z80 : T80s generic map ( mode=>0, T2Write=>1, IOWait=>1 )
+		   port map ( RESET_n=>nRESET, CLK_n=>z80_clk, 
                               WAIT_n=>z80_WAIT_n, INT_n=>z80_INT_n, NMI_n=>z80_NMI_n, BUSRQ_n=>z80_BUSRQ_n,
                               M1_n=>z80_M1_n, MREQ_n=>z80_MREQ_n, IORQ_n=>z80_IORQ_n, RD_n=>z80_RD_n, WR_n=>z80_WR_n, RFSH_n=>z80_RFSH_n, HALT_n=>z80_HALT_n, BUSAK_n=>z80_BUSAK_n,
                               A=>z80_A, DI=>z80_DI, DO=>z80_DO );
