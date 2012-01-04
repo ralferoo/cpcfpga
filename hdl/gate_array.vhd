@@ -44,20 +44,39 @@ end gate_array;
 
 architecture impl of gate_array is
 
+	-- we work on a 16 MHz input clock, but the CPC works on a 4MHz clock with 4 cycles per "period"
+	-- so, we have 16 cycles per period
+
+--	type clock_divisor_time is std_logic_vector(3 downto 0);
+
+--	constant T1_start			: clock_divisor_time :=	"0000";
+--	constant T1_end				: clock_divisor_time :=	"0010";
+	
+--	constant T2_start			: clock_divisor_time :=	"0100";
+--	constant T2_end				: clock_divisor_time :=	"0110";
+	
+--	constant T3_start			: clock_divisor_time :=	"1000";
+--	constant T3_end				: clock_divisor_time :=	"1010";
+--	
+--	constant T4_start			: clock_divisor_time :=	"1100";
+--	constant T4_end				: clock_divisor_time :=	"1110";
+--	
+--	constant V1_start			: 
+
 	-- evil hacky code for bootstrapping
 	component testrom is port(
 		addr				: in std_logic_vector(13 downto 0);
 		data				: out std_logic_vector(7 downto 0)
         );
 	end component;
-	signal testrom_data : std_logic_vector(7 downto 0);
-	signal testrom_addr : std_logic_vector(13 downto 0);
+	signal bootrom_data : std_logic_vector(7 downto 0);
+	signal bootrom_addr : std_logic_vector(13 downto 0);
 
 	signal d_tstate : std_logic_vector(1 downto 0);
 	signal d_idle   : std_logic;
 begin
 	-- evil hacky code for bootstrapping
-	memory_testrom : testrom port map( addr=>testrom_addr, data=>testrom_data );
+	memory_bootrom : testrom port map( addr=>bootrom_addr, data=>bootrom_data );
 
 	process(nRESET,clk16) is
 
@@ -107,6 +126,7 @@ begin
 		variable		out_z80_wait_n		: std_logic;
 		variable		out_z80_din		: std_logic_vector(7 downto 0);
 
+		variable		out_boot_address	: std_logic_vector(13 downto 0);
 		variable		out_sram_address	: std_logic_vector(18 downto 0);
 		variable		out_sram_data		: std_logic_vector(7 downto 0);
 		variable		out_sram_we		: std_logic;
@@ -117,15 +137,23 @@ begin
 		variable		out_video_byte_clock	: std_logic;
 		variable		out_crtc_clock		: std_logic;
 
+		variable		out_latch_cpu_data	: std_logic;
+		variable		out_latch_boot_data	: std_logic;
+		variable		out_latch_video_data	: std_logic;
+
 		procedure init_current_cycle is
 		begin
 
 			-- init variables
-			current_cycle		:= "1000";	-- we want to make sure it's not "00"
+			current_cycle		:= "0100";	-- we want to make sure it's not "00"
 			z80_bus_is_idle		:= '1';
 			out_z80_clock		:= '0';
 			out_crtc_clock		:= '0';
 			out_z80_wait_n		:= '1';
+
+			out_latch_cpu_data	:= '0';
+			out_latch_boot_data	:= '0';
+			out_latch_video_data	:= '0';
 
 		end procedure init_current_cycle;
 
@@ -146,6 +174,7 @@ begin
 			variable	n_out_z80_wait_n	: std_logic;
 			variable	n_out_z80_din		: std_logic_vector(7 downto 0);
 
+			variable	n_out_boot_address	: std_logic_vector(13 downto 0);
 			variable	n_out_sram_address	: std_logic_vector(18 downto 0);
 			variable	n_out_sram_data		: std_logic_vector(7 downto 0);
 			variable	n_out_sram_we		: std_logic;
@@ -157,6 +186,10 @@ begin
 			variable	n_out_crtc_clock	: std_logic;
 
 			variable	n_out_read_next_cycle	: std_logic;
+
+			variable	n_out_latch_cpu_data	: std_logic;
+			variable	n_out_latch_boot_data	: std_logic;
+			variable	n_out_latch_video_data	: std_logic;
 		begin
 
 			-- update variables
@@ -165,6 +198,7 @@ begin
 			n_out_z80_din		:= out_z80_din;
 			n_out_z80_wait_n	:= out_z80_wait_n;
 
+			n_out_boot_address	:= out_boot_address;
 			n_out_sram_address	:= out_sram_address;
 			n_out_sram_data		:= out_sram_data;
 			n_out_sram_we		:= out_sram_we;
@@ -176,12 +210,35 @@ begin
 			n_out_crtc_clock	:= out_crtc_clock;
 
 			n_out_z80_clock_delayed	:= out_z80_clock;			--_delayed;
-			n_out_z80_clock		:= not n_current_cycle(1);
+			n_out_z80_clock		:= n_current_cycle(1);
 			tstate			:= n_current_cycle(3 downto 2);
 			tstate_for_video	:= n_current_cycle(2);
 			lsb_of_video_address	:= n_current_cycle(3);
 
-			if n_out_z80_clock='1' and out_z80_clock='0' then		-- rising edge on current_tstate
+			-- check the condition where we need to latch data from the sram bus for the CPU
+			if out_latch_cpu_data='1' then
+				n_out_z80_din		:= sram_data;
+				n_out_sram_ce		:= '1';
+				n_out_sram_oe		:= '1';
+			end if;
+			n_out_latch_cpu_data		:= '0';
+
+			if out_latch_boot_data='1' then
+				n_out_z80_din		:= bootrom_data;
+			end if;
+			n_out_latch_boot_data		:= '0';
+
+			-- check the condition where we need to latch data from the sram bus for the video
+			if out_latch_video_data='1' then
+				n_out_video_byte_clock	:= '1';
+				n_out_video_byte_data	:= sram_data;
+				n_out_sram_ce		:= '1';
+				n_out_sram_oe		:= '1';
+			end if;
+			n_out_latch_video_data		:= '0';
+
+
+			if out_z80_clock='1' and n_out_z80_clock='0' then		-- falling edge on current_tstate
 				-- first off, calculate the wait_n for the new tstate
 				calculate_wait( iorq_n	=> z80_iorq_n, 
 						mreq_n	=> z80_mreq_n,
@@ -198,41 +255,48 @@ begin
 
 				-- handle video data transfer
 				if tstate_for_video='1' then				-- start video byte transfer in T1 or T3
---------				    if crtc_de='0' and crtc_de='1' then			-- just for neatness...
 					n_out_sram_address	:= "000" & crtc_ma(13 downto 12) & crtc_ra(2 downto 0) & crtc_ma(9 downto 0) & lsb_of_video_address;
 					n_out_sram_data		:= (others=>'Z');
 					n_out_sram_we		:= '1';
 					n_out_sram_ce		:= '0';
 					n_out_sram_oe		:= '0';
 					n_out_video_byte_clock	:= '0';
+					n_out_latch_video_data	:= '1';
 
 					report "Starting video byte transfer at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
-				    else							-- and clock out the data in T2 or T4
-					n_out_video_byte_clock	:= '1';
-					n_out_video_byte_data	:= sram_data;
-					n_out_sram_ce		:= '1';
-					n_out_sram_oe		:= '1';
-
-					report "Video byte transfer complete at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_video_byte_data)));
---------				    end if;
+--				    else							-- and clock out the data in T2 or T4
+--					n_out_video_byte_clock	:= '1';
+--					n_out_video_byte_data	:= sram_data;
+--					n_out_sram_ce		:= '1';
+--					n_out_sram_oe		:= '1';
+--
+--					report "Video byte transfer complete at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_video_byte_data)));
 				end if;
 
-				n_out_crtc_clock		:= not lsb_of_video_address;
+				n_out_crtc_clock		:= lsb_of_video_address;
 
 				-- handle regular ram transfer
 				if tstate="00" and z80_mreq_n='0' and n_z80_bus_is_idle='0' then	-- start a memory read/write
 					calculate_address( z80_a, n_out_sram_address, z80_rd_n );
 
 					if z80_rd_n='0' then						-- memory read
-						n_out_sram_data	:= (others=>'Z');
-						n_out_sram_we	:= '1';
-						n_out_sram_oe	:= '0';
-
+						if z80_a(14 downto 13)="00" then
+							n_out_latch_boot_data	:= '1';
+							n_out_boot_address	:= n_out_sram_address(13 downto 0);
+						else
+						end if;
+							n_out_sram_data		:= (others=>'Z');
+							n_out_sram_we		:= '1';
+							n_out_sram_oe		:= '0';
+							n_out_sram_ce		:= '0';
+							n_out_latch_cpu_data	:= '1';
+						
 						report "Starting memory read at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
 					else								-- memory write
 						n_out_sram_data	:= z80_dout;
 						n_out_sram_we	:= '0';
 						n_out_sram_oe	:= '1';
+						n_out_sram_ce	:= '0';
 
 						report "Starting memory write at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(z80_dout)));
 					end if;
@@ -242,14 +306,14 @@ begin
 					--report "Disabling memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
 					report "Memory access at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(sram_data)));
 
-					if z80_iorq_n='1' then						-- get result of memory read
-						n_out_z80_din	:= sram_data;
-
-						-- evil hacky code for bootstrapping
-						if out_sram_address(15 downto 14)="00" then
-							n_out_z80_din	:= testrom_data;
-						end if;
-					end if;
+--					if z80_iorq_n='1' then						-- get result of memory read
+--						n_out_z80_din	:= sram_data;
+--
+--						-- evil hacky code for bootstrapping
+--						if out_sram_address(15 downto 14)="00" then
+--							n_out_z80_din	:= bootrom_data;
+--						end if;
+--					end if;
 
 					-- note, we don't actually want to disable the memory as we just scheduled a video read byte
 --					n_out_sram_ce		:= '1';					-- in any case, disable the chip
@@ -267,6 +331,7 @@ begin
 			out_z80_clock		:= n_out_z80_clock;
 			out_z80_clock_delayed	:= n_out_z80_clock_delayed;
 
+			out_boot_address	:= n_out_boot_address;
 			out_sram_address	:= n_out_sram_address;
 			out_sram_data		:= n_out_sram_data;
 			out_sram_we		:= n_out_sram_we;
@@ -276,6 +341,10 @@ begin
 			out_video_byte_clock	:= n_out_video_byte_clock;
 			out_video_byte_data	:= n_out_video_byte_data;
 			out_crtc_clock		:= n_out_crtc_clock;
+
+			out_latch_cpu_data	:= n_out_latch_cpu_data;
+			out_latch_boot_data	:= n_out_latch_boot_data;
+			out_latch_video_data	:= n_out_latch_video_data;
 		end procedure update_current_cycle;
 
 		procedure update_ports_current_cycle is
@@ -293,7 +362,7 @@ begin
 
 			video_data		<= out_video_byte_data;
 
-			testrom_addr		<= out_sram_address(13 downto 0);	-- because it could have been trashed by the refresh
+			bootrom_addr		<= out_boot_address;
 
 			d_tstate		<= current_cycle(3 downto 2);
 			d_idle			<= z80_bus_is_idle;

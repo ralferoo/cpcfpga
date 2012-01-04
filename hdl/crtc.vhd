@@ -183,7 +183,7 @@ begin
 			HSYNC			<= '0';
 			VSYNC			<= '0';
 
-		elsif rising_edge(CLK) then
+		elsif falling_edge(CLK) then							-- figure 6, everything is updated in response to fall edge
 			-- copy all signals locally, so we avoid latches
 			n_hpos			:= v_hpos;
 			n_hdisp			:= v_hdisp;
