@@ -71,12 +71,12 @@ set_io {sram_data[1]}	  	-pinname 58 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_data[2]}	  	-pinname 57 -fixed yes -SLEW Low -DIRECTION Output
 
 
-set_io uart_rx          \
+set_io rxd          \
     -pinname 16       \
     -fixed yes        \
     -DIRECTION Input
 
-set_io uart_tx          \
+set_io txd          \
     -pinname 19       \
     -fixed yes        \
     -DIRECTION Output

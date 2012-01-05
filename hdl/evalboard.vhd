@@ -10,8 +10,8 @@ entity evalboard is
 		clock			: in  std_logic;
 		pushsw			: in  std_logic_vector(3 downto 0);
 		dipsw			: in  std_logic_vector(7 downto 0);
-		uart_rx			: in  std_logic;
-		uart_tx			: out std_logic;
+		rxd			: in  std_logic;
+		txd			: out std_logic;
 		dummy			: out std_logic;
 		leds			: out std_logic_vector(7 downto 0);
 		sram_address		: out std_logic_vector(18 downto 0);
@@ -34,8 +34,8 @@ architecture impl of evalboard is
 		clk16			: in  std_logic;
 		pushsw			: in  std_logic_vector(3 downto 0);
 		dipsw			: in  std_logic_vector(7 downto 0);
-		uart_rx			: in  std_logic;
-		uart_tx			: out std_logic;
+		rxd			: in  std_logic;
+		txd			: out std_logic;
 		dummy			: out std_logic;
 		leds			: out std_logic_vector(7 downto 0);
 		sram_address		: out std_logic_vector(18 downto 0);
@@ -60,8 +60,8 @@ end component;
 		clk16 => clk16,
 		pushsw => pushsw,
 		dipsw => dipsw,
-		uart_rx => uart_rx,
-		uart_tx => uart_tx,
+		rxd => rxd,
+		txd => txd,
 		dummy => dummy,
 		leds => leds,
 		sram_address => sram_address,

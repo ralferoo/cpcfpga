@@ -11,8 +11,8 @@ entity cpc is
 		pushsw			: in  std_logic_vector(3 downto 0);
 		dipsw			: in  std_logic_vector(7 downto 0);
 
-		uart_rx			: in  std_logic;
-		uart_tx			: out std_logic;
+		rxd			: in  std_logic;
+		txd			: out std_logic;
 
 		dummy			: out std_logic;
 		leds			: out std_logic_vector(7 downto 0);
@@ -113,7 +113,7 @@ architecture impl of cpc is
 	end component;
     
 	-- uart tx
-	component my_uart_tx is port (
+	component uart_tx is port (
 		nrst       : in std_logic;
 		clk16mhz   : in std_logic;
 
@@ -124,9 +124,9 @@ architecture impl of cpc is
 		txd        : out std_logic);
 	end component;
 
-	signal my_uart_tx_empty, my_uart_tx_load : std_logic;
-	signal my_uart_tx_data                                      : std_logic_vector(7 downto 0); 
-	signal my_uart_tx_txd                                       : std_logic;
+	signal uart_tx_empty, uart_tx_load : std_logic;
+	signal uart_tx_data                                      : std_logic_vector(7 downto 0); 
+	signal uart_tx_txd                                       : std_logic;
 
 	-- crtc
 	component crtc is port(
@@ -276,7 +276,7 @@ architecture impl of cpc is
 	    		    z80_DI_is_from_iorq <= '1';
 
 		    	elsif z80_A(15 downto 0) = x"FADD" then
-			    z80_DI_from_iorq(7) <= my_uart_tx_empty;          		-- latch the empty flag data
+			    z80_DI_from_iorq(7) <= uart_tx_empty;          		-- latch the empty flag data
 			    z80_DI_from_iorq(3 downto 0) <= not pushsw(3 downto 0);
 	    		    z80_DI_is_from_iorq <= '1';
 
@@ -293,15 +293,15 @@ architecture impl of cpc is
         begin
             if nRESET = '0' then
                 leds		<= (others=>'0');
-		my_uart_tx_data	<= (others=>'0');
-		my_uart_tx_load <= '0';
+		uart_tx_data	<= (others=>'0');
+		uart_tx_load <= '0';
             
 	    elsif rising_edge(z80_clk) then
-		my_uart_tx_load <= '0';
+		uart_tx_load <= '0';
 
 		    if z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADC" then
-			my_uart_tx_data	<= z80_DO;
-	    		my_uart_tx_load <= '1';
+			uart_tx_data	<= z80_DO;
+	    		uart_tx_load <= '1';
             
 	         elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADE" then
 		        leds <= not z80_DO(7 downto 0);
@@ -313,10 +313,10 @@ architecture impl of cpc is
         -- use dummy pins
         dummy <= dipsw   (0) xor dipsw   (1) xor dipsw   (2) xor dipsw   (3) xor dipsw   (4) xor dipsw   (5) xor dipsw   (6) xor dipsw   (7) xor 
                  pushsw  (0) xor pushsw  (1) xor pushsw  (2) xor pushsw  (3) xor
-                 uart_rx xor nRESET;
+                 rxd xor nRESET;
 
         -- uart echo
-        my_tx  : my_uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>my_uart_tx_txd , load=>my_uart_tx_load , data=>my_uart_tx_data , empty=>my_uart_tx_empty );
-        uart_tx <= my_uart_tx_txd;
+        uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>uart_tx_load , data=>uart_tx_data , empty=>uart_tx_empty );
+        txd <= uart_tx_txd;
 
 end impl;
