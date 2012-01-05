@@ -95,7 +95,9 @@ architecture impl of cpc is
 			crtc_hsync, crtc_vsync		: in  std_logic;				-- sync pulses from crtc
 			crtc_de				: in  std_logic;				-- display enable from crtc
 
-			video_data			: out std_logic_vector(7 downto 0);
+			-- video output
+			video_sync			: out std_logic;				-- 1 when sync pulse needed
+			video_red,video_green,video_blue: out std_logic_vector(1 downto 0);		-- 2 bits per colour output
 	
 			-- sram interface
 			sram_address			: out std_logic_vector(18 downto 0);
@@ -146,33 +148,27 @@ architecture impl of cpc is
 	signal	crtc_RA			: 	std_logic_vector(3 downto 0);
 	signal	crtc_HSYNC, crtc_VSYNC	: 	std_logic;
 
-	signal	video_data		: std_logic_vector(7 downto 0);
+	--signal	video_data		: std_logic_vector(7 downto 0);
+	signal	video_sync			:     std_logic;				-- 1 when sync pulse needed
+	signal	video_red,video_green,video_blue:     std_logic_vector(1 downto 0);		-- 2 bits per colour output
 
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
 
         -- video
         video_sound <= '0';
-	process(crtc_HSYNC, crtc_VSYNC, crtc_DE, crtc_MA, crtc_RA,video_data)
+	process(video_sync, video_red, video_green, video_blue)
 	begin
-		if crtc_HSYNC='1' or crtc_VSYNC='1' then
+		if video_sync='1' then
 			video_sync2	<= "00";
 			video_r2	<= "00";
 			video_g2	<= "00";
 			video_b2	<= "00";
-		elsif crtc_DE='0' then
-			video_sync2	<= dipsw(0) & (not dipsw(0));
-			video_r2	<= "00";
-			video_g2	<= "00";
-			video_b2	<= "00";
 		else
-			video_sync2	<= (crtc_MA(5) or crtc_MA(0)) & (crtc_MA(6) or not crtc_MA(0)); --dipsw(0) & (not dipsw(0));
-			video_r2	<= video_data(5 downto 4);
-			video_g2	<= video_data(3 downto 2);
-			video_b2	<= video_data(1 downto 0);
---			video_r2	<= crtc_RA(2 downto 1);
---			video_g2	<= crtc_MA(2 downto 1);
---			video_b2	<= crtc_MA(4 downto 3);
+			video_sync2	<= dipsw(0) & (not dipsw(0));
+			video_r2	<= video_red;
+			video_g2	<= video_green;
+			video_b2	<= video_blue;
 		end if;
 	end process;
 
@@ -214,7 +210,10 @@ architecture impl of cpc is
 			z80_mreq_n			=> z80_MREQ_n,
 			z80_wait_n			=> z80_WAIT_n,
 	
-			video_data			=> video_data,
+			video_sync			=> video_sync,
+			video_red			=> video_red,
+			video_green			=> video_green,
+			video_blue			=> video_blue,
 
 			-- crtc interface (for screen reading)
 			crtc_clk			=> crtc_CLK,

@@ -32,9 +32,8 @@ entity gate_array is
 		crtc_de				: in  std_logic;				-- display enable from crtc
 		
 		-- video output
-		--video_sync			: out std_logic;				-- 1 when sync pulse needed
-		--video_red,video_green,video_blue: out std_logic_vector(1 downto 0);		-- 2 bits per colour output
-		video_data			: out std_logic_vector(7 downto 0);
+		video_sync			: out std_logic;				-- 1 when sync pulse needed
+		video_red,video_green,video_blue: out std_logic_vector(1 downto 0);		-- 2 bits per colour output
 
 		-- sram interface
 		sram_address			: out std_logic_vector(18 downto 0);
@@ -106,7 +105,6 @@ begin
 		variable		current_cycle		: std_logic_vector(3 downto 0);	
 		variable		z80_bus_is_idle		: std_logic;	
 
-		--alias			out_z80_clock		: std_logic			is   current_cycle(1);
 		variable		out_z80_clock		: std_logic;
 
 		variable		out_z80_wait_n		: std_logic;
@@ -122,6 +120,11 @@ begin
 		variable		out_video_byte_data	: std_logic_vector(7 downto 0);
 		variable		out_video_byte_clock	: std_logic;
 		variable		out_crtc_clock		: std_logic;
+
+		variable		out_video_sync		: std_logic;
+		variable		out_video_red		: std_logic_vector(1 downto 0);
+		variable		out_video_green		: std_logic_vector(1 downto 0);
+		variable		out_video_blue		: std_logic_vector(1 downto 0);
 
 		variable		out_latch_cpu_data	: std_logic;
 		variable		out_latch_boot_data	: std_logic;
@@ -168,6 +171,11 @@ begin
 			variable	n_out_video_byte_clock	: std_logic;
 			variable	n_out_crtc_clock	: std_logic;
 
+			variable	n_out_video_sync	: std_logic;
+			variable	n_out_video_red		: std_logic_vector(1 downto 0);
+			variable	n_out_video_green	: std_logic_vector(1 downto 0);
+			variable	n_out_video_blue	: std_logic_vector(1 downto 0);
+
 			variable	n_out_read_next_cycle	: std_logic;
 
 			variable	n_out_latch_cpu_data	: std_logic;
@@ -193,6 +201,11 @@ begin
 			n_out_video_byte_data	:= out_video_byte_data;
 			n_out_crtc_clock	:= out_crtc_clock;
 
+			n_out_video_sync	:= out_video_sync;
+			n_out_video_red		:= out_video_red;
+			n_out_video_green	:= out_video_green;
+			n_out_video_blue	:= out_video_blue;
+
 			n_out_z80_clock		:= n_current_cycle(1);
 			tstate			:= n_current_cycle(3 downto 2);
 			tstate_for_video	:= n_current_cycle(2);
@@ -217,6 +230,17 @@ begin
 				n_out_video_byte_data	:= sram_data;
 				n_out_sram_ce		:= '1';
 				n_out_sram_oe		:= '1';
+
+				if crtc_DE='0' then
+					n_out_video_red		:= "00";
+					n_out_video_green	:= "00";
+					n_out_video_blue	:= "00";
+				else
+					n_out_video_red		:= n_out_video_byte_data(5 downto 4);
+					n_out_video_green	:= n_out_video_byte_data(3 downto 2);
+					n_out_video_blue	:= n_out_video_byte_data(1 downto 0);
+				end if;
+				n_out_video_sync		:= crtc_HSYNC or crtc_VSYNC;
 			end if;
 			n_out_latch_video_data		:= '0';
 
@@ -303,6 +327,11 @@ begin
 			out_video_byte_data	:= n_out_video_byte_data;
 			out_crtc_clock		:= n_out_crtc_clock;
 
+			out_video_sync		:= n_out_video_sync;
+			out_video_red		:= n_out_video_red;
+			out_video_green		:= n_out_video_green;
+			out_video_blue		:= n_out_video_blue;
+
 			out_latch_cpu_data	:= n_out_latch_cpu_data;
 			out_latch_boot_data	:= n_out_latch_boot_data;
 			out_latch_video_data	:= n_out_latch_video_data;
@@ -321,7 +350,11 @@ begin
 			sram_ce			<= out_sram_ce;
 			sram_oe			<= out_sram_oe;
 
-			video_data		<= out_video_byte_data;
+			--video_data		<= out_video_byte_data;
+			video_sync		<= out_video_sync;
+			video_red		<= out_video_red;
+			video_green		<= out_video_green;
+			video_blue		<= out_video_blue;
 
 			bootrom_addr		<= out_boot_address;
 
