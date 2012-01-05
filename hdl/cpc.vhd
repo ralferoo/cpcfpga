@@ -98,6 +98,10 @@ architecture impl of cpc is
 			-- video output
 			video_sync			: out std_logic;				-- 1 when sync pulse needed
 			video_red,video_green,video_blue: out std_logic_vector(1 downto 0);		-- 2 bits per colour output
+
+			-- bootrom interface
+        		bootrom_addr        		: out std_logic_vector(13 downto 0);		-- address set here
+        		bootrom_data        		: in  std_logic_vector(7 downto 0);		-- data becomes available here
 	
 			-- sram interface
 			sram_address			: out std_logic_vector(18 downto 0);
@@ -152,8 +156,20 @@ architecture impl of cpc is
 	signal	video_sync			:     std_logic;				-- 1 when sync pulse needed
 	signal	video_red,video_green,video_blue:     std_logic_vector(1 downto 0);		-- 2 bits per colour output
 
+	-- evil hacky code for bootstrapping
+	component bootrom is port(
+		addr				: in std_logic_vector(13 downto 0);
+		data				: out std_logic_vector(7 downto 0)
+        );
+	end component;
+	signal bootrom_data : std_logic_vector(7 downto 0);
+	signal bootrom_addr : std_logic_vector(13 downto 0);
+
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
+
+	-- bootstrap code
+	bootrom_0 : bootrom port map( addr=>bootrom_addr, data=>bootrom_data );
 
         -- video
         video_sound <= '0';
@@ -214,6 +230,10 @@ architecture impl of cpc is
 			video_red			=> video_red,
 			video_green			=> video_green,
 			video_blue			=> video_blue,
+
+			-- initial boot rom
+			bootrom_addr			=> bootrom_addr,
+			bootrom_data			=> bootrom_data,
 
 			-- crtc interface (for screen reading)
 			crtc_clk			=> crtc_CLK,

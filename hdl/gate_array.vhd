@@ -35,6 +35,10 @@ entity gate_array is
 		video_sync			: out std_logic;				-- 1 when sync pulse needed
 		video_red,video_green,video_blue: out std_logic_vector(1 downto 0);		-- 2 bits per colour output
 
+		-- bootrom interface
+        	bootrom_addr        		: out std_logic_vector(13 downto 0);		-- address set here
+        	bootrom_data        		: in  std_logic_vector(7 downto 0);		-- data becomes available here
+
 		-- sram interface
 		sram_address			: out std_logic_vector(18 downto 0);
 		sram_data			: inout std_logic_vector(7 downto 0);
@@ -49,21 +53,9 @@ architecture impl of gate_array is
 	-- we work on a 16 MHz input clock, but the CPC works on a 4MHz clock with 4 cycles per "period"
 	-- so, we have 16 cycles per period.
 
-	-- evil hacky code for bootstrapping
-	component bootrom is port(
-		addr				: in std_logic_vector(13 downto 0);
-		data				: out std_logic_vector(7 downto 0)
-        );
-	end component;
-	signal bootrom_data : std_logic_vector(7 downto 0);
-	signal bootrom_addr : std_logic_vector(13 downto 0);
-
 	signal d_tstate : std_logic_vector(1 downto 0);
 	signal d_idle   : std_logic;
 begin
-	-- evil hacky code for bootstrapping
-	memory_bootrom : bootrom port map( addr=>bootrom_addr, data=>bootrom_data );
-
 	process(nRESET,clk16) is
 
 		------------------------------------------------------------------------------------------------------------
@@ -140,6 +132,22 @@ begin
 			out_z80_clock		:= '0';
 			out_crtc_clock		:= '0';
 			out_z80_wait_n		:= '1';
+			out_z80_din		:= (others=>'0');
+
+			out_boot_address	:= (others=>'0');
+			out_sram_address	:= (others=>'0');
+			out_sram_data		:= (others=>'0');
+			out_sram_we		:= '0';
+			out_sram_ce		:= '0';
+			out_sram_oe		:= '0';
+
+			out_video_byte_data	:= (others=>'0');
+			out_video_byte_clock	:= '0';
+
+			out_video_sync		:= '0';
+			out_video_red		:= (others=>'0');
+			out_video_green		:= (others=>'0');
+			out_video_blue		:= (others=>'0');
 
 			out_latch_cpu_data	:= '0';
 			out_latch_boot_data	:= '0';

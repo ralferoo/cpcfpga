@@ -47,7 +47,7 @@ use ieee.std_logic_arith.all;
 
 entity '''+name+''' is
     port(
-        addr        : std_logic_vector(13 downto 0);
+        addr        : in  std_logic_vector(13 downto 0);
         data        : out std_logic_vector(7 downto 0)
     );
 end '''+name+''';

@@ -1,17 +1,17 @@
--- testrom.vhd
+-- bootrom.vhd
 library IEEE;
 use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use ieee.std_logic_arith.all;
 
-entity testrom is
+entity bootrom is
     port(
-        addr        : std_logic_vector(13 downto 0);
+        addr        : in  std_logic_vector(13 downto 0);
         data        : out std_logic_vector(7 downto 0)
     );
-end testrom;
+end bootrom;
 
-architecture impl of testrom is
+architecture impl of bootrom is
 
 begin
 process (addr)
