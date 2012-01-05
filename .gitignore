@@ -30,3 +30,12 @@ constraint/data
 simulation/modelsim.ini.sav
 designer/impl1/*.tcl
 designer/impl1/*.adb
+
+#       sim.tcl
+simulation/presynth/
+simulation/vsim.wlf
+simulation/work/
+transcript
+vsim.wlf
+work/
+
