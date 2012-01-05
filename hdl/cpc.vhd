@@ -205,7 +205,7 @@ architecture impl of cpc is
 	crtc_0 : crtc port map( nRESET=>nRESET, MA=>crtc_MA, DE=>crtc_DE, CLK=>crtc_CLK,
 				RW=>z80_A(9), E=>crtc_E, RS=>z80_A(8), nCS=>z80_A(14),
 				DIN=>z80_DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
-	crtc_E	 <= z80_IORD_n nor z80_IOWR_n;
+	crtc_E	 <= z80_IORD_n nand z80_IOWR_n;
 
 	-- gate array
 	gate_array_0 : gate_array port map (

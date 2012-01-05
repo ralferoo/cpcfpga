@@ -2,7 +2,12 @@
 	org #0000
 
 
-
+	ld bc,#bc00
+	ld a,1
+	out (c),a
+	inc b
+	ld a,32
+	out (c),a				; change width of screen per iteration
 
 	ld ix,0
 	ld sp,#fffe
@@ -16,6 +21,17 @@ fill:	ld (hl),#bd
 	jr nz, fill
 
 repeat:	
+
+	
+	ld bc,#bc00
+	ld a,1
+	out (c),a
+	inc b
+	ld a,ixl
+	and #1f
+	add a,8
+	out (c),a				; change width of screen per iteration
+
 
 	ld hl,string
 loop:	

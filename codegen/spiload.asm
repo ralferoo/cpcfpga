@@ -16,13 +16,15 @@
 	out (c),e			; C0 = mid addr
 	out (c),l			; 00 = LSB addr -> output 3 bytes of address FFC000 (top 16KB)
 	
+	ld a,e				; end at #c000
 xferloop:
-	out (c),l			; dummy write to trigger a read
-	ini				; read the byte and store it in memory
-	inc b				; fix b which has just been decremented
-	ld a,h				; end at #c000
-	cp e
-	jr z,xferloop			; loop until we reach the last byte
+	out (c),l			; 4us dummy write to trigger a read
+	ini				; 5us read the byte and store it in memory
+	inc b				; 1us fix b which has just been decremented
+	cp h				; 1us 
+	jr z,xferloop			; 3us loop until we reach the last byte
+
+					; total - 14us per byte = 230ms for 16KB
 
 ;	ld a,c				; FF
 ;	dec c				; FAFE = SPI control
