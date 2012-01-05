@@ -112,7 +112,7 @@ architecture impl of cpc is
 		);
 	end component;
     
-	-- uart tx
+	-- uart
 	component uart_tx is port (
 		nrst       : in std_logic;
 		clk16mhz   : in std_logic;
@@ -124,9 +124,26 @@ architecture impl of cpc is
 		txd        : out std_logic);
 	end component;
 
-	signal uart_tx_empty, uart_tx_load : std_logic;
-	signal uart_tx_data                                      : std_logic_vector(7 downto 0); 
-	signal uart_tx_txd                                       : std_logic;
+	signal uart_tx_empty, uart_tx_load			: std_logic;
+	signal uart_tx_data					: std_logic_vector(7 downto 0); 
+	signal uart_tx_txd					: std_logic;
+
+	component uart_rx is
+		port (
+			nrst       : in std_logic;
+			clk16mhz   : in std_logic;
+
+			clear      : in  std_logic;                                          -- triggered on rising edge
+			data       : out std_logic_vector(7 downto 0);                      -- must be latchable as load goes high
+			avail      : out std_logic;
+			errorfound : out std_logic;
+
+			rxd        : in  std_logic);
+	end component;
+
+	signal uart_rx_avail, uart_rx_clear, uart_rx_error	: std_logic;
+	signal uart_rx_data					: std_logic_vector(7 downto 0); 
+	signal uart_rx_rxd					: std_logic;
 
 	-- crtc
 	component crtc is port(
@@ -267,22 +284,32 @@ architecture impl of cpc is
     	        z80_DI_from_iorq <= (others=>'0');
             
 	    elsif rising_edge(z80_clk) then
+		uart_rx_clear <= '0';
 	    	z80_DI_is_from_iorq <= '0';
     	        z80_DI_from_iorq <= (others=>'0');
+
 	    	if z80_IORQ_n = '0' and z80_RD_n = '0' then
 
 			if    z80_A(15 downto 0) = x"FADE" then
-			    z80_DI_from_iorq <= not dipsw(7 downto 0);
-	    		    z80_DI_is_from_iorq <= '1';
-
+				z80_DI_from_iorq <= not dipsw(7 downto 0);
+				z80_DI_is_from_iorq <= '1';
+            
 		    	elsif z80_A(15 downto 0) = x"FADD" then
-			    z80_DI_from_iorq(7) <= uart_tx_empty;          		-- latch the empty flag data
-			    z80_DI_from_iorq(3 downto 0) <= not pushsw(3 downto 0);
-	    		    z80_DI_is_from_iorq <= '1';
+				z80_DI_from_iorq(7) <= uart_tx_empty;       		-- uart status and push buttons
+				z80_DI_from_iorq(6) <= uart_rx_avail;        
+				z80_DI_from_iorq(5) <= uart_rx_error;         
+	
+				z80_DI_from_iorq(3 downto 0) <= not pushsw(3 downto 0);
+				z80_DI_is_from_iorq <= '1';
+
+		    	elsif z80_A(15 downto 0) = x"FADC" then				-- uart data
+				z80_DI_from_iorq <= uart_rx_data;
+				z80_DI_is_from_iorq <= '1';
+				uart_rx_clear <= '1';
 
 		    	elsif z80_A(14)='0' then
-			    z80_DI_from_iorq <= crtc_DOUT;
-	    		    z80_DI_is_from_iorq <= '1';
+				z80_DI_from_iorq <= crtc_DOUT;
+				z80_DI_is_from_iorq <= '1';
 			end if;
 		end if;
             end if;
@@ -312,11 +339,13 @@ architecture impl of cpc is
 	
         -- use dummy pins
         dummy <= dipsw   (0) xor dipsw   (1) xor dipsw   (2) xor dipsw   (3) xor dipsw   (4) xor dipsw   (5) xor dipsw   (6) xor dipsw   (7) xor 
-                 pushsw  (0) xor pushsw  (1) xor pushsw  (2) xor pushsw  (3) xor
-                 rxd xor nRESET;
+                 pushsw  (0) xor pushsw  (1) xor pushsw  (2) xor pushsw  (3);
 
-        -- uart echo
+        -- uart
         uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>uart_tx_load , data=>uart_tx_data , empty=>uart_tx_empty );
         txd <= uart_tx_txd;
+
+        uart_rx_0  : uart_rx port map( nrst=>nreset, clk16mhz=>clk16, rxd=>uart_rx_rxd , avail=>uart_rx_avail , data=>uart_rx_data , clear=>uart_rx_clear, errorfound=>uart_rx_error );
+	uart_rx_rxd <= rxd;
 
 end impl;

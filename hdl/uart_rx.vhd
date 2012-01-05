@@ -5,15 +5,16 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 entity uart_rx is
-  port (
-     nrst       : in std_logic;
-     clk16mhz   : in std_logic;
+	port (
+		nrst       : in std_logic;
+		clk16mhz   : in std_logic;
 
-     clear      : in  std_logic;                                          -- triggered on rising edge
-     data       : out std_logic_vector(7 downto 0);                      -- must be latchable as load goes high
-     avail      : out std_logic;
+		clear      : in  std_logic;                                          -- triggered on rising edge
+		data       : out std_logic_vector(7 downto 0);                      -- must be latchable as load goes high
+		avail      : out std_logic;
+		errorfound : out std_logic;
 
-     rxd        : in  std_logic);
+		rxd        : in  std_logic);
 end entity;
 
 architecture impl of uart_rx is
@@ -60,6 +61,7 @@ begin
 		elsif rising_edge(clk16mhz) then
 			if clear='1' and last='0' then
 				data_out(0).full	:= '0';
+				error_found		:= '0';
 			end if;
 			last := clear;
 
@@ -121,8 +123,9 @@ begin
 			retime	:= rxd;
 
 			-- output the available data state
-			data	<= data_out(0).byte;
-			avail	<= data_out(0).full;
+			data		<= data_out(0).byte;
+			avail		<= data_out(0).full;
+			errorfound	<= error_found;
 		end if;
 	end process;
 end impl;
