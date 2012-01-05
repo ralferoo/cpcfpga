@@ -53,7 +53,7 @@ process (addr)
             when "00100001" => data <= X"01";
             when "00100010" => data <= X"ed";
             when "00100011" => data <= X"79";
-            when "00100100" => data <= X"14";
+            when "00100100" => data <= X"04";
             when "00100101" => data <= X"dd";
             when "00100110" => data <= X"7d";
             when "00100111" => data <= X"e6";
