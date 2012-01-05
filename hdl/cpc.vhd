@@ -29,10 +29,6 @@ entity cpc is
 end cpc;
 
 architecture impl of cpc is
-	-- PLL
---	signal clk_divider      : std_logic_vector(15 downto 0);        -- (0)=8mhz, (1)=4mhz, (2)=2mhz, (3)=1mhz
-	--signal clk4,clk1        : std_logic;
-
 	-- t80 from opencores.org
 	component T80s is
 		generic(
@@ -110,27 +106,6 @@ architecture impl of cpc is
 		);
 	end component;
     
-	-- my ram code, obsoleted by gate_array
-	component memory_mux is port(
-		nrst			: in  std_logic;
-
-		MREQ_n			: in std_logic;
-		IORQ_n			: in std_logic;
-		RD_n			: in std_logic;
-		WR_n			: in std_logic;
-		A			: in std_logic_vector(15 downto 0);
-		DI			: out std_logic_vector(7 downto 0);		-- these are named as per CPU view
-		DO			: in std_logic_vector(7 downto 0);		-- these are named as per CPU view
-
-		sram_address		: out std_logic_vector(18 downto 0);
-		sram_data		: inout std_logic_vector(7 downto 0);
-		sram_we			: out std_logic;
-		sram_ce			: out std_logic;				-- i might tie this low
-		sram_oe			: out std_logic;				-- could even tie this low
-
-		clk			: in std_logic);
-	end component;
-	
 	-- uart tx
 	component my_uart_tx is port (
 		nrst       : in std_logic;
@@ -175,19 +150,6 @@ architecture impl of cpc is
 
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
-	-- generate the master clock
---        process (clk16)
---        begin
---            if rising_edge(clk16) then
---                clk_divider <= clk_divider + 1;
---            end if;
---        end process;
---	z80_clk <=    clk_divider(1) when dipsw(7 downto 6)="00"
---		else clk_divider(7) when dipsw(7 downto 6)="01"
---		else clk_divider(11) when dipsw(7 downto 6)="10"
---		else clk_divider(15);
-	--clk4 <= clk_divider(1);
-	--clk1 <= clk_divider(3);
 
         -- video
         video_sound <= '0';
@@ -223,7 +185,6 @@ architecture impl of cpc is
 	z80_IORD_n <= z80_IORQ_n OR z80_RD_n;
 	z80_IOWR_n <= z80_IORQ_n OR z80_WR_n;
 
---        WAIT_n <=  '1'; --pushsw(0) and (nWAIT_uart_tx or not pushsw(3));
         z80_INT_n <=   '1'; --pushsw(1);
         z80_NMI_n <=   '1'; --pushsw(2);
         z80_BUSRQ_n <= '1'; --pushsw(3);
@@ -233,7 +194,6 @@ architecture impl of cpc is
 				RW=>z80_A(9), E=>crtc_E, RS=>z80_A(8), nCS=>z80_A(14),
 				DIN=>z80_DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
 	crtc_E	 <= z80_IORD_n nor z80_IOWR_n;
---	crtc_CLK <= clk1;
 
 	-- gate array
 	gate_array_0 : gate_array port map (
@@ -268,10 +228,6 @@ architecture impl of cpc is
 			sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
 
         -- memory
---        memory : memory_mux port map ( nrst=>nRESET, clk=>clk16, 
---            MREQ_n=>MREQ_n, IORQ_n=>IORQ_n, RD_n=>RD_n, WR_n=>WR_n, A=>A, DI=>DI_from_mem, DO=>DO,
---            sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
-
 	    z80_DI <= z80_DI_from_iorq when z80_DI_is_from_iorq='1' else z80_DI_from_mem;
 
 	process(z80_clk,z80_MREQ_n,z80_RD_n)
