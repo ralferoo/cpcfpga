@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
-entity my_uart_tx is
+entity uart_tx is
   port (
      nrst       : in std_logic;
      clk16mhz   : in std_logic;
@@ -16,7 +16,7 @@ entity my_uart_tx is
      txd        : out std_logic);
 end entity;
 
-architecture impl of my_uart_tx is
+architecture impl of uart_tx is
 begin
 	process(clk16mhz, nrst)
 		variable	clkcount	: std_logic_vector(7 downto 0);
