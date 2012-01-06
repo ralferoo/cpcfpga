@@ -66,6 +66,9 @@ syn: build/$(EDN_NAME)
 build/.dummy:
 	-@mkdir build
 	@echo dummy >$@
+image/.dummy:
+	-@mkdir image
+	@echo dummy >$@
 
 build/$(TOP_NAME)_fp.tcl: build/.dummy Makefile
 	@echo Rebuilding $@
@@ -151,7 +154,7 @@ build/$(TOP_NAME)_build.tcl: Makefile build/.dummy
 
 ##########################################################################
 
-codegen: hdl/testrom.vhd hdl/evalboard.vhd
+codegen: hdl/bootrom.vhd hdl/evalboard.vhd
 
 hdl/jingle.vhd: codegen/jingle.py
 	codegen/jingle.py >$@
@@ -165,4 +168,8 @@ hdl/%.vhd: codegen/%.asm codegen/makerom.py build/.dummy
 
 hdl/evalboard.vhd: codegen/evalboard.pl hdl/$(TOP_NAME).vhd
 	codegen/evalboard.pl <hdl/$(TOP_NAME).vhd >$@
+
+image/%.srec: codegen/%.asm build/.dummy image/.dummy
+	pasmo $< build/$*.bin build/$*.sym
+	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
