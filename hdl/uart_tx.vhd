@@ -19,7 +19,7 @@ end entity;
 architecture impl of uart_tx is
 begin
 	process(clk16mhz, nrst)
-		variable	clkcount	: std_logic_vector(7 downto 0);
+		variable	clkcount	: std_logic_vector(9 downto 0);
 		variable	shift		: std_logic_vector(8 downto 0);
 
 		variable	last		: std_logic;
@@ -53,7 +53,8 @@ begin
 				clkcount	:= clkcount - 1;
 			else
 				--clkcount	:= CONV_STD_LOGIC_VECTOR(1666,11);       -- 16MHz/  9600 = 1666.67
-				clkcount	:= CONV_STD_LOGIC_VECTOR( 139,8);        -- 16MHz/115200 =  138.88
+				--clkcount	:= CONV_STD_LOGIC_VECTOR( 139,8);        -- 16MHz/115200 =  138.88
+				clkcount	:= CONV_STD_LOGIC_VECTOR( 833,10);       -- 16MHz/19200 =  833.33
 				shift		:= '1' & shift(8 downto 1);
 
 				if bits /= 0 then

@@ -33,7 +33,7 @@ begin
 
 		variable	error_found	: std_logic;
 		variable	shift		: std_logic_vector(7 downto 0);
-		variable	clkcount	: std_logic_vector(7 downto 0);
+		variable	clkcount	: std_logic_vector(9 downto 0);
 
 		variable	last		: std_logic;
 
@@ -78,7 +78,8 @@ begin
 			if clkcount /= 0 then
 				clkcount	:= clkcount - 1;
 			else
-				clkcount	:= CONV_STD_LOGIC_VECTOR( 139,8);        -- 16MHz/115200 =  138.88
+				--clkcount	:= CONV_STD_LOGIC_VECTOR( 139,8);        -- 16MHz/115200 =  138.88
+				clkcount	:= CONV_STD_LOGIC_VECTOR( 833,10);       -- 16MHz/19200 =  833.33
 
 				-- we've reached the next bit
 				case state is
@@ -86,7 +87,8 @@ begin
 						if rxclean='0' then
 							bits		:= "1000";
 							state 		:= START;				-- skip 1/2 bit
-							clkcount	:= CONV_STD_LOGIC_VECTOR( 69,8);	-- 16MHz*0.5/115200=69.44
+							--clkcount	:= CONV_STD_LOGIC_VECTOR( 69,8);	-- 16MHz*0.5/115200=69.44
+							clkcount	:= CONV_STD_LOGIC_VECTOR(417,10);	-- 16MHz*0.5/19200=416.67
 						else
 							clkcount	:= (others=>'0');			-- find next edge
 						end if;
