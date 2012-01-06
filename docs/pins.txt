@@ -17,15 +17,16 @@ total	68
 need another 6 or 7 for composite DAC
 
 top bank of pins = 20+14				= 34
-bottom bank pins = 17(SW+LED+p27)+13(PSW+p2-p8,p11,p13)	= 30
+bottom bank pins = 16(SW+LED)+13(PSW+p2-p8,p11,p13)	= 29
 
+flash freeze is 27
 clock is pin 15
 reset is pin 10
 txd=19, rxd=16 (for uart)
 
 bank 0: 98-90,86-76	= 9+11 = 20		top row 	top
 bank 1: 73-69,65-57	= 5+9  = 14		bottom row	top
-bank 2: 45-40,36-26	= 6+11 = 17		top row		bottom
+bank 2: 45-40,36-28,26	= 6+10 = 16		top row		bottom
 bank 3: 23-20,(19,16,15),13,11,(10),8-2 = 13+4	bottom row	bottom
 
 total 68 pins
@@ -41,9 +42,8 @@ sdmmc	 1		CS (share clk, out, in) with flash
 
 bank 2:
 keyb	12 8D 4L	8 bits in, 4 select (in=26,28-34, out=35,36,40,41)
-audio	 2    2L		PWM	(44,45)		currently pin 13, maybe use 27 too?
+audio	 2    2L		PWM	(44,45)		currently on pin 13
 tape_out 2    2L 	write, motor	(42,43)
-spare	 1				(27)
 
 bank 3:
 video	 8		3x2 RGB, (csync, blank) or (vsync, hsync) (2-7,8,11)
@@ -81,9 +81,9 @@ sram chip:
 sram_16 to gnd, sram_32 to vcc
 
 
-         ---------------keyboard------------ tape  nc -ps2-
+         ---------------keyboard--------------- tape  -ps2-
          26 27 28 29 30 31 32 33 34 35 36 40 41 42 43 44 45
-+  +  -, i, X, i  i  i  i  i  i  i, o  o  o  o, o  o, o  o
++  +  -, i, FF,i  i  i  i  i  i  i, o  o  o  o, o  o, o  o
 +  +  -, X  X  X  X  X  X  X  X  X, i  i  i  i, g  g  g  g
          2  3  4  5  6  7  8  11 13 20 21 22 23 
          red-- green blue- sync- au nc D  N  tape
