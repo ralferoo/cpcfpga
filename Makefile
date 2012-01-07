@@ -173,7 +173,7 @@ image/%.srec: codegen/%.asm build/.dummy image/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
-image/%.srec: codegen/%.scr image/.dummy
+image/%.srec: codegen/%.scr build/.dummy image/.dummy
 	objcopy --change-addresses=16384 -I binary $< -O srec build/$*.srec
 	perl -ne '{print unless m/^S9/;}' <build/$*.srec >$@
 
