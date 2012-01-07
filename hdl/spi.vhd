@@ -17,8 +17,8 @@ entity spi is
 		clk16				: in  std_logic;				-- master clock input @ 16 MHz
 
 		-- IO mapping
-		din				: in  std_logic_vector(7 downto 0);		-- byte data to write
-		dout				: out std_logic_vector(7 downto 0);		-- byte data read whilst writing last byte
+		write				: in  std_logic_vector(7 downto 0);		-- byte data to write
+		read				: out std_logic_vector(7 downto 0);		-- byte data read whilst writing last byte
 
 		-- SPI data lines
 		spi_clk				: out  std_logic;				-- connected to SPI clock
@@ -94,7 +94,7 @@ begin
 				-- first check to see if there's data waiting
 				if load='1' and n_last='0' then
 					n_startload	:= '1';
-					n_cached	:= din;
+					n_cached	:= write;
 				end if;
 				n_last			:= load;
 	
@@ -135,7 +135,7 @@ begin
 
 		-- update ports
 		spi_di				<= bit_out;
-		dout				<= recvd;
+		read				<= recvd;
 		busy				<= working or startload;
 	end process;
 

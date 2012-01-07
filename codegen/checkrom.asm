@@ -38,6 +38,8 @@ wakeup:
 	out (c),h
 	out (c),h				; dummy bytes
 
+	in a,(c)		;; KLUDGE
+
 	in a,(c)				; read RES
 	call printhex
 	call dumpmore
@@ -55,6 +57,8 @@ dumpstatusreg:
 	inc b					; change to SPI data port
 	ld a,#05
 	out (c),a				; RDSR
+
+	in a,(c)		;; KLUDGE
 
 	in a,(c)				; read status
 	call printhex
@@ -75,8 +79,9 @@ dumpmanuf:
 	out (c),l				; read manufacturer ID
 	out (c),h
 	out (c),h
-	inc h
 	out (c),h				; from address 0
+
+	in a,(c)		;; KLUDGE
 
 	in a,(c)				; read manufacturer ID
 	call printhex
@@ -96,6 +101,8 @@ dumpjedec:
 	inc b					; change to SPI data port
 	ld a,#9f
 	out (c),a				; read jedec ID
+
+	in a,(c)		;; KLUDGE
 
 	in a,(c)				; read manufacturer ID
 	call printhex
@@ -121,6 +128,8 @@ dumpserial:
 	out (c),h				; dummy 2
 	out (c),h				; dummy 3
 	out (c),h				; dummy 4
+
+	in a,(c)		;; KLUDGE
 
 	in a,(c)				; read SN #1
 	call printhex
@@ -156,22 +165,37 @@ dumpcontents:
 	out (c),h				; addr 2
 	out (c),h				; addr 3
 
-	in a,(c)				; read SN #1
+	in a,(c)		;; KLUDGE
+
+	ld l,h
+dumploop:
+	ld a,l
+	and #f
+	jr nz, noheader
+
+	ld a,13
+	call putch
+	ld a,10
+	call putch
+
+	ld a,h
 	call printhex
-	in a,(c)				; read SN #2
+	ld a,l
 	call printhex
-	in a,(c)				; read SN #3
+
+	ld a,':'
+	call putch
+	ld a,' '
+	call putch
+noheader:
+	in a,(c)				; read char
+	ld d,a
 	call printhex
-	in a,(c)				; read SN #4
-	call printhex
-	in a,(c)				; read SN #5
-	call printhex
-	in a,(c)				; read SN #6
-	call printhex
-	in a,(c)				; read SN #7
-	call printhex
-	in a,(c)				; read SN #8
-	call printhex
+	ld a,' '
+	call putch
+	inc hl
+	inc d					; was it #FF?
+	jr nz, dumploop
 
 	dec b
 	out (c),c				; turn off flash rom
@@ -192,6 +216,9 @@ modifycontents:
 	out (c),d				; addr 1
 	out (c),h				; addr 2
 	out (c),l				; addr 3
+
+	in a,(c)		;; KLUDGE
+
 modify_search:
 	in a,(c)
 	inc a
@@ -232,10 +259,51 @@ found_space:
 	out (c),h
 	out (c),l				; address bytes
 
-	ld a,'*'
+	ld a,13
 	out (c),a				; data byte
+	ld a,10
 	out (c),a				; data byte
+
+	ld a,h
+	rra
+	rra
+	rra
+	rra
+	and #f					; upper nibble in A
+	cp 10
+	sbc a,#69
+	daa					; A=hex character in ascii
 	out (c),a				; data byte
+
+	ld a,h
+	and #f					; lower nibble in A
+	cp 10
+	sbc a,#69
+	daa					; A=hex character in ascii
+	out (c),a				; data byte
+
+	ld a,l
+	rra
+	rra
+	rra
+	rra
+	and #f					; upper nibble in A
+	cp 10
+	sbc a,#69
+	daa					; A=hex character in ascii
+	out (c),a				; data byte
+
+	ld a,l
+	and #f					; lower nibble in A
+	cp 10
+	sbc a,#69
+	daa					; A=hex character in ascii
+	out (c),a				; data byte
+
+	ld a,'-'
+	out (c),a
+	ld a,'x'
+	out (c),a
 
 	dec b
 	out (c),c
@@ -255,42 +323,76 @@ dumpmore:
 
 	ld a,' '
 	call putch
+	ld a,'('
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
 	call printhex
+	ld a,' '
+	call putch
 	in a,(c)				; hmmm
-	jp printhex
+	call printhex
+	ld a,')'
+	jp putch
 ;;;
 
 welcome:
-	defb 13,10,"Testing ROM chip...",13,10,0
+	defb 13,10,"Testing ROM chip...",0
 wakeupmsg:
 	defb 13,10,"Doing wakeup and read RES: ",0
 manuf:
@@ -306,7 +408,7 @@ modify_failed:
 statusreg:
 	defb 13,10,"Status register: ",0
 dump_msg:
-	defb 13,10,"Current ROM contents:"
+	defb 13,10,"Current ROM contents:", 0
 crlf:
 	defb 13,10,0
 end_msg:

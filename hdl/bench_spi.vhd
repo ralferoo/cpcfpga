@@ -22,8 +22,8 @@ architecture behavioral of bench_spi is
 		clk16				: in  std_logic;				-- master clock input @ 16 MHz
 
 		-- IO mapping
-		din				: in  std_logic_vector(7 downto 0);		-- byte data to write
-		dout				: out std_logic_vector(7 downto 0);		-- byte data read whilst writing last byte
+		write				: in  std_logic_vector(7 downto 0);		-- byte data to write
+		read				: out std_logic_vector(7 downto 0);		-- byte data read whilst writing last byte
 
 		-- SPI data lines
 		spi_clk				: out  std_logic;				-- connected to SPI clock
@@ -37,8 +37,8 @@ architecture behavioral of bench_spi is
 	);
 	end component;
 	
-	signal	dout			: 	std_logic_vector(7 downto 0);
-	signal	din			: 	std_logic_vector(7 downto 0);
+	signal	read			: 	std_logic_vector(7 downto 0);
+	signal	write			: 	std_logic_vector(7 downto 0);
 	signal	busy			: 	std_logic;
 	signal	load			: 	std_logic;
 
@@ -65,7 +65,7 @@ begin
 	-- 10MHz Clock Driver
 	SYSCLK <= not SYSCLK after (SYSCLK_PERIOD / 2.0 );
 
-	spi_0 : spi port map( nRESET=>NSYSRESET, clk16=>SYSCLK, din=>dout, dout=>din, busy=>busy, load=>load,
+	spi_0 : spi port map( nRESET=>NSYSRESET, clk16=>SYSCLK, write=>write, read=>read, busy=>busy, load=>load,
 				clock_when_idle=>clock_when_idle, spi_clk=>spi_clk, spi_di=>spi_di, spi_do=>spi_do );
 
 	-- echo the tx data back through our rx port
@@ -80,7 +80,7 @@ begin
 	clock_when_idle	<= byte(8);
 
 	if NSYSRESET = '0' then
-		dout		<= (others=>'0');
+		write		<= (others=>'0');
 		load		<= '0';
 		byte		:= (others=>'0');
 		pause		:= (others=>'0');
@@ -89,13 +89,13 @@ begin
 
 		-- check for new data
 		if busy = '0' then
-			report "Received byte " & integer'image(to_integer(ieee.numeric_std.unsigned(din)));
+			report "Received byte " & integer'image(to_integer(ieee.numeric_std.unsigned(read)));
 		end if;
 
 		-- send the dummy output through the transmit port
 		if busy = '0' then
 			if pause = 0 then
-				dout	<= byte(7 downto 0);
+				write	<= byte(7 downto 0);
 				byte	:= byte + 1;
 				load	<= '1';
 				pause	:= "1111";

@@ -194,8 +194,8 @@ architecture impl of cpc is
 		clk16				: in  std_logic;				-- master clock input @ 16 MHz
 
 		-- IO mapping
-		din				: in  std_logic_vector(7 downto 0);		-- byte data to write
-		dout				: out std_logic_vector(7 downto 0);		-- byte data read whilst writing last byte
+		write				: in  std_logic_vector(7 downto 0);		-- byte data to write
+		read				: out std_logic_vector(7 downto 0);		-- byte data read whilst writing last byte
 
 		-- SPI data lines
 		spi_clk				: out  std_logic;				-- connected to SPI clock
@@ -209,8 +209,8 @@ architecture impl of cpc is
 	);
 	end component;
 	
-	signal	spi_dout			: 	std_logic_vector(7 downto 0);
-	signal	spi_din				: 	std_logic_vector(7 downto 0);
+	signal	spi_write			: 	std_logic_vector(7 downto 0);
+	signal	spi_read			: 	std_logic_vector(7 downto 0);
 	signal	spi_busy			: 	std_logic;
 	signal	spi_load			: 	std_logic;
 
@@ -352,7 +352,7 @@ architecture impl of cpc is
 				z80_DI_is_from_iorq <= '1';
 
 		    	elsif z80_A(15 downto 8) = x"FF" then				-- spi data
-				z80_DI_from_iorq <= spi_din;
+				z80_DI_from_iorq <= spi_read;
 				z80_DI_is_from_iorq <= '1';
 			end if;
 		end if;
@@ -362,18 +362,18 @@ architecture impl of cpc is
         -- add SPI output to port #ffxx
 	-- note, this is a special case as just reading from the port also triggers a dummy transfer, although we need to be
 	-- careful as the "dummy" byte might actually be useful!
-	process(nRESET,z80_clk,z80_IORQ_n,z80_WR_n,z80_RD_n,z80_A)
+	process(nRESET,z80_clk,z80_IORQ_n,z80_WR_n,z80_RD_n,z80_A,z80_DO)
 	begin
 		if nRESET = '0' then
-			spi_dout		<= (others=>'0');
+			spi_write		<= (others=>'0');
 			spi_load 		<= '0';
             
 		elsif z80_IORQ_n = '0' and z80_A(15 downto 8) = x"FF" then
 			if z80_RD_n='0' then
-				spi_dout	<= z80_A(7 downto 0);			-- when reading SPI port, C specifies output byte
+				spi_write	<= z80_A(7 downto 0);			-- when reading SPI port, C specifies output byte
 				spi_load	<= '1';
 			elsif z80_WR_n='0' then
-				spi_dout	<= z80_DO;				-- when writing, output byte is on databus
+				spi_write	<= z80_DO;				-- when writing, output byte is on databus
 				spi_load	<= '1';
 			else
 				spi_load	<= '0';					-- reset port for next byte
@@ -426,7 +426,7 @@ architecture impl of cpc is
 	uart_rx_rxd <= rxd;
 
 	-- spi
-	spi_0 : spi port map( nRESET=>nreset, clk16=>clk16, din=>spi_dout, dout=>spi_din, busy=>spi_busy, load=>spi_load,
+	spi_0 : spi port map( nRESET=>nreset, clk16=>clk16, read=>spi_read, write=>spi_write, busy=>spi_busy, load=>spi_load,
 				clock_when_idle=>spi_clock_when_idle, spi_clk=>spi_clk, spi_di=>spi_di, spi_do=>spi_do );
 
 end impl;
