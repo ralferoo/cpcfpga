@@ -19,6 +19,10 @@ entity evalboard is
 		sram_we			: out std_logic;
 		sram_ce			: out std_logic;
 		sram_oe			: out std_logic;
+		spi_clk			: out  std_logic;
+		spi_di			: out  std_logic;
+		spi_do			: in   std_logic;
+		spi_flash_cs		: out  std_logic;
 		video_sync2,video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
 		video_sound                                 : out  std_logic
 	);
@@ -43,6 +47,10 @@ architecture impl of evalboard is
 		sram_we			: out std_logic;
 		sram_ce			: out std_logic;
 		sram_oe			: out std_logic;
+		spi_clk			: out  std_logic;
+		spi_di			: out  std_logic;
+		spi_do			: in   std_logic;
+		spi_flash_cs		: out  std_logic;
 		video_sync2,video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
 		video_sound                                 : out  std_logic
 	);
@@ -69,6 +77,10 @@ end component;
 		sram_we => sram_we,
 		sram_ce => sram_ce,
 		sram_oe => sram_oe,
+		spi_clk => spi_clk,
+		spi_di => spi_di,
+		spi_do => spi_do,
+		spi_flash_cs => spi_flash_cs,
 		video_sync2 => video_sync2,
 		video_r2 => video_r2,
 		video_g2 => video_g2,

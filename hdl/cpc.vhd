@@ -23,6 +23,11 @@ entity cpc is
 		sram_ce			: out std_logic;	                                    -- i might tie this low
 		sram_oe			: out std_logic;                                        -- could even tie this low
 
+		spi_clk			: out  std_logic;				-- connected to SPI clock
+		spi_di			: out  std_logic;				-- connected to SPI slave DI
+		spi_do			: in   std_logic;				-- connected to SPI slave DO
+		spi_flash_cs		: out  std_logic;				-- connected to flash rom CS
+
 		video_sync2,video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
 		video_sound                                 : out  std_logic
 	);
@@ -182,6 +187,41 @@ architecture impl of cpc is
 	signal bootrom_data : std_logic_vector(7 downto 0);
 	signal bootrom_addr : std_logic_vector(13 downto 0);
 
+	-- SPI (for rom and SD card access)
+	component spi is
+	port(
+		nRESET				: in  std_logic;
+		clk16				: in  std_logic;				-- master clock input @ 16 MHz
+
+		-- IO mapping
+		din				: in  std_logic_vector(7 downto 0);		-- byte data to write
+		dout				: out std_logic_vector(7 downto 0);		-- byte data read whilst writing last byte
+
+		-- SPI data lines
+		spi_clk				: out  std_logic;				-- connected to SPI clock
+		spi_di				: out  std_logic;				-- connected to SPI slave DI
+		spi_do				: in   std_logic;				-- connected to SPI slave DO
+
+		-- control
+		load				: in  std_logic;				-- begin transfer on rising edge
+		busy				: out std_logic;				-- 1 when in a transfer currently
+		clock_when_idle			: in  std_logic					-- CPOL&CPHA (mode 0/3 select)
+	);
+	end component;
+	
+	signal	spi_dout			: 	std_logic_vector(7 downto 0);
+	signal	spi_din				: 	std_logic_vector(7 downto 0);
+	signal	spi_busy			: 	std_logic;
+	signal	spi_load			: 	std_logic;
+
+--	signal	spi_di				: 	std_logic;
+--	signal	spi_do				: 	std_logic;
+--	signal	spi_clk				: 	std_logic;
+	signal	spi_clock_when_idle		: 	std_logic;
+
+--	signal	spi_flash_cs			: 	std_logic;
+	signal	spi_sd_cs			: 	std_logic;
+
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
 
@@ -290,7 +330,7 @@ architecture impl of cpc is
 
 	    	if z80_IORQ_n = '0' and z80_RD_n = '0' then
 
-			if    z80_A(15 downto 0) = x"FADE" then
+			if    z80_A(15 downto 0) = x"FADE" then				-- dip switches
 				z80_DI_from_iorq <= not dipsw(7 downto 0);
 				z80_DI_is_from_iorq <= '1';
             
@@ -307,34 +347,71 @@ architecture impl of cpc is
 				z80_DI_is_from_iorq <= '1';
 				uart_rx_clear <= '1';
 
-		    	elsif z80_A(14)='0' then
+		    	elsif z80_A(14)='0' then					-- crtc
 				z80_DI_from_iorq <= crtc_DOUT;
+				z80_DI_is_from_iorq <= '1';
+
+		    	elsif z80_A(15 downto 8) = x"FF" then				-- spi data
+				z80_DI_from_iorq <= spi_din;
 				z80_DI_is_from_iorq <= '1';
 			end if;
 		end if;
             end if;
         end process;
 	
+        -- add SPI output to port #ffxx
+	-- note, this is a special case as just reading from the port also triggers a dummy transfer, although we need to be
+	-- careful as the "dummy" byte might actually be useful!
+	process(nRESET,z80_clk,z80_IORQ_n,z80_WR_n,z80_RD_n,z80_A)
+	begin
+		if nRESET = '0' then
+			spi_dout		<= (others=>'0');
+			spi_load 		<= '0';
+            
+		elsif z80_IORQ_n = '0' and z80_A(15 downto 8) = x"FF" then
+			if z80_RD_n='0' then
+				spi_dout	<= z80_A(7 downto 0);			-- when reading SPI port, C specifies output byte
+				spi_load	<= '1';
+			elsif z80_WR_n='0' then
+				spi_dout	<= z80_DO;				-- when writing, output byte is on databus
+				spi_load	<= '1';
+			else
+				spi_load	<= '0';					-- reset port for next byte
+			end if;
+		else
+			spi_load		<= '0';					-- reset port for next byte
+		end if;
+        end process;
+
         -- add LED output to port #fade
         process(nRESET,z80_clk,z80_IORQ_n,z80_WR_n,z80_A)
         begin
-            if nRESET = '0' then
-                leds		<= (others=>'0');
-		uart_tx_data	<= (others=>'0');
-		uart_tx_load <= '0';
-            
-	    elsif rising_edge(z80_clk) then
-		uart_tx_load <= '0';
+		if nRESET = '0' then
+			leds			<= (others=>'0');
+			uart_tx_data		<= (others=>'0');
+			uart_tx_load		<= '0';
 
-		    if z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADC" then
-			uart_tx_data	<= z80_DO;
-	    		uart_tx_load <= '1';
+			spi_clock_when_idle	<= '1';					-- default clock state when idle
+			spi_flash_cs		<= '1';					-- rom enable
+			spi_sd_cs		<= '1';					-- sd card enable
             
-	         elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADE" then
-		        leds <= not z80_DO(7 downto 0);
+		elsif rising_edge(z80_clk) then
+			uart_tx_load <= '0';
 
+			if z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADC" then		-- uart tx
+				uart_tx_data	<= z80_DO;
+				uart_tx_load <= '1';
+            
+			elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADE" then		-- leds
+				leds <= not z80_DO(7 downto 0);
+
+			elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FEFF" then		-- spi config
+				spi_clock_when_idle<= z80_DO(7);
+				spi_flash_cs	<= z80_DO(0);
+				spi_sd_cs	<= z80_DO(1);
+
+			end if;
 		end if;
-            end if;
         end process;
 	
         -- use dummy pins
@@ -347,5 +424,9 @@ architecture impl of cpc is
 
         uart_rx_0  : uart_rx port map( nrst=>nreset, clk16mhz=>clk16, rxd=>uart_rx_rxd , avail=>uart_rx_avail , data=>uart_rx_data , clear=>uart_rx_clear, errorfound=>uart_rx_error );
 	uart_rx_rxd <= rxd;
+
+	-- spi
+	spi_0 : spi port map( nRESET=>nreset, clk16=>clk16, din=>spi_dout, dout=>spi_din, busy=>spi_busy, load=>spi_load,
+				clock_when_idle=>spi_clock_when_idle, spi_clk=>spi_clk, spi_di=>spi_di, spi_do=>spi_do );
 
 end impl;

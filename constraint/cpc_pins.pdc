@@ -70,6 +70,17 @@ set_io {sram_data[0]}	  	-pinname 59 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_data[1]}	  	-pinname 58 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_data[2]}	  	-pinname 57 -fixed yes -SLEW Low -DIRECTION Output
 
+#		spi_clk			: out  std_logic;				-- connected to SPI clock
+#		spi_di			: out  std_logic;				-- connected to SPI slave DI
+#		spi_do			: in   std_logic;				-- connected to SPI slave DO
+#		spi_flash_cs		: out  std_logic;				-- connected to flash rom CS
+
+set_io {spi_clk}	  	-pinname 96 -fixed yes -SLEW Low -DIRECTION Output
+set_io {spi_di}		  	-pinname 95 -fixed yes -SLEW Low -DIRECTION Output
+set_io {spi_do}		  	-pinname 97 -fixed yes           -DIRECTION Input
+set_io {spi_flash_cs}	  	-pinname 98 -fixed yes -SLEW Low -DIRECTION Output
+#set_io {spi_sd_cs}	  	-pinname 94 -fixed yes -SLEW Low -DIRECTION Output
+
 
 set_io rxd          \
     -pinname 16       \
