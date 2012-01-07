@@ -30,7 +30,7 @@ all: $(PDB_NAME)
 pdb: $(PDB_NAME)
 
 clean:
-	$(RM) -rf build/ $(PDB_NAME) stdout.log $(PDB_NAME).depends
+	$(RM) -rf build/ $(PDB_NAME) stdout.log $(PDB_NAME).depends image/
 
 edn: build/$(EDN_NAME)
 
