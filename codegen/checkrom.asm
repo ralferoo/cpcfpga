@@ -8,6 +8,7 @@
 	ld bc,#feff
 	out (c),c				; turn off SPI, default to clock high
 
+	call wakeup
 	call dumpmanuf
 	call dumpjedec
 	call dumpserial
@@ -23,7 +24,28 @@
 
 	rst 0					; jump back to the bootloader
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+wakeup:
+	ld hl,wakeupmsg
+	call printstr
+
+	out (c),b				; turn on flash rom CE
+
+	inc b					; change to SPI data port
+	ld hl,#ab
+	out (c),l				; release from deep power down and read electronic signature
+	out (c),h
+	out (c),h
+	out (c),h				; dummy bytes
+
+	in a,(c)				; read RES
+	call printhex
+	call dumpmore
+	
+	dec b
+	out (c),c				; turn off flash rom
+	ret
+;;;
 dumpstatusreg:
 	ld hl,statusreg
 	call printstr
@@ -53,6 +75,7 @@ dumpmanuf:
 	out (c),l				; read manufacturer ID
 	out (c),h
 	out (c),h
+	inc h
 	out (c),h				; from address 0
 
 	in a,(c)				; read manufacturer ID
@@ -185,6 +208,11 @@ modify_search:
 	jr turn_off_chip
 
 found_space:
+	ld a,h
+	call printhex
+	ld a,l
+	call printhex
+
 	dec b
 	out (c),c
 	out (c),b				; next command
@@ -223,6 +251,8 @@ turn_off_chip:
 	ret
 ;;;
 dumpmore:
+	ret
+
 	ld a,' '
 	call putch
 	in a,(c)				; hmmm
@@ -261,6 +291,8 @@ dumpmore:
 
 welcome:
 	defb 13,10,"Testing ROM chip...",13,10,0
+wakeupmsg:
+	defb 13,10,"Doing wakeup and read RES: ",0
 manuf:
 	defb 13,10,"Fetching REMS: ",0
 jedec_id:
