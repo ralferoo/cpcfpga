@@ -206,6 +206,8 @@ found_space:
 
 	ld a,'*'
 	out (c),a				; data byte
+	out (c),a				; data byte
+	out (c),a				; data byte
 
 	dec b
 	out (c),c
