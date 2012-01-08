@@ -21,7 +21,8 @@ EDN_NAME = $(TOP_NAME).edn
 PDB_NAME = $(TOP_NAME).pdb
 
 CODEGEN_ASM_FILES = $(sort $(wildcard codegen/*.asm))
-CODEGEN_SREC_FILES = $(patsubst codegen/%.asm,image/%.srec,$(CODEGEN_ASM_FILES))
+CODEGEN_SCR_FILES = $(sort $(wildcard codegen/*.scr))
+CODEGEN_SREC_FILES = $(patsubst codegen/%.asm,image/%.srec,$(CODEGEN_ASM_FILES)) $(patsubst codegen/%.scr,image/%.srec,$(CODEGEN_SCR_FILES))
 
 FLASHPRO	= flashpro
 SYNPLIFY	= C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe

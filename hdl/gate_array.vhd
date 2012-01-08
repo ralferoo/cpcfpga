@@ -154,6 +154,7 @@ begin
 
 			out_video_byte_data	:= (others=>'0');
 			out_video_byte_clock	:= '0';
+			out_video_shift_count	:= (others=>'0');
 
 			out_video_sync		:= '0';
 			out_video_red		:= (others=>'0');
@@ -513,10 +514,17 @@ begin
 			palette(1)			<= "00100";
 			palette(2)			<= "10101";
 			palette(3)			<= "11000";
+
+			for i in 4 to 16 loop
+				palette(i)		<= "00000";
+			end loop;
+
 			upper_rom_paging_disable	<= '0';
 			lower_rom_paging_disable	<= '0';
 			memory_page_64k			<= "000";
 			bank_select			<= "000";
+			pal_index			:= (others=>'0');
+			video_mode			<= (others=>'0');
 
 		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" then
 			case z80_dout(7 downto 6) is

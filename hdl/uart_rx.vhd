@@ -57,6 +57,10 @@ begin
 				data_out(i)  .byte	:= (others=>'0');
 			end loop;
 
+			data		<= (others=>'0');
+			avail		<= '0';
+			errorfound	<= '0';
+
 			-- process the incoming bits
 		elsif rising_edge(clk16mhz) then
 			if clear='1' and last='0' then
