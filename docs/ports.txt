@@ -17,6 +17,10 @@ FEFF				read		cpc.vhd (spi.vhd)	Reads previous byte received.
 FFxx				read		cpc.vhd (spi.vhd)	Byte in C is written to SPI bus, reads the previous byte read received.
 FFxx				write		cpc.vhd (spi.vhd)	Byte outputted is written to SPI bus.
 
+FEFE				write		gate_array.vhd		FPGA ROM emulation control
+									bit7=upper ROM writable
+									bit6=lower ROM writable
+									bit5=bootrom replaces lower ROM
 
 	Standard CPC port	read/write	file			notes
 	-----------------	----------	---------------		-----

@@ -169,9 +169,10 @@ begin
 			out_latch_boot_data	:= '0';
 			out_latch_video_data	:= '0';
 			out_latch_write_data	:= '0';
-			n_out_hsync		:= '0';
-			n_out_vsync		:= '0';
-			n_out_hsync_delayed	:= '0';
+			out_de			:= '0';
+			out_hsync		:= '0';
+			out_vsync		:= '0';
+			out_hsync_delayed	:= '0';
 
 		end procedure init_current_cycle;
 

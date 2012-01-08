@@ -173,6 +173,13 @@ hdl/%.vhd: codegen/%.asm codegen/makerom.py build/.dummy
 hdl/evalboard.vhd: codegen/evalboard.pl hdl/$(TOP_NAME).vhd
 	codegen/evalboard.pl <hdl/$(TOP_NAME).vhd >$@
 
+build/%.bin: codegen/%.asm build/.dummy
+	pasmo $< build/$*.bin build/$*.sym
+
+image/rom_c000.srec: codegen/rom_c000.asm build/.dummy image/.dummy
+	pasmo $< build/rom_c000.bin build/rom_c000.sym
+	objcopy --change-addresses=49152 -I binary build/rom_c000.bin -O srec $@
+
 image/%.srec: codegen/%.asm build/.dummy image/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
@@ -180,5 +187,7 @@ image/%.srec: codegen/%.asm build/.dummy image/.dummy
 image/%.srec: codegen/%.scr build/.dummy image/.dummy
 	objcopy --change-addresses=16384 -I binary $< -O srec build/$*.srec
 	perl -ne '{print unless m/^S9/;}' <build/$*.srec >$@
+
+image/rom_installer.srec: build/rom_c000.bin
 
 
