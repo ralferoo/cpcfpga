@@ -4,14 +4,14 @@
 
 ;	jp start
 ;data:
-;	incbin	codegen/snap_mode2.scr
+;	incbin	codegen/snap_mode1.scr
 ;start:
 ;	ld de,#4000
 ;	ld hl,data
 ;	ld bc,#4000
 ;	ldir
 
-	ld bc,#7f82
+	ld bc,#7f81
 	out (c),c
 
 	ld d,0

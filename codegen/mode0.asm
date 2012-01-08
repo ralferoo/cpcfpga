@@ -14,12 +14,14 @@
 	ld bc,#7f80
 	out (c),c
 
-	ld d,16
+	ld d,0
 	ld hl,palette
 loop:
 	out (c),d
 	ld a,(hl)
+	inc hl
 	or #40
+	out (c),a
 	inc d
 	ld a,d
 	cp 17
