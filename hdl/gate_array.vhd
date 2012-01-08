@@ -55,6 +55,16 @@ architecture impl of gate_array is
 
 	signal d_tstate : std_logic_vector(1 downto 0);
 	signal d_idle   : std_logic;
+
+	type t_palette is array(0 to 16) of std_logic_vector(4 downto 0);
+	
+	signal	local_z80_clk			: std_logic;
+	signal	video_mode			: std_logic_vector(1 downto 0);
+	signal	palette				: t_palette;
+	signal	upper_rom_paging_disable	: std_logic;
+	signal	lower_rom_paging_disable	: std_logic;
+	signal	memory_page_64k			: std_logic_vector(2 downto 0);
+	signal	bank_select			: std_logic_vector(2 downto 0);
 begin
 	process(nRESET,clk16) is
 
@@ -110,6 +120,7 @@ begin
 		variable		out_sram_oe		: std_logic;
 
 		variable		out_video_byte_data	: std_logic_vector(7 downto 0);
+		variable		out_video_shift_count	: std_logic_vector(2 downto 0);
 		variable		out_video_byte_clock	: std_logic;
 		variable		out_crtc_clock		: std_logic;
 
@@ -156,6 +167,95 @@ begin
 
 		end procedure init_current_cycle;
 
+		procedure update_video_pixel(	variable	n_out_video_byte_data	: inout std_logic_vector(7 downto 0); 
+						variable	n_out_video_shift_count	: inout std_logic_vector(2 downto 0);
+						variable	n_out_video_red		: out   std_logic_vector(1 downto 0);
+						variable	n_out_video_green	: out   std_logic_vector(1 downto 0);
+						variable	n_out_video_blue	: out   std_logic_vector(1 downto 0);
+						variable	n_out_video_sync	: out   std_logic ) is
+			variable	t_colour_index	: std_logic_vector(3 downto 0);			
+			variable	t_colour_data	: std_logic_vector(4 downto 0);	
+			variable	t_rgb		: std_logic_vector(5 downto 0);	
+			variable	t_shift_count	: std_logic_vector(3 downto 0);	
+			variable	t_shift		: std_logic;	
+		begin
+			-- colour index selection
+			if video_mode = "10" then
+				t_colour_index		:= "000" & n_out_video_byte_data(0);
+			elsif video_mode(0) = '1' then
+				t_colour_index		:= "00" & n_out_video_byte_data(4) & n_out_video_byte_data(0);
+			else
+				t_colour_index		:= n_out_video_byte_data(6) & n_out_video_byte_data(2) &
+							   n_out_video_byte_data(4) & n_out_video_byte_data(0);
+			end if;
+
+			-- move to next pixel at appropriate time
+			t_shift_count			:= ('0' & n_out_video_shift_count) + 1;
+			if video_mode = "10" then
+				t_shift			:= t_shift_count(1);
+				t_shift_count(1)	:= '0';
+			elsif video_mode = "01" then
+				t_shift			:= t_shift_count(2);
+				t_shift_count(2)	:= '0';
+			else
+				t_shift			:= t_shift_count(3);
+			end if;
+			if t_shift='1' then
+				n_out_video_byte_data	:= n_out_video_byte_data(6 downto 0) & '0';
+			end if;
+			n_out_video_shift_count		:= t_shift_count(2 downto 0);
+
+			-- lookup colour
+			if crtc_DE='0' then
+				t_colour_data		:= palette(16);
+			else
+				t_colour_data		:= palette( to_integer(ieee.numeric_std.unsigned(t_colour_index)) );
+			end if;
+
+			-- and map from that into real colours
+			case t_colour_data is
+				when "00000" | "00001"	=> t_rgb := "010101";	-- white
+				when "00010" | "10001"	=> t_rgb := "001101";	-- sea green
+				when "00011" | "01001"	=> t_rgb := "111101";	-- pastel yellow
+				when "00100" | "10000"	=> t_rgb := "000001";	-- blue
+				when "00101" | "01000"	=> t_rgb := "110001";	-- purple
+				when "00110"		=> t_rgb := "000101";	-- cyan
+				when "00111"		=> t_rgb := "110101";	-- pink
+				when "01010"		=> t_rgb := "111100";	-- bright yellow
+				when "01011"		=> t_rgb := "111111";	-- bright white
+				when "01100"		=> t_rgb := "110000";	-- bright red
+				when "01101"		=> t_rgb := "110011";	-- bright magenta
+				when "01110"		=> t_rgb := "110100";	-- orange
+				when "01111"		=> t_rgb := "110111";	-- pastel magenta
+				when "10010"		=> t_rgb := "001100";	-- bright green
+				when "10011"		=> t_rgb := "001111";	-- bright cyan
+				when "10100"		=> t_rgb := "000000";	-- black
+				when "10101"		=> t_rgb := "000011";	-- bright blue
+				when "10110"		=> t_rgb := "000100";	-- green
+				when "10111"		=> t_rgb := "000111";	-- sky blue
+				when "11000"		=> t_rgb := "010001";	-- magenta
+				when "11001"		=> t_rgb := "011101";	-- pastel green
+				when "11010"		=> t_rgb := "011100";	-- lime
+				when "11011"		=> t_rgb := "011111";	-- pastel cyan
+				when "11100"		=> t_rgb := "010000";	-- red
+				when "11101"		=> t_rgb := "010011";	-- mauve
+				when "11110"		=> t_rgb := "010100";	-- yellow
+				when others		=> t_rgb := "010111";	-- pastel blue
+			end case;
+
+			-- and from there render the pixel
+			if crtc_DE='0' then
+				n_out_video_red		:= "00";
+				n_out_video_green	:= "00";
+				n_out_video_blue	:= "00";
+			else
+				n_out_video_red		:= t_rgb(5 downto 4);
+				n_out_video_green	:= t_rgb(3 downto 2);
+				n_out_video_blue	:= t_rgb(1 downto 0);
+			end if;
+			n_out_video_sync		:= crtc_HSYNC or crtc_VSYNC;
+		end procedure update_video_pixel;
+
 		procedure update_current_cycle is
 			variable	n_current_cycle		: std_logic_vector(3 downto 0);
 
@@ -176,6 +276,7 @@ begin
 			variable	n_out_sram_oe		: std_logic;
 
 			variable	n_out_video_byte_data	: std_logic_vector(7 downto 0);
+			variable	n_out_video_shift_count	: std_logic_vector(2 downto 0);
 			variable	n_out_video_byte_clock	: std_logic;
 			variable	n_out_crtc_clock	: std_logic;
 
@@ -208,11 +309,12 @@ begin
 			n_out_video_byte_clock	:= out_video_byte_clock;
 			n_out_video_byte_data	:= out_video_byte_data;
 			n_out_crtc_clock	:= out_crtc_clock;
+			n_out_video_shift_count	:= out_video_shift_count;
 
-			n_out_video_sync	:= out_video_sync;
-			n_out_video_red		:= out_video_red;
-			n_out_video_green	:= out_video_green;
-			n_out_video_blue	:= out_video_blue;
+--			n_out_video_sync	:= out_video_sync;
+--			n_out_video_red		:= out_video_red;
+--			n_out_video_green	:= out_video_green;
+--			n_out_video_blue	:= out_video_blue;
 
 			n_out_z80_clock		:= n_current_cycle(1);
 			tstate			:= n_current_cycle(3 downto 2);
@@ -238,17 +340,7 @@ begin
 				n_out_video_byte_data	:= sram_data;
 				n_out_sram_ce		:= '1';
 				n_out_sram_oe		:= '1';
-
-				if crtc_DE='0' then
-					n_out_video_red		:= "00";
-					n_out_video_green	:= "00";
-					n_out_video_blue	:= "00";
-				else
-					n_out_video_red		:= n_out_video_byte_data(5 downto 4);
-					n_out_video_green	:= n_out_video_byte_data(3 downto 2);
-					n_out_video_blue	:= n_out_video_byte_data(1 downto 0);
-				end if;
-				n_out_video_sync		:= crtc_HSYNC or crtc_VSYNC;
+				n_out_video_shift_count	:= (others=>'0');
 			end if;
 			n_out_latch_video_data		:= '0';
 
@@ -259,7 +351,11 @@ begin
 			end if;
 			out_latch_write_data		:= '0';
 
+			-- update video output
+			update_video_pixel( n_out_video_byte_data, n_out_video_shift_count,
+						n_out_video_red, n_out_video_green, n_out_video_blue, n_out_video_sync);
 
+			-- handle z80 memory accesses
 			if out_z80_clock='1' and n_out_z80_clock='0' then		-- falling edge means change of tstate
 				-- first off, calculate the wait_n for the new tstate
 				calculate_wait( iorq_n	=> z80_iorq_n, 
@@ -334,6 +430,7 @@ begin
 			out_video_byte_clock	:= n_out_video_byte_clock;
 			out_video_byte_data	:= n_out_video_byte_data;
 			out_crtc_clock		:= n_out_crtc_clock;
+			out_video_shift_count	:= n_out_video_shift_count;
 
 			out_video_sync		:= n_out_video_sync;
 			out_video_red		:= n_out_video_red;
@@ -349,6 +446,7 @@ begin
 		begin
 			z80_wait_n		<= out_z80_wait_n;
 			z80_clk			<= out_z80_clock;
+			local_z80_clk		<= out_z80_clock;
 			crtc_clk		<= out_crtc_clock;
 			z80_din			<= out_z80_din;
 
@@ -378,6 +476,7 @@ begin
 		procedure init_regs is
 		begin
 			init_current_cycle;
+
 		end procedure init_regs;
 
 		-- updating for registers, once per clock
@@ -402,6 +501,44 @@ begin
 			update_regs;
 		end if;
 		update_ports;
+	end process;
+
+	-- watch the gate array port
+	process(local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
+		variable	pal_index	: std_logic_vector(4 downto 0);
+	begin
+		if nRESET='0' then
+			video_mode			<= "01";
+			palette(0)			<= "10100";
+			palette(1)			<= "00100";
+			palette(2)			<= "10101";
+			palette(3)			<= "11000";
+			upper_rom_paging_disable	<= '0';
+			lower_rom_paging_disable	<= '0';
+			memory_page_64k			<= "000";
+			bank_select			<= "000";
+
+		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" then
+			case z80_dout(7 downto 6) is
+				when "11"	=>	memory_page_64k			<= z80_dout(5 downto 3);
+							bank_select			<= z80_dout(2 downto 0);
+
+				when "10"	=>	
+							-- reset_intcounter( z80_dout(4) );
+							upper_rom_paging_disable	<= z80_dout(3);
+							lower_rom_paging_disable	<= z80_dout(2);
+							video_mode			<= z80_dout(1 downto 0);
+
+				when "01"	=>	if pal_index(4)='1' then
+								palette(16)		<= z80_dout(4 downto 0);
+							else
+								palette( to_integer(ieee.numeric_std.unsigned(pal_index)) )
+											<= z80_dout(4 downto 0);
+							end if;
+
+				when others	=>	pal_index			:= z80_dout(4 downto 0);
+			end case;
+		end if;
 	end process;
 
 end impl;

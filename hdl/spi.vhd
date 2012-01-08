@@ -78,7 +78,7 @@ begin
 			bits				:= (others=>'0');
 			recvd				:= (others=>'0');
 
-		else
+		elsif falling_edge(clk16) then							-- send a bit of data out
 			-- copy the variables into the new settings
 			n_last				:= last;
 			n_startload			:= startload;
@@ -90,35 +90,32 @@ begin
 			n_bits				:= bits;
 			n_recvd				:= recvd;
 
-			if falling_edge(clk16) then							-- send a bit of data out
-				-- first check to see if there's data waiting
-				if load='1' and n_last='0' then
-					n_startload	:= '1';
-					n_cached	:= write;
-				end if;
-				n_last			:= load;
+			-- first check to see if there's data waiting
+			if load='1' and n_last='0' then
+				n_startload	:= '1';
+				n_cached	:= write;
+			end if;
+			n_last			:= load;
 	
-				-- check to see if we've finished the previous bit
-				if n_working='1' and n_bits="000" then
-					n_working	:='0';
-					n_recvd		:= shiftin;
-				end if;
+			-- check to see if we've finished the previous bit
+			if n_working='1' and n_bits="000" then
+				n_working	:='0';
+				n_recvd		:= shiftin;
+			end if;
 
-				-- check to see if we're starting a new transfer
-				if n_working='0' and n_startload='1' then
-					n_shiftout	:= n_cached;
-					n_working	:= '1';
-					n_startload	:= '0';
-					n_bits 		:= (others=>'0');
-				end if;
+			-- check to see if we're starting a new transfer
+			if n_working='0' and n_startload='1' then
+				n_shiftout	:= n_cached;
+				n_working	:= '1';
+				n_startload	:= '0';
+				n_bits 		:= (others=>'0');
+			end if;
 	
-				-- shift out a bit
-				if n_working='1' then
-					n_bit_out	:= n_shiftout(7);				-- shift out the data
-					n_shiftout	:= n_shiftout(6 downto 0) & '0';
-					n_bits		:= n_bits + 1;				-- count down the bits until we're finished
-				end if;
-	
+			-- shift out a bit
+			if n_working='1' then
+				n_bit_out	:= n_shiftout(7);				-- shift out the data
+				n_shiftout	:= n_shiftout(6 downto 0) & '0';
+				n_bits		:= n_bits + 1;				-- count down the bits until we're finished
 			end if;
 
 			-- copy the variables from the new settings
