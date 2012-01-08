@@ -352,7 +352,8 @@ architecture impl of cpc is
 				z80_DI_from_iorq <= crtc_DOUT;
 				z80_DI_is_from_iorq <= '1';
 
-		    	elsif z80_A(15 downto 8) = x"FF" then				-- spi data
+		    	elsif z80_A(15 downto 8) = x"FF" or				-- spi data
+		    	      z80_A(15 downto 0) = x"FEFF" then				-- spi peek
 				z80_DI_from_iorq <= spi_read;
 				z80_DI_is_from_iorq <= '1';
 			end if;

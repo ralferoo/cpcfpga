@@ -1,0 +1,30 @@
+This is an attempt to document the IO ports I implement before it becomes too
+unweildly to come back and document them all...
+
+
+	Nonstandard ports	read/write	file			notes
+	-----------------	----------	---------------		-----
+
+FADC				read		cpc.vhd (uart_rx.vhd)	Fixed baudrate serial  input, same port as Amstrad's uart
+FADC				write		cpc.vhd (uart_tx.vhd)	Fixed baudrate serial output, same port as Amstrad's uart
+FADD				read		cpc.vhd (uart_*.vhd)	Status, b7=TX empty, b6=RX data, b5=RX error, b3-b0=push switches.
+
+FADE				read		cpc.vhd			Read dip switches. Will be deprecated soon when IO pins reused.
+FADE				write		cpc.vhd			Output to LEDs. Will be deprecated soon when IO pins reused.
+
+FEFF				write		cpc.vhd (spi.vhd)	SPI control. bit7=clock idle state/SPI mode. bit0=rom CS, bit1=SD CS.
+FEFF				read		cpc.vhd (spi.vhd)	Reads previous byte received.
+FFxx				read		cpc.vhd (spi.vhd)	Byte in C is written to SPI bus, reads the previous byte read received.
+FFxx				write		cpc.vhd (spi.vhd)	Byte outputted is written to SPI bus.
+
+
+	Standard CPC port	read/write	file			notes
+	-----------------	----------	---------------		-----
+
+7F00	01xxxxxx xxxxxxxx	write only	gate_array.vhd		Gate Array multipurpose (palette, bank switching)
+
+BC00	x0xxxx00 xxxxxxxx	write only	crtc.vhd / cpc.vhd	CRTC register select			nCS=A14=0, RW=A9=0, RS=A8=0
+BD00	x0xxxx01 xxxxxxxx	write only	crtc.vhd / cpc.vhd	CRTC register write			nCS=A14=0, RW=A9=0, RS=A8=1
+BE00	x0xxxx10 xxxxxxxx	read  only	crtc.vhd / cpc.vhd	CRTC register status (not implemented)	nCS=A14=0, RW=A9=1, RS=A8=0
+BF00	x0xxxx11 xxxxxxxx	read  only	crtc.vhd / cpc.vhd	CRTC register read (R12/R13 only)	nCS=A14=0, RW=A9=1, RS=A8=1
+
