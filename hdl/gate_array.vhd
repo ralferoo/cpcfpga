@@ -181,16 +181,16 @@ begin
 		begin
 			-- colour index selection
 			if video_mode = "10" then
-				t_colour_index		:= "000" & n_out_video_byte_data(0);
+				t_colour_index		:= "000" & n_out_video_byte_data(7);
 			elsif video_mode(0) = '1' then
-				t_colour_index		:= "00" & n_out_video_byte_data(4) & n_out_video_byte_data(0);
+				t_colour_index		:= "00" & n_out_video_byte_data(3) & n_out_video_byte_data(7);
 			else
-				t_colour_index		:= n_out_video_byte_data(6) & n_out_video_byte_data(2) &
-							   n_out_video_byte_data(4) & n_out_video_byte_data(0);
+				t_colour_index		:= n_out_video_byte_data(1) & n_out_video_byte_data(5) &
+							   n_out_video_byte_data(3) & n_out_video_byte_data(7);
 			end if;
 
 			-- move to next pixel at appropriate time
-			t_shift_count			:= ('0' & n_out_video_shift_count) + 1;
+			t_shift_count			:= ('0' & n_out_video_shift_count) + 2;
 			if video_mode = "10" then
 				t_shift			:= t_shift_count(1);
 				t_shift_count(1)	:= '0';

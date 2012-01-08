@@ -320,6 +320,7 @@ architecture impl of cpc is
         process(nRESET,z80_clk,z80_IORQ_n,z80_RD_n,z80_A)
         begin
             if nRESET = '0' then
+		uart_rx_clear <= '0';
 	    	z80_DI_is_from_iorq <= '0';
     	        z80_DI_from_iorq <= (others=>'0');
             

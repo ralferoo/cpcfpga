@@ -15,7 +15,7 @@ restart:
 
 	ld a,d
 	and #1f
-	or #30
+	or #40
 	out (c),a
 	inc d
 
