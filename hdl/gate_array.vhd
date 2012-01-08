@@ -125,6 +125,7 @@ begin
 		variable		out_crtc_clock		: std_logic;
 		variable		out_de			: std_logic;
 		variable		out_hsync		: std_logic;
+		variable		out_hsync_delayed	: std_logic;
 		variable		out_vsync		: std_logic;
 
 		variable		out_video_sync		: std_logic;
@@ -168,6 +169,9 @@ begin
 			out_latch_boot_data	:= '0';
 			out_latch_video_data	:= '0';
 			out_latch_write_data	:= '0';
+			n_out_hsync		:= '0';
+			n_out_vsync		:= '0';
+			n_out_hsync_delayed	:= '0';
 
 		end procedure init_current_cycle;
 
@@ -175,6 +179,7 @@ begin
 						variable	n_out_video_shift_count	: inout std_logic_vector(2 downto 0);
 						variable	n_out_de		: in	std_logic;
 						variable	n_out_hsync		: in	std_logic;
+						variable	n_out_hsync_delayed	: in	std_logic;
 						variable	n_out_vsync		: in	std_logic;
 						variable	n_out_video_red		: out   std_logic_vector(1 downto 0);
 						variable	n_out_video_green	: out   std_logic_vector(1 downto 0);
@@ -251,7 +256,7 @@ begin
 			end case;
 
 			-- and from there render the pixel
-			if n_out_de='0' then
+			if (n_out_HSYNC or n_out_HSYNC_delayed or n_out_VSYNC)='1' then		-- ensure black level if in front/back porch
 				n_out_video_red		:= "00";
 				n_out_video_green	:= "00";
 				n_out_video_blue	:= "00";
@@ -260,7 +265,7 @@ begin
 				n_out_video_green	:= t_rgb(3 downto 2);
 				n_out_video_blue	:= t_rgb(1 downto 0);
 			end if;
-			n_out_video_sync		:= n_out_HSYNC or n_out_VSYNC;
+			n_out_video_sync		:= n_out_HSYNC_delayed or n_out_VSYNC;
 		end procedure update_video_pixel;
 
 		procedure update_current_cycle is
@@ -288,6 +293,7 @@ begin
 			variable	n_out_crtc_clock	: std_logic;
 			variable	n_out_de		: std_logic;
 			variable	n_out_hsync		: std_logic;
+			variable	n_out_hsync_delayed	: std_logic;
 			variable	n_out_vsync		: std_logic;
 
 			variable	n_out_video_sync	: std_logic;
@@ -323,6 +329,7 @@ begin
 			n_out_de		:= out_de;
 			n_out_hsync		:= out_hsync;
 			n_out_vsync		:= out_vsync;
+			n_out_hsync_delayed	:= out_hsync_delayed;
 
 --			n_out_video_sync	:= out_video_sync;
 --			n_out_video_red		:= out_video_red;
@@ -355,6 +362,7 @@ begin
 				n_out_sram_oe		:= '1';
 				n_out_video_shift_count	:= (others=>'0');
 				n_out_de		:= crtc_de;
+				n_out_hsync_delayed	:= n_out_hsync;
 				n_out_hsync		:= crtc_hsync;
 				n_out_vsync		:= crtc_vsync;
 			end if;
@@ -369,7 +377,7 @@ begin
 
 			-- update video output
 			update_video_pixel( n_out_video_byte_data, n_out_video_shift_count,
-						n_out_de, n_out_hsync, n_out_vsync, 
+						n_out_de, n_out_hsync, n_out_vsync, n_out_hsync_delayed,
 						n_out_video_red, n_out_video_green, n_out_video_blue, n_out_video_sync);
 
 			-- handle z80 memory accesses
@@ -451,6 +459,7 @@ begin
 			out_de			:= n_out_de;
 			out_hsync		:= n_out_hsync;
 			out_vsync		:= n_out_vsync;
+			out_hsync_delayed	:= n_out_hsync_delayed;
 
 			out_video_sync		:= n_out_video_sync;
 			out_video_red		:= n_out_video_red;
