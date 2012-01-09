@@ -1,15 +1,18 @@
 
-	org #0000
+	org #4000
+
+	ld bc,#7f8c
+	out (c),c
 
 	ld ix,0
-	ld sp,#fffe
+	ld sp,#bffe
 
 start:
-	ld hl,#4000
+	ld hl,#8000
 fill:	ld (hl),#bd
 	inc hl
-	ld a,l
-	or h
+	ld a,h
+	cp #a0
 	jr nz, fill
 
 repeat:	
@@ -33,7 +36,7 @@ domodify:
 	ld b,ixl
 modify_loop2:
 	ld c,b
-	ld hl,#4000
+	ld hl,#8000
 modify_loop:
 	inc (hl)
 	inc hl
@@ -79,7 +82,7 @@ donext:
 	ld a,h
 	cp #4
 	jr z,skip
-	cp #42
+	cp #82
 	jr nz,noskip
 	ld h,#ff
 skipped:
@@ -102,7 +105,7 @@ noskip:
 	call repeat
 
 skip:
-	ld h,#3f
+	ld h,#7f
 	jr skipped
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
