@@ -16,13 +16,15 @@
 	ld (#39),hl
 	ei							; every interrupt returns immediately
 
+	jr mainloop2
+
 mainloop:
 ;	defs 13				; interestingly, i need 13 nops here where a real CPC should only need 12... :(
 
-	jr x
-x:	defs 9				; seems to equal 13 nops... hmmm
+;	jr x
+;x:	defs 9				; seems to equal 13 nops... hmmm
 
-;	defs 12
+	defs 12
 
 
 	ld bc,#7f00
@@ -52,7 +54,10 @@ intvec:
 	ret
 
 
-
+mainloop2:
+	halt
+	ld bc,#7f10
+	out (c),c
 	ld c,#41
 	out (c),c						; colour 1
 
@@ -86,5 +91,5 @@ intvec:
 	ld c,#46
 	out (c),c						; colour 1
 
-	jr mainloop
+	jr mainloop2
 

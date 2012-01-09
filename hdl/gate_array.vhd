@@ -644,16 +644,17 @@ begin
 			-- process acknowledge from z80
 			elsif z80_iorq_n='0' and z80_m1_n='0' then
 				n_line_counter(5)		:= '0';
+				n_generate_interrupt		:= '0';
 --				force_interrupt_ack		<= '0';
 
 			-- reset the int line at start of next instruction
-			elsif z80_m1_n='0' then
-				n_generate_interrupt		:= '0';
+--			elsif z80_m1_n='0' then
+--				n_generate_interrupt		:= '0';
 			end if;
 
 			-- update variables
 			line_counter				:= n_line_counter;
-			vsync_sense				:= n_vsync_sense(2 downto 1);
+			vsync_sense				:= n_vsync_sense(1 downto 0);
 			last_hsync				:= n_last_hsync;
 			generate_interrupt			:= n_generate_interrupt;
 

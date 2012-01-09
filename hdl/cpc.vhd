@@ -92,6 +92,9 @@ architecture impl of cpc is
 			z80_iorq_n			: in  std_logic;				-- used in determining wait flag
 			z80_mreq_n			: in  std_logic;				-- used in determining wait flag
 			z80_wait_n			: out std_logic;				-- determines in the CPU should be paused
+
+			-- interrupt generation
+			z80_int_n			: out std_logic;				-- interrupt acknowledge
 	
 			-- crtc interface (for screen reading)
 			crtc_clk			: out std_logic;				-- generated crtc clock @ 4MHz
@@ -254,7 +257,7 @@ architecture impl of cpc is
 	z80_IORD_n <= z80_IORQ_n OR z80_RD_n;
 	z80_IOWR_n <= z80_IORQ_n OR z80_WR_n;
 
-        z80_INT_n <=   '1'; --pushsw(1);
+        --z80_INT_n <=   '1'; --pushsw(1);
         z80_NMI_n <=   '1'; --pushsw(2);
         z80_BUSRQ_n <= '1'; --pushsw(3);
 
@@ -282,6 +285,9 @@ architecture impl of cpc is
 			z80_iorq_n			=> z80_IORQ_n,
 			z80_mreq_n			=> z80_MREQ_n,
 			z80_wait_n			=> z80_WAIT_n,
+
+			-- interrupt generation
+			z80_int_n			=> z80_INT_n,
 	
 			video_sync			=> video_sync,
 			video_red			=> video_red,
