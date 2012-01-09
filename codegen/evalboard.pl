@@ -49,6 +49,7 @@ entity evalboard is
 HEADER
 	
 	foreach (@defn) {
+		next if /bootrom/;
 		my $a=$_;
 		$a=~s/clk16/clock/;
 		print $a;
@@ -77,9 +78,21 @@ end component;
 	signal clklock : std_logic;
 	signal clk16   : std_logic;
 
+	-- evil hacky code for bootstrapping
+	component bootrom is port(
+		addr				: in std_logic_vector(13 downto 0);
+		data				: out std_logic_vector(7 downto 0)
+        );
+	end component;
+	signal bootrom_data : std_logic_vector(7 downto 0);
+	signal bootrom_addr : std_logic_vector(13 downto 0);
+
 	begin
 	-- generate the master clock
 	PLL_clock_clk16 : PLL16mhz port map ( CLKA => clock, POWERDOWN => '1', GLA => clk16, LOCK => clklock );
+
+	-- bootstrap code
+	bootrom_0 : bootrom port map( addr=>bootrom_addr, data=>bootrom_data );
 
 	cpc_0: cpc port map (
 MIDDLE

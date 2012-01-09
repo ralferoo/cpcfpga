@@ -262,6 +262,7 @@ begin
 				when others		=> t_rgb := "010111";	-- pastel blue
 			end case;
 
+
 			-- and from there render the pixel
 			if (n_out_HSYNC or n_out_HSYNC_delayed or n_out_VSYNC)='1' then		-- ensure black level if in front/back porch
 				n_out_video_red		:= "00";
@@ -546,10 +547,10 @@ begin
 	begin
 		if nRESET='0' then
 			video_mode			<= "01";
-			palette(0)			<= "10100";
-			palette(1)			<= "00100";
+			palette(0)			<= "00100";
+			palette(1)			<= "01010";
 			palette(2)			<= "10101";
-			palette(3)			<= "11000";
+			palette(3)			<= "01100";
 
 			for i in 4 to 16 loop
 				palette(i)		<= "00000";
@@ -560,7 +561,6 @@ begin
 			memory_page_64k			<= "000";
 			bank_select			<= "000";
 			pal_index			:= (others=>'0');
-			video_mode			<= (others=>'0');
 			force_interrupt_ack		<= '0';
 			use_boot_rom			<= '1';
 
@@ -626,9 +626,10 @@ begin
 				if n_line_counter = "110100" then
 					n_generate_interrupt	:= '1';
 					n_line_counter		:= (others=>'0');
+				end if;
 	
 				-- process vsync reset on 2nd hsync after vsync
-				elsif n_vsync_sense = "011" then
+				if n_vsync_sense = "011" then
 					if n_line_counter(5)='0' then
 						n_generate_interrupt	:= '1';
 					end if;

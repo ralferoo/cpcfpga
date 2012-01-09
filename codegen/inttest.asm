@@ -38,6 +38,7 @@ mainloop:
 
 intvec:
 	exx
+	ex af,af'
 	ld bc,#fadc
 	ld a,'.'
 	out (c),a
@@ -47,8 +48,14 @@ intvec:
 	ld a,d
 	and #1f
 	or #40
+	cp #46
+	jr nz,cont
+	ld d,#40
+cont:
 	out (c),c
 	out (c),a
+
+	ex af,af'
 	exx
 	ei
 	ret
@@ -56,40 +63,54 @@ intvec:
 
 mainloop2:
 	halt
+	jr mainloop2
+
 	ld bc,#7f10
 	out (c),c
-	ld c,#41
-	out (c),c						; colour 1
+	ld hl,#41
+	out (c),l						; colour 1
+	out (c),h
+	out (c),l	; and background colour
 
 	halt
 	ld bc,#7f10
 	out (c),c
-	ld c,#42
-	out (c),c						; colour 1
+	ld hl,#42
+	out (c),l						; colour 1
+	out (c),h
+	out (c),l	; and background colour
 
 	halt
 	ld bc,#7f10
 	out (c),c
-	ld c,#43
-	out (c),c						; colour 1
+	ld hl,#43
+	out (c),l						; colour 1
+	out (c),h
+	out (c),l	; and background colour
 
 	halt
 	ld bc,#7f10
 	out (c),c
-	ld c,#44
-	out (c),c						; colour 1
+	ld hl,#44
+	out (c),l						; colour 1
+	out (c),h
+	out (c),l	; and background colour
 
 	halt
 	ld bc,#7f10
 	out (c),c
-	ld c,#45
-	out (c),c						; colour 1
+	ld hl,#45
+	out (c),l						; colour 1
+	out (c),h
+	out (c),l	; and background colour
 
 	halt
 	ld bc,#7f10
 	out (c),c
-	ld c,#46
-	out (c),c						; colour 1
+	ld hl,#46
+	out (c),l						; colour 1
+	out (c),h
+	out (c),l	; and background colour
 
 	jr mainloop2
 
