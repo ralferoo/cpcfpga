@@ -2,14 +2,14 @@
 
 ; transfer 16K of data from #7c000 on memory chip to #c000 and jump to it
 
-        ld bc,#fade
-        ld a,ixl
-        inc ix
-        out (c),a
+;        ld bc,#fade
+;        ld a,ixl
+;        inc ix
+;        out (c),a
 
-        ld a,'~'
-        ld c,#dc
-        out (c),a
+;        ld a,'~'
+;        ld c,#dc
+;        out (c),a
 
         ld de,#0307                             ; D=READ
         ld hl,#c000                             ; EHL = transfer address
