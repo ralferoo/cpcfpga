@@ -32,15 +32,17 @@ init_crtc:
 	ld (#39),hl
 	ei							; every interrupt returns immediately
 
+;	di
+
 	jr mainloop2
 
 mainloop:
-;	defs 13				; interestingly, i need 13 nops here where a real CPC should only need 12... :(
+	defs 11				; interestingly, i need 13 nops here where a real CPC should only need 12... :(
 
 ;	jr x
 ;x:	defs 9				; seems to equal 13 nops... hmmm
 
-	defs 12
+;	defs 12
 
 
 	ld bc,#7f00
