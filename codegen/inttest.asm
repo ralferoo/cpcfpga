@@ -8,6 +8,22 @@
 	ld bc,#7f8d
 	out (c),c						; disable the roms, i.e. force the bootrom out of the way!
 
+	ld hl,crtc_regs
+	ld bc,#bc00
+init_crtc:
+	out (c),c
+	inc c
+	ld a,(hl)
+	inc hl
+	inc b
+	out (c),a
+	dec b
+	ld a,c
+	cp #c
+	jr nz,init_crtc
+
+
+
 	di
 	im 1
 	ld hl,intvec
@@ -113,4 +129,8 @@ mainloop2:
 	out (c),l	; and background colour
 
 	jr mainloop2
+
+
+crtc_regs:
+	defb #3f,#28,#2e,#8e,#26,#00,#19,#1e,#00,#07,#00,#00,#30,#78,#00,#00,#00,#00
 

@@ -610,7 +610,7 @@ begin
 			line_counter				:= (others=>'0');
 			vsync_sense				:= (others=>'0');
 			generate_interrupt			:= '0';
-			z80_int_n				<= '0';
+			z80_int_n				<= '1';
 			
 		elsif falling_edge(local_z80_clk) then
 			-- get local copy of variables
