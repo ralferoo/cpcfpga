@@ -56,22 +56,19 @@ architecture impl of '''+name+''' is
 
 begin
 process (addr)
-	begin
-		if addr('''+str(size)+''')='0' then
-			data <= X"f3";				-- fill lower half with DI instructions
-		else
-			case addr('''+str(size-1)+''' downto 0) is '''
+    begin
+        case addr('''+str(size-1)+''' downto 0) is '''
 
 for n in xrange(0,len(data)):
 	bn = bin(n,size)
 	bval = hex(data[n])[2:]
 	if len(bval)<2: bval="0"+bval #bin(data[n], 8)
-        print '%32swhen "%s" => data <= X"%s";'%('',bn,bval)
+        print '%12swhen "%s" => data <= X"%s";'%('',bn,bval)
 
 print '''
-				when others => data <= X"00";
-			end case;
-		end if;
-	end process;
+            when others => data <= X"00";
+          end case;
+    end process;
+
 end impl;'''
 
