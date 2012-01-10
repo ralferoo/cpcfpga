@@ -1,0 +1,2026 @@
+diff --git a/hdl/T80.vhd b/hdl/T80.vhd
+index 0912e3d..398fa0d 100755
+--- a/hdl/T80.vhd
++++ b/hdl/T80.vhd
+@@ -1,16 +1,3 @@
+--- ****
+--- T80(b) core. In an effort to merge and maintain bug fixes ....
+---
+---
+--- Ver 303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
+--- Ver 302 fixed IO cycle timing, tested thanks to Alessandro.
+--- Ver 301 parity flag is just parity for 8080, also overflow for Z80, by Sean Riddle
+--- Ver 300 started tidyup. Rmoved some auto_wait bits from 0247 which caused problems
+---
+--- MikeJ March 2005
+--- Latest version from www.fpgaarcade.com (original www.opencores.org)
+---
+--- ****
+ --
+ -- Z80 compatible microprocessor core
+ --
+@@ -51,33 +38,33 @@
+ -- you have the latest version of this file.
+ --
+ -- The latest version of this file can be found at:
+---      http://www.opencores.org/cvsweb.shtml/t80/
++--	http://www.opencores.org/cvsweb.shtml/t80/
+ --
+ -- Limitations :
+ --
+ -- File history :
+ --
+---      0208 : First complete release
++--	0208 : First complete release
+ --
+---      0210 : Fixed wait and halt
++--	0210 : Fixed wait and halt
+ --
+---      0211 : Fixed Refresh addition and IM 1
++--	0211 : Fixed Refresh addition and IM 1
+ --
+---      0214 : Fixed mostly flags, only the block instructions now fail the zex regression test
++--	0214 : Fixed mostly flags, only the block instructions now fail the zex regression test
+ --
+---      0232 : Removed refresh address output for Mode > 1 and added DJNZ M1_n fix by Mike Johnson
++--	0232 : Removed refresh address output for Mode > 1 and added DJNZ M1_n fix by Mike Johnson
+ --
+---      0235 : Added clock enable and IM 2 fix by Mike Johnson
++--	0235 : Added clock enable and IM 2 fix by Mike Johnson
+ --
+---      0237 : Changed 8080 I/O address output, added IntE output
++--	0237 : Changed 8080 I/O address output, added IntE output
+ --
+---      0238 : Fixed (IX/IY+d) timing and 16 bit ADC and SBC zero flag
++--	0238 : Fixed (IX/IY+d) timing and 16 bit ADC and SBC zero flag
+ --
+---      0240 : Added interrupt ack fix by Mike Johnson, changed (IX/IY+d) timing and changed flags in GB mode
++--	0240 : Added interrupt ack fix by Mike Johnson, changed (IX/IY+d) timing and changed flags in GB mode
+ --
+---      0242 : Added I/O wait, fixed refresh address, moved some registers to RAM
++--	0242 : Added I/O wait, fixed refresh address, moved some registers to RAM
+ --
+---      0247 : Fixed bus req/ack cycle
++--	0247 : Fixed bus req/ack cycle
+ --
+ 
+ library IEEE;
+@@ -87,8 +74,8 @@ use work.T80_Pack.all;
+ 
+ entity T80 is
+ 	generic(
+-		Mode   : integer := 0;  -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
+-		IOWait : integer := 0;  -- 1 => Single cycle I/O, 1 => Std I/O cycle
++		Mode : integer := 0;	-- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
++		IOWait : integer := 0;	-- 1 => Single cycle I/O, 1 => Std I/O cycle
+ 		Flag_C : integer := 0;
+ 		Flag_N : integer := 1;
+ 		Flag_P : integer := 2;
+@@ -99,167 +86,164 @@ entity T80 is
+ 		Flag_S : integer := 7
+ 	);
+ 	port(
+-		RESET_n         : in  std_logic;
+-		CLK_n           : in  std_logic;
+-		CEN             : in  std_logic;
+-		WAIT_n          : in  std_logic;
+-		INT_n           : in  std_logic;
+-		NMI_n           : in  std_logic;
+-		BUSRQ_n         : in  std_logic;
+-		M1_n            : out std_logic;
+-		IORQ            : out std_logic;
+-		NoRead          : out std_logic;
+-		Write           : out std_logic;
+-		RFSH_n          : out std_logic;
+-		HALT_n          : out std_logic;
+-		BUSAK_n         : out std_logic;
+-		A               : out std_logic_vector(15 downto 0);
+-		DInst           : in  std_logic_vector(7 downto 0);
+-		DI              : in  std_logic_vector(7 downto 0);
+-		DO              : out std_logic_vector(7 downto 0);
+-		MC              : out std_logic_vector(2 downto 0);
+-		TS              : out std_logic_vector(2 downto 0);
+-		IntCycle_n      : out std_logic;
+-		IntE            : out std_logic;
+-		Stop            : out std_logic
++		RESET_n		: in std_logic;
++		CLK_n		: in std_logic;
++		CEN			: in std_logic;
++		WAIT_n		: in std_logic;
++		INT_n		: in std_logic;
++		NMI_n		: in std_logic;
++		BUSRQ_n		: in std_logic;
++		M1_n		: out std_logic;
++		IORQ		: out std_logic;
++		NoRead		: out std_logic;
++		Write		: out std_logic;
++		RFSH_n		: out std_logic;
++		HALT_n		: out std_logic;
++		BUSAK_n		: out std_logic;
++		A			: out std_logic_vector(15 downto 0);
++		DInst		: in std_logic_vector(7 downto 0);
++		DI			: in std_logic_vector(7 downto 0);
++		DO			: out std_logic_vector(7 downto 0);
++		MC			: out std_logic_vector(2 downto 0);
++		TS			: out std_logic_vector(2 downto 0);
++		IntCycle_n	: out std_logic;
++		IntE		: out std_logic;
++		Stop		: out std_logic
+ 	);
+ end T80;
+ 
+ architecture rtl of T80 is
+ 
+-	constant aNone              : std_logic_vector(2 downto 0) := "111";
+-	constant aBC                : std_logic_vector(2 downto 0) := "000";
+-	constant aDE                : std_logic_vector(2 downto 0) := "001";
+-	constant aXY                : std_logic_vector(2 downto 0) := "010";
+-	constant aIOA               : std_logic_vector(2 downto 0) := "100";
+-	constant aSP                : std_logic_vector(2 downto 0) := "101";
+-	constant aZI                : std_logic_vector(2 downto 0) := "110";
++	constant aNone	: std_logic_vector(2 downto 0) := "111";
++	constant aBC	: std_logic_vector(2 downto 0) := "000";
++	constant aDE	: std_logic_vector(2 downto 0) := "001";
++	constant aXY	: std_logic_vector(2 downto 0) := "010";
++	constant aIOA	: std_logic_vector(2 downto 0) := "100";
++	constant aSP	: std_logic_vector(2 downto 0) := "101";
++	constant aZI	: std_logic_vector(2 downto 0) := "110";
+ 
+ 	-- Registers
+-	signal ACC, F               : std_logic_vector(7 downto 0);
+-	signal Ap, Fp               : std_logic_vector(7 downto 0);
+-	signal I                    : std_logic_vector(7 downto 0);
+-	signal R                    : unsigned(7 downto 0);
+-	signal SP, PC               : unsigned(15 downto 0);
+-
+-	signal RegDIH               : std_logic_vector(7 downto 0);
+-	signal RegDIL               : std_logic_vector(7 downto 0);
+-	signal RegBusA              : std_logic_vector(15 downto 0);
+-	signal RegBusB              : std_logic_vector(15 downto 0);
+-	signal RegBusC              : std_logic_vector(15 downto 0);
+-	signal RegAddrA_r           : std_logic_vector(2 downto 0);
+-	signal RegAddrA             : std_logic_vector(2 downto 0);
+-	signal RegAddrB_r           : std_logic_vector(2 downto 0);
+-	signal RegAddrB             : std_logic_vector(2 downto 0);
+-	signal RegAddrC             : std_logic_vector(2 downto 0);
+-	signal RegWEH               : std_logic;
+-	signal RegWEL               : std_logic;
+-	signal Alternate            : std_logic;
++	signal ACC, F			: std_logic_vector(7 downto 0);
++	signal Ap, Fp			: std_logic_vector(7 downto 0);
++	signal I				: std_logic_vector(7 downto 0);
++	signal R				: unsigned(7 downto 0);
++	signal SP, PC			: unsigned(15 downto 0);
++	signal RegDIH			: std_logic_vector(7 downto 0);
++	signal RegDIL			: std_logic_vector(7 downto 0);
++	signal RegBusA			: std_logic_vector(15 downto 0);
++	signal RegBusB			: std_logic_vector(15 downto 0);
++	signal RegBusC			: std_logic_vector(15 downto 0);
++	signal RegAddrA_r		: std_logic_vector(2 downto 0);
++	signal RegAddrA			: std_logic_vector(2 downto 0);
++	signal RegAddrB_r		: std_logic_vector(2 downto 0);
++	signal RegAddrB			: std_logic_vector(2 downto 0);
++	signal RegAddrC			: std_logic_vector(2 downto 0);
++	signal RegWEH			: std_logic;
++	signal RegWEL			: std_logic;
++	signal Alternate		: std_logic;
+ 
+ 	-- Help Registers
+-	signal TmpAddr              : std_logic_vector(15 downto 0);        -- Temporary address register
+-	signal IR                   : std_logic_vector(7 downto 0);         -- Instruction register
+-	signal ISet                 : std_logic_vector(1 downto 0);         -- Instruction set selector
+-	signal RegBusA_r            : std_logic_vector(15 downto 0);
+-
+-	signal ID16                 : signed(15 downto 0);
+-	signal Save_Mux             : std_logic_vector(7 downto 0);
+-
+-	signal TState               : unsigned(2 downto 0);
+-	signal MCycle               : std_logic_vector(2 downto 0);
+-	signal IntE_FF1             : std_logic;
+-	signal IntE_FF2             : std_logic;
+-	signal Halt_FF              : std_logic;
+-	signal BusReq_s             : std_logic;
+-	signal BusAck               : std_logic;
+-	signal ClkEn                : std_logic;
+-	signal NMI_s                : std_logic;
+-	signal INT_s                : std_logic;
+-	signal IStatus              : std_logic_vector(1 downto 0);
+-
+-	signal DI_Reg               : std_logic_vector(7 downto 0);
+-	signal T_Res                : std_logic;
+-	signal XY_State             : std_logic_vector(1 downto 0);
+-	signal Pre_XY_F_M           : std_logic_vector(2 downto 0);
+-	signal NextIs_XY_Fetch      : std_logic;
+-	signal XY_Ind               : std_logic;
+-	signal No_BTR               : std_logic;
+-	signal BTR_r                : std_logic;
+-	signal Auto_Wait            : std_logic;
+-	signal Auto_Wait_t1         : std_logic;
+-	signal Auto_Wait_t2         : std_logic;
+-	signal IncDecZ              : std_logic;
++	signal TmpAddr			: std_logic_vector(15 downto 0);	-- Temporary address register
++	signal IR				: std_logic_vector(7 downto 0);		-- Instruction register
++	signal ISet				: std_logic_vector(1 downto 0);		-- Instruction set selector
++	signal RegBusA_r		: std_logic_vector(15 downto 0);
++
++	signal ID16				: signed(15 downto 0);
++	signal Save_Mux			: std_logic_vector(7 downto 0);
++
++	signal TState			: unsigned(2 downto 0);
++	signal MCycle			: std_logic_vector(2 downto 0);
++	signal IntE_FF1			: std_logic;
++	signal IntE_FF2			: std_logic;
++	signal Halt_FF			: std_logic;
++	signal BusReq_s			: std_logic;
++	signal BusAck			: std_logic;
++	signal ClkEn			: std_logic;
++	signal NMI_s			: std_logic;
++	signal INT_s			: std_logic;
++	signal IStatus			: std_logic_vector(1 downto 0);
++
++	signal DI_Reg			: std_logic_vector(7 downto 0);
++	signal T_Res			: std_logic;
++	signal XY_State			: std_logic_vector(1 downto 0);
++	signal Pre_XY_F_M		: std_logic_vector(2 downto 0);
++	signal NextIs_XY_Fetch	: std_logic;
++	signal XY_Ind			: std_logic;
++	signal No_BTR			: std_logic;
++	signal BTR_r			: std_logic;
++	signal Auto_Wait		: std_logic;
++	signal Auto_Wait_t1		: std_logic;
++	signal Auto_Wait_t2		: std_logic;
++	signal IncDecZ			: std_logic;
+ 
+ 	-- ALU signals
+-	signal BusB                 : std_logic_vector(7 downto 0);
+-	signal BusA                 : std_logic_vector(7 downto 0);
+-	signal ALU_Q                : std_logic_vector(7 downto 0);
+-	signal F_Out                : std_logic_vector(7 downto 0);
++	signal BusB				: std_logic_vector(7 downto 0);
++	signal BusA				: std_logic_vector(7 downto 0);
++	signal ALU_Q			: std_logic_vector(7 downto 0);
++	signal F_Out			: std_logic_vector(7 downto 0);
+ 
+ 	-- Registered micro code outputs
+-	signal Read_To_Reg_r        : std_logic_vector(4 downto 0);
+-	signal Arith16_r            : std_logic;
+-	signal Z16_r                : std_logic;
+-	signal ALU_Op_r             : std_logic_vector(3 downto 0);
+-	signal Save_ALU_r           : std_logic;
+-	signal PreserveC_r          : std_logic;
+-	signal MCycles              : std_logic_vector(2 downto 0);
++	signal Read_To_Reg_r	: std_logic_vector(4 downto 0);
++	signal Arith16_r		: std_logic;
++	signal Z16_r			: std_logic;
++	signal ALU_Op_r			: std_logic_vector(3 downto 0);
++	signal Save_ALU_r		: std_logic;
++	signal PreserveC_r		: std_logic;
++	signal MCycles			: std_logic_vector(2 downto 0);
+ 
+ 	-- Micro code outputs
+-	signal MCycles_d            : std_logic_vector(2 downto 0);
+-	signal TStates              : std_logic_vector(2 downto 0);
+-	signal IntCycle             : std_logic;
+-	signal NMICycle             : std_logic;
+-	signal Inc_PC               : std_logic;
+-	signal Inc_WZ               : std_logic;
+-	signal IncDec_16            : std_logic_vector(3 downto 0);
+-	signal Prefix               : std_logic_vector(1 downto 0);
+-	signal Read_To_Acc          : std_logic;
+-	signal Read_To_Reg          : std_logic;
+-	signal Set_BusB_To          : std_logic_vector(3 downto 0);
+-	signal Set_BusA_To          : std_logic_vector(3 downto 0);
+-	signal ALU_Op               : std_logic_vector(3 downto 0);
+-	signal Save_ALU             : std_logic;
+-	signal PreserveC            : std_logic;
+-	signal Arith16              : std_logic;
+-	signal Set_Addr_To          : std_logic_vector(2 downto 0);
+-	signal Jump                 : std_logic;
+-	signal JumpE                : std_logic;
+-	signal JumpXY               : std_logic;
+-	signal Call                 : std_logic;
+-	signal RstP                 : std_logic;
+-	signal LDZ                  : std_logic;
+-	signal LDW                  : std_logic;
+-	signal LDSPHL               : std_logic;
+-	signal IORQ_i               : std_logic;
+-	signal Special_LD           : std_logic_vector(2 downto 0);
+-	signal ExchangeDH           : std_logic;
+-	signal ExchangeRp           : std_logic;
+-	signal ExchangeAF           : std_logic;
+-	signal ExchangeRS           : std_logic;
+-	signal I_DJNZ               : std_logic;
+-	signal I_CPL                : std_logic;
+-	signal I_CCF                : std_logic;
+-	signal I_SCF                : std_logic;
+-	signal I_RETN               : std_logic;
+-	signal I_BT                 : std_logic;
+-	signal I_BC                 : std_logic;
+-	signal I_BTR                : std_logic;
+-	signal I_RLD                : std_logic;
+-	signal I_RRD                : std_logic;
+-	signal I_INRC               : std_logic;
+-	signal SetDI                : std_logic;
+-	signal SetEI                : std_logic;
+-	signal IMode                : std_logic_vector(1 downto 0);
+-	signal Halt                 : std_logic;
+-	signal XYbit_undoc          : std_logic;
+-
++	signal MCycles_d		: std_logic_vector(2 downto 0);
++	signal TStates			: std_logic_vector(2 downto 0);
++	signal IntCycle			: std_logic;
++	signal NMICycle			: std_logic;
++	signal Inc_PC			: std_logic;
++	signal Inc_WZ			: std_logic;
++	signal IncDec_16		: std_logic_vector(3 downto 0);
++	signal Prefix			: std_logic_vector(1 downto 0);
++	signal Read_To_Acc		: std_logic;
++	signal Read_To_Reg		: std_logic;
++	signal Set_BusB_To		: std_logic_vector(3 downto 0);
++	signal Set_BusA_To		: std_logic_vector(3 downto 0);
++	signal ALU_Op			: std_logic_vector(3 downto 0);
++	signal Save_ALU			: std_logic;
++	signal PreserveC		: std_logic;
++	signal Arith16			: std_logic;
++	signal Set_Addr_To		: std_logic_vector(2 downto 0);
++	signal Jump				: std_logic;
++	signal JumpE			: std_logic;
++	signal JumpXY			: std_logic;
++	signal Call				: std_logic;
++	signal RstP				: std_logic;
++	signal LDZ				: std_logic;
++	signal LDW				: std_logic;
++	signal LDSPHL			: std_logic;
++	signal IORQ_i			: std_logic;
++	signal Special_LD		: std_logic_vector(2 downto 0);
++	signal ExchangeDH		: std_logic;
++	signal ExchangeRp		: std_logic;
++	signal ExchangeAF		: std_logic;
++	signal ExchangeRS		: std_logic;
++	signal I_DJNZ			: std_logic;
++	signal I_CPL			: std_logic;
++	signal I_CCF			: std_logic;
++	signal I_SCF			: std_logic;
++	signal I_RETN			: std_logic;
++	signal I_BT				: std_logic;
++	signal I_BC				: std_logic;
++	signal I_BTR			: std_logic;
++	signal I_RLD			: std_logic;
++	signal I_RRD			: std_logic;
++	signal I_INRC			: std_logic;
++	signal SetDI			: std_logic;
++	signal SetEI			: std_logic;
++	signal IMode			: std_logic_vector(1 downto 0);
++	signal Halt				: std_logic;
+ 
+ begin
+ 
+ 	mcode : T80_MCode
+ 		generic map(
+-			Mode   => Mode,
++			Mode => Mode,
+ 			Flag_C => Flag_C,
+ 			Flag_N => Flag_N,
+ 			Flag_P => Flag_P,
+@@ -269,64 +253,62 @@ begin
+ 			Flag_Z => Flag_Z,
+ 			Flag_S => Flag_S)
+ 		port map(
+-			IR          => IR,
+-			ISet        => ISet,
+-			MCycle      => MCycle,
+-			F           => F,
+-			NMICycle    => NMICycle,
+-			IntCycle    => IntCycle,
+-			XY_State    => XY_State,
+-			MCycles     => MCycles_d,
+-			TStates     => TStates,
+-			Prefix      => Prefix,
+-			Inc_PC      => Inc_PC,
+-			Inc_WZ      => Inc_WZ,
+-			IncDec_16   => IncDec_16,
++			IR => IR,
++			ISet => ISet,
++			MCycle => MCycle,
++			F => F,
++			NMICycle => NMICycle,
++			IntCycle => IntCycle,
++			MCycles => MCycles_d,
++			TStates => TStates,
++			Prefix => Prefix,
++			Inc_PC => Inc_PC,
++			Inc_WZ => Inc_WZ,
++			IncDec_16 => IncDec_16,
+ 			Read_To_Acc => Read_To_Acc,
+ 			Read_To_Reg => Read_To_Reg,
+ 			Set_BusB_To => Set_BusB_To,
+ 			Set_BusA_To => Set_BusA_To,
+-			ALU_Op      => ALU_Op,
+-			Save_ALU    => Save_ALU,
+-			PreserveC   => PreserveC,
+-			Arith16     => Arith16,
++			ALU_Op => ALU_Op,
++			Save_ALU => Save_ALU,
++			PreserveC => PreserveC,
++			Arith16 => Arith16,
+ 			Set_Addr_To => Set_Addr_To,
+-			IORQ        => IORQ_i,
+-			Jump        => Jump,
+-			JumpE       => JumpE,
+-			JumpXY      => JumpXY,
+-			Call        => Call,
+-			RstP        => RstP,
+-			LDZ         => LDZ,
+-			LDW         => LDW,
+-			LDSPHL      => LDSPHL,
+-			Special_LD  => Special_LD,
+-			ExchangeDH  => ExchangeDH,
+-			ExchangeRp  => ExchangeRp,
+-			ExchangeAF  => ExchangeAF,
+-			ExchangeRS  => ExchangeRS,
+-			I_DJNZ      => I_DJNZ,
+-			I_CPL       => I_CPL,
+-			I_CCF       => I_CCF,
+-			I_SCF       => I_SCF,
+-			I_RETN      => I_RETN,
+-			I_BT        => I_BT,
+-			I_BC        => I_BC,
+-			I_BTR       => I_BTR,
+-			I_RLD       => I_RLD,
+-			I_RRD       => I_RRD,
+-			I_INRC      => I_INRC,
+-			SetDI       => SetDI,
+-			SetEI       => SetEI,
+-			IMode       => IMode,
+-			Halt        => Halt,
+-			NoRead      => NoRead,
+-			Write       => Write,
+-			XYbit_undoc => XYbit_undoc);
++			IORQ => IORQ_i,
++			Jump => Jump,
++			JumpE => JumpE,
++			JumpXY => JumpXY,
++			Call => Call,
++			RstP => RstP,
++			LDZ => LDZ,
++			LDW => LDW,
++			LDSPHL => LDSPHL,
++			Special_LD => Special_LD,
++			ExchangeDH => ExchangeDH,
++			ExchangeRp => ExchangeRp,
++			ExchangeAF => ExchangeAF,
++			ExchangeRS => ExchangeRS,
++			I_DJNZ => I_DJNZ,
++			I_CPL => I_CPL,
++			I_CCF => I_CCF,
++			I_SCF => I_SCF,
++			I_RETN => I_RETN,
++			I_BT => I_BT,
++			I_BC => I_BC,
++			I_BTR => I_BTR,
++			I_RLD => I_RLD,
++			I_RRD => I_RRD,
++			I_INRC => I_INRC,
++			SetDI => SetDI,
++			SetEI => SetEI,
++			IMode => IMode,
++			Halt => Halt,
++			NoRead => NoRead,
++			Write => Write);
+ 
+ 	alu : T80_ALU
+ 		generic map(
+-			Mode   => Mode,
++			Mode => Mode,
+ 			Flag_C => Flag_C,
+ 			Flag_N => Flag_N,
+ 			Flag_P => Flag_P,
+@@ -337,15 +319,15 @@ begin
+ 			Flag_S => Flag_S)
+ 		port map(
+ 			Arith16 => Arith16_r,
+-			Z16     => Z16_r,
+-			ALU_Op  => ALU_Op_r,
+-			IR      => IR(5 downto 0),
+-			ISet    => ISet,
+-			BusA    => BusA,
+-			BusB    => BusB,
+-			F_In    => F,
+-			Q       => ALU_Q,
+-			F_Out   => F_Out);
++			Z16 => Z16_r,
++			ALU_Op => ALU_Op_r,
++			IR => IR(5 downto 0),
++			ISet => ISet,
++			BusA => BusA,
++			BusB => BusB,
++			F_In => F,
++			Q => ALU_Q,
++			F_Out => F_Out);
+ 
+ 	ClkEn <= CEN and not BusAck;
+ 
+@@ -661,7 +643,7 @@ begin
+ 					DI_Reg(4) xor DI_Reg(5) xor DI_Reg(6) xor DI_Reg(7));
+ 			end if;
+ 
+-			if TState = 1 then
++			if TState = 1 and Auto_Wait_t1 = '0' then
+ 				DO <= BusB;
+ 				if I_RLD = '1' then
+ 					DO(3 downto 0) <= BusA(3 downto 0);
+@@ -692,7 +674,7 @@ begin
+ 				F(Flag_P) <= IncDecZ;
+ 			end if;
+ 
+-			if (TState = 1 and Save_ALU_r = '0') or
++			if (TState = 1 and Save_ALU_r = '0' and Auto_Wait_t1 = '0') or
+ 				(Save_ALU_r = '1' and ALU_OP_r /= "0111") then
+ 				case Read_To_Reg_r is
+ 				when "10111" =>
+@@ -707,9 +689,6 @@ begin
+ 					F <= Save_Mux;
+ 				when others =>
+ 				end case;
+-				if XYbit_undoc='1' then
+-					DO <= ALU_Q;
+-				end if;
+ 			end if;
+ 
+ 		end if;
+@@ -791,7 +770,7 @@ begin
+ 	begin
+ 		RegWEH <= '0';
+ 		RegWEL <= '0';
+-		if (TState = 1 and Save_ALU_r = '0') or
++		if (TState = 1 and Save_ALU_r = '0' and Auto_Wait_t1 = '0') or
+ 			(Save_ALU_r = '1' and ALU_OP_r /= "0111") then
+ 			case Read_To_Reg_r is
+ 			when "10000" | "10001" | "10010" | "10011" | "10100" | "10101" =>
+@@ -913,10 +892,6 @@ begin
+ 			when others =>
+ 				BusB <= "--------";
+ 			end case;
+-			if XYbit_undoc='1' then
+-				BusA <= DI_Reg;
+-				BusB <= DI_Reg;
+-			end if;
+ 			end if;
+ 		end if;
+ 	end process;
+@@ -1001,7 +976,11 @@ begin
+ 			M1_n <= '1';
+ 		elsif CLK_n'event and CLK_n = '1' then
+ 			if CEN = '1' then
+-			Auto_Wait_t1 <= Auto_Wait;
++			if T_Res = '1' then
++				Auto_Wait_t1 <= '0';
++			else
++				Auto_Wait_t1 <= Auto_Wait or IORQ_i;
++			end if;
+ 			Auto_Wait_t2 <= Auto_Wait_t1;
+ 			No_BTR <= (I_BT and (not IR(4) or not F(Flag_P))) or
+ 					(I_BC and (not IR(4) or F(Flag_Z) or not F(Flag_P))) or
+@@ -1068,8 +1047,8 @@ begin
+ 						end if;
+ 					end if;
+ 				else
+-					if Auto_Wait = '1' nand Auto_Wait_t2 = '0' then
+-
++					if (Auto_Wait = '1' and Auto_Wait_t2 = '0') nor
++						(IOWait = 1 and IORQ_i = '1' and Auto_Wait_t1 = '0') then
+ 						TState <= TState + 1;
+ 					end if;
+ 				end if;
+diff --git a/hdl/T80_ALU.vhd b/hdl/T80_ALU.vhd
+index 95c98da..86fddce 100755
+--- a/hdl/T80_ALU.vhd
++++ b/hdl/T80_ALU.vhd
+@@ -1,13 +1,3 @@
+--- ****
+--- T80(b) core. In an effort to merge and maintain bug fixes ....
+---
+---
+--- Ver 301 parity flag is just parity for 8080, also overflow for Z80, by Sean Riddle
+--- Ver 300 started tidyup
+--- MikeJ March 2005
+--- Latest version from www.fpgaarcade.com (original www.opencores.org)
+---
+--- ****
+ --
+ -- Z80 compatible microprocessor core
+ --
+@@ -48,21 +38,21 @@
+ -- you have the latest version of this file.
+ --
+ -- The latest version of this file can be found at:
+---      http://www.opencores.org/cvsweb.shtml/t80/
++--	http://www.opencores.org/cvsweb.shtml/t80/
+ --
+ -- Limitations :
+ --
+ -- File history :
+ --
+---      0214 : Fixed mostly flags, only the block instructions now fail the zex regression test
++--	0214 : Fixed mostly flags, only the block instructions now fail the zex regression test
+ --
+---      0238 : Fixed zero flag for 16 bit SBC and ADC
++--	0238 : Fixed zero flag for 16 bit SBC and ADC
+ --
+---      0240 : Added GB operations
++--	0240 : Added GB operations
+ --
+---      0242 : Cleanup
++--	0242 : Cleanup
+ --
+---      0247 : Cleanup
++--	0247 : Cleanup
+ --
+ 
+ library IEEE;
+@@ -82,77 +72,66 @@ entity T80_ALU is
+ 		Flag_S : integer := 7
+ 	);
+ 	port(
+-		Arith16         : in  std_logic;
+-		Z16             : in  std_logic;
+-		ALU_Op          : in  std_logic_vector(3 downto 0);
+-		IR              : in  std_logic_vector(5 downto 0);
+-		ISet            : in  std_logic_vector(1 downto 0);
+-		BusA            : in  std_logic_vector(7 downto 0);
+-		BusB            : in  std_logic_vector(7 downto 0);
+-		F_In            : in  std_logic_vector(7 downto 0);
+-		Q               : out std_logic_vector(7 downto 0);
+-		F_Out           : out std_logic_vector(7 downto 0)
++		Arith16		: in std_logic;
++		Z16			: in std_logic;
++		ALU_Op		: in std_logic_vector(3 downto 0);
++		IR			: in std_logic_vector(5 downto 0);
++		ISet		: in std_logic_vector(1 downto 0);
++		BusA		: in std_logic_vector(7 downto 0);
++		BusB		: in std_logic_vector(7 downto 0);
++		F_In		: in std_logic_vector(7 downto 0);
++		Q			: out std_logic_vector(7 downto 0);
++		F_Out		: out std_logic_vector(7 downto 0)
+ 	);
+ end T80_ALU;
+ 
+ architecture rtl of T80_ALU is
+ 
+-	procedure AddSub(A        : std_logic_vector;
+-					 B        : std_logic_vector;
+-					 Sub      : std_logic;
+-					 Carry_In : std_logic;
+-			  signal Res      : out std_logic_vector;
+-			  signal Carry    : out std_logic) is
+-
+-		variable B_i          : unsigned(A'length - 1 downto 0);
+-		variable Res_i        : unsigned(A'length + 1 downto 0);
++	procedure AddSub(A : std_logic_vector;
++					B : std_logic_vector;
++					Sub : std_logic;
++					Carry_In : std_logic;
++					signal Res : out std_logic_vector;
++					signal Carry : out std_logic) is
++		variable B_i		: unsigned(A'length - 1 downto 0);
++		variable Res_i		: unsigned(A'length + 1 downto 0);
+ 	begin
+ 		if Sub = '1' then
+ 			B_i := not unsigned(B);
+ 		else
+-			B_i :=     unsigned(B);
++			B_i := unsigned(B);
+ 		end if;
+-
+ 		Res_i := unsigned("0" & A & Carry_In) + unsigned("0" & B_i & "1");
+ 		Carry <= Res_i(A'length + 1);
+ 		Res <= std_logic_vector(Res_i(A'length downto 1));
+ 	end;
+ 
+ 	-- AddSub variables (temporary signals)
+-	signal UseCarry                : std_logic;
+-	signal Carry7_v                : std_logic;
+-	signal Overflow_v              : std_logic;
+-	signal HalfCarry_v             : std_logic;
+-	signal Carry_v                 : std_logic;
+-	signal Q_v                     : std_logic_vector(7 downto 0);
++	signal	UseCarry		: std_logic;
++	signal	Carry7_v		: std_logic;
++	signal	Overflow_v		: std_logic;
++	signal	HalfCarry_v		: std_logic;
++	signal	Carry_v			: std_logic;
++	signal	Q_v				: std_logic_vector(7 downto 0);
+ 
+-	signal BitMask                 : std_logic_vector(7 downto 0);
++	signal	BitMask			: std_logic_vector(7 downto 0);
+ 
+ begin
+ 
+ 	with IR(5 downto 3) select BitMask <= "00000001" when "000",
+-										  "00000010" when "001",
+-										  "00000100" when "010",
+-										  "00001000" when "011",
+-										  "00010000" when "100",
+-										  "00100000" when "101",
+-										  "01000000" when "110",
+-										  "10000000" when others;
++									"00000010" when "001",
++									"00000100" when "010",
++									"00001000" when "011",
++									"00010000" when "100",
++									"00100000" when "101",
++									"01000000" when "110",
++									"10000000" when others;
+ 
+ 	UseCarry <= not ALU_Op(2) and ALU_Op(0);
+ 	AddSub(BusA(3 downto 0), BusB(3 downto 0), ALU_Op(1), ALU_Op(1) xor (UseCarry and F_In(Flag_C)), Q_v(3 downto 0), HalfCarry_v);
+ 	AddSub(BusA(6 downto 4), BusB(6 downto 4), ALU_Op(1), HalfCarry_v, Q_v(6 downto 4), Carry7_v);
+ 	AddSub(BusA(7 downto 7), BusB(7 downto 7), ALU_Op(1), Carry7_v, Q_v(7 downto 7), Carry_v);
+-
+-	-- bug fix - parity flag is just parity for 8080, also overflow for Z80
+-	process (Carry_v, Carry7_v, Q_v)
+-	begin
+-		if(Mode=2) then
+-			OverFlow_v <= not (Q_v(0) xor Q_v(1) xor Q_v(2) xor Q_v(3) xor
+-					   Q_v(4) xor Q_v(5) xor Q_v(6) xor Q_v(7));  else
+-			OverFlow_v <= Carry_v xor Carry7_v;
+-		end if;
+-	end process;
++	OverFlow_v <= Carry_v xor Carry7_v;
+ 
+ 	process (Arith16, ALU_OP, F_In, BusA, BusB, IR, Q_v, Carry_v, HalfCarry_v, OverFlow_v, BitMask, ISet, Z16)
+ 		variable Q_t : std_logic_vector(7 downto 0);
+@@ -197,7 +176,7 @@ begin
+ 			if Q_t(7 downto 0) = "00000000" then
+ 				F_Out(Flag_Z) <= '1';
+ 				if Z16 = '1' then
+-					F_Out(Flag_Z) <= F_In(Flag_Z);      -- 16 bit ADC,SBC
++					F_Out(Flag_Z) <= F_In(Flag_Z);	-- 16 bit ADC,SBC
+ 				end if;
+ 			else
+ 				F_Out(Flag_Z) <= '0';
+@@ -368,4 +347,5 @@ begin
+ 		end case;
+ 		Q <= Q_t;
+ 	end process;
++
+ end;
+diff --git a/hdl/T80_MCode.vhd b/hdl/T80_MCode.vhd
+index 4c15b9b..4cc30f3 100755
+--- a/hdl/T80_MCode.vhd
++++ b/hdl/T80_MCode.vhd
+@@ -1,14 +1,3 @@
+--- ****
+--- T80(b) core. In an effort to merge and maintain bug fixes ....
+---
+---
+--- Ver 303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
+--- Ver 302 fixed IO cycle timing, tested thanks to Alessandro.
+--- Ver 300 started tidyup
+--- MikeJ March 2005
+--- Latest version from www.fpgaarcade.com (original www.opencores.org)
+---
+--- ****
+ --
+ -- Z80 compatible microprocessor core
+ --
+@@ -49,35 +38,32 @@
+ -- you have the latest version of this file.
+ --
+ -- The latest version of this file can be found at:
+---      http://www.opencores.org/cvsweb.shtml/t80/
++--	http://www.opencores.org/cvsweb.shtml/t80/
+ --
+ -- Limitations :
+ --
+ -- File history :
+ --
+---      0208 : First complete release
++--	0208 : First complete release
+ --
+---      0211 : Fixed IM 1
++--	0211 : Fixed IM 1
+ --
+---      0214 : Fixed mostly flags, only the block instructions now fail the zex regression test
++--	0214 : Fixed mostly flags, only the block instructions now fail the zex regression test
+ --
+---      0235 : Added IM 2 fix by Mike Johnson
++--	0235 : Added IM 2 fix by Mike Johnson
+ --
+---      0238 : Added NoRead signal
++--	0238 : Added NoRead signal
+ --
+---      0238b: Fixed instruction timing for POP and DJNZ
++--	0238b: Fixed instruction timing for POP and DJNZ
+ --
+---      0240 : Added (IX/IY+d) states, removed op-codes from mode 2 and added all remaining mode 3 op-codes
+-
+---      0240mj1 fix for HL inc/dec for INI, IND, INIR, INDR, OUTI, OUTD, OTIR, OTDR
++--	0240 : Added (IX/IY+d) states, removed op-codes from mode 2 and added all remaining mode 3 op-codes
+ --
+---      0242 : Fixed I/O instruction timing, cleanup
++--	0242 : Fixed I/O instruction timing, cleanup
+ --
+ 
+ library IEEE;
+ use IEEE.std_logic_1164.all;
+ use IEEE.numeric_std.all;
+-use work.T80_Pack.all;
+ 
+ entity T80_MCode is
+ 	generic(
+@@ -92,73 +78,78 @@ entity T80_MCode is
+ 		Flag_S : integer := 7
+ 	);
+ 	port(
+-		IR                              : in std_logic_vector(7 downto 0);
+-		ISet                    : in std_logic_vector(1 downto 0);
+-		MCycle                  : in std_logic_vector(2 downto 0);
+-		F                               : in std_logic_vector(7 downto 0);
+-		NMICycle                : in std_logic;
+-		IntCycle                : in std_logic;
+-		XY_State                : in std_logic_vector(1 downto 0);
+-		MCycles                 : out std_logic_vector(2 downto 0);
+-		TStates                 : out std_logic_vector(2 downto 0);
+-		Prefix                  : out std_logic_vector(1 downto 0); -- None,CB,ED,DD/FD
+-		Inc_PC                  : out std_logic;
+-		Inc_WZ                  : out std_logic;
+-		IncDec_16               : out std_logic_vector(3 downto 0); -- BC,DE,HL,SP   0 is inc
+-		Read_To_Reg             : out std_logic;
+-		Read_To_Acc             : out std_logic;
+-		Set_BusA_To     : out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI/DB,A,SP(L),SP(M),0,F
+-		Set_BusB_To     : out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI,A,SP(L),SP(M),1,F,PC(L),PC(M),0
+-		ALU_Op                  : out std_logic_vector(3 downto 0);
++		IR				: in std_logic_vector(7 downto 0);
++		ISet			: in std_logic_vector(1 downto 0);
++		MCycle			: in std_logic_vector(2 downto 0);
++		F				: in std_logic_vector(7 downto 0);
++		NMICycle		: in std_logic;
++		IntCycle		: in std_logic;
++		MCycles			: out std_logic_vector(2 downto 0);
++		TStates			: out std_logic_vector(2 downto 0);
++		Prefix			: out std_logic_vector(1 downto 0); -- None,BC,ED,DD/FD
++		Inc_PC			: out std_logic;
++		Inc_WZ			: out std_logic;
++		IncDec_16		: out std_logic_vector(3 downto 0); -- BC,DE,HL,SP   0 is inc
++		Read_To_Reg		: out std_logic;
++		Read_To_Acc		: out std_logic;
++		Set_BusA_To	: out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI/DB,A,SP(L),SP(M),0,F
++		Set_BusB_To	: out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI,A,SP(L),SP(M),1,F,PC(L),PC(M),0
++		ALU_Op			: out std_logic_vector(3 downto 0);
+ 			-- ADD, ADC, SUB, SBC, AND, XOR, OR, CP, ROT, BIT, SET, RES, DAA, RLD, RRD, None
+-		Save_ALU                : out std_logic;
+-		PreserveC               : out std_logic;
+-		Arith16                 : out std_logic;
+-		Set_Addr_To             : out std_logic_vector(2 downto 0); -- aNone,aXY,aIOA,aSP,aBC,aDE,aZI
+-		IORQ                    : out std_logic;
+-		Jump                    : out std_logic;
+-		JumpE                   : out std_logic;
+-		JumpXY                  : out std_logic;
+-		Call                    : out std_logic;
+-		RstP                    : out std_logic;
+-		LDZ                             : out std_logic;
+-		LDW                             : out std_logic;
+-		LDSPHL                  : out std_logic;
+-		Special_LD              : out std_logic_vector(2 downto 0); -- A,I;A,R;I,A;R,A;None
+-		ExchangeDH              : out std_logic;
+-		ExchangeRp              : out std_logic;
+-		ExchangeAF              : out std_logic;
+-		ExchangeRS              : out std_logic;
+-		I_DJNZ                  : out std_logic;
+-		I_CPL                   : out std_logic;
+-		I_CCF                   : out std_logic;
+-		I_SCF                   : out std_logic;
+-		I_RETN                  : out std_logic;
+-		I_BT                    : out std_logic;
+-		I_BC                    : out std_logic;
+-		I_BTR                   : out std_logic;
+-		I_RLD                   : out std_logic;
+-		I_RRD                   : out std_logic;
+-		I_INRC                  : out std_logic;
+-		SetDI                   : out std_logic;
+-		SetEI                   : out std_logic;
+-		IMode                   : out std_logic_vector(1 downto 0);
+-		Halt                    : out std_logic;
+-		NoRead                  : out std_logic;
+-		Write                   : out std_logic;
+-		XYbit_undoc             : out std_logic
++		Save_ALU		: out std_logic;
++		PreserveC		: out std_logic;
++		Arith16			: out std_logic;
++		Set_Addr_To		: out std_logic_vector(2 downto 0); -- aNone,aXY,aIOA,aSP,aBC,aDE,aZI
++		IORQ			: out std_logic;
++		Jump			: out std_logic;
++		JumpE			: out std_logic;
++		JumpXY			: out std_logic;
++		Call			: out std_logic;
++		RstP			: out std_logic;
++		LDZ				: out std_logic;
++		LDW				: out std_logic;
++		LDSPHL			: out std_logic;
++		Special_LD		: out std_logic_vector(2 downto 0); -- A,I;A,R;I,A;R,A;None
++		ExchangeDH		: out std_logic;
++		ExchangeRp		: out std_logic;
++		ExchangeAF		: out std_logic;
++		ExchangeRS		: out std_logic;
++		I_DJNZ			: out std_logic;
++		I_CPL			: out std_logic;
++		I_CCF			: out std_logic;
++		I_SCF			: out std_logic;
++		I_RETN			: out std_logic;
++		I_BT			: out std_logic;
++		I_BC			: out std_logic;
++		I_BTR			: out std_logic;
++		I_RLD			: out std_logic;
++		I_RRD			: out std_logic;
++		I_INRC			: out std_logic;
++		SetDI			: out std_logic;
++		SetEI			: out std_logic;
++		IMode			: out std_logic_vector(1 downto 0);
++		Halt			: out std_logic;
++		NoRead			: out std_logic;
++		Write			: out std_logic
+ 	);
+ end T80_MCode;
+ 
+ architecture rtl of T80_MCode is
+ 
+-	constant aNone      : std_logic_vector(2 downto 0) := "111";
+-	constant aBC        : std_logic_vector(2 downto 0) := "000";
+-	constant aDE        : std_logic_vector(2 downto 0) := "001";
+-	constant aXY        : std_logic_vector(2 downto 0) := "010";
+-	constant aIOA       : std_logic_vector(2 downto 0) := "100";
+-	constant aSP        : std_logic_vector(2 downto 0) := "101";
+-	constant aZI        : std_logic_vector(2 downto 0) := "110";
++	constant aNone	: std_logic_vector(2 downto 0) := "111";
++	constant aBC	: std_logic_vector(2 downto 0) := "000";
++	constant aDE	: std_logic_vector(2 downto 0) := "001";
++	constant aXY	: std_logic_vector(2 downto 0) := "010";
++	constant aIOA	: std_logic_vector(2 downto 0) := "100";
++	constant aSP	: std_logic_vector(2 downto 0) := "101";
++	constant aZI	: std_logic_vector(2 downto 0) := "110";
++--	constant aNone	: std_logic_vector(2 downto 0) := "000";
++--	constant aXY	: std_logic_vector(2 downto 0) := "001";
++--	constant aIOA	: std_logic_vector(2 downto 0) := "010";
++--	constant aSP	: std_logic_vector(2 downto 0) := "011";
++--	constant aBC	: std_logic_vector(2 downto 0) := "100";
++--	constant aDE	: std_logic_vector(2 downto 0) := "101";
++--	constant aZI	: std_logic_vector(2 downto 0) := "110";
+ 
+ 	function is_cc_true(
+ 		F : std_logic_vector(7 downto 0);
+@@ -253,14 +244,13 @@ begin
+ 		Halt <= '0';
+ 		NoRead <= '0';
+ 		Write <= '0';
+-		XYbit_undoc <= '0';
+ 
+ 		case ISet is
+ 		when "00" =>
+ 
+ ------------------------------------------------------------------------------
+ --
+---      Unprefixed instructions
++--	Unprefixed instructions
+ --
+ ------------------------------------------------------------------------------
+ 
+@@ -934,7 +924,7 @@ begin
+ 					case to_integer(unsigned(MCycle)) is
+ 					when 1 =>
+ 						Set_Addr_To <= aBC;
+-						Set_BusB_To     <= "0111";
++						Set_BusB_To	<= "0111";
+ 					when 2 =>
+ 						Write <= '1';
+ 						IORQ <= '1';
+@@ -1167,6 +1157,7 @@ begin
+ 			MCycles <= "011";
+ 			case to_integer(unsigned(MCycle)) is
+ 			when 1 =>
++				TStates <= "101";
+ 				Set_Addr_TO <= aSP;
+ 			when 2 =>
+ 				IncDec_16 <= "0111";
+@@ -1187,7 +1178,7 @@ begin
+ 					when 2 =>
+ 						Inc_PC <= '1';
+ 						Set_Addr_To <= aIOA;
+-						Set_BusB_To     <= "0111";
++						Set_BusB_To	<= "0111";
+ 					when 3 =>
+ 						Write <= '1';
+ 					when others => null;
+@@ -1209,7 +1200,7 @@ begin
+ 						Save_ALU <= '1';
+ 						ALU_Op <= "0001";
+ 						Set_BusA_To <= "1001";
+-						Set_BusB_To <= "1110";  -- Incorrect unsigned !!!!!!!!!!!!!!!!!!!!!
++						Set_BusB_To <= "1110";	-- Incorrect unsigned !!!!!!!!!!!!!!!!!!!!!
+ 					when others =>
+ 					end case;
+ 				when "10" =>
+@@ -1224,7 +1215,7 @@ begin
+ 					when others => null;
+ 					end case;
+ 				when "11" =>
+-					-- LD HL,SP+n       -- Not correct !!!!!!!!!!!!!!!!!!!
++					-- LD HL,SP+n	-- Not correct !!!!!!!!!!!!!!!!!!!
+ 					MCycles <= "101";
+ 					case to_integer(unsigned(MCycle)) is
+ 					when 2 =>
+@@ -1298,7 +1289,6 @@ begin
+ 				when 3 =>
+ 					Read_To_Acc <= '1';
+ 					IORQ <= '1';
+-					TStates <= "100"; -- MIKEJ should be 4 for IO cycle
+ 				when others => null;
+ 				end case;
+ 			end if;
+@@ -1310,11 +1300,10 @@ begin
+ 				when 2 =>
+ 					Inc_PC <= '1';
+ 					Set_Addr_To <= aIOA;
+-					Set_BusB_To <= "0111";
++					Set_BusB_To	<= "0111";
+ 				when 3 =>
+ 					Write <= '1';
+ 					IORQ <= '1';
+-					TStates <= "100"; -- MIKEJ should be 4 for IO cycle
+ 				when others => null;
+ 				end case;
+ 			end if;
+@@ -1346,7 +1335,7 @@ begin
+ 
+ ------------------------------------------------------------------------------
+ --
+---      CB prefixed instructions
++--	CB prefixed instructions
+ --
+ ------------------------------------------------------------------------------
+ 
+@@ -1370,32 +1359,11 @@ begin
+ 				-- SRA r
+ 				-- SRL r
+ 				-- SLL r (Undocumented) / SWAP r
+-				if XY_State="00" then
+-					if MCycle = "001" then
+-					  ALU_Op <= "1000";
+-					  Read_To_Reg <= '1';
+-					  Save_ALU <= '1';
+-					end if;
+-				else
+-				-- R/S (IX+d),Reg, undocumented
+-					MCycles <= "011";
+-					XYbit_undoc <= '1';
+-					case to_integer(unsigned(MCycle)) is
+-					when 1 | 7=>
+-						Set_Addr_To <= aXY;
+-					when 2 =>
+-						ALU_Op <= "1000";
+-						Read_To_Reg <= '1';
+-						Save_ALU <= '1';
+-						Set_Addr_To <= aXY;
+-						TStates <= "100";
+-					when 3 =>
+-						Write <= '1';
+-					when others => null;
+-					end case;
++				if MCycle = "001" then
++					ALU_Op <= "1000";
++					Read_To_Reg <= '1';
++					Save_ALU <= '1';
+ 				end if;
+-
+-
+ 			when "00000110"|"00010110"|"00001110"|"00011110"|"00101110"|"00111110"|"00100110"|"00110110" =>
+ 				-- RLC (HL)
+ 				-- RL (HL)
+@@ -1428,34 +1396,20 @@ begin
+ 				|"01110000"|"01110001"|"01110010"|"01110011"|"01110100"|"01110101"|"01110111"
+ 				|"01111000"|"01111001"|"01111010"|"01111011"|"01111100"|"01111101"|"01111111" =>
+ 				-- BIT b,r
+-				if XY_State="00" then
+-					if MCycle = "001" then
+-					  Set_BusB_To(2 downto 0) <= IR(2 downto 0);
+-					  ALU_Op <= "1001";
+-					end if;
+-				else
+-				-- BIT b,(IX+d), undocumented
+-					MCycles <= "010";
+-					XYbit_undoc <= '1';
+-					case to_integer(unsigned(MCycle)) is
+-					when 1 | 7=>
+-						Set_Addr_To <= aXY;
+-					when 2 =>
+-						ALU_Op <= "1001";
+-						TStates <= "100";
+-					when others => null;
+-					end case;
++				if MCycle = "001" then
++					Set_BusB_To(2 downto 0) <= IR(2 downto 0);
++					ALU_Op <= "1001";
+ 				end if;
+ 			when "01000110"|"01001110"|"01010110"|"01011110"|"01100110"|"01101110"|"01110110"|"01111110" =>
+ 				-- BIT b,(HL)
+ 				MCycles <= "010";
+ 				case to_integer(unsigned(MCycle)) is
+-				when 1 | 7=>
++				when 1 | 7 =>
+ 					Set_Addr_To <= aXY;
+ 				when 2 =>
+ 					ALU_Op <= "1001";
+ 					TStates <= "100";
+-				when others => null;
++				when others =>
+ 				end case;
+ 			when "11000000"|"11000001"|"11000010"|"11000011"|"11000100"|"11000101"|"11000111"
+ 				|"11001000"|"11001001"|"11001010"|"11001011"|"11001100"|"11001101"|"11001111"
+@@ -1466,35 +1420,16 @@ begin
+ 				|"11110000"|"11110001"|"11110010"|"11110011"|"11110100"|"11110101"|"11110111"
+ 				|"11111000"|"11111001"|"11111010"|"11111011"|"11111100"|"11111101"|"11111111" =>
+ 				-- SET b,r
+-				if XY_State="00" then
+-					if MCycle = "001" then
+-					  ALU_Op <= "1010";
+-					  Read_To_Reg <= '1';
+-					  Save_ALU <= '1';
+-					end if;
+-				else
+-				-- SET b,(IX+d),Reg, undocumented
+-					MCycles <= "011";
+-					XYbit_undoc <= '1';
+-					case to_integer(unsigned(MCycle)) is
+-					when 1 | 7=>
+-						Set_Addr_To <= aXY;
+-					when 2 =>
+-						ALU_Op <= "1010";
+-						Read_To_Reg <= '1';
+-						Save_ALU <= '1';
+-						Set_Addr_To <= aXY;
+-						TStates <= "100";
+-					when 3 =>
+-						Write <= '1';
+-					when others => null;
+-					end case;
++				if MCycle = "001" then
++					ALU_Op <= "1010";
++					Read_To_Reg <= '1';
++					Save_ALU <= '1';
+ 				end if;
+ 			when "11000110"|"11001110"|"11010110"|"11011110"|"11100110"|"11101110"|"11110110"|"11111110" =>
+ 				-- SET b,(HL)
+ 				MCycles <= "011";
+ 				case to_integer(unsigned(MCycle)) is
+-				when 1 | 7=>
++				when 1 | 7 =>
+ 					Set_Addr_To <= aXY;
+ 				when 2 =>
+ 					ALU_Op <= "1010";
+@@ -1504,7 +1439,7 @@ begin
+ 					TStates <= "100";
+ 				when 3 =>
+ 					Write <= '1';
+-				when others => null;
++				when others =>
+ 				end case;
+ 			when "10000000"|"10000001"|"10000010"|"10000011"|"10000100"|"10000101"|"10000111"
+ 				|"10001000"|"10001001"|"10001010"|"10001011"|"10001100"|"10001101"|"10001111"
+@@ -1515,31 +1450,11 @@ begin
+ 				|"10110000"|"10110001"|"10110010"|"10110011"|"10110100"|"10110101"|"10110111"
+ 				|"10111000"|"10111001"|"10111010"|"10111011"|"10111100"|"10111101"|"10111111" =>
+ 				-- RES b,r
+-				if XY_State="00" then
+-					if MCycle = "001" then
+-					  ALU_Op <= "1011";
+-					  Read_To_Reg <= '1';
+-					  Save_ALU <= '1';
+-					end if;
+-				else
+-				-- RES b,(IX+d),Reg, undocumented
+-					MCycles <= "011";
+-					XYbit_undoc <= '1';
+-					case to_integer(unsigned(MCycle)) is
+-					when 1 | 7=>
+-						Set_Addr_To <= aXY;
+-					when 2 =>
+-						ALU_Op <= "1011";
+-						Read_To_Reg <= '1';
+-						Save_ALU <= '1';
+-						Set_Addr_To <= aXY;
+-						TStates <= "100";
+-					when 3 =>
+-						Write <= '1';
+-					when others => null;
+-					end case;
++				if MCycle = "001" then
++					ALU_Op <= "1011";
++					Read_To_Reg <= '1';
++					Save_ALU <= '1';
+ 				end if;
+-				
+ 			when "10000110"|"10001110"|"10010110"|"10011110"|"10100110"|"10101110"|"10110110"|"10111110" =>
+ 				-- RES b,(HL)
+ 				MCycles <= "011";
+@@ -1554,7 +1469,7 @@ begin
+ 					TStates <= "100";
+ 				when 3 =>
+ 					Write <= '1';
+-				when others => null;
++				when others =>
+ 				end case;
+ 			end case;
+ 
+@@ -1562,7 +1477,7 @@ begin
+ 
+ ------------------------------------------------------------------------------
+ --
+---      ED prefixed instructions
++--	ED prefixed instructions
+ --
+ ------------------------------------------------------------------------------
+ 
+@@ -1881,7 +1796,6 @@ begin
+ 				when 1 =>
+ 					Set_Addr_To <= aBC;
+ 				when 2 =>
+-					TStates <= "100"; -- MIKEJ should be 4 for IO cycle
+ 					IORQ <= '1';
+ 					if IR(5 downto 3) /= "110" then
+ 						Read_To_Reg <= '1';
+@@ -1897,19 +1811,17 @@ begin
+ 				case to_integer(unsigned(MCycle)) is
+ 				when 1 =>
+ 					Set_Addr_To <= aBC;
+-					Set_BusB_To(2 downto 0)     <= IR(5 downto 3);
++					Set_BusB_To(2 downto 0)	<= IR(5 downto 3);
+ 					if IR(5 downto 3) = "110" then
+ 						Set_BusB_To(3) <= '1';
+ 					end if;
+ 				when 2 =>
+-					TStates <= "100"; -- MIKEJ should be 4 for IO cycle
+ 					Write <= '1';
+ 					IORQ <= '1';
+ 				when others =>
+ 				end case;
+ 			when "10100010" | "10101010" | "10110010" | "10111010" =>
+ 				-- INI, IND, INIR, INDR
+-				-- note B is decremented AFTER being put on the bus
+ 				MCycles <= "100";
+ 				case to_integer(unsigned(MCycle)) is
+ 				when 1 =>
+@@ -1920,17 +1832,14 @@ begin
+ 					Save_ALU <= '1';
+ 					ALU_Op <= "0010";
+ 				when 2 =>
+-					TStates <= "100"; -- MIKEJ should be 4 for IO cycle
+ 					IORQ <= '1';
+ 					Set_BusB_To <= "0110";
+ 					Set_Addr_To <= aXY;
+ 				when 3 =>
+ 					if IR(3) = '0' then
+-						--IncDec_16 <= "0010";
+-						IncDec_16 <= "0110";
++						IncDec_16 <= "0010";
+ 					else
+-						--IncDec_16 <= "1010";
+-						IncDec_16 <= "1110";
++						IncDec_16 <= "1010";
+ 					end if;
+ 					TStates <= "100";
+ 					Write <= '1';
+@@ -1942,8 +1851,6 @@ begin
+ 				end case;
+ 			when "10100011" | "10101011" | "10110011" | "10111011" =>
+ 				-- OUTI, OUTD, OTIR, OTDR
+-				-- note B is decremented BEFORE being put on the bus.
+-				-- mikej fix for hl inc
+ 				MCycles <= "100";
+ 				case to_integer(unsigned(MCycle)) is
+ 				when 1 =>
+@@ -1959,11 +1866,10 @@ begin
+ 					Set_Addr_To <= aBC;
+ 				when 3 =>
+ 					if IR(3) = '0' then
+-						IncDec_16 <= "0110"; -- mikej
++						IncDec_16 <= "0010";
+ 					else
+-						IncDec_16 <= "1110"; -- mikej
++						IncDec_16 <= "1010";
+ 					end if;
+-					TStates <= "100"; -- MIKEJ should be 4 for IO cycle
+ 					IORQ <= '1';
+ 					Write <= '1';
+ 					I_BTR <= '1';
+@@ -1978,7 +1884,7 @@ begin
+ 
+ 		if Mode = 1 then
+ 			if MCycle = "001" then
+---              TStates <= "100";
++--				TStates <= "100";
+ 			else
+ 				TStates <= "011";
+ 			end if;
+@@ -1986,7 +1892,7 @@ begin
+ 
+ 		if Mode = 3 then
+ 			if MCycle = "001" then
+---              TStates <= "100";
++--				TStates <= "100";
+ 			else
+ 				TStates <= "100";
+ 			end if;
+diff --git a/hdl/T80_Pack.vhd b/hdl/T80_Pack.vhd
+index 6904b66..ac7d34d 100755
+--- a/hdl/T80_Pack.vhd
++++ b/hdl/T80_Pack.vhd
+@@ -1,13 +1,3 @@
+--- ****
+--- T80(b) core. In an effort to merge and maintain bug fixes ....
+---
+---
+--- Ver 303 add undocumented DDCB and FDCB opcodes by TobiFlex 20.04.2010
+--- Ver 300 started tidyup
+--- MikeJ March 2005
+--- Latest version from www.fpgaarcade.com (original www.opencores.org)
+---
+--- ****
+ --
+ -- Z80 compatible microprocessor core
+ --
+@@ -48,7 +38,7 @@
+ -- you have the latest version of this file.
+ --
+ -- The latest version of this file can be found at:
+---      http://www.opencores.org/cvsweb.shtml/t80/
++--	http://www.opencores.org/cvsweb.shtml/t80/
+ --
+ -- Limitations :
+ --
+@@ -62,8 +52,8 @@ package T80_Pack is
+ 
+ 	component T80
+ 	generic(
+-		Mode : integer := 0;    -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
+-		IOWait : integer := 0;  -- 1 => Single cycle I/O, 1 => Std I/O cycle
++		Mode : integer := 0;	-- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
++		IOWait : integer := 0;	-- 1 => Single cycle I/O, 1 => Std I/O cycle
+ 		Flag_C : integer := 0;
+ 		Flag_N : integer := 1;
+ 		Flag_P : integer := 2;
+@@ -74,55 +64,55 @@ package T80_Pack is
+ 		Flag_S : integer := 7
+ 	);
+ 	port(
+-		RESET_n         : in std_logic;
+-		CLK_n           : in std_logic;
+-		CEN                     : in std_logic;
+-		WAIT_n          : in std_logic;
+-		INT_n           : in std_logic;
+-		NMI_n           : in std_logic;
+-		BUSRQ_n         : in std_logic;
+-		M1_n            : out std_logic;
+-		IORQ            : out std_logic;
+-		NoRead          : out std_logic;
+-		Write           : out std_logic;
+-		RFSH_n          : out std_logic;
+-		HALT_n          : out std_logic;
+-		BUSAK_n         : out std_logic;
+-		A                       : out std_logic_vector(15 downto 0);
+-		DInst           : in std_logic_vector(7 downto 0);
+-		DI                      : in std_logic_vector(7 downto 0);
+-		DO                      : out std_logic_vector(7 downto 0);
+-		MC                      : out std_logic_vector(2 downto 0);
+-		TS                      : out std_logic_vector(2 downto 0);
+-		IntCycle_n      : out std_logic;
+-		IntE            : out std_logic;
+-		Stop            : out std_logic
++		RESET_n		: in std_logic;
++		CLK_n		: in std_logic;
++		CEN			: in std_logic;
++		WAIT_n		: in std_logic;
++		INT_n		: in std_logic;
++		NMI_n		: in std_logic;
++		BUSRQ_n		: in std_logic;
++		M1_n		: out std_logic;
++		IORQ		: out std_logic;
++		NoRead		: out std_logic;
++		Write		: out std_logic;
++		RFSH_n		: out std_logic;
++		HALT_n		: out std_logic;
++		BUSAK_n		: out std_logic;
++		A			: out std_logic_vector(15 downto 0);
++		DInst		: in std_logic_vector(7 downto 0);
++		DI			: in std_logic_vector(7 downto 0);
++		DO			: out std_logic_vector(7 downto 0);
++		MC			: out std_logic_vector(2 downto 0);
++		TS			: out std_logic_vector(2 downto 0);
++		IntCycle_n	: out std_logic;
++		IntE		: out std_logic;
++		Stop		: out std_logic
+ 	);
+ 	end component;
+ 
+ 	component T80_Reg
+ 	port(
+-		Clk                     : in std_logic;
+-		CEN                     : in std_logic;
+-		WEH                     : in std_logic;
+-		WEL                     : in std_logic;
+-		AddrA           : in std_logic_vector(2 downto 0);
+-		AddrB           : in std_logic_vector(2 downto 0);
+-		AddrC           : in std_logic_vector(2 downto 0);
+-		DIH                     : in std_logic_vector(7 downto 0);
+-		DIL                     : in std_logic_vector(7 downto 0);
+-		DOAH            : out std_logic_vector(7 downto 0);
+-		DOAL            : out std_logic_vector(7 downto 0);
+-		DOBH            : out std_logic_vector(7 downto 0);
+-		DOBL            : out std_logic_vector(7 downto 0);
+-		DOCH            : out std_logic_vector(7 downto 0);
+-		DOCL            : out std_logic_vector(7 downto 0)
++		Clk			: in std_logic;
++		CEN			: in std_logic;
++		WEH			: in std_logic;
++		WEL			: in std_logic;
++		AddrA		: in std_logic_vector(2 downto 0);
++		AddrB		: in std_logic_vector(2 downto 0);
++		AddrC		: in std_logic_vector(2 downto 0);
++		DIH			: in std_logic_vector(7 downto 0);
++		DIL			: in std_logic_vector(7 downto 0);
++		DOAH		: out std_logic_vector(7 downto 0);
++		DOAL		: out std_logic_vector(7 downto 0);
++		DOBH		: out std_logic_vector(7 downto 0);
++		DOBL		: out std_logic_vector(7 downto 0);
++		DOCH		: out std_logic_vector(7 downto 0);
++		DOCL		: out std_logic_vector(7 downto 0)
+ 	);
+ 	end component;
+ 
+ 	component T80_MCode
+ 	generic(
+-		Mode   : integer := 0;
++		Mode : integer := 0;
+ 		Flag_C : integer := 0;
+ 		Flag_N : integer := 1;
+ 		Flag_P : integer := 2;
+@@ -133,67 +123,65 @@ package T80_Pack is
+ 		Flag_S : integer := 7
+ 	);
+ 	port(
+-		IR                      : in  std_logic_vector(7 downto 0);
+-		ISet                    : in  std_logic_vector(1 downto 0);
+-		MCycle                  : in  std_logic_vector(2 downto 0);
+-		F                       : in  std_logic_vector(7 downto 0);
+-		NMICycle                : in  std_logic;
+-		IntCycle                : in  std_logic;
+-		XY_State                : in  std_logic_vector(1 downto 0);
+-		MCycles                 : out std_logic_vector(2 downto 0);
+-		TStates                 : out std_logic_vector(2 downto 0);
+-		Prefix                  : out std_logic_vector(1 downto 0); -- None,BC,ED,DD/FD
+-		Inc_PC                  : out std_logic;
+-		Inc_WZ                  : out std_logic;
+-		IncDec_16               : out std_logic_vector(3 downto 0); -- BC,DE,HL,SP   0 is inc
+-		Read_To_Reg             : out std_logic;
+-		Read_To_Acc             : out std_logic;
+-		Set_BusA_To             : out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI/DB,A,SP(L),SP(M),0,F
+-		Set_BusB_To             : out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI,A,SP(L),SP(M),1,F,PC(L),PC(M),0
+-		ALU_Op                  : out std_logic_vector(3 downto 0);
++		IR				: in std_logic_vector(7 downto 0);
++		ISet			: in std_logic_vector(1 downto 0);
++		MCycle			: in std_logic_vector(2 downto 0);
++		F				: in std_logic_vector(7 downto 0);
++		NMICycle		: in std_logic;
++		IntCycle		: in std_logic;
++		MCycles			: out std_logic_vector(2 downto 0);
++		TStates			: out std_logic_vector(2 downto 0);
++		Prefix			: out std_logic_vector(1 downto 0); -- None,BC,ED,DD/FD
++		Inc_PC			: out std_logic;
++		Inc_WZ			: out std_logic;
++		IncDec_16		: out std_logic_vector(3 downto 0); -- BC,DE,HL,SP   0 is inc
++		Read_To_Reg		: out std_logic;
++		Read_To_Acc		: out std_logic;
++		Set_BusA_To	: out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI/DB,A,SP(L),SP(M),0,F
++		Set_BusB_To	: out std_logic_vector(3 downto 0); -- B,C,D,E,H,L,DI,A,SP(L),SP(M),1,F,PC(L),PC(M),0
++		ALU_Op			: out std_logic_vector(3 downto 0);
+ 			-- ADD, ADC, SUB, SBC, AND, XOR, OR, CP, ROT, BIT, SET, RES, DAA, RLD, RRD, None
+-		Save_ALU                : out std_logic;
+-		PreserveC               : out std_logic;
+-		Arith16                 : out std_logic;
+-		Set_Addr_To             : out std_logic_vector(2 downto 0); -- aNone,aXY,aIOA,aSP,aBC,aDE,aZI
+-		IORQ                    : out std_logic;
+-		Jump                    : out std_logic;
+-		JumpE                   : out std_logic;
+-		JumpXY                  : out std_logic;
+-		Call                    : out std_logic;
+-		RstP                    : out std_logic;
+-		LDZ                     : out std_logic;
+-		LDW                     : out std_logic;
+-		LDSPHL                  : out std_logic;
+-		Special_LD              : out std_logic_vector(2 downto 0); -- A,I;A,R;I,A;R,A;None
+-		ExchangeDH              : out std_logic;
+-		ExchangeRp              : out std_logic;
+-		ExchangeAF              : out std_logic;
+-		ExchangeRS              : out std_logic;
+-		I_DJNZ                  : out std_logic;
+-		I_CPL                   : out std_logic;
+-		I_CCF                   : out std_logic;
+-		I_SCF                   : out std_logic;
+-		I_RETN                  : out std_logic;
+-		I_BT                    : out std_logic;
+-		I_BC                    : out std_logic;
+-		I_BTR                   : out std_logic;
+-		I_RLD                   : out std_logic;
+-		I_RRD                   : out std_logic;
+-		I_INRC                  : out std_logic;
+-		SetDI                   : out std_logic;
+-		SetEI                   : out std_logic;
+-		IMode                   : out std_logic_vector(1 downto 0);
+-		Halt                    : out std_logic;
+-		NoRead                  : out std_logic;
+-		Write                   : out std_logic;
+-		XYbit_undoc             : out std_logic
++		Save_ALU		: out std_logic;
++		PreserveC		: out std_logic;
++		Arith16			: out std_logic;
++		Set_Addr_To		: out std_logic_vector(2 downto 0); -- aNone,aXY,aIOA,aSP,aBC,aDE,aZI
++		IORQ			: out std_logic;
++		Jump			: out std_logic;
++		JumpE			: out std_logic;
++		JumpXY			: out std_logic;
++		Call			: out std_logic;
++		RstP			: out std_logic;
++		LDZ				: out std_logic;
++		LDW				: out std_logic;
++		LDSPHL			: out std_logic;
++		Special_LD		: out std_logic_vector(2 downto 0); -- A,I;A,R;I,A;R,A;None
++		ExchangeDH		: out std_logic;
++		ExchangeRp		: out std_logic;
++		ExchangeAF		: out std_logic;
++		ExchangeRS		: out std_logic;
++		I_DJNZ			: out std_logic;
++		I_CPL			: out std_logic;
++		I_CCF			: out std_logic;
++		I_SCF			: out std_logic;
++		I_RETN			: out std_logic;
++		I_BT			: out std_logic;
++		I_BC			: out std_logic;
++		I_BTR			: out std_logic;
++		I_RLD			: out std_logic;
++		I_RRD			: out std_logic;
++		I_INRC			: out std_logic;
++		SetDI			: out std_logic;
++		SetEI			: out std_logic;
++		IMode			: out std_logic_vector(1 downto 0);
++		Halt			: out std_logic;
++		NoRead			: out std_logic;
++		Write			: out std_logic
+ 	);
+ 	end component;
+ 
+ 	component T80_ALU
+ 	generic(
+-		Mode   : integer := 0;
++		Mode : integer := 0;
+ 		Flag_C : integer := 0;
+ 		Flag_N : integer := 1;
+ 		Flag_P : integer := 2;
+@@ -204,16 +192,16 @@ package T80_Pack is
+ 		Flag_S : integer := 7
+ 	);
+ 	port(
+-		Arith16         : in  std_logic;
+-		Z16             : in  std_logic;
+-		ALU_Op          : in  std_logic_vector(3 downto 0);
+-		IR              : in  std_logic_vector(5 downto 0);
+-		ISet            : in  std_logic_vector(1 downto 0);
+-		BusA            : in  std_logic_vector(7 downto 0);
+-		BusB            : in  std_logic_vector(7 downto 0);
+-		F_In            : in  std_logic_vector(7 downto 0);
+-		Q               : out std_logic_vector(7 downto 0);
+-		F_Out           : out std_logic_vector(7 downto 0)
++		Arith16		: in std_logic;
++		Z16			: in std_logic;
++		ALU_Op		: in std_logic_vector(3 downto 0);
++		IR			: in std_logic_vector(5 downto 0);
++		ISet		: in std_logic_vector(1 downto 0);
++		BusA		: in std_logic_vector(7 downto 0);
++		BusB		: in std_logic_vector(7 downto 0);
++		F_In		: in std_logic_vector(7 downto 0);
++		Q			: out std_logic_vector(7 downto 0);
++		F_Out		: out std_logic_vector(7 downto 0)
+ 	);
+ 	end component;
+ 
+diff --git a/hdl/T80_Reg.vhd b/hdl/T80_Reg.vhd
+index 1c0f263..3a0acb5 100755
+--- a/hdl/T80_Reg.vhd
++++ b/hdl/T80_Reg.vhd
+@@ -1,12 +1,3 @@
+--- ****
+--- T80(b) core. In an effort to merge and maintain bug fixes ....
+---
+---
+--- Ver 300 started tidyup
+--- MikeJ March 2005
+--- Latest version from www.fpgaarcade.com (original www.opencores.org)
+---
+--- ****
+ --
+ -- T80 Registers, technology independent
+ --
+@@ -47,15 +38,15 @@
+ -- you have the latest version of this file.
+ --
+ -- The latest version of this file can be found at:
+---      http://www.opencores.org/cvsweb.shtml/t51/
++--	http://www.opencores.org/cvsweb.shtml/t51/
+ --
+ -- Limitations :
+ --
+ -- File history :
+ --
+---      0242 : Initial release
++--	0242 : Initial release
+ --
+---      0244 : Changed to single register file
++--	0244 : Changed to single register file
+ --
+ 
+ library IEEE;
+@@ -64,29 +55,33 @@ use IEEE.numeric_std.all;
+ 
+ entity T80_Reg is
+ 	port(
+-		Clk                     : in std_logic;
+-		CEN                     : in std_logic;
+-		WEH                     : in std_logic;
+-		WEL                     : in std_logic;
+-		AddrA           : in std_logic_vector(2 downto 0);
+-		AddrB           : in std_logic_vector(2 downto 0);
+-		AddrC           : in std_logic_vector(2 downto 0);
+-		DIH                     : in std_logic_vector(7 downto 0);
+-		DIL                     : in std_logic_vector(7 downto 0);
+-		DOAH            : out std_logic_vector(7 downto 0);
+-		DOAL            : out std_logic_vector(7 downto 0);
+-		DOBH            : out std_logic_vector(7 downto 0);
+-		DOBL            : out std_logic_vector(7 downto 0);
+-		DOCH            : out std_logic_vector(7 downto 0);
+-		DOCL            : out std_logic_vector(7 downto 0)
++		Clk			: in std_logic;
++		CEN			: in std_logic;
++		WEH			: in std_logic;
++		WEL			: in std_logic;
++		AddrA		: in std_logic_vector(2 downto 0);
++		AddrB		: in std_logic_vector(2 downto 0);
++		AddrC		: in std_logic_vector(2 downto 0);
++		DIH			: in std_logic_vector(7 downto 0);
++		DIL			: in std_logic_vector(7 downto 0);
++		DOAH		: out std_logic_vector(7 downto 0);
++		DOAL		: out std_logic_vector(7 downto 0);
++		DOBH		: out std_logic_vector(7 downto 0);
++		DOBL		: out std_logic_vector(7 downto 0);
++		DOCH		: out std_logic_vector(7 downto 0);
++		DOCL		: out std_logic_vector(7 downto 0)
+ 	);
+ end T80_Reg;
+ 
+ architecture rtl of T80_Reg is
+ 
+ 	type Register_Image is array (natural range <>) of std_logic_vector(7 downto 0);
+-	signal      RegsH   : Register_Image(0 to 7);
+-	signal      RegsL   : Register_Image(0 to 7);
++	signal	RegsH	: Register_Image(0 to 7);
++	signal	RegsL	: Register_Image(0 to 7);
++
++	-- the following is needed to stop actel putting this into a RAM block!
++	attribute syn_ramstyle : string;
++	attribute syn_ramstyle of RegsH, RegsL : signal is "registers";
+ 
+ begin
+ 
+diff --git a/hdl/T80a.vhd b/hdl/T80a.vhd
+index 75636aa..5e18902 100755
+--- a/hdl/T80a.vhd
++++ b/hdl/T80a.vhd
+@@ -1,12 +1,3 @@
+--- ****
+--- T80(b) core. In an effort to merge and maintain bug fixes ....
+---
+---
+--- Ver 300 started tidyup
+--- MikeJ March 2005
+--- Latest version from www.fpgaarcade.com (original www.opencores.org)
+---
+--- ****
+ --
+ -- Z80 compatible microprocessor core, asynchronous top level
+ --
+@@ -47,25 +38,25 @@
+ -- you have the latest version of this file.
+ --
+ -- The latest version of this file can be found at:
+---      http://www.opencores.org/cvsweb.shtml/t80/
++--	http://www.opencores.org/cvsweb.shtml/t80/
+ --
+ -- Limitations :
+ --
+ -- File history :
+ --
+---      0208 : First complete release
++--	0208 : First complete release
+ --
+---      0211 : Fixed interrupt cycle
++--	0211 : Fixed interrupt cycle
+ --
+---      0235 : Updated for T80 interface change
++--	0235 : Updated for T80 interface change
+ --
+---      0238 : Updated for T80 interface change
++--	0238 : Updated for T80 interface change
+ --
+---      0240 : Updated for T80 interface change
++--	0240 : Updated for T80 interface change
+ --
+---      0242 : Updated for T80 interface change
++--	0242 : Updated for T80 interface change
+ --
+---      0247 : Fixed bus req/ack cycle
++--	0247 : Fixed bus req/ack cycle
+ --
+ 
+ library IEEE;
+@@ -75,52 +66,52 @@ use work.T80_Pack.all;
+ 
+ entity T80a is
+ 	generic(
+-		Mode : integer := 0     -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
++		Mode : integer := 0	-- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
+ 	);
+ 	port(
+-		RESET_n         : in std_logic;
+-		CLK_n           : in std_logic;
+-		WAIT_n          : in std_logic;
+-		INT_n           : in std_logic;
+-		NMI_n           : in std_logic;
+-		BUSRQ_n         : in std_logic;
+-		M1_n            : out std_logic;
+-		MREQ_n          : out std_logic;
+-		IORQ_n          : out std_logic;
+-		RD_n            : out std_logic;
+-		WR_n            : out std_logic;
+-		RFSH_n          : out std_logic;
+-		HALT_n          : out std_logic;
+-		BUSAK_n         : out std_logic;
+-		A                       : out std_logic_vector(15 downto 0);
+-		D                       : inout std_logic_vector(7 downto 0)
++		RESET_n		: in std_logic;
++		CLK_n		: in std_logic;
++		WAIT_n		: in std_logic;
++		INT_n		: in std_logic;
++		NMI_n		: in std_logic;
++		BUSRQ_n		: in std_logic;
++		M1_n		: out std_logic;
++		MREQ_n		: out std_logic;
++		IORQ_n		: out std_logic;
++		RD_n		: out std_logic;
++		WR_n		: out std_logic;
++		RFSH_n		: out std_logic;
++		HALT_n		: out std_logic;
++		BUSAK_n		: out std_logic;
++		A			: out std_logic_vector(15 downto 0);
++		D			: inout std_logic_vector(7 downto 0)
+ 	);
+ end T80a;
+ 
+ architecture rtl of T80a is
+ 
+-	signal CEN                  : std_logic;
+-	signal Reset_s              : std_logic;
+-	signal IntCycle_n   : std_logic;
+-	signal IORQ                 : std_logic;
+-	signal NoRead               : std_logic;
+-	signal Write                : std_logic;
+-	signal MREQ                 : std_logic;
+-	signal MReq_Inhibit : std_logic;
+-	signal Req_Inhibit  : std_logic;
+-	signal RD                   : std_logic;
+-	signal MREQ_n_i             : std_logic;
+-	signal IORQ_n_i             : std_logic;
+-	signal RD_n_i               : std_logic;
+-	signal WR_n_i               : std_logic;
+-	signal RFSH_n_i             : std_logic;
+-	signal BUSAK_n_i    : std_logic;
+-	signal A_i                  : std_logic_vector(15 downto 0);
+-	signal DO                   : std_logic_vector(7 downto 0);
+-	signal DI_Reg               : std_logic_vector (7 downto 0);        -- Input synchroniser
+-	signal Wait_s               : std_logic;
+-	signal MCycle               : std_logic_vector(2 downto 0);
+-	signal TState               : std_logic_vector(2 downto 0);
++	signal CEN			: std_logic;
++	signal Reset_s		: std_logic;
++	signal IntCycle_n	: std_logic;
++	signal IORQ			: std_logic;
++	signal NoRead		: std_logic;
++	signal Write		: std_logic;
++	signal MREQ			: std_logic;
++	signal MReq_Inhibit	: std_logic;
++	signal Req_Inhibit	: std_logic;
++	signal RD			: std_logic;
++	signal MREQ_n_i		: std_logic;
++	signal IORQ_n_i		: std_logic;
++	signal RD_n_i		: std_logic;
++	signal WR_n_i		: std_logic;
++	signal RFSH_n_i		: std_logic;
++	signal BUSAK_n_i	: std_logic;
++	signal A_i			: std_logic_vector(15 downto 0);
++	signal DO			: std_logic_vector(7 downto 0);
++	signal DI_Reg		: std_logic_vector (7 downto 0);	-- Input synchroniser
++	signal Wait_s		: std_logic;
++	signal MCycle		: std_logic_vector(2 downto 0);
++	signal TState		: std_logic_vector(2 downto 0);
+ 
+ begin
+ 
+@@ -190,7 +181,7 @@ begin
+ 			WR_n_i <= '1';
+ 		elsif CLK_n'event and CLK_n = '1' then
+ 			WR_n_i <= '1';
+-			if TState = "001" then      -- To short for IO writes !!!!!!!!!!!!!!!!!!!
++			if TState = "001" then	-- To short for IO writes !!!!!!!!!!!!!!!!!!!
+ 				WR_n_i <= not Write;
+ 			end if;
+ 		end if;
+diff --git a/hdl/T80se.vhd b/hdl/T80se.vhd
+index 1b0cb9b..ac8886a 100755
+--- a/hdl/T80se.vhd
++++ b/hdl/T80se.vhd
+@@ -1,18 +1,9 @@
+--- ****
+--- T80(b) core. In an effort to merge and maintain bug fixes ....
+---
+---
+--- Ver 300 started tidyup
+--- MikeJ March 2005
+--- Latest version from www.fpgaarcade.com (original www.opencores.org)
+---
+--- ****
+ --
+ -- Z80 compatible microprocessor core, synchronous top level with clock enable
+ -- Different timing than the original z80
+ -- Inputs needs to be synchronous and outputs may glitch
+ --
+--- Version : 0240
++-- Version : 0242
+ --
+ -- Copyright (c) 2001-2002 Daniel Wallner (jesus@opencores.org)
+ --
+@@ -49,24 +40,25 @@
+ -- you have the latest version of this file.
+ --
+ -- The latest version of this file can be found at:
+---      http://www.opencores.org/cvsweb.shtml/t80/
++--	http://www.opencores.org/cvsweb.shtml/t80/
+ --
+ -- Limitations :
+ --
+ -- File history :
+ --
+---      0235 : First release
++--	0235 : First release
+ --
+---      0236 : Added T2Write generic
++--	0236 : Added T2Write generic
+ --
+---      0237 : Fixed T2Write with wait state
++--	0237 : Fixed T2Write with wait state
+ --
+---      0238 : Updated for T80 interface change
++--	0238 : Updated for T80 interface change
+ --
+---      0240 : Updated for T80 interface change
++--	0240 : Updated for T80 interface change
+ --
+---      0242 : Updated for T80 interface change
++--	0242 : Updated for T80 interface change
+ --
++
+ library IEEE;
+ use IEEE.std_logic_1164.all;
+ use IEEE.numeric_std.all;
+@@ -74,41 +66,41 @@ use work.T80_Pack.all;
+ 
+ entity T80se is
+ 	generic(
+-		Mode : integer := 0;    -- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
+-		T2Write : integer := 0;  -- 0 => WR_n active in T3, /=0 => WR_n active in T2
+-		IOWait : integer := 1   -- 0 => Single cycle I/O, 1 => Std I/O cycle
++		Mode : integer := 0;	-- 0 => Z80, 1 => Fast Z80, 2 => 8080, 3 => GB
++		T2Write : integer := 0;	-- 0 => WR_n active in T3, /=0 => WR_n active in T2
++		IOWait : integer := 1	-- 0 => Single cycle I/O, 1 => Std I/O cycle
+ 	);
+ 	port(
+-		RESET_n         : in  std_logic;
+-		CLK_n           : in  std_logic;
+-		CLKEN           : in  std_logic;
+-		WAIT_n          : in  std_logic;
+-		INT_n           : in  std_logic;
+-		NMI_n           : in  std_logic;
+-		BUSRQ_n         : in  std_logic;
+-		M1_n            : out std_logic;
+-		MREQ_n          : out std_logic;
+-		IORQ_n          : out std_logic;
+-		RD_n            : out std_logic;
+-		WR_n            : out std_logic;
+-		RFSH_n          : out std_logic;
+-		HALT_n          : out std_logic;
+-		BUSAK_n         : out std_logic;
+-		A               : out std_logic_vector(15 downto 0);
+-		DI              : in  std_logic_vector(7 downto 0);
+-		DO              : out std_logic_vector(7 downto 0)
++		RESET_n		: in std_logic;
++		CLK_n		: in std_logic;
++		CLKEN		: in std_logic;
++		WAIT_n		: in std_logic;
++		INT_n		: in std_logic;
++		NMI_n		: in std_logic;
++		BUSRQ_n		: in std_logic;
++		M1_n		: out std_logic;
++		MREQ_n		: out std_logic;
++		IORQ_n		: out std_logic;
++		RD_n		: out std_logic;
++		WR_n		: out std_logic;
++		RFSH_n		: out std_logic;
++		HALT_n		: out std_logic;
++		BUSAK_n		: out std_logic;
++		A			: out std_logic_vector(15 downto 0);
++		DI			: in std_logic_vector(7 downto 0);
++		DO			: out std_logic_vector(7 downto 0)
+ 	);
+ end T80se;
+ 
+ architecture rtl of T80se is
+ 
+-	signal IntCycle_n   : std_logic;
+-	signal NoRead       : std_logic;
+-	signal Write        : std_logic;
+-	signal IORQ         : std_logic;
+-	signal DI_Reg       : std_logic_vector(7 downto 0);
+-	signal MCycle       : std_logic_vector(2 downto 0);
+-	signal TState       : std_logic_vector(2 downto 0);
++	signal IntCycle_n	: std_logic;
++	signal NoRead		: std_logic;
++	signal Write		: std_logic;
++	signal IORQ			: std_logic;
++	signal DI_Reg		: std_logic_vector(7 downto 0);
++	signal MCycle		: std_logic_vector(2 downto 0);
++	signal TState		: std_logic_vector(2 downto 0);
+ 
+ begin
+ 
+@@ -117,26 +109,26 @@ begin
+ 			Mode => Mode,
+ 			IOWait => IOWait)
+ 		port map(
+-			CEN        => CLKEN,
+-			M1_n       => M1_n,
+-			IORQ       => IORQ,
+-			NoRead     => NoRead,
+-			Write      => Write,
+-			RFSH_n     => RFSH_n,
+-			HALT_n     => HALT_n,
+-			WAIT_n     => Wait_n,
+-			INT_n      => INT_n,
+-			NMI_n      => NMI_n,
+-			RESET_n    => RESET_n,
+-			BUSRQ_n    => BUSRQ_n,
+-			BUSAK_n    => BUSAK_n,
+-			CLK_n      => CLK_n,
+-			A          => A,
+-			DInst      => DI,
+-			DI         => DI_Reg,
+-			DO         => DO,
+-			MC         => MCycle,
+-			TS         => TState,
++			CEN => CLKEN,
++			M1_n => M1_n,
++			IORQ => IORQ,
++			NoRead => NoRead,
++			Write => Write,
++			RFSH_n => RFSH_n,
++			HALT_n => HALT_n,
++			WAIT_n => Wait_n,
++			INT_n => INT_n,
++			NMI_n => NMI_n,
++			RESET_n => RESET_n,
++			BUSRQ_n => BUSRQ_n,
++			BUSAK_n => BUSAK_n,
++			CLK_n => CLK_n,
++			A => A,
++			DInst => DI,
++			DI => DI_Reg,
++			DO => DO,
++			MC => MCycle,
++			TS => TState,
+ 			IntCycle_n => IntCycle_n);
+ 
+ 	process (RESET_n, CLK_n)
