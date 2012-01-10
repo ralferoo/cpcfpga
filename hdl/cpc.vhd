@@ -219,6 +219,36 @@ architecture impl of cpc is
 --	signal	spi_flash_cs			: 	std_logic;
 	signal	spi_sd_cs			: 	std_logic;
 
+	component ppi8255 is
+	port(
+		nRESET				: in  std_logic;
+
+		-- z80 interface
+		rd_n				: in  std_logic;
+		wr_n				: in  std_logic;
+		cs_n				: in  std_logic;
+		a				: in  std_logic_vector(1 downto 0);
+		din				: in  std_logic_vector(7 downto 0);
+		dout				: out std_logic_vector(7 downto 0);
+
+		-- cpc specific ports out
+		psg_databus			: inout std_logic_vector(7 downto 0);
+		psg_bdir_bc1			: out std_logic_vector(1 downto 0);
+		keyboard_row			: out std_logic_vector(3 downto 0);
+
+		cas_in				: in  std_logic;
+		cas_out, cas_motor		: out std_logic;
+		vsync				: in std_logic
+	);
+	end component;
+	signal	ppi_dout			: std_logic_vector(7 downto 0);
+	signal	psg_databus			: std_logic_vector(7 downto 0);
+	signal	psg_bdir_bc1			: std_logic_vector(1 downto 0);
+	signal	keyboard_row			: std_logic_vector(3 downto 0);
+
+	signal	cas_in				: std_logic;
+	signal	cas_out, cas_motor		: std_logic;
+
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
 
@@ -257,6 +287,13 @@ architecture impl of cpc is
 				RW=>z80_A(9), E=>crtc_E, RS=>z80_A(8), nCS=>z80_A(14),
 				DIN=>z80_DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
 	crtc_E	 <= z80_IORD_n nand z80_IOWR_n;
+
+	-- ppi 8255
+	ppi_0 : ppi8255 port map ( nRESET=>nRESET, rd_n => z80_iord_n, wr_n => z80_iowr_n,
+				   cs_n => z80_a(11), a => z80_a(9 downto 8),
+				   din => z80_DO, dout=>ppi_dout,
+				   psg_databus => psg_databus, psg_bdir_bc1 => psg_bdir_bc1, keyboard_row => keyboard_row,
+				   cas_in => cas_in, cas_out => cas_out, cas_motor => cas_motor, vsync => crtc_vsync );
 
 	-- gate array
 	gate_array_0 : gate_array port map (
@@ -347,6 +384,10 @@ architecture impl of cpc is
 
 		    	elsif z80_A(14)='0' then					-- crtc
 				z80_DI_from_iorq <= crtc_DOUT;
+				z80_DI_is_from_iorq <= '1';
+
+		    	elsif z80_A(11)='0' then					-- ppi
+				z80_DI_from_iorq <= ppi_DOUT;
 				z80_DI_is_from_iorq <= '1';
 
 		    	elsif z80_A(15 downto 8) = x"FF" or				-- spi data

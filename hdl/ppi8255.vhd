@@ -12,7 +12,6 @@ entity ppi8255 is
 		-- z80 interface
 		rd_n				: in  std_logic;
 		wr_n				: in  std_logic;
-		reset				: in  std_logic;
 		cs_n				: in  std_logic;
 		a				: in  std_logic_vector(1 downto 0);
 		din				: in  std_logic_vector(7 downto 0);
@@ -31,7 +30,7 @@ end ppi8255;
 
 architecture impl of ppi8255 is
 begin
-	process(rd_n, wr_n, reset, cs_n, a, din)
+	process(rd_n, wr_n, nreset, cs_n, a, din)
 		variable	v_psg_inout		: std_logic;
 		variable	v_psg_databus		: std_logic_vector(7 downto 0);
 		variable	v_psg_bdir_bc1		: std_logic_vector(1 downto 0);
@@ -39,7 +38,7 @@ begin
 		variable	v_cas_out, v_cas_motor	: std_logic;
 		variable	v_dout			: std_logic_vector(7 downto 0);
 	begin
-		if reset='1' then			-- note reset is 1 not 0 like most chips
+		if nreset='0' then			-- note reset is different on real ppi
 			v_psg_inout		:= '1';
 			v_psg_databus		:= (others=>'Z');
 			v_psg_bdir_bc1		:= "00";
