@@ -81,7 +81,7 @@ MIDDLE
 	print <<MIDDLE;
 
 	-- evil hacky code for bootstrapping
-	component bootrom is port(
+	component bench_cpc_bootrom is port(
 		addr				: in std_logic_vector(13 downto 0);
 		data				: out std_logic_vector(7 downto 0)
         );
@@ -108,7 +108,7 @@ MIDDLE
 
 
 	-- bootstrap code
-	bootrom_0 : bootrom port map( addr=>bootrom_addr, data=>bootrom_data );
+	bootrom_0 : bench_cpc_bootrom port map( addr=>bootrom_addr, data=>bootrom_data );
 
 	cpc_0: cpc port map (
 MIDDLE

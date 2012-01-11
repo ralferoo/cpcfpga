@@ -47,8 +47,8 @@ architecture impl of evalboard is
 		sram_we			: out std_logic;
 		sram_ce			: out std_logic;
 		sram_oe			: out std_logic;
-       		bootrom_addr        	: out std_logic_vector(13 downto 0);
-       		bootrom_data        	: in  std_logic_vector(7 downto 0);
+		bootrom_addr        	: out std_logic_vector(13 downto 0);
+		bootrom_data        	: in  std_logic_vector(7 downto 0);
 		spi_clk			: out  std_logic;
 		spi_di			: out  std_logic;
 		spi_do			: in   std_logic;

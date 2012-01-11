@@ -158,7 +158,7 @@ build/$(TOP_NAME)_build.tcl: Makefile build/.dummy
 
 ##########################################################################
 
-codegen: hdl/bootrom.vhd hdl/evalboard.vhd $(CODEGEN_SREC_FILES)
+codegen: hdl/bootrom.vhd hdl/bench_cpc_bootrom.vhd hdl/evalboard.vhd $(CODEGEN_SREC_FILES)
 
 hdl/jingle.vhd: codegen/jingle.py
 	codegen/jingle.py >$@
@@ -170,10 +170,10 @@ hdl/%.vhd: codegen/%.asm codegen/makerom.py build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 	codegen/makerom.py $* build/$*.bin >$@
 
-hdl/evalboard.vhd: codegen/evalboard.pl hdl/$(TOP_NAME).vhd
+hdl/evalboard.vhd: codegen/evalboard.pl hdl/$(TOP_NAME).vhd hdl/bootrom.vhd
 	codegen/evalboard.pl <hdl/$(TOP_NAME).vhd >$@
 
-hdl/bench_cpc.vhd: codegen/bench_cpc.pl hdl/$(TOP_NAME).vhd
+hdl/bench_cpc.vhd: codegen/bench_cpc.pl hdl/$(TOP_NAME).vhd hdl/bench_cpc_bootrom.vhd
 	codegen/bench_cpc.pl <hdl/$(TOP_NAME).vhd >$@
 
 build/%.bin: codegen/%.asm build/.dummy
