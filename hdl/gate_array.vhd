@@ -83,7 +83,14 @@ begin
 						variable	wait_n			: inout std_logic) is
 		begin
 			wait_n	:= '1';
-			if idle='1' and (iorq_n='0' or mreq_n='0') then				-- we're in the idle state and IO/mem requested
+			if (iorq_n='0' and m1_n='0') then					-- we're acknowledging an interrupt, T4->T2(instr)
+				if tstate="00" then
+					wait_n	:= '1';						-- we can proceed out Tw that's a T2
+				else
+					wait_n	:= '0';						-- wait until T2
+				end if;
+				idle	:= '0';							-- and go into busy state just in case
+			elsif idle='1' and (iorq_n='0' or mreq_n='0') then			-- we're in the idle state and IO/mem requested
 				if tstate="00" then
 					idle	:= '0';						-- from T2 we can transition into busy state
 					wait_n	:= not m1_n;					-- but add a wait state unless it's instruction fetch
@@ -429,16 +436,16 @@ begin
 							n_out_latch_cpu_data	:= '1';
 						end if;
 						
-						report "Starting memory read at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
+--						report "Starting memory read at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address)));
 					elsif z80_wr_n='0' then					-- memory write
 						n_out_sram_data			:= z80_dout;
 						n_out_sram_we			:= '0';
 						n_out_sram_oe			:= '1';
 						n_out_sram_ce			:= '0';
 						out_latch_write_data		:= '1';
---
-						report "Starting memory write at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(z80_dout)));
-					else								-- memory write
+
+--						report "Starting memory write at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(z80_dout)));
+--					else								-- memory write
 --						report "Memory acces, neither read nor write at address " & integer'image(to_integer(ieee.numeric_std.unsigned(n_out_sram_address))) & " value " & integer'image(to_integer(ieee.numeric_std.unsigned(z80_dout)));
 					end if;
 					n_out_sram_ce		:= '0';
@@ -615,7 +622,7 @@ begin
 		elsif falling_edge(local_z80_clk) then
 			-- get local copy of variables
 			n_line_counter				:= line_counter;
-			n_vsync_sense				:= vsync_sense & crtc_vsync;
+			n_vsync_sense				:= "0" & vsync_sense;
 			n_generate_interrupt			:= generate_interrupt;
 			n_last_hsync				:= crtc_hsync;
 
@@ -629,6 +636,10 @@ begin
 				end if;
 	
 				-- process vsync reset on 2nd hsync after vsync
+				if crtc_vsync = '1' then
+					report "vysnc";
+				end if;
+				n_vsync_sense			:= vsync_sense & crtc_vsync;
 				if n_vsync_sense = "011" then
 					if n_line_counter(5)='0' then
 						n_generate_interrupt	:= '1';
