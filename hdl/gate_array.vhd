@@ -84,6 +84,11 @@ begin
 						variable	wait_n			: inout std_logic) is
 		begin
 			wait_n	:= '1';
+
+			if tstate="11" then							-- if we've reached T1, all signals should be normal
+				idle	:= '1';							-- and we can transition back to the idle state
+			end if;
+
 			if (iorq_n='0' and m1_n='0') then					-- we're acknowledging an interrupt, T4->T2(instr)
 				if tstate="00" then
 					wait_n	:= '1';						-- we can proceed out Tw that's a T2
@@ -94,13 +99,11 @@ begin
 			elsif idle='1' and (iorq_n='0' or mreq_n='0') then			-- we're in the idle state and IO/mem requested
 				if tstate="00" then
 					idle	:= '0';						-- from T2 we can transition into busy state
-					wait_n	:= not m1_n;					-- but add a wait state unless it's instruction fetch
+					wait_n	:= iorq_n; --not m1_n;				-- but add a wait state unless it's instruction fetch
 				else
 					wait_n	:= '0';						-- not in T2, force them to wait until the next block
 				end if;
 
-			elsif tstate="11" then							-- if we've reached T1, all signals should be normal
-					idle	:= '1';						-- and we can transition back to the idle state
 			end if;
 		end procedure calculate_wait;
 
@@ -190,7 +193,7 @@ begin
 			out_vsync		:= '0';
 			out_hsync_delayed	:= '0';
 
-			out_d_us_count		:= (others=>'0');
+			out_d_us_count		:= (others=>'1');
 
 		end procedure init_current_cycle;
 

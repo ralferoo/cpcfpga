@@ -43,10 +43,10 @@ init_crtc:
 ;	jr mainloop2
 
 mainloop:
-	defs 11				; interestingly, i need 13 nops here where a real CPC should only need 12... :(
+	defs 12				; interestingly, i need 13 nops here where a real CPC should only need 12... 
 
 ;	jr x
-;x:	defs 9				; seems to equal 13 nops... hmmm
+;x	defs 9				; seems to equal 13 nops... hmmm
 
 ;	defs 12
 
