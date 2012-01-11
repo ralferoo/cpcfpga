@@ -63,6 +63,8 @@ begin
 						elsif din(3 downto 1)="100" then
 							v_psg_inout		:= din(0);
 						end if;
+
+				when others	=>
 			end case;
 
 		-- check for port write
@@ -83,6 +85,8 @@ begin
 							v_dout(5)		:= v_cas_out;
 							v_dout(4)		:= v_cas_motor;
 							v_dout(3 downto 0)	:= v_keyboard_row;
+
+				when others	=>
 
 			end case;
 		end if;

@@ -173,6 +173,9 @@ hdl/%.vhd: codegen/%.asm codegen/makerom.py build/.dummy
 hdl/evalboard.vhd: codegen/evalboard.pl hdl/$(TOP_NAME).vhd
 	codegen/evalboard.pl <hdl/$(TOP_NAME).vhd >$@
 
+hdl/bench_cpc.vhd: codegen/bench_cpc.pl hdl/$(TOP_NAME).vhd
+	codegen/bench_cpc.pl <hdl/$(TOP_NAME).vhd >$@
+
 build/%.bin: codegen/%.asm build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 

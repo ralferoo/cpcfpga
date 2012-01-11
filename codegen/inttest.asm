@@ -1,6 +1,12 @@
 
 	org #4000
 
+	ld bc,#bc07
+	out (c),c
+	ld bc,#bd08
+	out (c),c
+
+
 	ld bc,#fadc
 	ld a,'!'
 	out (c),a
@@ -32,9 +38,9 @@ init_crtc:
 	ld (#39),hl
 	ei							; every interrupt returns immediately
 
-;	di
+	di
 
-	jr mainloop2
+;	jr mainloop2
 
 mainloop:
 	defs 11				; interestingly, i need 13 nops here where a real CPC should only need 12... :(
@@ -44,10 +50,19 @@ mainloop:
 
 ;	defs 12
 
+	ld b,#f5
+	in a,(c)
+	rrca
+	sbc a,a
+
+	ld bc,#fade
+	out (c),a
+
+	defs 32-8-3-4
 
 	ld bc,#7f00
 	inc d
-	ld a,d
+	or d			;ld a,d
 	and #1f
 	or #40
 	out (c),c

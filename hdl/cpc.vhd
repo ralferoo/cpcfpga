@@ -23,8 +23,8 @@ entity cpc is
 		sram_ce			: out std_logic;	                                    -- i might tie this low
 		sram_oe			: out std_logic;                                        -- could even tie this low
 
-       		bootrom_addr        	: out std_logic_vector(13 downto 0);		-- address set here
-       		bootrom_data        	: in  std_logic_vector(7 downto 0);		-- data becomes available here
+		bootrom_addr        	: out std_logic_vector(13 downto 0);		-- address set here
+		bootrom_data        	: in  std_logic_vector(7 downto 0);		-- data becomes available here
 
 		spi_clk			: out  std_logic;				-- connected to SPI clock
 		spi_di			: out  std_logic;				-- connected to SPI slave DI
@@ -294,6 +294,7 @@ architecture impl of cpc is
 				   din => z80_DO, dout=>ppi_dout,
 				   psg_databus => psg_databus, psg_bdir_bc1 => psg_bdir_bc1, keyboard_row => keyboard_row,
 				   cas_in => cas_in, cas_out => cas_out, cas_motor => cas_motor, vsync => crtc_vsync );
+	cas_in <= '0';
 
 	-- gate array
 	gate_array_0 : gate_array port map (
