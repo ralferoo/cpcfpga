@@ -56,8 +56,9 @@ architecture impl of gate_array is
 	-- we work on a 16 MHz input clock, but the CPC works on a 4MHz clock with 4 cycles per "period"
 	-- so, we have 16 cycles per period.
 
-	signal d_tstate : std_logic_vector(1 downto 0);
-	signal d_idle   : std_logic;
+	signal d_tstate				: std_logic_vector(1 downto 0);
+	signal d_idle				: std_logic;
+	signal d_us_count			: std_logic_vector(7 downto 0);
 
 	type t_palette is array(0 to 16) of std_logic_vector(4 downto 0);
 	
@@ -151,6 +152,8 @@ begin
 		variable		out_latch_video_data	: std_logic;
 		variable		out_latch_write_data	: std_logic;
 
+		variable		out_d_us_count		: std_logic_vector(7 downto 0);
+
 		procedure init_current_cycle is
 		begin
 
@@ -186,6 +189,8 @@ begin
 			out_hsync		:= '0';
 			out_vsync		:= '0';
 			out_hsync_delayed	:= '0';
+
+			out_d_us_count		:= (others=>'0');
 
 		end procedure init_current_cycle;
 
@@ -322,6 +327,8 @@ begin
 			variable	n_out_latch_boot_data	: std_logic;
 			variable	n_out_latch_video_data	: std_logic;
 			variable	n_out_latch_write_data	: std_logic;
+
+			variable	n_out_d_us_count	: std_logic_vector(7 downto 0);
 		begin
 
 			-- update variables
@@ -355,6 +362,8 @@ begin
 			tstate			:= n_current_cycle(3 downto 2);
 			tstate_for_video	:= n_current_cycle(2);
 			lsb_of_video_address	:= n_current_cycle(3);
+
+			n_out_d_us_count	:= out_d_us_count;
 
 			-- check the condition where we need to latch data from the sram bus for the CPU
 			if out_latch_cpu_data='1' then
@@ -420,6 +429,10 @@ begin
 
 				n_out_crtc_clock		:= lsb_of_video_address;
 
+				if tstate="00" then
+					n_out_d_us_count := n_out_d_us_count + 1;			-- debug cycle counter
+				end if;
+
 				-- handle regular ram transfer only during T state 00
 				if tstate="00" and z80_mreq_n='0' and n_z80_bus_is_idle='0' then	-- start a memory read/write
 					calculate_address( z80_a, n_out_sram_address, z80_rd_n );
@@ -484,6 +497,8 @@ begin
 			out_latch_cpu_data	:= n_out_latch_cpu_data;
 			out_latch_boot_data	:= n_out_latch_boot_data;
 			out_latch_video_data	:= n_out_latch_video_data;
+
+			out_d_us_count		:= n_out_d_us_count;
 		end procedure update_current_cycle;
 
 		procedure update_ports_current_cycle is
@@ -510,6 +525,7 @@ begin
 
 			d_tstate		<= current_cycle(3 downto 2);
 			d_idle			<= z80_bus_is_idle;
+			d_us_count		<= out_d_us_count;
 		end procedure update_ports_current_cycle;
 
 		------------------------------------------------------------------------------------------------------------
@@ -548,7 +564,7 @@ begin
 	end process;
 
 	-- watch the gate array port
-	process(local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
+	process(nRESET, local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
 		variable	pal_index	: std_logic_vector(4 downto 0);
 		variable	t_force_int_ack	: std_logic;
 	begin
@@ -602,7 +618,7 @@ begin
 	end process;
 
 	-- interrupt generation
-	process(local_z80_clk, crtc_hsync, crtc_vsync, z80_iorq_n, z80_m1_n ) is
+	process(nRESET, local_z80_clk, crtc_hsync, crtc_vsync, z80_iorq_n, z80_m1_n ) is
 		variable	last_hsync			: std_logic;
 		variable	line_counter			: std_logic_vector(5 downto 0);
 		variable	vsync_sense			: std_logic_vector(1 downto 0);
@@ -614,6 +630,7 @@ begin
 		variable	n_generate_interrupt		: std_logic;
 	begin
 		if nRESET='0' then
+			last_hsync				:= '0';
 			line_counter				:= (others=>'0');
 			vsync_sense				:= (others=>'0');
 			generate_interrupt			:= '0';

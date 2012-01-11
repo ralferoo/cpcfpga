@@ -25,22 +25,22 @@ mainloop:
 
 ;	defs 12
 
-	ld b,#f5
-	in a,(c)
-	rrca
-	sbc a,a
+	ld b,#f5		; 2
+	in a,(c)		; 4
+	rrca			; 1
+	sbc a,a			; 1
 
-	ld bc,#fade
-	out (c),a
+	ld bc,#fade		; 3
+	out (c),a		; 4
 
-	defs 32-8-3-4
+	defs 32-8-3-4		; 17
 
-	ld bc,#7f00
-	inc d
-	or d			;ld a,d
-	and #1f
-	or #40
-	out (c),c
-	out (c),a
-	jr mainloop
+	ld bc,#7f00		; 3
+	inc d			; 1
+	or d			; 1			ld a,d
+	and #1f			; 2
+	or #40			; 2
+	out (c),c		; 4
+	out (c),a		; 4
+	jr mainloop		; 3			SEEMS TO TAKE 4!!!
 
