@@ -658,14 +658,10 @@ begin
 				upper_rom_base	<= "01000";						-- anything else maps to BASIC
 			end if;
 
-			use_boot_rom		<= z80_dout(5);
-			lower_rom_writeable	<= z80_dout(6);
-			upper_rom_writeable	<= z80_dout(7);
-
 		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFE" then
-			use_boot_rom		<= z80_dout(5);
-			lower_rom_writeable	<= z80_dout(6);
 			upper_rom_writeable	<= z80_dout(7);
+			lower_rom_writeable	<= z80_dout(6);
+			use_boot_rom		<= z80_dout(5);
 
 		end if;
 	end process;

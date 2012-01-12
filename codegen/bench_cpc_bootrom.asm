@@ -24,14 +24,16 @@ test:
 	ld e,(hl)
 
 	ld d,#c0
-	out (c),a		; roms writable, should still be ram selected
+	out (c),d		; roms writable, should still be ram selected
 
+	inc hl
 	ld (hl),a
 	ld e,(hl)
 
 	ld bc,#7f85		; enable upper, disable lower ROM
 	out (c),c
 
+	inc hl
 	ld (hl),a
 	ld e,(hl)
 
@@ -39,6 +41,7 @@ test:
 	xor a
 	out (c),a		; roms read only, boot rom disabled
 
+	inc hl
 	ld (hl),a
 	ld e,(hl)
 
