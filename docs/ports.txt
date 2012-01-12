@@ -32,3 +32,10 @@ BD00	x0xxxx01 xxxxxxxx	write only	crtc.vhd / cpc.vhd	CRTC register write			nCS=A
 BE00	x0xxxx10 xxxxxxxx	read  only	crtc.vhd / cpc.vhd	CRTC register status (not implemented)	nCS=A14=0, RW=A9=1, RS=A8=0
 BF00	x0xxxx11 xxxxxxxx	read  only	crtc.vhd / cpc.vhd	CRTC register read (R12/R13 only)	nCS=A14=0, RW=A9=1, RS=A8=1
 
+F400	xxxx0x00 xxxxxxxx	read/write	ppi8255.vhd / cpc.vhd	PSG databus nCS=A11=0, A9=9,A8=0
+F500	xxxx0x01 xxxxxxxx	read  only	ppi8255.vhd / cpc.vhd	bit7=tape in, bit 0=vsync
+F600	xxxx0x10 xxxxxxxx	write only	ppi8255.vhd / cpc.vhd	bit7-6=PSG BDIR&BC1, bit5=tape out, bit4=tape motor, bit3-0=keyboard
+F700	xxxx0x11 xxxxxxxx	write only	ppi8255.vhd / cpc.vhd	PSG databus direction
+									bit7=0 -> bit4=dir (0=output, 1=input)
+									bit7=1 -> bit0=dir if bit3-1="100" (0=output, 1=input)
+
