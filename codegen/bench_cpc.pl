@@ -55,7 +55,7 @@ architecture impl of bench_cpc is
 	constant SYSCLK_PERIOD : time := 62.5 ns;
 
 	-- fake memory
-	type memory is array(0 to 255) of std_logic_vector(7 downto 0);
+	type memory is array(0 to 65535) of std_logic_vector(7 downto 0);
 	
 	component cpc is port (
 HEADER
@@ -147,13 +147,13 @@ print <<FOOTER;
 		end if;
 
 		if rising_edge(sram_we) then
-			fake_sram(to_integer(ieee.numeric_std.unsigned(sram_address(7 downto 0)))) := sram_data;
+			fake_sram(to_integer(ieee.numeric_std.unsigned(sram_address(15 downto 0)))) := sram_data;
 		end if;
 
 		if sram_oe='1' then
 			sram_data <= (others=>'Z');
 		else
-			sram_data <= fake_sram(to_integer(ieee.numeric_std.unsigned(sram_address(7 downto 0))));
+			sram_data <= fake_sram(to_integer(ieee.numeric_std.unsigned(sram_address(15 downto 0))));
 		end if;
 	end process;
 

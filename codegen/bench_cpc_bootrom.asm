@@ -1,6 +1,7 @@
 
 	org #0000
 
+	jr timings
 
 	di
 
@@ -70,6 +71,7 @@ testlen equ ($-test)
 	nop			; this 
 	
 
+timings:
 
 
         di			; 1
