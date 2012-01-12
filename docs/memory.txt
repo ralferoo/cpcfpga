@@ -4,10 +4,11 @@ SRAM chip is 4Mbit = 512KB, flash chip is 4Mbit = 512KB or 16Mbit = 2MB
 
 RAM layout:
 
-    64K base CPC RAM
-    64K alt system RAM (for menus etc)
-8 x 16K 8 ROM images
-   256K RAM expansion, as per DK tronics
+    64K base CPC RAM				#00000
+    48K alt system RAM (for menus etc)		#10000
+    16K lower ROM image				#1c000
+8 x 16K 8 ROM images				#20000,#24000,#28000,#2c000,#30000,#34000,#38000,#3c000
+   256K RAM expansion, as per DK tronics	#40000
 
 ROM layout:
 

@@ -1,6 +1,74 @@
 
 	org #0000
 
+
+	di
+
+	ld bc,#7f8d		; disable upper/lower ROM
+	out (c),c
+
+	ld hl,test
+	ld de,test
+	ld bc,testlen
+	ldir			; copy myself to RAM
+
+	ld bc,#fefe
+	xor a
+	out (c),a		; roms read only, boot rom disabled
+
+test:
+
+	ld a,#69
+	ld hl,#c000
+	ld (hl),a
+	ld e,(hl)
+
+	ld d,#c0
+	out (c),a		; roms writable, should still be ram selected
+
+	ld (hl),a
+	ld e,(hl)
+
+	ld bc,#7f85		; enable upper, disable lower ROM
+	out (c),c
+
+	ld (hl),a
+	ld e,(hl)
+
+	ld bc,#fefe
+	xor a
+	out (c),a		; roms read only, boot rom disabled
+
+	ld (hl),a
+	ld e,(hl)
+
+infloop:
+	jr infloop
+
+	ld de,#4000
+	push de
+	ld hl,test2
+	ld bc,test2len
+	ldir			; copy more data (this should be from ram not rom)
+	ret
+
+test2:				; running at #4000
+	ld hl,(test)
+	ld bc,#fe
+
+test2len equ ($-test2)
+
+	ld hl,(test)
+	ld bc,#fe
+
+testlen equ ($-test)
+
+	nop	
+	nop			; this 
+	
+
+
+
         di			; 1
         im 1			; 2
         ld hl,&c9fb		; 3
@@ -10,8 +78,6 @@
 	jr mainloop		; 3	; 15 total
 xxx:
 
-	defs #38-xxx
-	
 ;	org #38
 
 	ei

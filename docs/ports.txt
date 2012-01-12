@@ -25,7 +25,8 @@ FEFE				write		gate_array.vhd		FPGA ROM emulation control
 	Standard CPC port	read/write	file			notes
 	-----------------	----------	---------------		-----
 
-7F00	01xxxxxx xxxxxxxx	write only	gate_array.vhd		Gate Array multipurpose (palette, bank switching)
+7F00	01xxxxxx xxxxxxxx	write only	gate_array.vhd		Gate Array multipurpose (palette, bank switching, rom disable)
+DF00	xx0xxxxx xxxxxxxx	write only	gate_array.vhd		Upper ROM selector
 
 BC00	x0xxxx00 xxxxxxxx	write only	crtc.vhd / cpc.vhd	CRTC register select			nCS=A14=0, RW=A9=0, RS=A8=0
 BD00	x0xxxx01 xxxxxxxx	write only	crtc.vhd / cpc.vhd	CRTC register write			nCS=A14=0, RW=A9=0, RS=A8=1

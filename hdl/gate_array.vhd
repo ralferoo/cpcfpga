@@ -69,9 +69,12 @@ architecture impl of gate_array is
 	signal	lower_rom_paging_disable	: std_logic;
 	signal	memory_page_64k			: std_logic_vector(2 downto 0);
 	signal	bank_select			: std_logic_vector(2 downto 0);
+	signal	upper_rom_base			: std_logic_vector(4 downto 0);
 
 	signal	force_interrupt_ack		: std_logic;
 	signal	use_boot_rom			: std_logic;
+	signal	lower_rom_writeable		: std_logic;
+	signal	upper_rom_writeable		: std_logic;
 begin
 	process(nRESET,clk16) is
 
@@ -113,8 +116,36 @@ begin
 		procedure calculate_address(			address			: in std_logic_vector(15 downto 0);
 						variable	real_address		: out std_logic_vector(18 downto 0);
 								rd_n			: in std_logic) is
+			variable	t_disable		: std_logic;	
+			variable	t_writeable		: std_logic;	
+			variable	t_base			: std_logic_vector(4 downto 0);	
 		begin
+			-- the bootrom is a special case - if it is enabled, reads from the lower 16K will always read from there
+			-- writes will always happen to the write address. so we don't really even need to worry about it here
+
+			case address(15 downto 14) is
+				when "00" =>	t_disable		:= lower_rom_paging_disable;
+						t_writeable		:= lower_rom_writeable;
+						t_base			:= "00111";			-- lower rom from #1c000
+
+				when "11" =>	t_disable		:= upper_rom_paging_disable;
+						t_writeable		:= upper_rom_writeable;
+						t_base			:= upper_rom_base;		-- upper rom from #20000
+
+				when others =>	t_disable		:= '0';
+						t_writeable		:= '0';
+
+			end case;
+
+			-- default address is just plain RAM address - add RAM banking in later
 			real_address := "000" & address;
+
+			-- do upper/lower RAM mapping
+			if t_disable='0' then						-- ROM is enabled
+				if rd_n='0' or t_writeable='1' then			-- reading or writing to write-enabled ROM
+					real_address := t_base & address(13 downto 0);
+				end if;
+			end if;
 
 		end procedure calculate_address;
 
@@ -171,9 +202,9 @@ begin
 			out_boot_address	:= (others=>'0');
 			out_sram_address	:= (others=>'0');
 			out_sram_data		:= (others=>'0');
-			out_sram_we		:= '0';
-			out_sram_ce		:= '0';
-			out_sram_oe		:= '0';
+			out_sram_we		:= '1';
+			out_sram_ce		:= '1';
+			out_sram_oe		:= '1';
 
 			out_video_byte_data	:= (others=>'0');
 			out_video_byte_clock	:= '0';
@@ -589,6 +620,9 @@ begin
 			pal_index			:= (others=>'0');
 			force_interrupt_ack		<= '0';
 			use_boot_rom			<= '1';
+			lower_rom_writeable		<= '0';
+			upper_rom_writeable		<= '0';
+			upper_rom_base			<= "01000";
 
 		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" then
 			t_force_int_ack	:= '0';
@@ -616,7 +650,23 @@ begin
 			end case;
 
 			force_interrupt_ack	<= t_force_int_ack;
-			use_boot_rom		<= not lower_rom_paging_disable;
+
+		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(13)='0' then		-- DFxx
+			if z80_dout(7 downto 3)="00000" then
+				upper_rom_base	<= "01" & z80_dout(2 downto 0);				-- select roms 0-7 normally
+			else
+				upper_rom_base	<= "01000";						-- anything else maps to BASIC
+			end if;
+
+			use_boot_rom		<= z80_dout(5);
+			lower_rom_writeable	<= z80_dout(6);
+			upper_rom_writeable	<= z80_dout(7);
+
+		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFE" then
+			use_boot_rom		<= z80_dout(5);
+			lower_rom_writeable	<= z80_dout(6);
+			upper_rom_writeable	<= z80_dout(7);
+
 		end if;
 	end process;
 
