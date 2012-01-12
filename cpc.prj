@@ -18,7 +18,7 @@ ENDLIST
 LIST FileManager
 VALUE "<project>\constraint\cpc_pins.pdc,pdc"
 STATE="utd"
-TIME="1326037924"
+TIME="1326229711"
 SIZE="8495"
 BEGIN_USE_CONSTRAINT
 TOOL_CONSTRAINT_TYPE="ideDESIGNER"
@@ -32,13 +32,13 @@ SIZE="1205"
 ENDFILE
 VALUE "<project>\hdl\bench_cpc.vhd,hdl"
 STATE="utd"
-TIME="1325513163"
-SIZE="3737"
+TIME="1326401616"
+SIZE="4282"
 ENDFILE
 VALUE "<project>\hdl\cpc.vhd,hdl"
 STATE="utd"
-TIME="1326043398"
-SIZE="15363"
+TIME="1326271679"
+SIZE="16683"
 ENDFILE
 VALUE "<project>\hdl\crtc.vhd,hdl"
 STATE="utd"
@@ -47,18 +47,18 @@ SIZE="11892"
 ENDFILE
 VALUE "<project>\hdl\evalboard.vhd,hdl"
 STATE="utd"
-TIME="1326044425"
-SIZE="2539"
+TIME="1326400744"
+SIZE="3107"
 ENDFILE
 VALUE "<project>\hdl\T80.vhd,hdl"
 STATE="utd"
-TIME="1038145888"
-SIZE="28911"
+TIME="1326231838"
+SIZE="31284"
 ENDFILE
 VALUE "<project>\hdl\T80a.vhd,hdl"
 STATE="utd"
-TIME="1038145888"
-SIZE="6560"
+TIME="1326231838"
+SIZE="7228"
 ENDFILE
 VALUE "<project>\hdl\T80s.vhd,hdl"
 STATE="utd"
@@ -67,72 +67,33 @@ SIZE="5249"
 ENDFILE
 VALUE "<project>\hdl\T80se.vhd,hdl"
 STATE="utd"
-TIME="1035164216"
-SIZE="5202"
+TIME="1326231838"
+SIZE="5763"
 ENDFILE
 VALUE "<project>\hdl\T80_ALU.vhd,hdl"
 STATE="utd"
-TIME="1038145432"
-SIZE="10637"
+TIME="1326231838"
+SIZE="11518"
 ENDFILE
 VALUE "<project>\hdl\T80_MCode.vhd,hdl"
 STATE="utd"
-TIME="1035164216"
-SIZE="50680"
+TIME="1326231838"
+SIZE="53999"
 ENDFILE
 VALUE "<project>\hdl\T80_Pack.vhd,hdl"
 STATE="utd"
-TIME="1035164216"
-SIZE="6709"
+TIME="1326231838"
+SIZE="8446"
 ENDFILE
 VALUE "<project>\hdl\T80_Reg.vhd,hdl"
 STATE="utd"
-TIME="1325288678"
-SIZE="3647"
+TIME="1326231947"
+SIZE="4079"
 ENDFILE
 VALUE "<project>\simulation\run.do,do"
 STATE="utd"
 TIME="1325384164"
 SIZE="1315"
-ENDFILE
-VALUE "<project>\smartgen\dummyrom\dummyrom.cxf,actgen_cxf"
-STATE="utd"
-TIME="1326137474"
-SIZE="1663"
-ENDFILE
-VALUE "<project>\smartgen\dummyrom\dummyrom.gen,gen"
-STATE="utd"
-TIME="1326137473"
-SIZE="389"
-PARENT="<project>\smartgen\dummyrom\dummyrom.cxf"
-IS_READONLY="TRUE"
-ENDFILE
-VALUE "<project>\smartgen\dummyrom\dummyrom.log,log"
-STATE="utd"
-TIME="1326137474"
-SIZE="1188"
-PARENT="<project>\smartgen\dummyrom\dummyrom.cxf"
-IS_READONLY="TRUE"
-ENDFILE
-VALUE "<project>\smartgen\dummyrom\dummyrom.mem,sim"
-STATE="utd"
-TIME="1326137474"
-SIZE="1280"
-PARENT="<project>\smartgen\dummyrom\dummyrom.cxf"
-ENDFILE
-VALUE "<project>\smartgen\dummyrom\dummyrom.ufc,???"
-STATE="utd"
-TIME="1326137474"
-SIZE="2341"
-PARENT="<project>\smartgen\dummyrom\dummyrom.cxf"
-IS_READONLY="TRUE"
-ENDFILE
-VALUE "<project>\smartgen\dummyrom\dummyrom.vhd,hdl"
-STATE="utd"
-TIME="1326137474"
-SIZE="1858"
-PARENT="<project>\smartgen\dummyrom\dummyrom.cxf"
-IS_READONLY="TRUE"
 ENDFILE
 VALUE "<project>\smartgen\PLL16mhz\PLL16mhz.cxf,actgen_cxf"
 STATE="utd"
@@ -170,21 +131,12 @@ LIST Other_Association
 VALUE "<project>\constraint\cpc_pins.pdc,pdc"
 ENDLIST
 ENDLIST
-LIST "dummyrom::work"
-FILE "<project>\smartgen\dummyrom\dummyrom.vhd,hdl"
-LIST Other_Association
-VALUE "<project>\smartgen\dummyrom\dummyrom.mem,sim"
-ENDLIST
-ENDLIST
 ENDLIST
 LIST AssociatedStimulus
 ENDLIST
 LIST Other_Association
 LIST cpc
 VALUE "<project>\constraint\cpc_pins.pdc,pdc"
-ENDLIST
-LIST dummyrom
-VALUE "<project>\smartgen\dummyrom\dummyrom.mem,sim"
 ENDLIST
 ENDLIST
 LIST SimulationOptions
@@ -265,12 +217,4 @@ ENDLIST
 LIST UserCustomizedFileList
 ENDLIST
 LIST OpenedFileList
-DESIGNFLOW:
-FILE:<project>\hdl\cpc.vhd,hdl
-FILE:<project>\hdl\memory_mux.vhd,hdl
-FILE:<project>\smartgen\dummyrom\dummyrom.vhd,hdl
-FILE:<project>\smartgen\dummyrom\dummyrom.mem,sim
-FILE:<project>\smartgen\dummyrom\dummyrom.ufc,???
-FILE:<project>\smartgen\dummyrom\dummyrom.gen,gen
-ACTIVE_VIEW:5
 ENDLIST
