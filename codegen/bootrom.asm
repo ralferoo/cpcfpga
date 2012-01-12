@@ -7,8 +7,13 @@
 ; IYH = length left in srec data this line
 ; IYL = xsum within line
 
-	ld sp,#fffe
-	ld bc,#fadd
+	di
+
+	ld bc,#7f8d		; disable upper/lower ROM
+	out (c),c
+
+	ld sp,#bffe				; stack outside potential rom area
+	ld bc,#fadd				; serial port address
 	ld ixh,#80				; IXH = file error status
 
 	ld hl,welcome_msg
@@ -16,9 +21,10 @@
 
 mainloop:
 	call getch
+skipeol:
 	cp 'S'
 	jr z,is_s				; for first line
-skipeol:
+;skipeol:
 	cp 13
 	jr z,maybe_s
 	cp 10
@@ -59,19 +65,6 @@ srec_exec:					; execution address
 	call printstr
 	ret
 
-; handle an S5 record type
-
-srec_count:
-	call getlen_and_addr
-	call endsrecline
-
-	push ix
-	pop de
-	and a
-	sbc hl,de				; check line counts
-	jr z,mainloop_far			; all fine
-	jr mark_as_error			; otherwise set message
-	
 ; handle an S0 record type
 
 srec_header:
@@ -127,6 +120,19 @@ data_end:
 	ld a,'.'
 	jr printchar_jp_mainloop 		; show progress
 
+; handle an S5 record type
+
+srec_count:
+	call getlen_and_addr
+	call endsrecline
+
+	push ix
+	pop de
+	and a
+	sbc hl,de				; check line counts
+	jr z,mainloop_far			; all fine
+	jr mark_as_error			; otherwise set message
+	
 ; checks the checksum byte at the end, aborts if wrong
 
 endsrecline:
