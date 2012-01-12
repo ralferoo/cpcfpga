@@ -132,7 +132,7 @@ begin
 						t_writeable		:= upper_rom_writeable;
 						t_base			:= upper_rom_base;		-- upper rom from #20000
 
-				when others =>	t_disable		:= '0';
+				when others =>	t_disable		:= '1';
 						t_writeable		:= '0';
 
 			end case;
