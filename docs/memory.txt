@@ -15,10 +15,10 @@ ROM layout:
     64K standard ROM and boot image space
 
 A25L040 has protection on block 7 (protected area 0x70000-0x7FFFF)
-    16K firmware image
-    16K BASIC image
-    16K AMSDOS image
-    16K boot image
+    16K firmware image		#78000
+    16K BASIC image		#74000
+    16K AMSDOS image		#70000
+    16K boot image		#7c000
 
 S25FL016K has a much more flexible system, enabling any power of 2 from 4KB
 upwards from either top or bottom to be protected. It's also really cheap, so

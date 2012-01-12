@@ -15,28 +15,17 @@
 ;	ld de,0
 ;	call dumpcontents
 
-	ld de,#7c0
-	call dumpcontents
-	ld de,#7d0
+	ld de,#780
 	call dumpcontents
 
 	;rst 0
 
-	ld de,#7c0
-	call erasepage
+	ld de,#780
 	ld hl, romimage_start
 	ld ix, romimage_length 
 	call writebytes
 
-	ld de,#7d0
-	call erasepage
-	ld hl, altimage_start
-	ld ix, altimage_length 
-	call writebytes
-
-	ld de,#7c0
-	call dumpcontents
-	ld de,#7d0
+	ld de,#780
 	call dumpcontents
 
 ;	call dumpstatusreg
@@ -701,28 +690,7 @@ putchloop:
 
 
 
-	ld hl,romimage_start
-	ld de,#07c0				; upper 2 bytes of destination
-	ld bc,romimage_length
 
 romimage_start:
-	incbin build/rom_c000.bin
+	incbin roms/OS464.ROM
 romimage_length equ ($-romimage_start)
-
-
-
-altimage_start:
-	ld bc,#fadc
-	ld a,'.'
-	out (c),a
-
-	ld c,#de
-	out (c),e
-	inc e
-pause:
-	dec hl
-	ld a,h
-	or l
-	jr nz,pause
-	jr altimage_start
-altimage_length equ ($-altimage_start)
