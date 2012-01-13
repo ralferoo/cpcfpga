@@ -1,0 +1,19 @@
+ps/2 keyboard adaptor from old motherboard
+
+according to diagram	 facing me
+
+
+         5 | 6              6 | 5
+           |                  |
+       3       4           4     3
+
+          1 2                2 1
+
+
+5 - blue - clk
+3 - yellow - gnd
+1 - red - data
+2 - nc
+4 - green - +5v
+6 - nc
+
