@@ -25,6 +25,7 @@ entity cpc is
 
 		bootrom_addr        	: out std_logic_vector(13 downto 0);		-- address set here
 		bootrom_data        	: in  std_logic_vector(7 downto 0);		-- data becomes available here
+		bootrom_clk        	: out std_logic;				-- clock for bootrom
 
 		spi_clk			: out  std_logic;				-- connected to SPI clock
 		spi_di			: out  std_logic;				-- connected to SPI slave DI
@@ -340,6 +341,7 @@ architecture impl of cpc is
 
         -- memory
 	    z80_DI <= z80_DI_from_iorq when z80_DI_is_from_iorq='1' else z80_DI_from_mem;
+	    bootrom_clk <= z80_clk;
 
 	process(z80_clk,z80_MREQ_n,z80_RD_n)
 	begin

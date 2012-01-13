@@ -9,10 +9,17 @@
 
 	di
 
-	ld bc,#7f8d		; disable upper/lower ROM
+	ld sp,#bffe				; stack outside potential rom area
+	ld bc,#7f8d				; disable upper/lower ROM
 	out (c),c
 
-	ld sp,#bffe				; stack outside potential rom area
+        ld bc,#fade
+        in a,(c)
+        dec bc                                  ; BC=FADD
+
+        and #01
+        jp z,boot_basic
+
 	ld bc,#fadd				; serial port address
 	ld ixh,#80				; IXH = file error status
 
@@ -276,7 +283,7 @@ gethex2:
 	ret
 
 welcome_msg:
-	defb 13,10,"SREC loader v0.02, (c) 2012 Ranulf Doswell",13,10
+	defb 13,10,"SREC loader v0.02b, (c) 2012 Ranulf Doswell",13,10
 exec_msg2:
 	defb 13,10,0
 exec_msg1:
@@ -284,4 +291,77 @@ exec_msg1:
 error_msg:
 	defb 13,10,"ERROR",13,10,0
 progend:
+
+
+
+
+
+boot_basic:				; move out of way of ROM and boot basic
+
+	ld de,#4000
+	ld hl,basicprog
+	ld bc,basic_prog_len
+	push de
+	ldir
+	ret
+
+basicprog:
+
+; transfer 16K of data from #74000 on memory chip to #c000
+; transfer 16K of data from #78000 on memory chip to #0000 and jump to it
+
+	ld bc,#bc0c
+	out (c),c
+	ld bc,#bd30
+	out (c),c		; start screen at #c000
+
+	ld hl,#c000		; fill the screen with garbage
+	ld b,#5a
+	xor a
+fill:	ld (hl),b
+	inc hl
+	cp h
+	jr nz,fill
+
+
+	ld bc,#7f81		; enable upper/lower ROM
+	out (c),c
+
+	ld bc,#fefe
+	ld a,#c0
+	out (c),a		; make ROM writeable...	 ;)
+
+        ld de,#0307                             ; D=READ
+        ld hl,#4000                             ; EHL = transfer address
+
+        ld bc,#feff
+        out (c),c                               ; ensure SPI bus is idle
+
+        out (c),b                               ; turn on flash rom CE
+        inc b                                   ; change to SPI data port
+        out (c),d                               ; READ data bytes
+        out (c),e                               ; addr 1
+        out (c),h                               ; addr 2
+        out (c),l                               ; addr 3
+
+        in a,(c)                ; dummy read
+
+						; read in the lower rom
+	ld a,#40				; end address (hi byte)
+	ld h,#c0				; start address (low byte)
+xferloop:
+	ini
+	inc b
+        cp h
+        jr nz,xferloop				; loop until we reach #4000
+
+        dec b
+        out (c),c                               ; finish with SPI bus
+
+	ld bc,#fefe
+	xor a
+	out (c),a		; protect ROM from writes...	 ;)
+
+	rst 0			; and reset
+basic_prog_len equ ($-basicprog)
 

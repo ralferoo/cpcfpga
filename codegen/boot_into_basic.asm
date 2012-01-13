@@ -58,5 +58,5 @@ xferloop:
 	xor a
 	out (c),a		; protect ROM from writes...	 ;)
 
-	rst 0			; and reset
+	jp 0			; and reset
 

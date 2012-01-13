@@ -11,7 +11,16 @@ def bin(x,len):
 	return ''.join(reversed(out))
 
 name=sys.argv[1]
-f=open(sys.argv[2], "rb")
+if sys.argv[2][0] == '-':
+	internal=sys.argv[2][1:]
+	start=128
+	f=open(sys.argv[3], "rb")
+
+	f2=open(internal, "wb")
+else:
+	internal=None
+	start=0
+	f=open(sys.argv[2], "rb")
 xdata=f.read(100000);
 f.close()
 
@@ -47,28 +56,71 @@ use ieee.std_logic_arith.all;
 
 entity '''+name+''' is
     port(
-        addr        : in  std_logic_vector(13 downto 0);
-        data        : out std_logic_vector(7 downto 0)
+	clk		: in  std_logic;
+        addr		: in  std_logic_vector(13 downto 0);
+        data		: out std_logic_vector(7 downto 0)
     );
 end '''+name+''';
 
 architecture impl of '''+name+''' is
+'''
 
+if internal <> None: print '''
+	component bootrom_internal is
+	    port(CLK : in std_logic;
+	    	ADDR : in std_logic_vector(6 downto 0);
+		DOUT : out std_logic_vector(7 downto 0)) ;
+	end component;
+
+	signal intout : std_logic_vector(7 downto 0);
+'''
+
+print '''
 begin
+'''
+
+if internal <> None: print '''
+	internal_0 : bootrom_internal port map (clk=>clk, addr=>addr(6 downto 0), dout=>intout);
+'''
+
+print '''
 process (addr)
     begin
-        case addr('''+str(size-1)+''' downto 0) is '''
+'''
 
-for n in xrange(0,len(data)):
+if internal <> None: print '''
+	if addr('''+str(size-1)+''' downto 7) = 0 then
+		data <= intout;
+	else '''
+
+print '''	        case addr('''+str(size-1)+''' downto 0) is '''
+
+for n in xrange(start,len(data)):
 	bn = bin(n,size)
 	bval = hex(data[n])[2:]
 	if len(bval)<2: bval="0"+bval #bin(data[n], 8)
-        print '%12swhen "%s" => data <= X"%s";'%('',bn,bval)
+        print '%20swhen "%s" => data <= X"%s";'%('',bn,bval)
 
 print '''
-            when others => data <= X"00";
-          end case;
+	            when others => data <= X"00";
+        	  end case;
+'''
+
+if internal <> None: print '''
+	end if;
+'''
+
+print '''
     end process;
 
 end impl;'''
 
+if internal <> None:
+	while len(data)<128:
+		data.append('\000')
+	for n in xrange(0, start):
+		try: v=data[n]
+		except: v=0
+		bn = bin(v,8)
+		f2.write(bn+"\n")
+	f2.close()

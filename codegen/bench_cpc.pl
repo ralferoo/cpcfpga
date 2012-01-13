@@ -82,6 +82,7 @@ MIDDLE
 
 	-- evil hacky code for bootstrapping
 	component bench_cpc_bootrom is port(
+		clk				: in std_logic;
 		addr				: in std_logic_vector(13 downto 0);
 		data				: out std_logic_vector(7 downto 0)
         );
@@ -108,7 +109,7 @@ MIDDLE
 
 
 	-- bootstrap code
-	bootrom_0 : bench_cpc_bootrom port map( addr=>bootrom_addr, data=>bootrom_data );
+	bootrom_0 : bench_cpc_bootrom port map( clk=>bootrom_clk, addr=>bootrom_addr, data=>bootrom_data );
 
 	cpc_0: cpc port map (
 MIDDLE

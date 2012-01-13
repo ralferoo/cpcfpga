@@ -17,3 +17,10 @@ according to diagram	 facing me
 4 - green - +5v
 6 - nc
 
+header:
+
+1 red		data
+2 blue		clk
+3 yellow	gnd
+4 nc
+5 green		5v

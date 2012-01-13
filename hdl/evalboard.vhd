@@ -49,6 +49,7 @@ architecture impl of evalboard is
 		sram_oe			: out std_logic;
 		bootrom_addr        	: out std_logic_vector(13 downto 0);
 		bootrom_data        	: in  std_logic_vector(7 downto 0);
+		bootrom_clk        	: out std_logic;
 		spi_clk			: out  std_logic;
 		spi_di			: out  std_logic;
 		spi_do			: in   std_logic;
@@ -63,19 +64,21 @@ end component;
 
 	-- evil hacky code for bootstrapping
 	component bootrom is port(
+		clk				: in std_logic;
 		addr				: in std_logic_vector(13 downto 0);
 		data				: out std_logic_vector(7 downto 0)
         );
 	end component;
 	signal bootrom_data : std_logic_vector(7 downto 0);
 	signal bootrom_addr : std_logic_vector(13 downto 0);
+	signal bootrom_clk  : std_logic;
 
 	begin
 	-- generate the master clock
 	PLL_clock_clk16 : PLL16mhz port map ( CLKA => clock, POWERDOWN => '1', GLA => clk16, LOCK => clklock );
 
 	-- bootstrap code
-	bootrom_0 : bootrom port map( addr=>bootrom_addr, data=>bootrom_data );
+	bootrom_0 : bootrom port map( clk=>bootrom_clk, addr=>bootrom_addr, data=>bootrom_data );
 
 	cpc_0: cpc port map (
 		nRESET => nRESET,
@@ -93,6 +96,7 @@ end component;
 		sram_oe => sram_oe,
 		bootrom_addr => bootrom_addr,
 		bootrom_data => bootrom_data,
+		bootrom_clk => bootrom_clk,
 		spi_clk => spi_clk,
 		spi_di => spi_di,
 		spi_do => spi_do,

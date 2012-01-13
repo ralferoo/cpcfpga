@@ -17,6 +17,8 @@ PDC_FILES =constraint/$(TOP_NAME)_pins.pdc
 SDC_FILES =$(wildcard constraint/$(TOP_NAME)_sdc.sdc)
 #PDC_FILES = $(wildcard constraint/*.pdc)
 
+UFC_NAME=smartgen/bootrom_internal/bootrom_internal
+
 EDN_NAME = $(TOP_NAME).edn
 PDB_NAME = $(TOP_NAME).pdb
 
@@ -74,13 +76,20 @@ image/.dummy:
 	-@mkdir image
 	@echo dummy >$@
 
-build/$(TOP_NAME)_fp.tcl: build/.dummy Makefile
+build/$(TOP_NAME)_fp.tcl: build/.dummy Makefile $(UFC_NAME).mem
 	@echo Rebuilding $@
 	@echo new_project \
          -name {$(TOP_NAME)_fpro} \
          -location {$(TOP_NAME)_fpro} \
          -mode {single} >$@
 	@echo set_programming_file -file {../$(TOP_NAME).pdb} >>$@
+#	@echo update_programming_file \
+#         -feature {prog_from} \
+#         -from_content {ufc} \
+#         -from_config_file {../$(UFC_NAME).ufc} \
+#         -number_of_devices {1} \
+#         -from_program_pages {0 1 2 3 4 5 6 7 } \
+#         -pdb_file {../$(TOP_NAME).pdb} >>$@
 	@echo run_selected_actions >>$@
 
 build/$(TOP_NAME).prj: Makefile $(VHD_FILES) $(SDC_FILES) build/.dummy
@@ -166,6 +175,10 @@ hdl/jingle.vhd: codegen/jingle.py
 hdl/notelookup.vhd: codegen/notes.py
 	codegen/notes.py >$@
 
+#hdl/bootrom.vhd smartgen/bootrom_internal/bootrom_internal.mem: codegen/bootrom.asm codegen/makerom.py build/.dummy
+#	pasmo $< build/bootrom.bin build/bootrom.sym
+#	codegen/makerom.py bootrom -$(UFC_NAME).mem build/bootrom.bin >$@
+	
 hdl/%.vhd: codegen/%.asm codegen/makerom.py build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 	codegen/makerom.py $* build/$*.bin >$@
