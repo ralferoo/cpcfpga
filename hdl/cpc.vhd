@@ -317,7 +317,8 @@ architecture impl of cpc is
 	ppi_0 : ppi8255 port map ( nRESET=>nRESET, rd_n => z80_iord_n, wr_n => z80_iowr_n,
 				   cs_n => z80_a(11), a => z80_a(9 downto 8),
 				   din => z80_DO, dout=>ppi_dout,
-				   psg_databus_in => psg_databus_in, psg_databus_out => psg_databus_out, psg_bdir_bc1 => psg_bdir_bc1, 
+				   psg_databus_in => psg_databus_in, psg_databus_out => psg_databus_out,
+				   psg_bdir_bc1 => psg_bdir_bc1, 
 				   keyboard_row => keyboard_row, cas_in => cas_in, cas_out => cas_out, cas_motor => cas_motor, vsync => crtc_vsync );
 	cas_in <= '0';
 
@@ -365,6 +366,9 @@ architecture impl of cpc is
 			-- initial boot rom
 			bootrom_addr			=> bootrom_addr,
 			bootrom_data			=> bootrom_data,
+
+			-- psg clock
+			psg_clk				=> psg_clk, 
 
 			-- crtc interface (for screen reading)
 			crtc_clk			=> crtc_CLK,

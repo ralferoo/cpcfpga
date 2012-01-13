@@ -65,10 +65,10 @@ begin
 							v_psg_inout		:= din(0);
 						end if;
 
-				when others	=>
+				when others	=> null;
 			end case;
 
-		-- check for port write
+		-- check for port read
 		elsif rd_n='0' then
 			case a is
 				when "00"	=>	if v_psg_inout='0' then
@@ -87,7 +87,7 @@ begin
 							v_dout(4)		:= v_cas_motor;
 							v_dout(3 downto 0)	:= v_keyboard_row;
 
-				when others	=>
+				when others	=> null;
 
 			end case;
 		end if;
