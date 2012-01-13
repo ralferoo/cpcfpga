@@ -18,7 +18,8 @@ entity ppi8255 is
 		dout				: out std_logic_vector(7 downto 0);
 
 		-- cpc specific ports out
-		psg_databus			: inout std_logic_vector(7 downto 0);
+		psg_databus_out			: in  std_logic_vector(7 downto 0);
+		psg_databus_in			: out std_logic_vector(7 downto 0);
 		psg_bdir_bc1			: out std_logic_vector(1 downto 0);
 		keyboard_row			: out std_logic_vector(3 downto 0);
 
@@ -73,7 +74,7 @@ begin
 				when "00"	=>	if v_psg_inout='0' then
 								v_dout		:= v_psg_databus;	-- output mode, read our copy
 							else
-								v_dout		:= psg_databus;		-- input mode, read live
+								v_dout		:= psg_databus_out;	-- input mode, read live
 							end if;
 				when "01"	=>	v_dout(7)		:= cas_in;
 							v_dout(6)		:= '1';			-- printer not ready
@@ -92,11 +93,11 @@ begin
 		end if;
 
 		-- output ports
-		if v_psg_inout='0' then
-			psg_databus			<= v_psg_databus;	-- output mode, so send our data
-		else
-			psg_databus			<= (others=>'Z');	-- input mode, high Z
-		end if;
+--		if v_psg_inout='0' then
+			psg_databus_in			<= v_psg_databus;	-- output mode, so send our data
+--		else
+--			psg_databus_in			<= (others=>'Z');	-- input mode, high Z
+--		end if;
 		--psg_databus			<= v_psg_databus when v_psg_inout='0' else (others=>'Z');
 		psg_bdir_bc1			<= v_psg_bdir_bc1;
 		keyboard_row			<= v_keyboard_row;
