@@ -34,9 +34,7 @@ keybloop:
 
 	call printhex			; output kbd line
 
-	ld a,13
-	call putch
-	ld a,10
+	ld a,32
 	call putch
 
 	inc e
@@ -45,8 +43,13 @@ keybloop:
 	sbc a,a				; A=FF if less than 10
 	and e
 	ld e,a
-	jr keybloop
+	jr nz, keybloop
 
+	ld a,13
+	call putch
+	ld a,10
+	call putch
+	jr keybloop
 
 printhex:
 	push af

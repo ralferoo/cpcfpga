@@ -36,19 +36,21 @@ set_io {video_sync2[0]}  -pinname 11 -fixed yes -SLEW Low -DIRECTION Output
 
 set_io video_sound -pinname 13 -fixed yes -DIRECTION Output
 
-
+# these pins were formally leds[6,7], now bidirectional ps2 keyboard interface
+set_io {ps2_data} 	 	-pinname 44 -fixed yes -DIRECTION Output
+set_io {ps2_clock} 	 	-pinname 45 -fixed yes -DIRECTION Output
 
 set_io {sram_address[18]}  	-pinname 94 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_address[15]}  	-pinname 93 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_address[17]}  	-pinname 92 -fixed yes -SLEW Low -DIRECTION Output
-set_io {sram_we} 	 		-pinname 91 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_we} 	 	-pinname 91 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_address[13]}  	-pinname 90 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_address[8]}  	-pinname 86 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_address[9]}  	-pinname 85 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_address[11]}  	-pinname 84 -fixed yes -SLEW Low -DIRECTION Output
-set_io {sram_oe}		  	-pinname 83 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_oe}		-pinname 83 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_address[10]}  	-pinname 82 -fixed yes -SLEW Low -DIRECTION Output
-set_io {sram_ce}		  	-pinname 81 -fixed yes -SLEW Low -DIRECTION Output
+set_io {sram_ce}	  	-pinname 81 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_data[7]}	  	-pinname 80 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_data[6]}	  	-pinname 79 -fixed yes -SLEW Low -DIRECTION Output
 set_io {sram_data[5]}	  	-pinname 78 -fixed yes -SLEW Low -DIRECTION Output
@@ -188,16 +190,16 @@ set_io {leds[5]}       \
     -DIRECTION Output
 
 
-set_io {leds[6]}       \
-    -pinname 44        \
-    -fixed yes         \
-    -DIRECTION Output
-
-
-set_io {leds[7]}       \
-    -pinname 45        \
-    -fixed yes         \
-    -DIRECTION Output
+#set_io {leds[6]}       \
+#    -pinname 44        \
+#    -fixed yes         \
+#    -DIRECTION Output
+#
+#
+#set_io {leds[7]}       \
+#    -pinname 45        \
+#    -fixed yes         \
+#    -DIRECTION Output
 
 
 

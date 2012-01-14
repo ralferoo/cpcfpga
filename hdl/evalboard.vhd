@@ -13,7 +13,9 @@ entity evalboard is
 		rxd			: in  std_logic;
 		txd			: out std_logic;
 		dummy			: out std_logic;
-		leds			: out std_logic_vector(7 downto 0);
+		leds			: out std_logic_vector(5 downto 0);
+		ps2_clock		: inout std_logic;
+		ps2_data		: inout std_logic;
 		sram_address		: out std_logic_vector(18 downto 0);
 		sram_data		: inout std_logic_vector(7 downto 0);
 		sram_we			: out std_logic;
@@ -41,7 +43,9 @@ architecture impl of evalboard is
 		rxd			: in  std_logic;
 		txd			: out std_logic;
 		dummy			: out std_logic;
-		leds			: out std_logic_vector(7 downto 0);
+		leds			: out std_logic_vector(5 downto 0);
+		ps2_clock		: inout std_logic;
+		ps2_data		: inout std_logic;
 		sram_address		: out std_logic_vector(18 downto 0);
 		sram_data		: inout std_logic_vector(7 downto 0);
 		sram_we			: out std_logic;
@@ -89,6 +93,8 @@ end component;
 		txd => txd,
 		dummy => dummy,
 		leds => leds,
+		ps2_clock => ps2_clock,
+		ps2_data => ps2_data,
 		sram_address => sram_address,
 		sram_data => sram_data,
 		sram_we => sram_we,

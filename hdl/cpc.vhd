@@ -15,7 +15,10 @@ entity cpc is
 		txd			: out std_logic;
 
 		dummy			: out std_logic;
-		leds			: out std_logic_vector(7 downto 0);
+		leds			: out std_logic_vector(5 downto 0);
+
+		ps2_clock		: inout std_logic;
+		ps2_data		: inout std_logic;
 
 		sram_address		: out std_logic_vector(18 downto 0);
 		sram_data		: inout std_logic_vector(7 downto 0);
@@ -272,8 +275,27 @@ architecture impl of cpc is
 	signal	psg_dout			: std_logic_vector(7 downto 0);
 
 	-- keyboard
+	component ps2input is port(
+		nRESET				: in	std_logic;
+		clk				: in	std_logic;					-- 1mhz clock
+	
+		-- ps/2 keyboard interface
+		ps2_clock			: inout std_logic;
+		ps2_data			: inout std_logic;
+	
+		-- receive matrix
+		keyboard_row			: in	std_logic_vector(3 downto 0);
+		keyboard_column			: out	std_logic_vector(7 downto 0);	
+
+		-- joystick special
+		joystick_1			: in	std_logic_vector(5 downto 0);
+		joystick_2			: in	std_logic_vector(5 downto 0) );
+	end component;
+
 	signal	keyboard_row			: std_logic_vector(3 downto 0);
 	signal	keyboard_column			: std_logic_vector(7 downto 0);
+	signal	joystick_1			: std_logic_vector(5 downto 0);
+	signal	joystick_2			: std_logic_vector(5 downto 0);
 
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
@@ -327,13 +349,19 @@ architecture impl of cpc is
 				 io_a=>keyboard_column, pwm_left=>video_sound, pwm_right=>video_sound2 );
 
 	-- keyboard
-	process(keyboard_row,pushsw)
+	kbd_0 : ps2input port map ( nRESET=>nRESET, clk=>psg_clk,
+				    	ps2_clock=>ps2_clock, ps2_data=>ps2_data,
+					keyboard_row=>keyboard_row, keyboard_column=>keyboard_column,
+					joystick_1=>joystick_1, joystick_2=>joystick_2 );
+	process(pushsw)
 	begin
-		if keyboard_row = "1001" then
-			keyboard_column <= "1111" & pushsw;		-- map push buttons to joystick directions
-		else
-			keyboard_column <= (others=>'1');
-		end if;
+		joystick_1 <= dipsw(1 downto 0) & pushsw;
+		joystick_2 <= (others=>'1');
+--		if keyboard_row = "1001" then
+--			keyboard_column <= "1111" & pushsw;		-- map push buttons to joystick directions
+--		else
+--			keyboard_column <= (others=>'1');
+--		end if;
 	end process;
 
 	-- gate array
@@ -384,16 +412,6 @@ architecture impl of cpc is
         -- memory
 	    z80_DI <= z80_DI_from_iorq when z80_DI_is_from_iorq='1' else z80_DI_from_mem;
 	    bootrom_clk <= z80_clk;
-
-	process(z80_clk,z80_MREQ_n,z80_RD_n)
-	begin
-		if rising_edge(z80_clk) then
-			if z80_MREQ_n = '0' and z80_RD_n = '0' then
---				DI <= (others=>'0'); -- nops for now
---				leds <= not A(7 downto 0);
-			end if;
-		end if;
-	end process;
 
         -- add switch input to port #fade
         process(nRESET,z80_clk,z80_IORQ_n,z80_RD_n,z80_A)
@@ -488,7 +506,7 @@ architecture impl of cpc is
 				uart_tx_load <= '1';
             
 			elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADE" then		-- leds
-				leds <= not z80_DO(7 downto 0);
+				leds <= not z80_DO(5 downto 0);
 
 			elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FEFF" then		-- spi config
 				spi_clock_when_idle<= z80_DO(7);

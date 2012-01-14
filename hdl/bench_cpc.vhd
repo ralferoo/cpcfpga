@@ -25,7 +25,9 @@ architecture impl of bench_cpc is
 		rxd			: in  std_logic;
 		txd			: out std_logic;
 		dummy			: out std_logic;
-		leds			: out std_logic_vector(7 downto 0);
+		leds			: out std_logic_vector(5 downto 0);
+		ps2_clock		: inout std_logic;
+		ps2_data		: inout std_logic;
 		sram_address		: out std_logic_vector(18 downto 0);
 		sram_data		: inout std_logic_vector(7 downto 0);
 		sram_we			: out std_logic;
@@ -50,7 +52,9 @@ architecture impl of bench_cpc is
 	signal 		rxd			: std_logic;
 	signal 		txd			: std_logic;
 	signal 		dummy			: std_logic;
-	signal 		leds			: std_logic_vector(7 downto 0);
+	signal 		leds			: std_logic_vector(5 downto 0);
+	signal 		ps2_clock		: std_logic;
+	signal 		ps2_data		: std_logic;
 	signal 		sram_address		: std_logic_vector(18 downto 0);
 	signal 		sram_data		: std_logic_vector(7 downto 0);
 	signal 		sram_we			: std_logic;
@@ -106,6 +110,8 @@ architecture impl of bench_cpc is
 		txd => txd,
 		dummy => dummy,
 		leds => leds,
+		ps2_clock => ps2_clock,
+		ps2_data => ps2_data,
 		sram_address => sram_address,
 		sram_data => sram_data,
 		sram_we => sram_we,
