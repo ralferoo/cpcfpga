@@ -2,12 +2,12 @@ EAGLE AutoRouter Statistics:
 
 Job           : C:/fpga/cpcfpga/eagle/ps2/adaptor.brd
 
-Start at      : 08:50:53 (14/01/2012)
-End at        : 08:50:53 (14/01/2012)
+Start at      : 09:11:43 (14/01/2012)
+End at        : 09:11:43 (14/01/2012)
 Elapsed time  : 00:00:00
 
-Signals       :    11   RoutingGrid: 10 mil  Layers: 1
-Connections   :    18   predefined:  15 ( 0 Vias )
+Signals       :     7   RoutingGrid: 10 mil  Layers: 1
+Connections   :    16   predefined:  15 ( 0 Vias )
 
 Router memory :   259692
 
@@ -18,7 +18,7 @@ Number of Ripups  :         0         0         0         0         0
 max. Level        :         0         0         0         0         0
 max. Total        :         0         0         0         0         0
 
-Routed            :         3         3         3         3         3
+Routed            :         1         1         1         1         1
 Vias              :         0         0         0         0         0
 Resolution        :   100.0 %   100.0 %   100.0 %   100.0 %   100.0 %
 
