@@ -68,7 +68,7 @@ begin
 
 			r_maxscanlinecount	<= "00111";	-- r9
 
-			r_startaddress_h	<= "010000";	-- r12		-- changed slightly to start reading from #4000
+			r_startaddress_h	<= "110000";	-- r12		-- start reading from #c000
 			r_startaddress_l	<= x"00";	-- r13
 
 			DOUT 			<= (others=>'0');

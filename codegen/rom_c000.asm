@@ -9,6 +9,11 @@
 
 	ld sp,#bffe
 
+	ld bc,#bc0c
+	out (c),c
+	ld bc,#bd10
+	out (c),c		; start srec screen at #4000
+
 	ld bc,#fade
 	in a,(c)
 	dec bc					; BC=FADD
