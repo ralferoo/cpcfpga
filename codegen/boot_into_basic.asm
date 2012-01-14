@@ -12,9 +12,8 @@
 	out (c),c		; start screen at #c000
 
 	ld hl,#c000		; fill the screen with garbage
-	ld b,#5a
 	xor a
-fill:	ld (hl),b
+fill:	ld (hl),a
 	inc hl
 	cp h
 	jr nz,fill

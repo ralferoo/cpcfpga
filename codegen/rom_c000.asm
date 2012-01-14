@@ -289,7 +289,7 @@ alternate_boot_msg:
 	defb 13,10,"DIP switch 1 is OFF; jumping to code at D000...",13,10,0
 
 welcome_msg:
-	defb 13,10,"SREC loader v0.03, (c) 2012 Ranulf Doswell",13,10
+	defb 13,10,"SREC loader v0.04, (c) 2012 Ranulf Doswell",13,10
 	defb       "------------------------------------------",13,10
 	defb 13,10,"Start SREC transfer...",13,10
 exec_msg2:

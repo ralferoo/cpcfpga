@@ -16,20 +16,18 @@
 ;	call dumpcontents
 
 	ld de,#7c0
-	call dumpcontents
+;	call dumpcontents
 	ld de,#7d0
-	call dumpcontents
+;	call dumpcontents
 
 	;rst 0
 
 	ld de,#7c0
-	call erasepage
 	ld hl, romimage_start
 	ld ix, romimage_length 
 	call writebytes
 
 	ld de,#7d0
-	call erasepage
 	ld hl, altimage_start
 	ld ix, altimage_length 
 	call writebytes
@@ -387,6 +385,8 @@ dumpcontents:					; DE holds page (block of 256)
 	ld l,h
 	ld h,e
 dumploop:
+	ld iyh,128
+dumploopmaybe:
 	ld a,l
 	and #f
 	jr nz, noheader
@@ -419,7 +419,10 @@ noheader:
 noincd:
 	pop af
 	inc a					; was it #FF?
-	jr nz, dumploop
+	jr nz, dumploop				; reset counter if not
+
+	dec iyh
+	jr nz,dumploopmaybe			; otherwise loop until it looks likely
 
 	dec b
 	out (c),c				; turn off flash rom
@@ -712,17 +715,113 @@ romimage_length equ ($-romimage_start)
 
 
 altimage_start:
-	ld bc,#fadc
-	ld a,'.'
-	out (c),a
 
-	ld c,#de
-	out (c),e
-	inc e
-pause:
-	dec hl
-	ld a,h
-	or l
-	jr nz,pause
-	jr altimage_start
+	ld de,#4000
+	ld hl,#d000+reloc_ofs
+	ld bc,reloc_len
+	push de
+	ldir
+	ret
+
+reloc_ofs equ ($-altimage_start)
+reloc_start:
+
+        ; org #4000
+
+; transfer 16K of data from #74000 on memory chip to #c000
+; transfer 16K of data from #78000 on memory chip to #0000 and jump to it
+
+	ld bc,#7f8d		; disable upper/lower ROM
+	out (c),c
+
+	ld bc,#bc0c
+	out (c),c
+	ld bc,#bd30
+	out (c),c		; start screen at #c000
+
+	ld hl,#c000		; fill the screen with garbage
+	xor a
+fill:	ld (hl),a
+	inc hl
+	cp h
+	jr nz,fill
+
+
+	ld bc,#7f81		; enable upper/lower ROM
+	out (c),c
+
+	ld bc,#fefe
+	ld a,#c0
+	out (c),a		; make ROM writeable...	 ;)
+
+        ld de,#0307                             ; D=READ
+        ld hl,#4000                             ; EHL = transfer address
+
+        ld bc,#feff
+        out (c),c                               ; ensure SPI bus is idle
+
+        out (c),b                               ; turn on flash rom CE
+        inc b                                   ; change to SPI data port
+        out (c),d                               ; READ data bytes
+        out (c),e                               ; addr 1
+        out (c),h                               ; addr 2
+        out (c),l                               ; addr 3
+
+        in a,(c)                ; dummy read
+
+						; read in the lower rom
+	ld a,#40				; end address (hi byte)
+	ld h,#c0				; start address (low byte)
+xferloop:
+	ini
+	inc b
+        cp h
+        jr nz,xferloop				; loop until we reach #4000
+
+        dec b
+        out (c),c                               ; finish with SPI bus
+
+	ld bc,#fefe
+	xor a
+	out (c),a		; protect ROM from writes...	 ;)
+
+	ld hl,#4000+text_ofs
+	ld bc,#fadd
+xputchloop:
+	in a,(c)
+	rlca
+	jr nc,xputchloop				; loop until tx uart idle
+	ld a,(hl)
+	inc hl
+	or a
+	jp z,0					; and reboot
+	dec c
+	out (c),a
+	inc c
+	jr xputchloop
+
+;	jp 0			; and reset
+
+text_ofs equ ($-reloc_start)
+	defb 13,10,'Booting into BASIC...',13,10,0
+
+
+reloc_len equ ($-reloc_start)
+
+
+
+;	ld bc,#fadc
+;	ld a,'.'
+;	out (c),a
+;
+;	ld c,#de
+;	out (c),e
+;	inc e
+;pause:
+;	dec hl
+;	ld a,h
+;	or l
+;	jr nz,pause
+;	jr altimage_start
+
 altimage_length equ ($-altimage_start)
