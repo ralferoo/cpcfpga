@@ -1,6 +1,13 @@
 
 	org #0000
 
+;buttons:
+;	ld bc,#fade
+;	in a,(c)
+;;	inc c
+;	out (c),a
+;	jr buttons
+
 flash:
 	; led flash
 

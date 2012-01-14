@@ -24,3 +24,7 @@ header:
 3 yellow	gnd
 4 nc
 5 green		5v
+
+as wired up:
+pin 44 = led 7 = data
+pin 45 = led 8 = clk

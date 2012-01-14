@@ -3681,11 +3681,11 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <variantdefs>
 </variantdefs>
 <classes>
-<class number="0" name="default" width="0.25" drill="0">
-<clearance class="0" value="0.24"/>
+<class number="0" name="default" width="0.4" drill="0">
+<clearance class="0" value="0.2"/>
 </class>
-<class number="1" name="power" width="0.5" drill="1.1">
-<clearance class="1" value="0.24"/>
+<class number="1" name="power" width="0.6" drill="1.1">
+<clearance class="1" value="0.4"/>
 </class>
 </classes>
 <parts>
