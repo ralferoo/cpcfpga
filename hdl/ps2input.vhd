@@ -158,6 +158,7 @@ begin
 	process(nRESET, clk)
 		variable	r_timeout	: std_logic_vector(12 downto 0);
 		variable	r_clock		: std_logic;
+		variable	r_data		: std_logic;
 		variable	r_filter_count	: std_logic_vector(3 downto 0);
 		variable	r_do_sample	: std_logic;
 		variable	r_shift_reg	: std_logic_vector(10 downto 0);
@@ -167,6 +168,7 @@ begin
 
 		variable	n_timeout	: std_logic_vector(13 downto 0);
 		variable	n_clock		: std_logic;
+		variable	n_data		: std_logic;
 		variable	n_filter_count	: std_logic_vector(3 downto 0);
 		variable	n_do_sample	: std_logic;
 		variable	n_shift_reg	: std_logic_vector(10 downto 0);
@@ -185,6 +187,7 @@ begin
 			n_parity	:= '0';
 			n_keystate	:= '0';
 			n_extended	:= '0';
+			n_data		:= '0';
 
 			-- set the buses to high-Z
 			ps2_clock	<= 'Z';
@@ -282,6 +285,7 @@ begin
 			n_parity	:= r_parity;
 			n_keystate	:= r_keystate;
 			n_extended	:= r_extended;
+			n_data		:= r_data;
 
 			-- manage the timeout, if we go over 8192us without a clock pulse then empty out the shift register
 			n_timeout		:= n_timeout + 1;
@@ -291,7 +295,7 @@ begin
 
 			-- filter out the clock signal
 			if r_clock /= ps2_clock then			-- ps2 clock is 10-16.7MHz, so 30-50us between edges
-				n_filter_count		:= "1111";	-- so, wait for 15us for a stable clock signal
+				n_filter_count		:= "0101";	-- so, wait for 5us for a stable clock signal (book has 8@25MHz, 10us and 15us seem to miss keys)
 				n_clock			:= ps2_clock;	-- so we can sample it approximately 1/2 way
 				n_do_sample		:= ps2_clock;	-- sample on the falling edge
 
@@ -302,8 +306,8 @@ begin
 				n_do_sample		:= '1';		-- only care about the edge not the whole signal
 
 				-- process the incoming bit, shifting right => 1(stop) x(par) xxxxxxxx(data) 0(start)
-				n_shift_reg		:= ps2_data & n_shift_reg(10 downto 1); -- shift right, LSB first
-				n_parity		:= n_parity xor ps2_data;		-- calculate parity bit
+				n_shift_reg		:= n_data & n_shift_reg(10 downto 1); -- shift right, LSB first
+				n_parity		:= n_parity xor n_data;			-- calculate parity bit
 				n_timeout		:= (others=>'0');			-- clear timeout
 
 				-- check if we received an entire byte and if so, process scancode
@@ -417,6 +421,9 @@ begin
 					n_parity	:= '0';
 				end if; -- byte recvd
 			end if; -- do sample
+
+			-- resample the incoming data
+			n_data	:= ps2_data;
 		end if; -- rising edge
 
 		-- save vars
@@ -428,6 +435,7 @@ begin
 		r_parity	:= n_parity;
 		r_keystate	:= n_keystate;
 		r_extended	:= n_extended;
+		r_data		:= n_data;
 	end process;
 end impl;
 
