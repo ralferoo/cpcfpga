@@ -606,16 +606,22 @@ begin
 	process(nRESET, local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
 		variable	pal_index	: std_logic_vector(4 downto 0);
 		variable	t_force_int_ack	: std_logic;
+		variable	n_palette	: t_palette;
+		variable	r_palette	: t_palette;
 	begin
 		if nRESET='0' then
 			video_mode			<= "01";
-			palette(0)			<= "00100";
-			palette(1)			<= "01010";
-			palette(2)			<= "10101";
-			palette(3)			<= "01100";
+--			palette(0)			<= "00100";
+--			palette(1)			<= "01010";
+--			palette(2)			<= "10101";
+--			palette(3)			<= "01100";
+--
+--			for i in 4 to 16 loop
+--				palette(i)		<= "00000";
+--			end loop;
 
-			for i in 4 to 16 loop
-				palette(i)		<= "00000";
+			for i in 0 to 16 loop
+				n_palette(i)		:= "10100";
 			end loop;
 
 			upper_rom_paging_disable	<= '0';
@@ -630,7 +636,8 @@ begin
 			upper_rom_base			<= "01000";
 
 		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" then
-			t_force_int_ack	:= '0';
+			t_force_int_ack			:= '0';
+			n_palette			:= r_palette;
 
 			case z80_dout(7 downto 6) is
 				when "11"	=>	memory_page_64k			<= z80_dout(5 downto 3);
@@ -645,10 +652,10 @@ begin
 							video_mode			<= z80_dout(1 downto 0);
 
 				when "01"	=>	if pal_index(4)='1' then
-								palette(16)		<= z80_dout(4 downto 0);
+								n_palette(16)		:= z80_dout(4 downto 0);
 							else
-								palette( to_integer(ieee.numeric_std.unsigned(pal_index)) )
-											<= z80_dout(4 downto 0);
+								n_palette( to_integer(ieee.numeric_std.unsigned(pal_index)) )
+											:= z80_dout(4 downto 0);
 							end if;
 
 				when others	=>	pal_index			:= z80_dout(4 downto 0);
@@ -669,6 +676,10 @@ begin
 			use_boot_rom		<= z80_dout(5);
 
 		end if;
+
+		--update palette (avoids auto mux)
+		r_palette			:= n_palette;
+		palette				<= r_palette;
 	end process;
 
 	-- interrupt generation
