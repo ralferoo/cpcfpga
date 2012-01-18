@@ -692,5 +692,6 @@ putchloop:
 
 
 romimage_start:
-	incbin roms/AMSDOS.ROM
+;	incbin roms/AMSDOS.ROM
+	incbin roms/PARADOS.ROM
 romimage_length equ ($-romimage_start)

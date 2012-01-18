@@ -2,7 +2,8 @@
 
         ; org #4000
 
-; transfer 16K of data from #74000 on memory chip to #c000
+; transfer 16K of data from #70000 on memory chip to #c000 (rom 7)
+; transfer 16K of data from #74000 on memory chip to #c000 (rom 0)
 ; transfer 16K of data from #78000 on memory chip to #0000 and jump to it
 
 	ld bc,#7f8d		; disable upper/lower ROM
@@ -24,12 +25,19 @@ fill:	ld (hl),a
 	ld bc,#7f81		; enable upper/lower ROM
 	out (c),c
 
+	ld bc,#fefd
+	ld a,#00
+	out (c),a		; enabled AMSDOS rom
+
+	ld bc,#df07
+	out (c),c		; select AMSDOS rom
+
 	ld bc,#fefe
 	ld a,#c0
 	out (c),a		; make ROM writeable...	 ;)
 
         ld de,#0307                             ; D=READ
-        ld hl,#4000                             ; EHL = transfer address
+        ld hl,#0000                             ; EHL = transfer address
 
         ld bc,#feff
         out (c),c                               ; ensure SPI bus is idle
@@ -43,7 +51,21 @@ fill:	ld (hl),a
 
         in a,(c)                ; dummy read
 
-						; read in the lower rom
+						; read in the amsdoc rom
+	ld a,#00				; end address (hi byte)
+	ld h,#c0				; start address (low byte)
+amsxferloop:
+	ini
+	inc b
+        cp h
+        jr nz,amsxferloop			; loop until we reach #0000
+
+	ld bc,#df00
+	out (c),c				; select BASIC rom
+
+	ld bc,#ffff				; restore xfer reg
+
+						; read in the basic and lower rom
 	ld a,#40				; end address (hi byte)
 	ld h,#c0				; start address (low byte)
 xferloop:
