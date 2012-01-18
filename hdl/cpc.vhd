@@ -256,6 +256,7 @@ architecture impl of cpc is
 	component ay8912 is port(
 		nRESET				: in	std_logic;
 		clk				: in	std_logic;
+		pcm_clk				: in	std_logic;
 		
 		-- z80 databus interface
 		bdir_bc1			: in	std_logic_vector(1 downto 0);			-- bc2, a8 are pulled high, so won't bother
@@ -345,7 +346,7 @@ architecture impl of cpc is
 	cas_in <= '0';
 
 	-- ay 8912 psg
-	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
+	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, pcm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
 				 io_a=>keyboard_column, pwm_left=>video_sound, pwm_right=>video_sound2 );
 
 	-- keyboard
@@ -355,7 +356,7 @@ architecture impl of cpc is
 					joystick_1=>joystick_1, joystick_2=>joystick_2 );
 	process(pushsw)
 	begin
-		joystick_1 <= dipsw(1 downto 0) & pushsw;
+		joystick_1 <= "1" & dipsw(7) & pushsw;
 		joystick_2 <= (others=>'1');
 --		if keyboard_row = "1001" then
 --			keyboard_column <= "1111" & pushsw;		-- map push buttons to joystick directions
