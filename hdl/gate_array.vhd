@@ -78,6 +78,8 @@ architecture impl of gate_array is
 	signal	use_boot_rom			: std_logic;
 	signal	lower_rom_writeable		: std_logic;
 	signal	upper_rom_writeable		: std_logic;
+
+	signal	rom_enabled			: std_logic_vector(7 downto 0);
 begin
 	process(nRESET,clk16) is
 
@@ -608,6 +610,7 @@ begin
 		variable	t_force_int_ack	: std_logic;
 		variable	n_palette	: t_palette;
 		variable	r_palette	: t_palette;
+		variable	t_upper_rom_base: std_logic_vector(4 downto 0);
 	begin
 		if nRESET='0' then
 			video_mode			<= "01";
@@ -634,6 +637,7 @@ begin
 			lower_rom_writeable		<= '0';
 			upper_rom_writeable		<= '0';
 			upper_rom_base			<= "01000";
+			rom_enabled			<= (others=>'0');		-- note BASIC is always available
 
 		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" then
 			t_force_int_ack			:= '0';
@@ -664,16 +668,41 @@ begin
 			force_interrupt_ack	<= t_force_int_ack;
 
 		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(13)='0' then		-- DFxx
-			if z80_dout(7 downto 3)="00000" then
-				upper_rom_base	<= "01" & z80_dout(2 downto 0);				-- select roms 0-7 normally
-			else
-				upper_rom_base	<= "01000";						-- anything else maps to BASIC
-			end if;
+			t_upper_rom_base	:= "01000";					-- default to BASIC rom
+
+			case z80_dout is
+				when "00000001" =>	if rom_enabled(1)='1' then
+								t_upper_rom_base := "01" & z80_dout(2 downto 0);
+							end if;
+				when "00000010" =>	if rom_enabled(2)='1' then
+								t_upper_rom_base := "01" & z80_dout(2 downto 0);
+							end if;
+				when "00000011" =>	if rom_enabled(3)='1' then
+								t_upper_rom_base := "01" & z80_dout(2 downto 0);
+							end if;
+				when "00000100" =>	if rom_enabled(4)='1' then
+								t_upper_rom_base := "01" & z80_dout(2 downto 0);
+							end if;
+				when "00000101" =>	if rom_enabled(5)='1' then
+								t_upper_rom_base := "01" & z80_dout(2 downto 0);
+							end if;
+				when "00000110" =>	if rom_enabled(6)='1' then
+								t_upper_rom_base := "01" & z80_dout(2 downto 0);
+							end if;
+				when "00000111" =>	if rom_enabled(7)='1' then
+								t_upper_rom_base := "01" & z80_dout(2 downto 0);
+							end if;
+				when others => null;
+			end case;
+			upper_rom_base		<= t_upper_rom_base;
 
 		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFE" then
 			upper_rom_writeable	<= z80_dout(7);
 			lower_rom_writeable	<= z80_dout(6);
 			use_boot_rom		<= z80_dout(5);
+
+		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFD" then
+			rom_enabled		<= z80_dout;
 
 		end if;
 

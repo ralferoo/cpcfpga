@@ -7,14 +7,35 @@
 	ld bc,#feff
 	out (c),c				; turn off SPI, default to clock high
 
+;	call wakeup
+;	call dumpmanuf
+;	call dumpjedec
+;	call dumpserial
+
+;	ld de,0
+;	call dumpcontents
+
+	ld de,#7c0
+;	call dumpcontents
 	ld de,#7d0
-	ld hl, altimage_start
-	ld ix, altimage_length 
+;	call dumpcontents
+
+	;rst 0
+
+	ld de,#7c0
+	ld hl, romimage_start
+	ld ix, romimage_length 
 	call writebytes
 
-	ld de,#7d0
+	ld de,#7c0
 	call dumpcontents
 
+;	call dumpstatusreg
+;	call modifycontents
+;	call dumpstatusreg
+;	call dumpcontents
+;	call dumpstatusreg
+	
 	ld hl,end_msg
 	call printstr
 
@@ -676,18 +697,12 @@ putchloop:
 
 
 
-altimage_start:
+	ld hl,romimage_start
+	ld de,#07c0				; upper 2 bytes of destination
+	ld bc,romimage_length
 
-	ld de,#4000
-	ld hl,#d000+reloc_ofs
-	ld bc,reloc_len
-	push de
-	ldir
-	ret
+romimage_start:
+	incbin build/rom_c000.bin
+romimage_length equ ($-romimage_start)
 
-reloc_ofs equ ($-altimage_start)
-reloc_start:
-	incbin build/boot_into_basic.bin
 
-reloc_len equ ($-reloc_start)
-altimage_length equ ($-altimage_start)

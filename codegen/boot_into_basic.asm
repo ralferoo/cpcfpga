@@ -1,5 +1,7 @@
         org #4000
 
+        ; org #4000
+
 ; transfer 16K of data from #74000 on memory chip to #c000
 ; transfer 16K of data from #78000 on memory chip to #0000 and jump to it
 
@@ -57,5 +59,21 @@ xferloop:
 	xor a
 	out (c),a		; protect ROM from writes...	 ;)
 
-	jp 0			; and reset
+	ld hl,text_ofs
+	ld bc,#fadd
+xputchloop:
+	in a,(c)
+	rlca
+	jr nc,xputchloop				; loop until tx uart idle
+	ld a,(hl)
+	inc hl
+	or a
+	jp z,0					; and reboot
+	dec c
+	out (c),a
+	inc c
+	jr xputchloop
+
+text_ofs:
+	defb 13,10,'Booting into BASIC...',13,10,0
 

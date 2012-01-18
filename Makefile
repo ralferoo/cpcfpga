@@ -204,6 +204,7 @@ image/%.srec: codegen/%.scr build/.dummy image/.dummy
 	objcopy --change-addresses=16384 -I binary $< -O srec build/$*.srec
 	perl -ne '{print unless m/^S9/;}' <build/$*.srec >$@
 
-image/rom_installer.srec: build/rom_c000.bin
+image/rom_installer_recovery.srec: build/rom_c000.bin
+image/rom_installer.srec: build/boot_into_basic.bin
 
 

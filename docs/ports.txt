@@ -21,6 +21,8 @@ FEFE				write		gate_array.vhd		FPGA ROM emulation control
 									bit7=upper ROM writable
 									bit6=lower ROM writable
 									bit5=bootrom replaces lower ROM
+FEFD				write		gate_array.vhd		FPGA ROM emulation control
+									bit1-7=ROM 1-7 enabled, if not enabled, ROM 0 is used instead
 
 	Standard CPC port	read/write	file			notes
 	-----------------	----------	---------------		-----
