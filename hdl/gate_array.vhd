@@ -634,8 +634,8 @@ begin
 			pal_index			:= (others=>'0');
 			force_interrupt_ack		<= '0';
 			use_boot_rom			<= '1';
-			lower_rom_writeable		<= '0';
-			upper_rom_writeable		<= '0';
+			lower_rom_writeable		<= '1';
+			upper_rom_writeable		<= '1';
 			upper_rom_base			<= "01000";
 			rom_enabled			<= (others=>'0');		-- note BASIC is always available
 

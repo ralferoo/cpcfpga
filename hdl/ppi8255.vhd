@@ -49,7 +49,7 @@ begin
 			v_dout			:= (others=>'0');
 
 		-- check for port write
-		elsif wr_n='0' then
+		elsif cs_n='0' and wr_n='0' then
 			case a is
 				when "00"	=>	v_psg_databus		:= din;
 
@@ -69,7 +69,7 @@ begin
 			end case;
 
 		-- check for port read
-		elsif rd_n='0' then
+		elsif cs_n='0' and rd_n='0' then
 			case a is
 				when "00"	=>	if v_psg_inout='0' then
 								v_dout		:= v_psg_databus;	-- output mode, read our copy

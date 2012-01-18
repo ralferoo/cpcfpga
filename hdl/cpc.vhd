@@ -310,7 +310,7 @@ architecture impl of cpc is
 			video_g2	<= "00";
 			video_b2	<= "00";
 		else
-			video_sync2	<= dipsw(0) & (not dipsw(0));
+			video_sync2	<= "10"; --dipsw(0) & (not dipsw(0));
 			video_r2	<= video_red;
 			video_g2	<= video_green;
 			video_b2	<= video_blue;

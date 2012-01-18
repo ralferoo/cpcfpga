@@ -381,7 +381,7 @@ begin
 
 			-- store registers
 			r_tone_divisor			:= n_tone_divisor(2 downto 0);
-			r_env_divisor			:= r_env_divisor(3 downto 0);
+			r_env_divisor			:= n_env_divisor(3 downto 0);
 			r_tone_a_ctr			:= n_tone_a_ctr;
 			r_tone_b_ctr			:= n_tone_b_ctr;
 			r_tone_c_ctr			:= n_tone_c_ctr;

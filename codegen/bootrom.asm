@@ -11,17 +11,19 @@
 
 ;	ld sp,#bffe				; stack outside potential rom area
 
-	ld bc,#fefe
-	ld a,#e0
-	out (c),a				; keep bootrom active, make ROM writeable
+;	ld bc,#fefe
+;	ld a,#e0
+;	out (c),a				; keep bootrom active, make ROM writeable
 
         ld de,#0307                             ; D=READ
         ld hl,#c000                             ; EHL = transfer address
 
 ;	push hl
 
-        inc c		;ld bc,#feff
-        out (c),c                               ; ensure SPI bus is idle
+;        inc c		;ld bc,#feff
+
+	ld bc,#feff
+;        out (c),c                               ; ensure SPI bus is idle
 
         out (c),b                               ; turn on flash rom CE
         inc b                                   ; change to SPI data port (FFFF)
@@ -39,8 +41,8 @@ xferloop:
         cp h
         jr nz,xferloop				; loop until we reach #0000
 
-        dec b					; FEFF
-        out (c),c                               ; finish with SPI bus
+;        dec b					; FEFF
+;        out (c),c                               ; finish with SPI bus
 
 	jp #c000
 
