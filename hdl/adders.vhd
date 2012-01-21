@@ -95,6 +95,7 @@ entity clock_divider is
 		load		: in  std_logic;
 --		divisor		: in  std_logic_vector( width-1 downto 0 );
 		divisor		: in  std_logic_vector;
+		osc		: out std_logic;
 		output		: out std_logic);
 end entity;
 
@@ -102,8 +103,10 @@ architecture impl of clock_divider is
 begin
 	process(clk)
 		variable	counter		: std_logic_vector(divisor'high+1 downto 0);	-- note 1 bit longer than width
-		variable	t_bit0		: std_logic;				-- new bit 0 after subtract
-		variable	t_carry0	: std_logic;				-- carry to subtract from bit 1
+		variable	osc_val		: std_logic;					-- oscillating output
+		variable	t_osc_val	: std_logic;					-- oscillating output
+		variable	t_bit0		: std_logic;					-- new bit 0 after subtract
+		variable	t_carry0	: std_logic;					-- carry to subtract from bit 1
 		variable	t_divisor	: std_logic_vector(divisor'high downto 0);	-- remainder of subtractand
 		variable	t_rest		: std_logic_vector(divisor'high downto 0);	-- remainder of subtractand
 		variable	t_restsub	: std_logic_vector(divisor'high downto 0);	-- result of subtraction
@@ -111,27 +114,31 @@ begin
 	begin
 		if rising_edge(clk) then
 			if load='1' then						-- reset to divisor - 2 on load
-				t_divisor	:= divisor;
+				t_divisor	:= divisor;				-- reorder bits in case constant passed in
 				t_bit0		:= t_divisor(0);			-- bit 0 untouched
 				t_carry0	:= '1';					-- always carry into bit 1
-				report std.standard.natural'image(t_divisor'high);
 				t_rest		:= "0" & t_divisor(t_divisor'high downto 1);
+				t_osc_val	:= '0';
 
 			elsif counter(counter'high)='1' then				-- also on rollover (same code, wary about uninitialised)
-				t_divisor	:= divisor;
+				t_divisor	:= divisor;				-- reorder bits in case constant passed in
 				t_bit0		:= t_divisor(0);			-- bit 0 untouched
 				t_carry0	:= '1';
-				report std.standard.natural'image(t_divisor'high);
 				t_rest		:= "0" & t_divisor(t_divisor'high downto 1);
+				t_osc_val	:= not osc_val;
 
 			else								-- manually do the bit 0 carry
 				t_bit0		:= not counter(0);
 				t_carry0	:= not counter(0);
 				t_rest		:= "0" & counter(counter'high-1 downto 1);
+				t_osc_val	:= osc_val;
 			end if;
 
 			t_restsub		:= t_rest - (t_carry0);			-- do the rest of the subtraction
 			counter			:= t_restsub & t_bit0;
+			osc_val			:= t_osc_val;
+
+			osc			<= osc_val;
 			output			<= counter(counter'high);		-- will pulse on last clock per divisor
 		end if;
 	end process;
