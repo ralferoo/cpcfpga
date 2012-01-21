@@ -273,7 +273,6 @@ architecture impl of cpc is
 	signal	psg_databus_in			: std_logic_vector(7 downto 0);
 	signal	psg_databus_out			: std_logic_vector(7 downto 0);
 	signal	psg_bdir_bc1			: std_logic_vector(1 downto 0);
-	signal	psg_dout			: std_logic_vector(7 downto 0);
 
 	-- keyboard
 	component ps2input is port(
@@ -288,10 +287,16 @@ architecture impl of cpc is
 		keyboard_row			: in	std_logic_vector(3 downto 0);
 		keyboard_column			: out	std_logic_vector(7 downto 0);	
 
+		-- debug
+		raw_scancode			: out	std_logic_vector(7 downto 0);
+		raw_scancode_clk		: out	std_logic;
+
 		-- joystick special
 		joystick_1			: in	std_logic_vector(5 downto 0);
 		joystick_2			: in	std_logic_vector(5 downto 0) );
 	end component;
+	signal	raw_scancode			: std_logic_vector(7 downto 0);
+	signal	raw_scancode_clk		: std_logic;
 
 	signal	keyboard_row			: std_logic_vector(3 downto 0);
 	signal	keyboard_column			: std_logic_vector(7 downto 0);
@@ -353,8 +358,10 @@ architecture impl of cpc is
 	kbd_0 : ps2input port map ( nRESET=>nRESET, clk=>psg_clk,
 				    	ps2_clock=>ps2_clock, ps2_data=>ps2_data,
 					keyboard_row=>keyboard_row, keyboard_column=>keyboard_column,
+					raw_scancode=>raw_scancode, raw_scancode_clk=>raw_scancode_clk,
 					joystick_1=>joystick_1, joystick_2=>joystick_2 );
-	process(pushsw)
+
+	process(pushsw, dipsw)
 	begin
 		joystick_1 <= "1" & dipsw(7) & pushsw;
 		joystick_2 <= (others=>'1');
@@ -466,7 +473,7 @@ architecture impl of cpc is
         -- add SPI output to port #ffxx
 	-- note, this is a special case as just reading from the port also triggers a dummy transfer, although we need to be
 	-- careful as the "dummy" byte might actually be useful!
-	process(nRESET,z80_clk,z80_IORQ_n,z80_WR_n,z80_RD_n,z80_A,z80_DO)
+	process(nRESET,z80_IORQ_n,z80_WR_n,z80_RD_n,z80_A,z80_DO)
 	begin
 		if nRESET = '0' then
 			spi_write		<= (others=>'0');
@@ -523,7 +530,8 @@ architecture impl of cpc is
                  pushsw  (0) xor pushsw  (1) xor pushsw  (2) xor pushsw  (3);
 
         -- uart
-        uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>uart_tx_load , data=>uart_tx_data , empty=>uart_tx_empty );
+        --uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>uart_tx_load , data=>uart_tx_data , empty=>uart_tx_empty );
+        uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>raw_scancode_clk , data=>raw_scancode , empty=>uart_tx_empty );
         txd <= uart_tx_txd;
 
         uart_rx_0  : uart_rx port map( nrst=>nreset, clk16mhz=>clk16, rxd=>uart_rx_rxd , avail=>uart_rx_avail , data=>uart_rx_data , clear=>uart_rx_clear, errorfound=>uart_rx_error );

@@ -614,14 +614,6 @@ begin
 	begin
 		if nRESET='0' then
 			video_mode			<= "01";
---			palette(0)			<= "00100";
---			palette(1)			<= "01010";
---			palette(2)			<= "10101";
---			palette(3)			<= "01100";
---
---			for i in 4 to 16 loop
---				palette(i)		<= "00000";
---			end loop;
 
 			for i in 0 to 16 loop
 				n_palette(i)		:= "10100";
@@ -639,71 +631,74 @@ begin
 			upper_rom_base			<= "01000";
 			rom_enabled			<= (others=>'0');		-- note BASIC is always available
 
-		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" then
+		elsif rising_edge(local_z80_clk) then
 			t_force_int_ack			:= '0';
 			n_palette			:= r_palette;
+	
+			if z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" then
+				case z80_dout(7 downto 6) is
+					when "11"	=>	memory_page_64k			<= z80_dout(5 downto 3);
+								bank_select			<= z80_dout(2 downto 0);
+	
+					when "10"	=>	
+								if z80_dout(4)='1' then
+									t_force_int_ack		:= '1';
+								end if;
+								upper_rom_paging_disable	<= z80_dout(3);
+								lower_rom_paging_disable	<= z80_dout(2);
+								video_mode			<= z80_dout(1 downto 0);
+	
+					when "01"	=>	if pal_index(4)='1' then
+									n_palette(16)		:= z80_dout(4 downto 0);
+								else
+									n_palette( to_integer(ieee.numeric_std.unsigned(pal_index)) )
+												:= z80_dout(4 downto 0);
+								end if;
+	
+					when others	=>	pal_index			:= z80_dout(4 downto 0);
+				end case;
+	
+				force_interrupt_ack	<= t_force_int_ack;
+	
+			elsif z80_wr_n='0' and z80_iorq_n='0' and z80_a(13)='0' then		-- DFxx
+				t_upper_rom_base	:= "01000";					-- default to BASIC rom
+	
+				case z80_dout is
+					when "00000001" =>	if rom_enabled(1)='1' then
+									t_upper_rom_base := "01" & z80_dout(2 downto 0);
+								end if;
+					when "00000010" =>	if rom_enabled(2)='1' then
+									t_upper_rom_base := "01" & z80_dout(2 downto 0);
+								end if;
+					when "00000011" =>	if rom_enabled(3)='1' then
+									t_upper_rom_base := "01" & z80_dout(2 downto 0);
+								end if;
+					when "00000100" =>	if rom_enabled(4)='1' then
+									t_upper_rom_base := "01" & z80_dout(2 downto 0);
+								end if;
+					when "00000101" =>	if rom_enabled(5)='1' then
+									t_upper_rom_base := "01" & z80_dout(2 downto 0);
+								end if;
+					when "00000110" =>	if rom_enabled(6)='1' then
+									t_upper_rom_base := "01" & z80_dout(2 downto 0);
+								end if;
+					when "00000111" =>	if rom_enabled(7)='1' then
+									t_upper_rom_base := "01" & z80_dout(2 downto 0);
+								end if;
+					when others => null;
+				end case;
+				upper_rom_base		<= t_upper_rom_base;
+	
+			elsif z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFE" then
+				upper_rom_writeable	<= z80_dout(7);
+				lower_rom_writeable	<= z80_dout(6);
+				use_boot_rom		<= z80_dout(5);
+	
+			elsif z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFD" then
+				rom_enabled		<= z80_dout;
 
-			case z80_dout(7 downto 6) is
-				when "11"	=>	memory_page_64k			<= z80_dout(5 downto 3);
-							bank_select			<= z80_dout(2 downto 0);
-
-				when "10"	=>	
-							if z80_dout(4)='1' then
-								t_force_int_ack		:= '1';
-							end if;
-							upper_rom_paging_disable	<= z80_dout(3);
-							lower_rom_paging_disable	<= z80_dout(2);
-							video_mode			<= z80_dout(1 downto 0);
-
-				when "01"	=>	if pal_index(4)='1' then
-								n_palette(16)		:= z80_dout(4 downto 0);
-							else
-								n_palette( to_integer(ieee.numeric_std.unsigned(pal_index)) )
-											:= z80_dout(4 downto 0);
-							end if;
-
-				when others	=>	pal_index			:= z80_dout(4 downto 0);
-			end case;
-
-			force_interrupt_ack	<= t_force_int_ack;
-
-		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(13)='0' then		-- DFxx
-			t_upper_rom_base	:= "01000";					-- default to BASIC rom
-
-			case z80_dout is
-				when "00000001" =>	if rom_enabled(1)='1' then
-								t_upper_rom_base := "01" & z80_dout(2 downto 0);
-							end if;
-				when "00000010" =>	if rom_enabled(2)='1' then
-								t_upper_rom_base := "01" & z80_dout(2 downto 0);
-							end if;
-				when "00000011" =>	if rom_enabled(3)='1' then
-								t_upper_rom_base := "01" & z80_dout(2 downto 0);
-							end if;
-				when "00000100" =>	if rom_enabled(4)='1' then
-								t_upper_rom_base := "01" & z80_dout(2 downto 0);
-							end if;
-				when "00000101" =>	if rom_enabled(5)='1' then
-								t_upper_rom_base := "01" & z80_dout(2 downto 0);
-							end if;
-				when "00000110" =>	if rom_enabled(6)='1' then
-								t_upper_rom_base := "01" & z80_dout(2 downto 0);
-							end if;
-				when "00000111" =>	if rom_enabled(7)='1' then
-								t_upper_rom_base := "01" & z80_dout(2 downto 0);
-							end if;
-				when others => null;
-			end case;
-			upper_rom_base		<= t_upper_rom_base;
-
-		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFE" then
-			upper_rom_writeable	<= z80_dout(7);
-			lower_rom_writeable	<= z80_dout(6);
-			use_boot_rom		<= z80_dout(5);
-
-		elsif rising_edge(local_z80_clk) and z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFD" then
-			rom_enabled		<= z80_dout;
-
+			end if;
+	
 		end if;
 
 		--update palette (avoids auto mux)

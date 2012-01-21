@@ -19,9 +19,14 @@ entity ps2input is port(
 	keyboard_row		: in	std_logic_vector(3 downto 0);
 	keyboard_column		: out	std_logic_vector(7 downto 0);	
 
+	-- debug
+	raw_scancode		: out	std_logic_vector(7 downto 0);
+	raw_scancode_clk	: out	std_logic;
+
 	-- joystick special
 	joystick_1		: in	std_logic_vector(5 downto 0);
 	joystick_2		: in	std_logic_vector(5 downto 0) );
+
 end ps2input;
 
 architecture impl of ps2input is
@@ -158,7 +163,7 @@ begin
 	process(nRESET, clk)
 		variable	r_timeout	: std_logic_vector(12 downto 0);
 		variable	r_clock		: std_logic;
-		variable	r_data		: std_logic;
+		variable	r_data, r_data2	: std_logic;
 		variable	r_filter_count	: std_logic_vector(3 downto 0);
 		variable	r_do_sample	: std_logic;
 		variable	r_shift_reg	: std_logic_vector(10 downto 0);
@@ -168,7 +173,7 @@ begin
 
 		variable	n_timeout	: std_logic_vector(13 downto 0);
 		variable	n_clock		: std_logic;
-		variable	n_data		: std_logic;
+		variable	n_data, n_data2	: std_logic;
 		variable	n_filter_count	: std_logic_vector(3 downto 0);
 		variable	n_do_sample	: std_logic;
 		variable	n_shift_reg	: std_logic_vector(10 downto 0);
@@ -188,6 +193,7 @@ begin
 			n_keystate	:= '0';
 			n_extended	:= '0';
 			n_data		:= '0';
+			n_data2		:= '0';
 
 			-- set the buses to high-Z
 			ps2_clock	<= 'Z';
@@ -274,6 +280,8 @@ begin
 			key_1					<= '1';
 			key_del					<= '1';
 			
+			raw_scancode				<= (others=>'0');
+			raw_scancode_clk			<= '0';
 
 		elsif rising_edge(clk) then	
 			-- initialise vars
@@ -286,6 +294,7 @@ begin
 			n_keystate	:= r_keystate;
 			n_extended	:= r_extended;
 			n_data		:= r_data;
+			n_data2		:= r_data2;
 
 			-- manage the timeout, if we go over 8192us without a clock pulse then empty out the shift register
 			n_timeout		:= n_timeout + 1;
@@ -295,7 +304,7 @@ begin
 
 			-- filter out the clock signal
 			if r_clock /= ps2_clock then			-- ps2 clock is 10-16.7MHz, so 30-50us between edges
-				n_filter_count		:= "0101";	-- so, wait for 5us for a stable clock signal (book has 8@25MHz, 10us and 15us seem to miss keys)
+				n_filter_count		:= "1101";	-- so, wait for 13us for a stable clock signal (book has 8@25MHz, 10us and 15us seem to miss keys)
 				n_clock			:= ps2_clock;	-- so we can sample it approximately 1/2 way
 				n_do_sample		:= ps2_clock;	-- sample on the falling edge
 
@@ -306,115 +315,125 @@ begin
 				n_do_sample		:= '1';		-- only care about the edge not the whole signal
 
 				-- process the incoming bit, shifting right => 1(stop) x(par) xxxxxxxx(data) 0(start)
-				n_shift_reg		:= n_data & n_shift_reg(10 downto 1); -- shift right, LSB first
-				n_parity		:= n_parity xor n_data;			-- calculate parity bit
+				n_shift_reg		:= r_data & n_shift_reg(10 downto 1); -- shift right, LSB first
+				n_parity		:= n_parity xor r_data;			-- calculate parity bit
 				n_timeout		:= (others=>'0');			-- clear timeout
+
+
+				raw_scancode_clk	<= '0';
 
 				-- check if we received an entire byte and if so, process scancode
 				if n_shift_reg(0) = '0' then	-- byte received
 					if n_shift_reg(10) = '1' and n_parity ='0' then	-- odd parity + stop bit 
 					-- should check parity, but i don't want to do the host requesting retransmit
 
-					    t_scancode	:= "000" & n_extended & n_shift_reg(8 downto 1);	
+						t_scancode	:= "000" & n_extended & n_shift_reg(8 downto 1);	
 
-					    n_keystate	:= '0';			-- default next keystate to pressed for next key
-					    n_extended	:= '0';
+						n_keystate	:= '0';			-- default next keystate to pressed for next key
+						n_extended	:= '0';
 
-					    d_scancode	<= r_keystate & t_scancode(8 downto 0);
+						d_scancode	<= r_keystate & t_scancode(8 downto 0);
 
-					    case t_scancode is
-						when x"014" =>		key_ctrl_l	<= r_keystate;		-- left control
-						when x"114" =>		key_ctrl_r	<= r_keystate;		-- right control
+						raw_scancode	<= n_shift_reg(8 downto 1);
+						raw_scancode_clk	<= '1';
 
-						-- handle extended scancode prefix
-						when x"0e0" =>		n_extended	:= '1';			-- set extended state
-
-						-- handle break prefix
-						when x"0f0" =>		n_keystate	:= '1';			-- next key is release
-						when x"1f0" =>		n_keystate	:= '1';			-- next key is release
-									n_extended	:= '1';			-- maintain extended
+						case t_scancode is
+							when x"014" =>		key_ctrl_l	<= r_keystate;		-- left control
+							when x"114" =>		key_ctrl_r	<= r_keystate;		-- right control
+	
+							-- handle extended scancode prefix
+							when x"0e0" =>		n_extended	:= '1';			-- set extended state
+	
+							-- handle break prefix
+							when x"0f0" =>		n_keystate	:= '1';			-- next key is release
+							when x"1f0" =>		n_keystate	:= '1';			-- next key is release
+										n_extended	:= '1';			-- maintain extended
 
 -- grep n_dout hdl/ps2input.vhd |perl -ne '$a=$_;{while ($a=~s/(key_[^\s;\)]+)//) {print "\t\t\t\t\t\twhen \"x000\" =>\t$1\t\t<= r_keystate;\n";}}' 
+	
+							when x"071" =>		key_fdot	<= r_keystate;
+							when x"15a" =>		key_enter	<= r_keystate;		-- numeric enter
+							when x"07a" =>		key_f3		<= r_keystate;
+							when x"074" =>		key_f6		<= r_keystate;
+							when x"07d" =>		key_f9		<= r_keystate;
+							when x"172" =>		key_curdown	<= r_keystate;
+							when x"174" =>		key_curright	<= r_keystate;
+							when x"175" =>		key_curup	<= r_keystate;
+							when x"070" =>		key_f0		<= r_keystate;
+							when x"072" =>		key_f2		<= r_keystate;
+							when x"069" =>		key_f1		<= r_keystate;
+							when x"073" =>		key_f5		<= r_keystate;
+							when x"075" =>		key_f8		<= r_keystate;
+							when x"06c" =>		key_f7		<= r_keystate;
+							when x"011" =>		key_copy	<= r_keystate;		-- left alt = copy on pc
+							when x"16b" =>		key_curleft	<= r_keystate;
+							---when x"000" =>		key_control	<= r_keystate;
+							--when x"05d" =>		key_bslash_real	<= r_keystate;		-- backslash, but on wrong side of pc keyboard	(oooooh!)
+							when x"127" =>		key_bslash_ralt	<= r_keystate;		-- backslash, right alt is close
+							when x"012" =>		key_shift_l	<= r_keystate;
+							when x"059" =>		key_shift_r	<= r_keystate;
+							when x"06b" =>		key_f4		<= r_keystate;
+							when x"05d" =>		key_rsquare	<= r_keystate;		-- rsqaure on cpc		-> hash (bslash) on pc	(oooooh!)
+							when x"05a" =>		key_return	<= r_keystate;		-- "enter" on PC/464, "return" on 6128
+							when x"05b" =>		key_lsquare	<= r_keystate;		-- lsquare on cpc		-> rsquare on pc
+							when x"171" =>		key_clr		<= r_keystate;		-- clr on cpc			-> delete on pc
+							when x"049" =>		key_dot		<= r_keystate;
+							when x"04a" =>		key_fslash	<= r_keystate;
+							when x"04c" =>		key_colon	<= r_keystate;		-- colon / star on cpc		-> semi / colon on pc
+							when x"052" =>		key_semi	<= r_keystate;		-- semi / plus on cpc		-> quote / at on pc
+							when x"04d" =>		key_p		<= r_keystate;
+							when x"054" =>		key_at		<= r_keystate;		-- at / bar on cpc		-> left square on pc
+							when x"04e" =>		key_dash	<= r_keystate;		-- minus / equals on cpc	-> minus on pc
+							when x"055" =>		key_hat		<= r_keystate;		-- hat / pound on cpc		-> equals on pc
+							when x"041" =>		key_comma	<= r_keystate;
+							when x"03a" =>		key_m		<= r_keystate;
+							when x"042" =>		key_k		<= r_keystate;
+							when x"04b" =>		key_l		<= r_keystate;
+							when x"043" =>		key_i		<= r_keystate;
+							when x"044" =>		key_o		<= r_keystate;
+							when x"046" =>		key_9		<= r_keystate;
+							when x"045" =>		key_0		<= r_keystate;
+							when x"029" =>		key_space	<= r_keystate;		-- space bar
+							when x"031" =>		key_n		<= r_keystate;
+							when x"03b" =>		key_j		<= r_keystate;
+							when x"033" =>		key_h		<= r_keystate;
+							when x"035" =>		key_y		<= r_keystate;
+							when x"03c" =>		key_u		<= r_keystate;
+							when x"03d" =>		key_7		<= r_keystate;
+							when x"03e" =>		key_8		<= r_keystate;
+							when x"02a" =>		key_v		<= r_keystate;
+							when x"032" =>		key_b		<= r_keystate;
+							when x"02b" =>		key_f		<= r_keystate;
+							when x"034" =>		key_g		<= r_keystate;
+							when x"02c" =>		key_t		<= r_keystate;
+							when x"02d" =>		key_r		<= r_keystate;
+							when x"02e" =>		key_5		<= r_keystate;
+							when x"036" =>		key_6		<= r_keystate;
+							when x"022" =>		key_x		<= r_keystate;
+							when x"021" =>		key_c		<= r_keystate;
+							when x"023" =>		key_d		<= r_keystate;
+							when x"01b" =>		key_s		<= r_keystate;
+							when x"01d" =>		key_w		<= r_keystate;
+							when x"024" =>		key_e		<= r_keystate;
+							when x"026" =>		key_3		<= r_keystate;
+							when x"025" =>		key_4		<= r_keystate;
+							when x"01a" =>		key_z		<= r_keystate;
+							when x"058" =>		key_caps	<= r_keystate;
+							when x"01c" =>		key_a		<= r_keystate;
+							when x"00d" =>		key_tab		<= r_keystate;
+							when x"015" =>		key_q		<= r_keystate;
+							when x"076" =>		key_esc		<= r_keystate;
+							when x"01e" =>		key_2		<= r_keystate;
+							when x"016" =>		key_1		<= r_keystate;
+							when x"066" =>		key_del		<= r_keystate;		-- backsp on pc
+	
+							when others => null;
+							end case;
+						else
 
-						when x"071" =>		key_fdot	<= r_keystate;
-						when x"15a" =>		key_enter	<= r_keystate;		-- numeric enter
-						when x"07a" =>		key_f3		<= r_keystate;
-						when x"074" =>		key_f6		<= r_keystate;
-						when x"07d" =>		key_f9		<= r_keystate;
-						when x"172" =>		key_curdown	<= r_keystate;
-						when x"174" =>		key_curright	<= r_keystate;
-						when x"175" =>		key_curup	<= r_keystate;
-						when x"070" =>		key_f0		<= r_keystate;
-						when x"072" =>		key_f2		<= r_keystate;
-						when x"069" =>		key_f1		<= r_keystate;
-						when x"073" =>		key_f5		<= r_keystate;
-						when x"075" =>		key_f8		<= r_keystate;
-						when x"06c" =>		key_f7		<= r_keystate;
-						when x"011" =>		key_copy	<= r_keystate;		-- left alt = copy on pc
-						when x"16b" =>		key_curleft	<= r_keystate;
-						---when x"000" =>		key_control	<= r_keystate;
-						--when x"05d" =>		key_bslash_real	<= r_keystate;		-- backslash, but on wrong side of pc keyboard	(oooooh!)
-						when x"127" =>		key_bslash_ralt	<= r_keystate;		-- backslash, right alt is close
-						when x"012" =>		key_shift_l	<= r_keystate;
-						when x"059" =>		key_shift_r	<= r_keystate;
-						when x"06b" =>		key_f4		<= r_keystate;
-						when x"05d" =>		key_rsquare	<= r_keystate;		-- rsqaure on cpc		-> hash (bslash) on pc	(oooooh!)
-						when x"05a" =>		key_return	<= r_keystate;		-- "enter" on PC/464, "return" on 6128
-						when x"05b" =>		key_lsquare	<= r_keystate;		-- lsquare on cpc		-> rsquare on pc
-						when x"171" =>		key_clr		<= r_keystate;		-- clr on cpc			-> delete on pc
-						when x"049" =>		key_dot		<= r_keystate;
-						when x"04a" =>		key_fslash	<= r_keystate;
-						when x"04c" =>		key_colon	<= r_keystate;		-- colon / star on cpc		-> semi / colon on pc
-						when x"052" =>		key_semi	<= r_keystate;		-- semi / plus on cpc		-> quote / at on pc
-						when x"04d" =>		key_p		<= r_keystate;
-						when x"054" =>		key_at		<= r_keystate;		-- at / bar on cpc		-> left square on pc
-						when x"04e" =>		key_dash	<= r_keystate;		-- minus / equals on cpc	-> minus on pc
-						when x"055" =>		key_hat		<= r_keystate;		-- hat / pound on cpc		-> equals on pc
-						when x"041" =>		key_comma	<= r_keystate;
-						when x"03a" =>		key_m		<= r_keystate;
-						when x"042" =>		key_k		<= r_keystate;
-						when x"04b" =>		key_l		<= r_keystate;
-						when x"043" =>		key_i		<= r_keystate;
-						when x"044" =>		key_o		<= r_keystate;
-						when x"046" =>		key_9		<= r_keystate;
-						when x"045" =>		key_0		<= r_keystate;
-						when x"029" =>		key_space	<= r_keystate;		-- space bar
-						when x"031" =>		key_n		<= r_keystate;
-						when x"03b" =>		key_j		<= r_keystate;
-						when x"033" =>		key_h		<= r_keystate;
-						when x"035" =>		key_y		<= r_keystate;
-						when x"03c" =>		key_u		<= r_keystate;
-						when x"03d" =>		key_7		<= r_keystate;
-						when x"03e" =>		key_8		<= r_keystate;
-						when x"02a" =>		key_v		<= r_keystate;
-						when x"032" =>		key_b		<= r_keystate;
-						when x"02b" =>		key_f		<= r_keystate;
-						when x"034" =>		key_g		<= r_keystate;
-						when x"02c" =>		key_t		<= r_keystate;
-						when x"02d" =>		key_r		<= r_keystate;
-						when x"02e" =>		key_5		<= r_keystate;
-						when x"036" =>		key_6		<= r_keystate;
-						when x"022" =>		key_x		<= r_keystate;
-						when x"021" =>		key_c		<= r_keystate;
-						when x"023" =>		key_d		<= r_keystate;
-						when x"01b" =>		key_s		<= r_keystate;
-						when x"01d" =>		key_w		<= r_keystate;
-						when x"024" =>		key_e		<= r_keystate;
-						when x"026" =>		key_3		<= r_keystate;
-						when x"025" =>		key_4		<= r_keystate;
-						when x"01a" =>		key_z		<= r_keystate;
-						when x"058" =>		key_caps	<= r_keystate;
-						when x"01c" =>		key_a		<= r_keystate;
-						when x"00d" =>		key_tab		<= r_keystate;
-						when x"015" =>		key_q		<= r_keystate;
-						when x"076" =>		key_esc		<= r_keystate;
-						when x"01e" =>		key_2		<= r_keystate;
-						when x"016" =>		key_1		<= r_keystate;
-						when x"066" =>		key_del		<= r_keystate;		-- backsp on pc
-
-						when others => null;
-					    end case;
-					end if;
+						raw_scancode	<= (others=>'1');
+						raw_scancode_clk	<= '1';
+					end if; --parity
 
 					-- clear out the shift register so we can detect the start bit falling through to the end again
 					n_shift_reg	:= (others=>'1');
@@ -423,7 +442,8 @@ begin
 			end if; -- do sample
 
 			-- resample the incoming data
-			n_data	:= ps2_data;
+			n_data	:= r_data2;
+			n_data2	:= ps2_data;
 		end if; -- rising edge
 
 		-- save vars
@@ -436,6 +456,7 @@ begin
 		r_keystate	:= n_keystate;
 		r_extended	:= n_extended;
 		r_data		:= n_data;
+		r_data2		:= n_data2;
 	end process;
 end impl;
 

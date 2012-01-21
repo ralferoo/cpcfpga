@@ -18,8 +18,8 @@ ENDLIST
 LIST FileManager
 VALUE "<project>\constraint\cpc_pins.pdc,pdc"
 STATE="utd"
-TIME="1326229711"
-SIZE="8495"
+TIME="1326564246"
+SIZE="8705"
 BEGIN_USE_CONSTRAINT
 TOOL_CONSTRAINT_TYPE="ideDESIGNER"
 END_USE_CONSTRAINT
@@ -32,23 +32,23 @@ SIZE="1205"
 ENDFILE
 VALUE "<project>\hdl\bench_cpc.vhd,hdl"
 STATE="utd"
-TIME="1326401616"
-SIZE="4282"
+TIME="1326929319"
+SIZE="4617"
 ENDFILE
 VALUE "<project>\hdl\cpc.vhd,hdl"
 STATE="utd"
-TIME="1326271679"
-SIZE="16683"
+TIME="1326929247"
+SIZE="18854"
 ENDFILE
 VALUE "<project>\hdl\crtc.vhd,hdl"
 STATE="utd"
-TIME="1325698161"
-SIZE="11892"
+TIME="1326502635"
+SIZE="11872"
 ENDFILE
 VALUE "<project>\hdl\evalboard.vhd,hdl"
 STATE="utd"
-TIME="1326400744"
-SIZE="3107"
+TIME="1326930207"
+SIZE="3429"
 ENDFILE
 VALUE "<project>\hdl\T80.vhd,hdl"
 STATE="utd"
@@ -95,6 +95,41 @@ STATE="utd"
 TIME="1325384164"
 SIZE="1315"
 ENDFILE
+VALUE "<project>\smartgen\bootrom_internal\bootrom_internal.cxf,actgen_cxf"
+STATE="utd"
+TIME="1326401967"
+SIZE="1711"
+ENDFILE
+VALUE "<project>\smartgen\bootrom_internal\bootrom_internal.gen,gen"
+STATE="utd"
+TIME="1326401966"
+SIZE="413"
+PARENT="<project>\smartgen\bootrom_internal\bootrom_internal.cxf"
+ENDFILE
+VALUE "<project>\smartgen\bootrom_internal\bootrom_internal.log,log"
+STATE="utd"
+TIME="1326401967"
+SIZE="1229"
+PARENT="<project>\smartgen\bootrom_internal\bootrom_internal.cxf"
+ENDFILE
+VALUE "<project>\smartgen\bootrom_internal\bootrom_internal.mem,sim"
+STATE="utd"
+TIME="1326411693"
+SIZE="1152"
+PARENT="<project>\smartgen\bootrom_internal\bootrom_internal.cxf"
+ENDFILE
+VALUE "<project>\smartgen\bootrom_internal\bootrom_internal.ufc,???"
+STATE="utd"
+TIME="1326412546"
+SIZE="2335"
+PARENT="<project>\smartgen\bootrom_internal\bootrom_internal.cxf"
+ENDFILE
+VALUE "<project>\smartgen\bootrom_internal\bootrom_internal.vhd,hdl"
+STATE="utd"
+TIME="1326401967"
+SIZE="1922"
+PARENT="<project>\smartgen\bootrom_internal\bootrom_internal.cxf"
+ENDFILE
 VALUE "<project>\smartgen\PLL16mhz\PLL16mhz.cxf,actgen_cxf"
 STATE="utd"
 TIME="1325285689"
@@ -125,6 +160,12 @@ ENDLIST
 LIST UsedFile
 ENDLIST
 LIST NewModulesInfo
+LIST "bootrom_internal::work"
+FILE "<project>\smartgen\bootrom_internal\bootrom_internal.vhd,hdl"
+LIST Other_Association
+VALUE "<project>\smartgen\bootrom_internal\bootrom_internal.mem,sim"
+ENDLIST
+ENDLIST
 LIST "cpc::work"
 FILE "<project>\hdl\cpc.vhd,hdl"
 LIST Other_Association
@@ -137,6 +178,9 @@ ENDLIST
 LIST Other_Association
 LIST cpc
 VALUE "<project>\constraint\cpc_pins.pdc,pdc"
+ENDLIST
+LIST bootrom_internal
+VALUE "<project>\smartgen\bootrom_internal\bootrom_internal.mem,sim"
 ENDLIST
 ENDLIST
 LIST SimulationOptions

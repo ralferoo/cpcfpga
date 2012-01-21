@@ -33,7 +33,7 @@ architecture impl of ppi8255 is
 begin
 	process(rd_n, wr_n, nreset, cs_n, a, din)
 		variable	v_psg_inout		: std_logic;
-		variable	v_psg_databus		: std_logic_vector(7 downto 0);
+		variable	v_psg_databus_in	: std_logic_vector(7 downto 0);
 		variable	v_psg_bdir_bc1		: std_logic_vector(1 downto 0);
 		variable	v_keyboard_row		: std_logic_vector(3 downto 0);
 		variable	v_cas_out, v_cas_motor	: std_logic;
@@ -41,7 +41,7 @@ begin
 	begin
 		if nreset='0' then			-- note reset is different on real ppi
 			v_psg_inout		:= '1';
-			v_psg_databus		:= (others=>'Z');
+			v_psg_databus_in	:= (others=>'0');
 			v_psg_bdir_bc1		:= "00";
 			v_keyboard_row		:= (others=>'0');
 			v_cas_out		:= '0';
@@ -50,8 +50,9 @@ begin
 
 		-- check for port write
 		elsif cs_n='0' and wr_n='0' then
+			v_dout			:= (others=>'0');
 			case a is
-				when "00"	=>	v_psg_databus		:= din;
+				when "00"	=>	v_psg_databus_in	:= din;
 
 				when "10"	=>	v_psg_bdir_bc1		:= din(7 downto 6);
 							v_cas_out		:= din(5);
@@ -70,9 +71,10 @@ begin
 
 		-- check for port read
 		elsif cs_n='0' and rd_n='0' then
+			v_dout			:= (others=>'0');
 			case a is
 				when "00"	=>	if v_psg_inout='0' then
-								v_dout		:= v_psg_databus;	-- output mode, read our copy
+								v_dout		:= v_psg_databus_in;	-- output mode, read our copy
 							else
 								v_dout		:= psg_databus_out;	-- input mode, read live
 							end if;
@@ -93,12 +95,7 @@ begin
 		end if;
 
 		-- output ports
---		if v_psg_inout='0' then
-			psg_databus_in			<= v_psg_databus;	-- output mode, so send our data
---		else
---			psg_databus_in			<= (others=>'Z');	-- input mode, high Z
---		end if;
-		--psg_databus			<= v_psg_databus when v_psg_inout='0' else (others=>'Z');
+		psg_databus_in			<= v_psg_databus_in;	-- output mode, so send our data
 		psg_bdir_bc1			<= v_psg_bdir_bc1;
 		keyboard_row			<= v_keyboard_row;
 		cas_out				<= v_cas_out;
