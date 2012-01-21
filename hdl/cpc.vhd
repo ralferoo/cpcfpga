@@ -42,6 +42,7 @@ end cpc;
 
 architecture impl of cpc is
 	signal video_sound2 		: std_logic;			-- should be in entity definition
+	signal audio_left, audio_right	: std_logic;
 
 	-- t80 from opencores.org
 	component T80s is
@@ -348,11 +349,13 @@ architecture impl of cpc is
 				   psg_databus_in => psg_databus_in, psg_databus_out => psg_databus_out,
 				   psg_bdir_bc1 => psg_bdir_bc1, 
 				   keyboard_row => keyboard_row, cas_in => cas_in, cas_out => cas_out, cas_motor => cas_motor, vsync => crtc_vsync );
-	cas_in <= '0';
+	cas_in <= pushsw(3); --'0';
 
 	-- ay 8912 psg
 	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, pcm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
-				 io_a=>keyboard_column, pwm_left=>video_sound, pwm_right=>video_sound2 );
+				 io_a=>keyboard_column, pwm_left=>audio_left, pwm_right=>audio_right );
+	video_sound <= audio_left xor cas_out xor cas_in;
+	video_sound2 <= audio_right;
 
 	-- keyboard
 	kbd_0 : ps2input port map ( nRESET=>nRESET, clk=>psg_clk,

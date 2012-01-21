@@ -46,11 +46,11 @@ begin
 			v_keyboard_row		:= (others=>'0');
 			v_cas_out		:= '0';
 			v_cas_motor		:= '0';
-			v_dout			:= (others=>'0');
+			v_dout			:= (others=>'1');
 
 		-- check for port write
 		elsif cs_n='0' and wr_n='0' then
-			v_dout			:= (others=>'0');
+			v_dout			:= (others=>'1');
 			case a is
 				when "00"	=>	v_psg_databus_in	:= din;
 
@@ -71,7 +71,7 @@ begin
 
 		-- check for port read
 		elsif cs_n='0' and rd_n='0' then
-			v_dout			:= (others=>'0');
+			v_dout			:= (others=>'1');
 			case a is
 				when "00"	=>	if v_psg_inout='0' then
 								v_dout		:= v_psg_databus_in;	-- output mode, read our copy
@@ -79,9 +79,9 @@ begin
 								v_dout		:= psg_databus_out;	-- input mode, read live
 							end if;
 				when "01"	=>	v_dout(7)		:= cas_in;
-							v_dout(6)		:= '1';			-- printer not ready
-							v_dout(5)		:= '1';			-- exp_n
-							v_dout(4)		:= '1';			-- 1=50hz, 0=60hz
+--							v_dout(6)		:= '1';			-- printer not ready
+--							v_dout(5)		:= '1';			-- exp_n
+--							v_dout(4)		:= '1';			-- 1=50hz, 0=60hz
 							v_dout(3 downto 1)	:= (others=>'1');	-- distributor = amstrad
 							v_dout(0)		:= vsync;
 				when "10"	=>	v_dout(7 downto 6)	:= v_psg_bdir_bc1;

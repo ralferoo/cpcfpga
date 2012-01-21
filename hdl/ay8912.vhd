@@ -72,20 +72,34 @@ begin
 		variable	r_sel_register	: std_logic_vector(3 downto 0);
 		variable	r_dout		: std_logic_vector(7 downto 0);
 		variable	r_env_restart	: std_logic;
+		variable	r_tone_a	: std_logic_vector(11 downto 0);
+		variable	r_tone_b	: std_logic_vector(11 downto 0);
+		variable	r_tone_c	: std_logic_vector(11 downto 0);
 
 		variable	n_sel_register	: std_logic_vector(3 downto 0);
 		variable	n_dout		: std_logic_vector(7 downto 0);
 		variable	n_env_restart	: std_logic;
+		variable	n_tone_a	: std_logic_vector(11 downto 0);
+		variable	n_tone_b	: std_logic_vector(11 downto 0);
+		variable	n_tone_c	: std_logic_vector(11 downto 0);
 	begin
 		if nRESET='0' then
 			r_sel_register	:= (others=>'0');
 			r_dout		:= (others=>'0');
 			r_env_restart	:= '0';
 
+			r_tone_a	:= (others=>'0');
+			r_tone_b	:= (others=>'0');
+			r_tone_c	:= (others=>'0');
+
 		elsif rising_edge(clk) then	
 			n_sel_register	:= r_sel_register;
 			n_dout		:= r_dout;
 			n_env_restart	:= '0';
+
+			n_tone_a	:= r_tone_a;
+			n_tone_b	:= r_tone_b;
+			n_tone_c	:= r_tone_c;
 			
 			-- bc2 is pulled high, so on CPC:
 			-- bdir bc1
@@ -129,14 +143,14 @@ begin
 						end case;
 
 				when "10" =>	case r_sel_register is
-							when "0000" =>	tone_a( 7 downto 0)	<= din;
-							when "0001" =>	tone_a(11 downto 8)	<= din(3 downto 0);
+							when "0000" =>	n_tone_a( 7 downto 0)	:= din;
+							when "0001" =>	n_tone_a(11 downto 8)	:= din(3 downto 0);
 
-							when "0010" =>	tone_b( 7 downto 0)	<= din;
-							when "0011" =>	tone_b(11 downto 8)	<= din(3 downto 0);
+							when "0010" =>	n_tone_b( 7 downto 0)	:= din;
+							when "0011" =>	n_tone_b(11 downto 8)	:= din(3 downto 0);
 
-							when "0100" =>	tone_c( 7 downto 0)	<= din;
-							when "0101" =>	tone_c(11 downto 8)	<= din(3 downto 0);
+							when "0100" =>	n_tone_c( 7 downto 0)	:= din;
+							when "0101" =>	n_tone_c(11 downto 8)	:= din(3 downto 0);
 
 							when "0110" =>	noise			<= din(4 downto 0);
 							when "0111" =>	iobdir			<= din(7);
@@ -164,17 +178,23 @@ begin
 			r_sel_register	:= n_sel_register;
 			r_dout		:= n_dout;
 			r_env_restart	:= n_env_restart;
+
+			r_tone_a	:= n_tone_a;
+			r_tone_b	:= n_tone_b;
+			r_tone_c	:= n_tone_c;
 		end if;
 
 		env_restart		<= r_env_restart;
 		dout			<= r_dout;
+
+		tone_a			<= r_tone_a;
+		tone_b			<= r_tone_b;
+		tone_c			<= r_tone_c;
 	end process;
 
 	-- this process deals with playback
-	process(nRESET, clk, tone_a, tone_b, tone_c)
+	process(nRESET, clk)
 		variable	r_tone_divisor					: std_logic_vector(2 downto 0);		-- freq divide by 16, toggle every 8
-		variable	r_tone_a_ctr, r_tone_b_ctr, r_tone_c_ctr	: std_logic_vector(11 downto 0);	-- current count for each tone unit
-		variable	r_tone_a_out, r_tone_b_out, r_tone_c_out	: std_logic; 				-- output tones
 		variable	r_noise_ctr					: std_logic_vector(4 downto 0);		-- current count for noise
 		variable	r_lfsr						: std_logic_vector(14 downto 0);	-- current random seed for noise
 		variable	r_pwm_add_left, r_pwm_add_right			: std_logic_vector(11 downto 0);	-- contribution to pwm output per physical channel
@@ -191,8 +211,6 @@ begin
 		variable	n_env_divisor					: std_logic_vector(4 downto 0);		-- divide r_tone_divisor by 16
 		variable	n_env_actual					: std_logic_vector(3 downto 0);		-- amplitude to use for envelope
 
-		variable	t_pwm_add_mono					: std_logic_vector(12 downto 0);	-- left and right mixed together
-
 		variable	t_amp_a, t_amp_b, t_amp_c			: std_logic_vector(4 downto 0);		-- amplitude to use
 		variable	t_pwm_cont_a, t_pwm_cont_b, t_pwm_cont_c	: std_logic_vector(11 downto 0);	-- contribution to pwm output per AY channel
 		variable	t_noise_a, t_noise_b, t_noise_c			: std_logic;				-- noise per channel
@@ -207,6 +225,7 @@ begin
 						variable	env	: in  std_logic_vector(3 downto 0);
 						variable	pwmval	: out std_logic_vector(11 downto 0)) is
 		variable	t_vol	: std_logic_vector(3 downto 0);
+		variable	t_pwm	: std_logic_vector(11 downto 0);
 		begin
 			if enable='1' then
 				if vol(4)='0' then
@@ -216,6 +235,23 @@ begin
 				end if;
 
 				--- hmm, this log scale doesn't actually seem to match the 464 volume at all... :(
+
+--				if t_vol(0)='1' then
+--					t_pwm			:= x"AAA";
+--				else
+--					t_pwm			:= x"78A";
+--				end if;
+--				if t_vol(3)='0' then
+--					t_pwm			:= "0000" & t_pwm(11 downto 4);
+--				end if;
+--				if t_vol(2)='0' then
+--					t_pwm			:= "00" & t_pwm(11 downto 2);
+--				end if;
+--				if t_vol(1)='0' then
+--					t_pwm			:= "0" & t_pwm(11 downto 1);
+--				end if;
+--
+--				pwmval				:= t_pwm;
 	
 				case t_vol is						-- translate figure 9 into PWM contribution
 					when "1111" =>	pwmval	:= x"AAA";		-- 1.000*AAA FFF / 1.5 (as we're mixing A+B/2 and C+B/2)
@@ -345,7 +381,7 @@ begin
 				-- calculate the tone bits
 				t_noise_a		:= r_lfsr( 7) and en_noise_a;			-- generate noise using a different bit
 				t_noise_b		:= r_lfsr(13) and en_noise_b;			-- of the feedback register for each
-				t_noise_c		:= r_lfsr(11) and en_noise_c;			-- channel
+				t_noise_c		:= r_lfsr(11) and en_noise_c;			-- channel. oh apparently 8912 shares same noise... :(
 	
 				-- calculate the sound enable
 				t_sound_a		:= t_noise_a xor tone_out_a;			-- effectively add and divide by 2
