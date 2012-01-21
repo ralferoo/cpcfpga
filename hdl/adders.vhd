@@ -143,3 +143,78 @@ begin
 		end if;
 	end process;
 end impl;
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+library IEEE;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity add3 is
+	port	(
+		clk		: in  std_logic;
+		a,b,c		: in  std_logic_vector;
+		output		: out std_logic_vector;
+		carry		: out std_logic_vector(1 downto 0));
+end entity;
+
+architecture impl of add3 is
+begin
+	process(clk)
+		variable	n_output	: std_logic_vector(a'high downto 0);
+		variable	t_carry		: std_logic_vector(1 downto 0);
+		variable	t_bits		: std_logic_vector(4 downto 0);
+	begin
+		if rising_edge(clk) then
+			t_carry		:= "00";
+	
+			for i in 0 to a'high loop
+				t_bits	:= t_carry & a(i) & b(i) & c(i);
+				case t_bits is
+                                        when "00000" => t_carry:="00"; n_output(i):='0';
+                                        when "00001" => t_carry:="00"; n_output(i):='1';
+                                        when "00010" => t_carry:="00"; n_output(i):='1';
+                                        when "00011" => t_carry:="01"; n_output(i):='0';
+                                        when "00100" => t_carry:="00"; n_output(i):='1';
+                                        when "00101" => t_carry:="01"; n_output(i):='0';
+                                        when "00110" => t_carry:="01"; n_output(i):='0';
+                                        when "00111" => t_carry:="01"; n_output(i):='1';
+                                        when "01000" => t_carry:="00"; n_output(i):='1';
+                                        when "01001" => t_carry:="01"; n_output(i):='0';
+                                        when "01010" => t_carry:="01"; n_output(i):='0';
+                                        when "01011" => t_carry:="01"; n_output(i):='1';
+                                        when "01100" => t_carry:="01"; n_output(i):='0';
+                                        when "01101" => t_carry:="01"; n_output(i):='1';
+                                        when "01110" => t_carry:="01"; n_output(i):='1';
+                                        when "01111" => t_carry:="10"; n_output(i):='0';
+                                        when "10000" => t_carry:="01"; n_output(i):='0';
+                                        when "10001" => t_carry:="01"; n_output(i):='1';
+                                        when "10010" => t_carry:="01"; n_output(i):='1';
+                                        when "10011" => t_carry:="10"; n_output(i):='0';
+                                        when "10100" => t_carry:="01"; n_output(i):='1';
+                                        when "10101" => t_carry:="10"; n_output(i):='0';
+                                        when "10110" => t_carry:="10"; n_output(i):='0';
+                                        when "10111" => t_carry:="10"; n_output(i):='1';
+                                        when "11000" => t_carry:="01"; n_output(i):='1';
+                                        when "11001" => t_carry:="10"; n_output(i):='0';
+                                        when "11010" => t_carry:="10"; n_output(i):='0';
+                                        when "11011" => t_carry:="10"; n_output(i):='1';
+                                        when "11100" => t_carry:="10"; n_output(i):='0';
+                                        when "11101" => t_carry:="10"; n_output(i):='1';
+                                        when "11110" => t_carry:="10"; n_output(i):='1';
+                                        when "11111" => t_carry:="11"; n_output(i):='0';
+					when others =>
+                                        		t_carry:="00"; n_output(i):='0';
+				end case;
+			end loop;
+
+			output		<= n_output;
+			carry		<= t_carry;
+		end if;
+	end process;
+end impl;
+

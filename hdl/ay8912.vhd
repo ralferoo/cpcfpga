@@ -191,6 +191,8 @@ begin
 		variable	n_env_divisor					: std_logic_vector(4 downto 0);		-- divide r_tone_divisor by 16
 		variable	n_env_actual					: std_logic_vector(3 downto 0);		-- amplitude to use for envelope
 
+		variable	t_pwm_add_mono					: std_logic_vector(12 downto 0);	-- left and right mixed together
+
 		variable	t_amp_a, t_amp_b, t_amp_c			: std_logic_vector(4 downto 0);		-- amplitude to use
 		variable	t_pwm_cont_a, t_pwm_cont_b, t_pwm_cont_c	: std_logic_vector(11 downto 0);	-- contribution to pwm output per AY channel
 		variable	t_noise_a, t_noise_b, t_noise_c			: std_logic;				-- noise per channel
@@ -358,8 +360,15 @@ begin
 				calculate_pwm_contribution( t_sound_b, t_amp_b, r_env_actual, t_pwm_cont_b );
 				calculate_pwm_contribution( t_sound_c, t_amp_c, r_env_actual, t_pwm_cont_c );
 
-				n_pwm_add_left		:= t_pwm_cont_a + ("0" & t_pwm_cont_b(11 downto 1) );
-				n_pwm_add_right		:= t_pwm_cont_c + ("0" & t_pwm_cont_b(11 downto 1) );
+--				t_pwm_add_mono		:= t_pwm_cont_a + t_pwm_cont_b + t_pwm_cont_c;
+--				n_pwm_add_left		:= t_pwm_add_mono(t_pwm_add_mono'high downto 1);
+
+				n_pwm_add_left		:= ("0" & t_pwm_cont_a(11 downto 1) ) + ("0" & t_pwm_cont_b(11 downto 1) ) + ("0" & t_pwm_cont_c(11 downto 1) );
+
+				n_pwm_add_right		:= (others=>'0');
+
+--				n_pwm_add_left		:= t_pwm_cont_a + ("0" & t_pwm_cont_b(11 downto 1) );
+--				n_pwm_add_right		:= t_pwm_cont_c + ("0" & t_pwm_cont_b(11 downto 1) );
 
 			end if; -- tone divisor
 
