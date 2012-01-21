@@ -257,7 +257,7 @@ begin
 			n_tone_divisor			:= n_tone_divisor + 1;
 			if n_tone_divisor(3)='1' then				-- overflow, i.e. == 8 clock cycles
 				-- tone a
-				if n_tone_a_ctr = x"001" then
+				if n_tone_a_ctr(11 downto 1) = "00000000000" then -- = x"001" then
 					n_tone_a_ctr	:= tone_a;
 					n_tone_a_out	:= not n_tone_a_out;
 				else
@@ -265,7 +265,7 @@ begin
 				end if;
 
 				-- tone b
-				if n_tone_b_ctr = x"001" then
+				if n_tone_b_ctr(11 downto 1) = "00000000000" then --  = x"001" then
 					n_tone_b_ctr	:= tone_b;
 					n_tone_b_out	:= not n_tone_b_out;
 				else
@@ -273,7 +273,7 @@ begin
 				end if;
 
 				-- tone c
-				if n_tone_c_ctr = x"001" then
+				if n_tone_c_ctr(11 downto 1) = "00000000000" then --  = x"001" then
 					n_tone_c_ctr	:= tone_c;
 					n_tone_c_out	:= not n_tone_c_out;
 				else
@@ -281,7 +281,7 @@ begin
 				end if;
 
 				-- noise
-				if n_noise_ctr = "00001" then
+				if n_noise_ctr = "00001" then			-- interestingly, doing the same subrange comparison to 0 increases gate count substantially!
 					n_noise_ctr	:= noise;
 					n_lfsr		:= (n_lfsr(14) xor n_lfsr(13)) & n_lfsr(12 downto 5) & (n_lfsr(14) xor n_lfsr(4)) &
 								n_lfsr(3 downto 2) & (n_lfsr(14) xor n_lfsr(1)) & n_lfsr(0) & n_lfsr(14);
