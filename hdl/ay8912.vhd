@@ -38,7 +38,35 @@ architecture impl of ay8912 is
 	signal	env_restart				: std_logic;
 
 	signal	pwm_add_left, pwm_add_right		: std_logic_vector(11 downto 0);	-- contribution to pwm output per physical channel
+
+	component clock_divider is
+		port	(
+			clk		: in  std_logic;
+			load		: in  std_logic;
+			divisor		: in  std_logic_vector;
+			osc		: out std_logic;
+			output		: out std_logic);
+	end component;
+	signal tone_divider_clock : std_logic;
+	signal tone_divider_load : std_logic;
+	signal tone_out_a : std_logic;
+	signal tone_out_b : std_logic;
+	signal tone_out_c : std_logic;
+	signal noise_clock : std_logic;
+	signal env_divider_clock : std_logic;
+	signal env_divider_load : std_logic;
+	signal env_clock : std_logic;
 begin
+
+	tone_divider_load <= not nRESET;
+	tone_div_a: clock_divider port map( clk=>tone_divider_clock, load=>tone_divider_load, divisor=>tone_a, osc=>tone_out_a);
+	tone_div_b: clock_divider port map( clk=>tone_divider_clock, load=>tone_divider_load, divisor=>tone_b, osc=>tone_out_b);
+	tone_div_c: clock_divider port map( clk=>tone_divider_clock, load=>tone_divider_load, divisor=>tone_c, osc=>tone_out_c);
+	noise_div: clock_divider port map( clk=>tone_divider_clock, load=>tone_divider_load, divisor=>noise, output=>noise_clock);
+
+	env_divider_load <= (not nRESET) or env_restart;
+	env_div: clock_divider port map( clk=>env_divider_clock, load=>env_divider_load, divisor=>env_period, output=>env_clock);
+
 	-- this process deals with the CPU (well, PPI) interface to the registers
 	process(nRESET, clk, bdir_bc1, din)
 		variable	r_sel_register	: std_logic_vector(3 downto 0);
@@ -156,9 +184,6 @@ begin
 		variable	r_env_actual					: std_logic_vector(3 downto 0);		-- amplitude to use for envelope
 
 		variable	n_tone_divisor					: std_logic_vector(3 downto 0);		-- freq divide by 16, toggle every 8
-		variable	n_tone_a_ctr, n_tone_b_ctr, n_tone_c_ctr	: std_logic_vector(11 downto 0);	-- current count for each tone unit
-		variable	n_tone_a_out, n_tone_b_out, n_tone_c_out	: std_logic; 				-- output tones
-		variable	n_noise_ctr					: std_logic_vector(4 downto 0);		-- current count for noise
 		variable	n_lfsr						: std_logic_vector(14 downto 0);	-- current random seed for noise
 		variable	n_pwm_add_left, n_pwm_add_right			: std_logic_vector(11 downto 0);	-- contribution to pwm output per physical channel
 		variable	n_env_vol					: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
@@ -218,18 +243,10 @@ begin
 			-- initialise variables
 			r_tone_divisor			:= (others=>'0');
 			r_env_divisor			:= (others=>'0');
-			r_tone_a_ctr			:= (others=>'0');
-			r_tone_b_ctr			:= (others=>'0');
-			r_tone_c_ctr			:= (others=>'0');
-			r_tone_a_out			:= '0';
-			r_tone_b_out			:= '0';
-			r_tone_c_out			:= '0';
-			r_noise_ctr			:= (others=>'0');
 			r_lfsr				:= (others=>'0');
 			r_pwm_add_left			:= (others=>'0');
 			r_pwm_add_right			:= (others=>'0');
 			r_env_vol			:= (others=>'0');
-			r_env_period_ctr		:= (others=>'0');
 			r_env_actual			:= (others=>'0');
 
 			pwm_add_left			<= (others=>'0');
@@ -239,61 +256,30 @@ begin
 			-- initialise variables
 			n_tone_divisor			:= "0" & r_tone_divisor;	
 			n_env_divisor			:= "0" & r_env_divisor;
-			n_tone_a_ctr			:= r_tone_a_ctr;
-			n_tone_b_ctr			:= r_tone_b_ctr;
-			n_tone_c_ctr			:= r_tone_c_ctr;
-			n_tone_a_out			:= r_tone_a_out;
-			n_tone_b_out			:= r_tone_b_out;
-			n_tone_c_out			:= r_tone_c_out;
-			n_noise_ctr			:= r_noise_ctr;
 			n_lfsr				:= r_lfsr;
 			n_pwm_add_left			:= r_pwm_add_left;
 			n_pwm_add_right			:= r_pwm_add_right;
 			n_env_vol			:= r_env_vol;
-			n_env_period_ctr		:= r_env_period_ctr;
 			n_env_actual			:= r_env_actual;
 
 			-- do the tone divisor and counters
 			n_tone_divisor			:= n_tone_divisor + 1;
+			tone_divider_clock		<= n_tone_divisor(3);			-- this automagically updates tone_out_{a,b,c}
+
 			if n_tone_divisor(3)='1' then				-- overflow, i.e. == 8 clock cycles
-				-- tone a
-				if n_tone_a_ctr(11 downto 1) = "00000000000" then -- = x"001" then
-					n_tone_a_ctr	:= tone_a;
-					n_tone_a_out	:= not n_tone_a_out;
-				else
-					n_tone_a_ctr	:= n_tone_a_ctr - 1;
-				end if;
-
-				-- tone b
-				if n_tone_b_ctr(11 downto 1) = "00000000000" then --  = x"001" then
-					n_tone_b_ctr	:= tone_b;
-					n_tone_b_out	:= not n_tone_b_out;
-				else
-					n_tone_b_ctr	:= n_tone_b_ctr - 1;
-				end if;
-
-				-- tone c
-				if n_tone_c_ctr(11 downto 1) = "00000000000" then --  = x"001" then
-					n_tone_c_ctr	:= tone_c;
-					n_tone_c_out	:= not n_tone_c_out;
-				else
-					n_tone_c_ctr	:= n_tone_c_ctr - 1;
-				end if;
 
 				-- noise
-				if n_noise_ctr = "00001" then			-- interestingly, doing the same subrange comparison to 0 increases gate count substantially!
-					n_noise_ctr	:= noise;
+				if noise_clock = '1' then
 					n_lfsr		:= (n_lfsr(14) xor n_lfsr(13)) & n_lfsr(12 downto 5) & (n_lfsr(14) xor n_lfsr(4)) &
 								n_lfsr(3 downto 2) & (n_lfsr(14) xor n_lfsr(1)) & n_lfsr(0) & n_lfsr(14);
-				else
-					n_noise_ctr	:= n_noise_ctr - 1;
 				end if;
 
 				-- update envelope
 				n_env_divisor		:= n_env_divisor + 1;
+				env_divider_clock	<= n_env_divisor(4);			-- this automagically updates env_clock
+
 				if n_env_divisor(4)='1' then				-- divide r_tone_divisor by 16 
-					if n_env_period_ctr = x"0001" or env_restart='1' then
-						n_env_period_ctr	:= env_period;
+					if env_clock='1' then
 
 						if env_restart='1' then
 							n_env_vol	:= (others=>'0');		-- restart envelope whenever port is written to
@@ -351,8 +337,6 @@ begin
 						
 						-- 00xx		\000	synonym: 1001
 						-- 01xx		/000	synonym: 1111
-					else
-						n_env_period_ctr	:= n_env_period_ctr - 1;
 					end if; -- env period ctr
 				end if; -- env divisor
 
@@ -362,9 +346,9 @@ begin
 				t_noise_c		:= r_lfsr(11) and en_noise_c;			-- channel
 	
 				-- calculate the sound enable
-				t_sound_a		:= t_noise_a xor r_tone_a_out;			-- effectively add and divide by 2
-				t_sound_b		:= t_noise_b xor r_tone_b_out;
-				t_sound_c		:= t_noise_c xor r_tone_c_out;
+				t_sound_a		:= t_noise_a xor tone_out_a;			-- effectively add and divide by 2
+				t_sound_b		:= t_noise_b xor tone_out_b;
+				t_sound_c		:= t_noise_c xor tone_out_c;
 	
 				-- calculate the accumulation values for the PWM
 				t_amp_a			:= amp_a;
@@ -382,18 +366,10 @@ begin
 			-- store registers
 			r_tone_divisor			:= n_tone_divisor(2 downto 0);
 			r_env_divisor			:= n_env_divisor(3 downto 0);
-			r_tone_a_ctr			:= n_tone_a_ctr;
-			r_tone_b_ctr			:= n_tone_b_ctr;
-			r_tone_c_ctr			:= n_tone_c_ctr;
-			r_tone_a_out			:= n_tone_a_out;
-			r_tone_b_out			:= n_tone_b_out;
-			r_tone_c_out			:= n_tone_c_out;
-			r_noise_ctr			:= n_noise_ctr;
 			r_lfsr				:= n_lfsr;
 			r_pwm_add_left			:= n_pwm_add_left;
 			r_pwm_add_right			:= n_pwm_add_right;
 			r_env_vol			:= n_env_vol;
-			r_env_period_ctr		:= n_env_period_ctr;
 			r_env_actual			:= n_env_actual;
 
 			pwm_add_left			<= r_pwm_add_left;
