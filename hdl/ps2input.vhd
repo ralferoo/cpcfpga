@@ -10,6 +10,7 @@ use ieee.std_logic_arith.all;
 entity ps2input is port(
 	nRESET			: in	std_logic;
 	clk			: in	std_logic;					-- 1mhz clock
+	clk16			: in  std_logic;				-- master clock input @ 16 MHz
 
 	-- ps/2 keyboard interface
 	ps2_clock		: inout std_logic;
@@ -304,7 +305,7 @@ begin
 
 			-- filter out the clock signal
 			if r_clock /= ps2_clock then			-- ps2 clock is 10-16.7MHz, so 30-50us between edges
-				n_filter_count		:= "1101";	-- so, wait for 13us for a stable clock signal (book has 8@25MHz, 10us and 15us seem to miss keys)
+				n_filter_count		:= "1111";	-- so, wait for ~15us for a stable clock signal (book has 8@25MHz, 10us and 15us seem to miss keys)
 				n_clock			:= ps2_clock;	-- so we can sample it approximately 1/2 way
 				n_do_sample		:= ps2_clock;	-- sample on the falling edge
 

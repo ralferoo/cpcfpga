@@ -42,17 +42,17 @@ sdmmc	 1		CS (share clk, out, in) with flash
 
 bank 2:
 keyb	12 8D 4L	8 bits in, 4 select (in=26,28-34, out=35,36,40,41)
-audio	 2    2L		PWM	(44,45)		currently on pin 13
-tape_out 2    2L 	write, motor	(42,43)
+audio	 2    	 1P	PWM	(13,20!!!)
+tape_out 2    2L 	write(42), motor(43)
 
 bank 3:
 video	 8		3x2 RGB, (csync, blank) or (vsync, hsync) (2-7,8,11)
 reset	 1		RESET [10 not header]
 clock20	 1		20 Mhz [15 not header]
 uart	 2		usb debug uart *sigh*
-misc io	 2       2P 	NMI, DEBUG	(20,21)
+misc io	 2       2P 	NMI, DEBUG	(21,22)
 tape_in	 1       1P	read		(23)
-ps2key	 2	 1P	ps2data (44), ps2clk (45) both nominally output
+ps2key	 2    2L 	ps2data (44), ps2clk (45) both nominally output, but through bi-dir level convertor so it's safe
 
 future proto board:
 

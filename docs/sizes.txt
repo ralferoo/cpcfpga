@@ -1,0 +1,13 @@
+as of 21/1/2012:
+
+crtc	553
+garray	616
+kbd	470
+ppi 	74
+psg	762
+spi 	81
+uartrx	122
+uarttx	99
+z80	3191
+
+total	5968

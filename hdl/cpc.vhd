@@ -15,7 +15,10 @@ entity cpc is
 		txd			: out std_logic;
 
 		dummy			: out std_logic;
-		leds			: out std_logic_vector(5 downto 0);
+		leds			: out std_logic_vector(3 downto 0);
+
+		tape_out		: out std_logic;
+		tape_motor		: out std_logic;
 
 		ps2_clock		: inout std_logic;
 		ps2_data		: inout std_logic;
@@ -226,6 +229,7 @@ architecture impl of cpc is
 	component ppi8255 is
 	port(
 		nRESET				: in  std_logic;
+		clk				: in  std_logic;
 
 		-- z80 interface
 		rd_n				: in  std_logic;
@@ -279,6 +283,7 @@ architecture impl of cpc is
 	component ps2input is port(
 		nRESET				: in	std_logic;
 		clk				: in	std_logic;					-- 1mhz clock
+		clk16				: in  std_logic;				-- master clock input @ 16 MHz
 	
 		-- ps/2 keyboard interface
 		ps2_clock			: inout std_logic;
@@ -343,7 +348,7 @@ architecture impl of cpc is
 	crtc_E	 <= z80_IORD_n nand z80_IOWR_n;
 
 	-- ppi 8255
-	ppi_0 : ppi8255 port map ( nRESET=>nRESET, rd_n => z80_iord_n, wr_n => z80_iowr_n,
+	ppi_0 : ppi8255 port map ( nRESET=>nRESET, clk=>z80_clk, rd_n => z80_iord_n, wr_n => z80_iowr_n,
 				   cs_n => z80_a(11), a => z80_a(9 downto 8),
 				   din => z80_DO, dout=>ppi_dout,
 				   psg_databus_in => psg_databus_in, psg_databus_out => psg_databus_out,
@@ -358,7 +363,7 @@ architecture impl of cpc is
 	video_sound2 <= audio_right;
 
 	-- keyboard
-	kbd_0 : ps2input port map ( nRESET=>nRESET, clk=>psg_clk,
+	kbd_0 : ps2input port map ( nRESET=>nRESET, clk=>psg_clk, clk16=>clk16,
 				    	ps2_clock=>ps2_clock, ps2_data=>ps2_data,
 					keyboard_row=>keyboard_row, keyboard_column=>keyboard_column,
 					raw_scancode=>raw_scancode, raw_scancode_clk=>raw_scancode_clk,
@@ -517,7 +522,7 @@ architecture impl of cpc is
 				uart_tx_load <= '1';
             
 			elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADE" then		-- leds
-				leds <= not z80_DO(5 downto 0);
+				leds <= not z80_DO(3 downto 0);
 
 			elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FEFF" then		-- spi config
 				spi_clock_when_idle<= z80_DO(7);
@@ -544,4 +549,7 @@ architecture impl of cpc is
 	spi_0 : spi port map( nRESET=>nreset, clk16=>clk16, read=>spi_read, write=>spi_write, busy=>spi_busy, load=>spi_load,
 				clock_when_idle=>spi_clock_when_idle, spi_clk=>spi_clk, spi_di=>spi_di, spi_do=>spi_do );
 
+	-- tape
+	tape_out <= cas_out;
+	tape_motor <= cas_motor;
 end impl;

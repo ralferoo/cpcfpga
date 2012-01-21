@@ -8,6 +8,7 @@ use IEEE.numeric_std.all;
 entity ppi8255 is
 	port(
 		nRESET				: in  std_logic;
+		clk				: in  std_logic;
 
 		-- z80 interface
 		rd_n				: in  std_logic;
@@ -31,7 +32,7 @@ end ppi8255;
 
 architecture impl of ppi8255 is
 begin
-	process(rd_n, wr_n, nreset, cs_n, a, din)
+	process(clk,nreset) -- rd_n, wr_n, nreset, cs_n, a, din)
 		variable	v_psg_inout		: std_logic;
 		variable	v_psg_databus_in	: std_logic_vector(7 downto 0);
 		variable	v_psg_bdir_bc1		: std_logic_vector(1 downto 0);
@@ -48,50 +49,63 @@ begin
 			v_cas_motor		:= '0';
 			v_dout			:= (others=>'1');
 
-		-- check for port write
-		elsif cs_n='0' and wr_n='0' then
-			v_dout			:= (others=>'1');
-			case a is
-				when "00"	=>	v_psg_databus_in	:= din;
-
-				when "10"	=>	v_psg_bdir_bc1		:= din(7 downto 6);
-							v_cas_out		:= din(5);
-							v_cas_motor		:= din(4);
-							v_keyboard_row		:= din(3 downto 0);
-
-				when "11" 	=>
-						if din(7)='1' then
-							v_psg_inout		:= din(4);	-- 0=output, 1=input
-						elsif din(3 downto 1)="100" then
-							v_psg_inout		:= din(0);
-						end if;
-
-				when others	=> null;
-			end case;
-
-		-- check for port read
-		elsif cs_n='0' and rd_n='0' then
-			v_dout			:= (others=>'1');
-			case a is
-				when "00"	=>	if v_psg_inout='0' then
-								v_dout		:= v_psg_databus_in;	-- output mode, read our copy
+		elsif rising_edge(clk) then
+			-- check for port write
+			if cs_n='0' and wr_n='0' then
+--				v_dout			:= (others=>'1');
+				case a is
+					when "00"	=>	v_psg_databus_in	:= din;
+	
+					when "10"	=>	v_psg_bdir_bc1		:= din(7 downto 6);
+								v_cas_out		:= din(5);
+								v_cas_motor		:= din(4);
+								v_keyboard_row		:= din(3 downto 0);
+	
+					when "11" 	=>
+							if din(7)='1' then
+								v_psg_inout		:= din(4);	-- 0=output, 1=input
 							else
-								v_dout		:= psg_databus_out;	-- input mode, read live
+								case din(3 downto 1) is
+									when "000" =>	v_keyboard_row(0) := din(0);
+									when "001" =>	v_keyboard_row(1) := din(0);
+									when "010" =>	v_keyboard_row(2) := din(0);
+									when "011" =>	v_keyboard_row(3) := din(0);
+									when "100" =>	v_cas_motor := din(0);
+									when "101" =>	v_cas_out := din(0);
+									when "110" =>	v_psg_bdir_bc1(0) := din(0);
+									when "111" =>	v_psg_bdir_bc1(1) := din(0);
+									when others =>	null;
+								end case;
 							end if;
-				when "01"	=>	v_dout(7)		:= cas_in;
---							v_dout(6)		:= '1';			-- printer not ready
---							v_dout(5)		:= '1';			-- exp_n
---							v_dout(4)		:= '1';			-- 1=50hz, 0=60hz
-							v_dout(3 downto 1)	:= (others=>'1');	-- distributor = amstrad
-							v_dout(0)		:= vsync;
-				when "10"	=>	v_dout(7 downto 6)	:= v_psg_bdir_bc1;
-							v_dout(5)		:= v_cas_out;
-							v_dout(4)		:= v_cas_motor;
-							v_dout(3 downto 0)	:= v_keyboard_row;
+	
+					when others	=> null;
+				end case;
+			end if;
 
-				when others	=> null;
-
-			end case;
+			-- check for port read
+--			elsif cs_n='0' and rd_n='0' then
+				v_dout			:= (others=>'1');
+				case a is
+					when "00"	=>	if v_psg_inout='0' then
+									v_dout		:= v_psg_databus_in;	-- output mode, read our copy
+								else
+									v_dout		:= psg_databus_out;	-- input mode, read live
+								end if;
+					when "01"	=>	v_dout(7)		:= cas_in;
+	--							v_dout(6)		:= '1';			-- printer not ready
+	--							v_dout(5)		:= '1';			-- exp_n
+	--							v_dout(4)		:= '1';			-- 1=50hz, 0=60hz
+								v_dout(3 downto 1)	:= (others=>'1');	-- distributor = amstrad
+								v_dout(0)		:= vsync;
+					when "10"	=>	v_dout(7 downto 6)	:= v_psg_bdir_bc1;
+								v_dout(5)		:= v_cas_out;
+								v_dout(4)		:= v_cas_motor;
+								v_dout(3 downto 0)	:= v_keyboard_row;
+	
+					when others	=> null;
+	
+				end case;
+--			end if;
 		end if;
 
 		-- output ports

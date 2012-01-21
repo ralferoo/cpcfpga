@@ -604,26 +604,18 @@ begin
 		update_ports;
 	end process;
 
-	-- watch the gate array port
-	process(nRESET, local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
-		variable	pal_index	: std_logic_vector(4 downto 0);
+	-- watch the gate array ports
+	watch_ports: process(nRESET, local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
 		variable	t_force_int_ack	: std_logic;
-		variable	n_palette	: t_palette;
-		variable	r_palette	: t_palette;
 		variable	t_upper_rom_base: std_logic_vector(4 downto 0);
 	begin
 		if nRESET='0' then
 			video_mode			<= "01";
 
-			for i in 0 to 16 loop
-				n_palette(i)		:= "10100";
-			end loop;
-
 			upper_rom_paging_disable	<= '0';
 			lower_rom_paging_disable	<= '0';
 			memory_page_64k			<= "000";
 			bank_select			<= "000";
-			pal_index			:= (others=>'0');
 			force_interrupt_ack		<= '0';
 			use_boot_rom			<= '1';
 			lower_rom_writeable		<= '1';
@@ -633,7 +625,6 @@ begin
 
 		elsif rising_edge(local_z80_clk) then
 			t_force_int_ack			:= '0';
-			n_palette			:= r_palette;
 	
 			if z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" then
 				case z80_dout(7 downto 6) is
@@ -648,14 +639,7 @@ begin
 								lower_rom_paging_disable	<= z80_dout(2);
 								video_mode			<= z80_dout(1 downto 0);
 	
-					when "01"	=>	if pal_index(4)='1' then
-									n_palette(16)		:= z80_dout(4 downto 0);
-								else
-									n_palette( to_integer(ieee.numeric_std.unsigned(pal_index)) )
-												:= z80_dout(4 downto 0);
-								end if;
-	
-					when others	=>	pal_index			:= z80_dout(4 downto 0);
+					when others	=>	null;
 				end case;
 	
 				force_interrupt_ack	<= t_force_int_ack;
@@ -700,10 +684,43 @@ begin
 			end if;
 	
 		end if;
+	end process;
 
-		--update palette (avoids auto mux)
-		r_palette			:= n_palette;
-		palette				<= r_palette;
+	-- watch the gate array port for palette things
+	palette_updater: process(nRESET, local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
+		variable	r_pal_index	: std_logic_vector(4 downto 0);
+--		variable	r_palette	: t_palette;
+
+		variable	n_pal_index	: std_logic_vector(4 downto 0);
+--		variable	n_palette	: t_palette;
+	begin
+		if rising_edge(local_z80_clk) then
+			if nRESET='0' then
+				n_pal_index				:= (others=>'0');
+
+--				for i in 0 to 16 loop
+--					palette(i)            		<= "10100";
+--				end loop;
+				
+			else
+				n_pal_index				:= r_pal_index;
+
+				if z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" and z80_dout(7)='0' then
+					if z80_dout(6)='1' then
+						if r_pal_index(4)='1' then
+							palette(16)	<= z80_dout(4 downto 0);
+						else
+							palette( to_integer(ieee.numeric_std.unsigned(r_pal_index)) )
+									<= z80_dout(4 downto 0);
+						end if;
+					else
+						n_pal_index		:= z80_dout(4 downto 0);
+					end if;
+				end if;
+			end if;
+
+			r_pal_index			:= n_pal_index;
+		end if;
 	end process;
 
 	-- interrupt generation
