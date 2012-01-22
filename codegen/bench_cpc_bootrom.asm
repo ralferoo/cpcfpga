@@ -1,7 +1,53 @@
 
 	org #0000
 
+	ld bc,#fefe
+	ld a,#a0
+	out (c),a		; make upper ROM writeable, leave boot rom active
+
+	ld bc,#7f00
+	out (c),c		; keep roms enabled
+
+	ld bc,#fefd
+	ld a,#80
+	out (c),a		; enable rom #7
+
+	ld hl,#c543
+
+	ld bc,#df07
+	out (c),c		; select rom #7
+
+	ld (hl),c		; write a marker to it
+	ld a,(hl)		; test read it
+
+	ld bc,#df00
+	out (c),c		; select rom #0
+	ld (hl),c
+	ld a,(hl)
+
+	ld bc,#fefe
+	ld a,#20
+	out (c),a		; make upper ROM read-only, leave boot rom active
+
+	ld (hl),b
+	ld a,(hl)		; test rom #0
+
+	ld bc,#df07
+	out (c),c		; select rom #7
+
+	ld (hl),b
+	ld a,(hl)		; test rom #7
+
+	ld bc,#df00
+	out (c),c		; select rom #0
+
+	ld (hl),b
+	ld a,(hl)		; test rom #0
+
 	jr timings
+
+
+
 
 	di
 

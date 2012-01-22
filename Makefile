@@ -167,7 +167,7 @@ build/$(TOP_NAME)_build.tcl: Makefile build/.dummy
 
 ##########################################################################
 
-codegen: hdl/bootrom.vhd hdl/bench_cpc_bootrom.vhd hdl/evalboard.vhd $(CODEGEN_SREC_FILES)
+codegen: hdl/bootrom.vhd hdl/bench_cpc.vhd hdl/evalboard.vhd $(CODEGEN_SREC_FILES)
 
 hdl/jingle.vhd: codegen/jingle.py
 	codegen/jingle.py >$@
@@ -206,5 +206,6 @@ image/%.srec: codegen/%.scr build/.dummy image/.dummy
 
 image/rom_installer_recovery.srec: build/rom_c000.bin
 image/rom_installer.srec: build/boot_into_basic.bin
+image/rom_installer_myrom.srec: build/mytestrom.bin
 
 

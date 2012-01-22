@@ -64,6 +64,13 @@ begin
 					when "11" 	=>
 							if din(7)='1' then
 								v_psg_inout		:= din(4);	-- 0=output, 1=input
+
+								-- auto reset of ports a, b and c
+								v_psg_databus_in	:= (others=>'0');
+								v_psg_bdir_bc1		:= "00";
+								v_keyboard_row		:= (others=>'0');
+								v_cas_out		:= '0';
+								v_cas_motor		:= '0';
 							else
 								case din(3 downto 1) is
 									when "000" =>	v_keyboard_row(0) := din(0);

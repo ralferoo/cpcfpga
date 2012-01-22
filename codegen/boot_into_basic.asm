@@ -26,7 +26,7 @@ fill:	ld (hl),a
 	out (c),c
 
 	ld bc,#fefd
-	ld a,#00
+	ld a,#80
 	out (c),a		; enabled AMSDOS rom
 
 	ld bc,#df07

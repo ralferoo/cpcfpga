@@ -538,8 +538,8 @@ architecture impl of cpc is
                  pushsw  (0) xor pushsw  (1) xor pushsw  (2) xor pushsw  (3);
 
         -- uart
-        --uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>uart_tx_load , data=>uart_tx_data , empty=>uart_tx_empty );
-        uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>raw_scancode_clk , data=>raw_scancode , empty=>uart_tx_empty );
+        uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>uart_tx_load , data=>uart_tx_data , empty=>uart_tx_empty );
+--        uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>raw_scancode_clk , data=>raw_scancode , empty=>uart_tx_empty );
         txd <= uart_tx_txd;
 
         uart_rx_0  : uart_rx port map( nrst=>nreset, clk16mhz=>clk16, rxd=>uart_rx_rxd , avail=>uart_rx_avail , data=>uart_rx_data , clear=>uart_rx_clear, errorfound=>uart_rx_error );

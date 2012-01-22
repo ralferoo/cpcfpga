@@ -1,3 +1,5 @@
+hdl/bench_cpc.vhd
+hdl/bench_cpc_bootrom.vhd
 codegen/*.scr
 tcl_stacktrace.txt
 image/.dummy
