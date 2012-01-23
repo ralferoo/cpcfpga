@@ -50,6 +50,7 @@ HEADER
 	
 	foreach (@defn) {
 		next if /bootrom/;
+		next if /clklock/;
 		my $a=$_;
 		$a=~s/clk16/clock/;
 		print $a;

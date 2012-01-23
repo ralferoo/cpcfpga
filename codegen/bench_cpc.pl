@@ -92,6 +92,7 @@ MIDDLE
 
 	-- fake PLL
 	clk16 <= not clk16 after (SYSCLK_PERIOD / 2.0 );
+	clklock <= '1';
 
 	process
 		variable vhdl_initial : BOOLEAN := TRUE;

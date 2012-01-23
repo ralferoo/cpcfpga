@@ -8,6 +8,7 @@ entity cpc is
 	port(
 		nRESET			: in  std_logic;
 		clk16			: in  std_logic;
+		clklock			: in  std_logic;
 		pushsw			: in  std_logic_vector(3 downto 0);
 		dipsw			: in  std_logic_vector(7 downto 0);
 
@@ -312,6 +313,8 @@ architecture impl of cpc is
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
 
+	--leds(3) <= clklock;
+
         -- video
 	process(video_sync, video_red, video_green, video_blue)
 	begin
@@ -506,7 +509,7 @@ architecture impl of cpc is
         process(nRESET,z80_clk,z80_IORQ_n,z80_WR_n,z80_A)
         begin
 		if nRESET = '0' then
-			leds			<= (others=>'0');
+			leds(3 downto 0)	<= (others=>'0');
 			uart_tx_data		<= (others=>'0');
 			uart_tx_load		<= '0';
 
@@ -522,7 +525,7 @@ architecture impl of cpc is
 				uart_tx_load <= '1';
             
 			elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FADE" then		-- leds
-				leds <= not z80_DO(3 downto 0);
+				leds(3 downto 0) <= not z80_DO(3 downto 0);
 
 			elsif z80_IORQ_n = '0' and z80_WR_n = '0' and z80_A(15 downto 0) = x"FEFF" then		-- spi config
 				spi_clock_when_idle<= z80_DO(7);

@@ -40,6 +40,7 @@ architecture impl of evalboard is
 	component cpc is port (
 		nRESET			: in  std_logic;
 		clk16			: in  std_logic;
+		clklock			: in  std_logic;
 		pushsw			: in  std_logic_vector(3 downto 0);
 		dipsw			: in  std_logic_vector(7 downto 0);
 		rxd			: in  std_logic;
@@ -91,6 +92,7 @@ end component;
 	cpc_0: cpc port map (
 		nRESET => nRESET,
 		clk16 => clk16,
+		clklock => clklock,
 		pushsw => pushsw,
 		dipsw => dipsw,
 		rxd => rxd,

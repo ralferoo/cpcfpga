@@ -37,7 +37,7 @@ architecture impl of ay8912 is
 	signal	env_shape				: std_logic_vector( 3 downto 0);
 	signal	env_restart				: std_logic;
 
-	signal	pwm_add_left, pwm_add_right		: std_logic_vector(11 downto 0);	-- contribution to pwm output per physical channel
+	signal	pwm_add_left, pwm_add_right		: std_logic_vector(7 downto 0);	-- contribution to pwm output per physical channel
 
 	component clock_divider is
 		port	(
@@ -197,7 +197,7 @@ begin
 		variable	r_tone_divisor					: std_logic_vector(2 downto 0);		-- freq divide by 16, toggle every 8
 		variable	r_noise_ctr					: std_logic_vector(4 downto 0);		-- current count for noise
 		variable	r_lfsr						: std_logic_vector(14 downto 0);	-- current random seed for noise
-		variable	r_pwm_add_left, r_pwm_add_right			: std_logic_vector(11 downto 0);	-- contribution to pwm output per physical channel
+		variable	r_pwm_add_left, r_pwm_add_right			: std_logic_vector(7 downto 0);	-- contribution to pwm output per physical channel
 		variable	r_env_divisor					: std_logic_vector(3 downto 0);		-- divide r_tone_divisor by 16
 		variable	r_env_period_ctr				: std_logic_vector(15 downto 0);	-- counts up to env_period
 		variable	r_env_vol					: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
@@ -205,7 +205,7 @@ begin
 
 		variable	n_tone_divisor					: std_logic_vector(3 downto 0);		-- freq divide by 16, toggle every 8
 		variable	n_lfsr						: std_logic_vector(14 downto 0);	-- current random seed for noise
-		variable	n_pwm_add_left, n_pwm_add_right			: std_logic_vector(11 downto 0);	-- contribution to pwm output per physical channel
+		variable	n_pwm_add_left, n_pwm_add_right			: std_logic_vector(7 downto 0);	-- contribution to pwm output per physical channel
 		variable	n_env_vol					: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
 		variable	n_env_period_ctr				: std_logic_vector(15 downto 0);	-- counts up to env_period
 		variable	n_env_divisor					: std_logic_vector(4 downto 0);		-- divide r_tone_divisor by 16
@@ -399,7 +399,7 @@ begin
 --				t_pwm_add_mono		:= t_pwm_cont_a + t_pwm_cont_b + t_pwm_cont_c;
 --				n_pwm_add_left		:= t_pwm_add_mono(t_pwm_add_mono'high downto 1);
 
-				n_pwm_add_left		:= ("0" & t_pwm_cont_a(11 downto 1) ) + ("0" & t_pwm_cont_b(11 downto 1) ) + ("0" & t_pwm_cont_c(11 downto 1) );
+				n_pwm_add_left		:= ("0" & t_pwm_cont_a(11 downto 5) ) + ("0" & t_pwm_cont_b(11 downto 5) ) + ("0" & t_pwm_cont_c(11 downto 5) );
 
 				n_pwm_add_right		:= (others=>'0');
 
@@ -425,24 +425,34 @@ begin
 
 	-- this process deals with PWM output
 	process(nRESET, pcm_clk, pwm_add_left, pwm_add_right)
-		variable	r_pwm_sum_left, r_pwm_sum_right		: std_logic_vector(11 downto 0);
-		variable	n_pwm_sum_left, n_pwm_sum_right		: std_logic_vector(12 downto 0);
+		variable	r_pwm_sum_left, r_pwm_sum_right		: std_logic_vector(7 downto 0);
+		variable	n_pwm_sum_left, n_pwm_sum_right		: std_logic_vector(8 downto 0);
+
+--		variable	r_root2_sum				: std_logic_vector(5 downto 0);
+--		variable	r_root2_stream				: std_logic;
+--		variable	n_root2_sum				: std_logic_vector(6 downto 0);
+		
 	begin
-		if nRESET='0' then
-			r_pwm_sum_left			:= (others=>'0');
-			r_pwm_sum_right			:= (others=>'0');
-			pwm_left			<= '0';
-			pwm_right			<= '0';
+		if rising_edge(pcm_clk) then	
+			if nRESET='0' then
+--				n_root2_sum			:= (others=>'0');
 
-		elsif rising_edge(pcm_clk) then	
-			n_pwm_sum_left 			:= ("0"&r_pwm_sum_left ) + ("0"&pwm_add_left );
-			n_pwm_sum_right			:= ("0"&r_pwm_sum_right) + ("0"&pwm_add_right);
+				r_pwm_sum_left			:= (others=>'0');
+				r_pwm_sum_right			:= (others=>'0');
+				pwm_left			<= '0';
+				pwm_right			<= '0';
+			else
+--				n_root2_sum			:= ("0" & r_root2_sum) + "101101";		-- 45/64 = 0.703125, ideal is .707 for 14, later .606 for 12 down (which is stupid)
 
-			r_pwm_sum_left			:= n_pwm_sum_left(11 downto 0);
-			r_pwm_sum_right			:= n_pwm_sum_right(11 downto 0);
-
-			pwm_left			<= n_pwm_sum_left(12);
-			pwm_right			<= n_pwm_sum_right(12);
+				n_pwm_sum_left 			:= ("0"&r_pwm_sum_left ) + ("0"&pwm_add_left );
+				n_pwm_sum_right			:= ("0"&r_pwm_sum_right) + ("0"&pwm_add_right);
+	
+				r_pwm_sum_left			:= n_pwm_sum_left(7 downto 0);
+				r_pwm_sum_right			:= n_pwm_sum_right(7 downto 0);
+	
+				pwm_left			<= n_pwm_sum_left(8);
+				pwm_right			<= n_pwm_sum_right(8);
+			end if;
 		end if;
 	end process;
 end impl;
