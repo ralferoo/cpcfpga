@@ -363,7 +363,7 @@ architecture impl of cpc is
 	cas_in <= pushsw(3); --'0';
 
 	-- ay 8912 psg
-	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, pwm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
+	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, pwm_clk=>psg_clk, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
 				 io_a=>keyboard_column, pwm_left=>audio_left, pwm_right=>audio_right, tape_noise=>psg_tape_noise, is_mono=>dipsw(6) );
 	psg_tape_noise <= cas_out xor cas_in;
 	video_sound <= audio_left;

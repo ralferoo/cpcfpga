@@ -322,23 +322,23 @@ begin
 				--	R	R1,R3		L1,R3
 
 				if (r_selector(0) and is_mono)='0' then
-					t_left		:= (en_noise_a and noise_bit) xor (en_tone_a and tone_out_a);	t_left_a:= amp_a;
+					t_left		:= (en_noise_a or noise_bit) xor (en_tone_a or tone_out_a);	t_left_a:= amp_a;
 				else
-					t_left		:= (en_noise_c and noise_bit) xor (en_tone_c and tone_out_c);	t_left_a:= amp_c;		-- play C in left only on 01 & mono
+					t_left		:= (en_noise_c or noise_bit) xor (en_tone_c or tone_out_c);	t_left_a:= amp_c;		-- play C in left only on 01 & mono
 				end if;
 
 				if ((not r_selector(0)) and is_mono)='0' then
-					t_right		:= (en_noise_c and noise_bit) xor (en_tone_c and tone_out_c);	t_right_a:= amp_c;
+					t_right		:= (en_noise_c or noise_bit) xor (en_tone_c or tone_out_c);	t_right_a:= amp_c;
 				else
-					t_right		:= (en_noise_a and noise_bit) xor (en_tone_a and tone_out_c);	t_right_a:= amp_a;		-- play A in right only on 00 & mono
+					t_right		:= (en_noise_a or noise_bit) xor (en_tone_a or tone_out_c);	t_right_a:= amp_a;		-- play A in right only on 00 & mono
 				end if;
 
 			elsif r_selector(0)='0' then
-					t_left		:= (en_noise_b and noise_bit) xor (en_tone_b and tone_out_b);	t_left_a:= amp_b;
-					t_right		:= (en_noise_b and noise_bit) xor (en_tone_b and tone_out_b);	t_right_a:= amp_b;
+					t_left		:= (en_noise_b or noise_bit) xor (en_tone_b or tone_out_b);	t_left_a:= amp_b;
+					t_right		:= (en_noise_b or noise_bit) xor (en_tone_b or tone_out_b);	t_right_a:= amp_b;
 			else
-					t_left		:= tape_noise;							t_left_a:= "01110";
-					t_right		:= tape_noise;							t_right_a:= "01110";
+					t_left		:= tape_noise;							t_left_a:= "01100";
+					t_right		:= tape_noise;							t_right_a:= "01100";
 
 					-- also, update the root 2 malarky every 4th cycle
 					n_root2_sum	:= ("0"+n_root2_sum(5 downto 0)) + "0101101";		-- 45/64 is 0.703, sqrt(2)=0.707
@@ -393,4 +393,7 @@ begin
 	end process;
 
 end impl;
+
+-- sound 7,100,100,15	:' note how it actually uses volume 14 not 15!
+-- 64 00 64 00 64 00 00 38 0e 0e 0e 00 00 00 00 00
 

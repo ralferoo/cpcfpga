@@ -24,5 +24,9 @@ define_clock -name {n:cpc_0.gate_array_0.current_cycle[1]} -freq 4
 # the real clock. not sure this actually works..
 create_clock  -name { external_clock_source } -period 50.000 -waveform { 0.000 25.000  }  { n:clock  }
 
+define_clock -name {n:cpc_0.un2_z80_iorq_n} -freq 4
+define_clock -name {n:cpc_0.gate_array_0.current_cycle[3]} -freq 4
+define_clock -name {n:cpc_0.psg_0.env_div.counter[16]} -freq 1
+define_clock -name {n:cpc_0.psg_0.env_div_clock_gen.counter[4]} -freq 1
+define_clock -name {n:cpc_0.psg_0.tone_div_clock_gen.counter[4]} -freq 1
 
-# main clock
