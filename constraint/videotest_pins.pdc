@@ -1,0 +1,48 @@
+# Actel Physical design constraints file
+# Generated file
+
+# Version: 9.1 9.1.0.18
+# Family: IGLOO , Die: AGLN250V2 , Package: 100 VQFP
+# Date generated: Fri Dec 16 21:20:34 2011 
+
+
+
+
+# assign_quadrant_clock -net clk128 -quadrant LL
+
+
+
+# 
+# IO banks setting
+# 
+
+
+# 
+# I/O constraints
+# 
+
+
+set_io {video_r2[1]}  -pinname 6 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_r2[0]}  -pinname 7 -fixed yes -SLEW High -DIRECTION Output
+
+set_io {video_g2[1]}  -pinname 4 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_g2[0]}  -pinname 5 -fixed yes -SLEW High -DIRECTION Output
+
+set_io {video_b2[1]}  -pinname 2 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_b2[0]}  -pinname 3 -fixed yes -SLEW High -DIRECTION Output
+
+set_io {video_sync2[1]}  -pinname  8 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_sync2[0]}  -pinname 11 -fixed yes -SLEW High -DIRECTION Output
+
+set_io video_sound -pinname 13 -fixed yes -DIRECTION Output
+
+set_io nRESET         \
+    -pinname 10       \
+    -fixed yes        \
+    -DIRECTION Input
+
+
+set_io clock          \
+    -pinname 15       \
+    -fixed yes        \
+    -DIRECTION Input
