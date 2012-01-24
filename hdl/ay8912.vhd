@@ -6,11 +6,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.std_logic_arith.all;
-
 entity ay8912 is port(
 	nRESET			: in	std_logic;
 	clk			: in	std_logic;
-	pcm_clk			: in	std_logic;
+	pwm_clk			: in	std_logic;
 	
 	-- z80 databus interface
 	bdir_bc1		: in	std_logic_vector(1 downto 0);			-- bc2, a8 are pulled high, so won't bother
@@ -21,11 +20,12 @@ entity ay8912 is port(
 	io_a			: in	std_logic_vector(7 downto 0);			-- really this should be inout, but cpc is input
 
 	-- sound
+	tape_noise		: in	std_logic;
+	is_mono			: in	std_logic;
 	pwm_left, pwm_right	: out	std_logic);
 end ay8912;
 
 architecture impl of ay8912 is
-
 	-- these are the internal state of the PSG
 	signal	tone_a, tone_b, tone_c			: std_logic_vector(11 downto 0);
 	signal	noise					: std_logic_vector( 4 downto 0);
@@ -42,30 +42,35 @@ architecture impl of ay8912 is
 	component clock_divider is
 		port	(
 			clk		: in  std_logic;
+			reset		: in  std_logic;
 			load		: in  std_logic;
 			divisor		: in  std_logic_vector;
 			osc		: out std_logic;
 			output		: out std_logic);
 	end component;
-	signal tone_divider_clock : std_logic;
-	signal tone_divider_load : std_logic;
 	signal tone_out_a : std_logic;
 	signal tone_out_b : std_logic;
 	signal tone_out_c : std_logic;
 	signal noise_clock : std_logic;
+	signal tone_divider_clock : std_logic;
 	signal env_divider_clock : std_logic;
-	signal env_divider_load : std_logic;
+--	signal env_divider_load : std_logic;
 	signal env_clock : std_logic;
+
+	signal	env_volume				: std_logic_vector( 3 downto 0);			-- represents the amplitude of the global envelope
+	signal noise_bit				: std_logic;
 begin
 
-	tone_divider_load <= not nRESET;
-	tone_div_a: clock_divider port map( clk=>tone_divider_clock, load=>tone_divider_load, divisor=>tone_a, osc=>tone_out_a);
-	tone_div_b: clock_divider port map( clk=>tone_divider_clock, load=>tone_divider_load, divisor=>tone_b, osc=>tone_out_b);
-	tone_div_c: clock_divider port map( clk=>tone_divider_clock, load=>tone_divider_load, divisor=>tone_c, osc=>tone_out_c);
-	noise_div: clock_divider port map( clk=>tone_divider_clock, load=>tone_divider_load, divisor=>noise, output=>noise_clock);
+	tone_div_clock_gen: clock_divider port map( clk=>clk, output=>tone_divider_clock, reset=>nRESET, divisor=>"1000");
+	env_div_clock_gen: clock_divider port map( clk=>tone_divider_clock, output=>env_divider_clock, reset=>nRESET, load=>env_restart, divisor=>"1000");
 
-	env_divider_load <= (not nRESET) or env_restart;
-	env_div: clock_divider port map( clk=>env_divider_clock, load=>env_divider_load, divisor=>env_period, output=>env_clock);
+	tone_div_a: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_a, osc=>tone_out_a);
+	tone_div_b: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_b, osc=>tone_out_b);
+	tone_div_c: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_c, osc=>tone_out_c);
+	noise_div: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>noise, output=>noise_clock);
+
+--	env_divider_load <= (not nRESET) or env_restart;
+	env_div: clock_divider port map( clk=>env_divider_clock, reset=>nRESET, load=>env_restart, divisor=>env_period, output=>env_clock);
 
 	-- this process deals with the CPU (well, PPI) interface to the registers
 	process(nRESET, clk, bdir_bc1, din)
@@ -192,268 +197,200 @@ begin
 		tone_c			<= r_tone_c;
 	end process;
 
-	-- this process deals with playback
-	process(nRESET, clk)
-		variable	r_tone_divisor					: std_logic_vector(2 downto 0);		-- freq divide by 16, toggle every 8
-		variable	r_noise_ctr					: std_logic_vector(4 downto 0);		-- current count for noise
-		variable	r_lfsr						: std_logic_vector(14 downto 0);	-- current random seed for noise
-		variable	r_pwm_add_left, r_pwm_add_right			: std_logic_vector(7 downto 0);	-- contribution to pwm output per physical channel
-		variable	r_env_divisor					: std_logic_vector(3 downto 0);		-- divide r_tone_divisor by 16
-		variable	r_env_period_ctr				: std_logic_vector(15 downto 0);	-- counts up to env_period
-		variable	r_env_vol					: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
-		variable	r_env_actual					: std_logic_vector(3 downto 0);		-- amplitude to use for envelope
-
-		variable	n_tone_divisor					: std_logic_vector(3 downto 0);		-- freq divide by 16, toggle every 8
+	
+	noise_calc: process(noise_clock, nRESET)
 		variable	n_lfsr						: std_logic_vector(14 downto 0);	-- current random seed for noise
-		variable	n_pwm_add_left, n_pwm_add_right			: std_logic_vector(7 downto 0);	-- contribution to pwm output per physical channel
-		variable	n_env_vol					: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
-		variable	n_env_period_ctr				: std_logic_vector(15 downto 0);	-- counts up to env_period
-		variable	n_env_divisor					: std_logic_vector(4 downto 0);		-- divide r_tone_divisor by 16
-		variable	n_env_actual					: std_logic_vector(3 downto 0);		-- amplitude to use for envelope
+	begin
+		if nRESET='0' then
+			n_lfsr			:= (others=>'0');
+			noise_bit		<= '0';
 
-		variable	t_amp_a, t_amp_b, t_amp_c			: std_logic_vector(4 downto 0);		-- amplitude to use
-		variable	t_pwm_cont_a, t_pwm_cont_b, t_pwm_cont_c	: std_logic_vector(11 downto 0);	-- contribution to pwm output per AY channel
-		variable	t_noise_a, t_noise_b, t_noise_c			: std_logic;				-- noise per channel
-		variable	t_sound_a, t_sound_b, t_sound_c			: std_logic;				-- sound per channel
+		else
+			noise_bit		<= n_lfsr(14);
+			n_lfsr			:= (n_lfsr(14) xor n_lfsr(13)) & n_lfsr(12 downto 5) & (n_lfsr(14) xor n_lfsr(4)) &
+								n_lfsr(3 downto 2) & (n_lfsr(14) xor n_lfsr(1)) & n_lfsr(0) & n_lfsr(14);
+		end if;
+	end process;
+
+	global_envelope: process(env_clock, nRESET)
+		variable	r_env_step					: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
+
+		variable	n_env_step					: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
+		variable	n_env_actual					: std_logic_vector(3 downto 0);		-- amplitude to use for envelope
 
 		variable	t_attack, t_alternate, t_hold			: std_logic;				-- temp vars for envelope
 		variable	t_stop, t_doalt, t_xor_bit			: std_logic;				-- temp vars for envelope
-
-
-	procedure calculate_pwm_contribution(	variable	enable	: in  std_logic;
-						variable	vol	: in  std_logic_vector(4 downto 0);
-						variable	env	: in  std_logic_vector(3 downto 0);
-						variable	pwmval	: out std_logic_vector(11 downto 0)) is
-		variable	t_vol	: std_logic_vector(3 downto 0);
-		variable	t_pwm	: std_logic_vector(11 downto 0);
-		begin
-			if enable='1' then
-				if vol(4)='0' then
-					t_vol		:= vol(3 downto 0);
-				else
-					t_vol		:= env(3 downto 0);
-				end if;
-
-				--- hmm, this log scale doesn't actually seem to match the 464 volume at all... :(
-
---				if t_vol(0)='1' then
---					t_pwm			:= x"AAA";
---				else
---					t_pwm			:= x"78A";
---				end if;
---				if t_vol(3)='0' then
---					t_pwm			:= "0000" & t_pwm(11 downto 4);
---				end if;
---				if t_vol(2)='0' then
---					t_pwm			:= "00" & t_pwm(11 downto 2);
---				end if;
---				if t_vol(1)='0' then
---					t_pwm			:= "0" & t_pwm(11 downto 1);
---				end if;
---
---				pwmval				:= t_pwm;
-	
-				case t_vol is						-- translate figure 9 into PWM contribution
-					when "1111" =>	pwmval	:= x"AAA";		-- 1.000*AAA FFF / 1.5 (as we're mixing A+B/2 and C+B/2)
-					when "1110" =>	pwmval	:= x"78A";		-- 0.707*AAA (0.5*sqrt(2))
-					when "1101" =>	pwmval	:= x"555";		-- 0.500*AAA
-					when "1100" =>	pwmval	:= x"33B";		-- 0.303*AAA (this is starts the non-logarithmic section)
-					when "1011" =>	pwmval	:= x"2AA";		-- 0.250*AAA
-					when "1010" =>	pwmval	:= x"19D";		-- 0.1515*AAA
-					when "1001" =>	pwmval	:= x"155";		-- 0.125*AAA
-					when "1000" =>	pwmval	:= x"0CE";		-- all subsequent ones are half the penultimate value
-					when "0111" =>	pwmval	:= x"0AA";	
-					when "0110" =>	pwmval	:= x"067";	
-					when "0101" =>	pwmval	:= x"055";	
-					when "0100" =>	pwmval	:= x"033";	
-					when "0011" =>	pwmval	:= x"02A";	
-					when "0010" =>	pwmval	:= x"019";	
-					when "0001" =>	pwmval	:= x"015";	
-					when others =>	pwmval	:= (others=>'0');
-				end case;
-			else
-				pwmval				:= (others=>'0');
-			end if;
-		end procedure calculate_pwm_contribution;
-
 	begin
-		if nRESET='0' then
-			-- initialise variables
-			r_tone_divisor			:= (others=>'0');
-			r_env_divisor			:= (others=>'0');
-			r_lfsr				:= (others=>'0');
-			r_pwm_add_left			:= (others=>'0');
-			r_pwm_add_right			:= (others=>'0');
-			r_env_vol			:= (others=>'0');
-			r_env_actual			:= (others=>'0');
+		if nRESET='0' or env_restart='1' then
+			n_env_step			:= (others=>'0');			-- restart envelope whenever port is written to
+			env_volume			<= (others=>'0');
 
-			pwm_add_left			<= (others=>'0');
-			pwm_add_right			<= (others=>'0');
+		elsif rising_edge(env_clock) then
+			n_env_step			:= r_env_step;
 
-		elsif rising_edge(clk) then	
-			-- initialise variables
-			n_tone_divisor			:= "0" & r_tone_divisor;	
-			n_env_divisor			:= "0" & r_env_divisor;
-			n_lfsr				:= r_lfsr;
-			n_pwm_add_left			:= r_pwm_add_left;
-			n_pwm_add_right			:= r_pwm_add_right;
-			n_env_vol			:= r_env_vol;
-			n_env_actual			:= r_env_actual;
-
-			-- do the tone divisor and counters
-			n_tone_divisor			:= n_tone_divisor + 1;
-			tone_divider_clock		<= n_tone_divisor(3);			-- this automagically updates tone_out_{a,b,c}
-
-			if n_tone_divisor(3)='1' then				-- overflow, i.e. == 8 clock cycles
-
-				-- noise
-				if noise_clock = '1' then
-					n_lfsr		:= (n_lfsr(14) xor n_lfsr(13)) & n_lfsr(12 downto 5) & (n_lfsr(14) xor n_lfsr(4)) &
-								n_lfsr(3 downto 2) & (n_lfsr(14) xor n_lfsr(1)) & n_lfsr(0) & n_lfsr(14);
-				end if;
-
-				-- update envelope
-				n_env_divisor		:= n_env_divisor + 1;
-				env_divider_clock	<= n_env_divisor(4);			-- this automagically updates env_clock
-
-				if n_env_divisor(4)='1' then				-- divide r_tone_divisor by 16 
-					if env_clock='1' then
-
-						if env_restart='1' then
-							n_env_vol	:= (others=>'0');		-- restart envelope whenever port is written to
-						end if;
-
-						-- rules from figure 7, condensed
-						if env_shape(3) = '1' then
-							t_attack		:= env_shape(2);
-							t_alternate		:= env_shape(1);
-							t_hold			:= env_shape(0);
-						else
-							t_attack		:= env_shape(2);
-							t_alternate		:= env_shape(2);
-							t_hold			:= '1';
-						end if;							
-						t_stop				:= t_hold and n_env_vol(4);
-						t_doalt				:= t_alternate and n_env_vol(4);
-
-						-- calculate envelope value
-						if t_stop='1' then
-							t_xor_bit		:= t_attack xor t_alternate;
-							n_env_actual		:= t_xor_bit & t_xor_bit & t_xor_bit & t_xor_bit;
-
-						else
-							t_xor_bit		:= t_attack xor t_doalt;
-							n_env_actual		:= n_env_vol(3 downto 0) xnor (t_xor_bit & t_xor_bit & t_xor_bit & t_xor_bit);
-						end if;
-
-						-- and do the count
-						n_env_vol			:= n_env_vol + ("0000"&(not t_stop));
-
-						-- this next bit is complicated...
-						--
-						-- env_shape(0) = hold		'1' = limit to one cycle, holding at 0000 or 1111 depending on count-up or -down
-						-- env_shape(1)	= alternate	'1' = reverse direction after each cycle
-						-- env_shape(2) = attack	'1' = count up 0000->1111, '0' = count down 1111->0000
-						-- env_shape(3)	= continue	'1' = defined by hold, '0' reset to 0000 after each cycle and hold it there
-
-						-- however, this description is clearly wrong when looking at figure 7...
-						-- 1011 should hold at 0, but shows it at 1. therefore hold also counts to "10000" and holds it depending on alternate
-						-- best to work it out from a table based on figure 7 (reordered)
-
-						-- CTLH							
-						-- 1000		\\\\
-						-- 1010		\/\/
-						
-						-- 1100		////
-						-- 1110		/\/\
-						
-						-- 1011		\111
-						-- 1101		/111
-						
-						-- 1001		\000
-						-- 1111		/000							
-						
-						-- 00xx		\000	synonym: 1001
-						-- 01xx		/000	synonym: 1111
-					end if; -- env period ctr
-				end if; -- env divisor
-
-				-- calculate the tone bits
-				t_noise_a		:= r_lfsr( 7) and en_noise_a;			-- generate noise using a different bit
-				t_noise_b		:= r_lfsr(13) and en_noise_b;			-- of the feedback register for each
-				t_noise_c		:= r_lfsr(11) and en_noise_c;			-- channel. oh apparently 8912 shares same noise... :(
-	
-				-- calculate the sound enable
-				t_sound_a		:= t_noise_a xor tone_out_a;			-- effectively add and divide by 2
-				t_sound_b		:= t_noise_b xor tone_out_b;
-				t_sound_c		:= t_noise_c xor tone_out_c;
-	
-				-- calculate the accumulation values for the PWM
-				t_amp_a			:= amp_a;
-				t_amp_b			:= amp_b;
-				t_amp_c			:= amp_c;
-				calculate_pwm_contribution( t_sound_a, t_amp_a, r_env_actual, t_pwm_cont_a );
-				calculate_pwm_contribution( t_sound_b, t_amp_b, r_env_actual, t_pwm_cont_b );
-				calculate_pwm_contribution( t_sound_c, t_amp_c, r_env_actual, t_pwm_cont_c );
-
---				t_pwm_add_mono		:= t_pwm_cont_a + t_pwm_cont_b + t_pwm_cont_c;
---				n_pwm_add_left		:= t_pwm_add_mono(t_pwm_add_mono'high downto 1);
-
-				n_pwm_add_left		:= ("0" & t_pwm_cont_a(11 downto 5) ) + ("0" & t_pwm_cont_b(11 downto 5) ) + ("0" & t_pwm_cont_c(11 downto 5) );
-
-				n_pwm_add_right		:= (others=>'0');
-
---				n_pwm_add_left		:= t_pwm_cont_a + ("0" & t_pwm_cont_b(11 downto 1) );
---				n_pwm_add_right		:= t_pwm_cont_c + ("0" & t_pwm_cont_b(11 downto 1) );
-
-			end if; -- tone divisor
-
-			-- store registers
-			r_tone_divisor			:= n_tone_divisor(2 downto 0);
-			r_env_divisor			:= n_env_divisor(3 downto 0);
-			r_lfsr				:= n_lfsr;
-			r_pwm_add_left			:= n_pwm_add_left;
-			r_pwm_add_right			:= n_pwm_add_right;
-			r_env_vol			:= n_env_vol;
-			r_env_actual			:= n_env_actual;
-
-			pwm_add_left			<= r_pwm_add_left;
-			pwm_add_right			<= r_pwm_add_right;
-
-		end if; -- rising clock
-	end process;
-
-	-- this process deals with PWM output
-	process(nRESET, pcm_clk, pwm_add_left, pwm_add_right)
-		variable	r_pwm_sum_left, r_pwm_sum_right		: std_logic_vector(7 downto 0);
-		variable	n_pwm_sum_left, n_pwm_sum_right		: std_logic_vector(8 downto 0);
-
---		variable	r_root2_sum				: std_logic_vector(5 downto 0);
---		variable	r_root2_stream				: std_logic;
---		variable	n_root2_sum				: std_logic_vector(6 downto 0);
-		
-	begin
-		if rising_edge(pcm_clk) then	
-			if nRESET='0' then
---				n_root2_sum			:= (others=>'0');
-
-				r_pwm_sum_left			:= (others=>'0');
-				r_pwm_sum_right			:= (others=>'0');
-				pwm_left			<= '0';
-				pwm_right			<= '0';
+			-- rules from figure 7, condensed
+			if env_shape(3) = '1' then
+				t_attack		:= env_shape(2);
+				t_alternate		:= env_shape(1);
+				t_hold			:= env_shape(0);
 			else
---				n_root2_sum			:= ("0" & r_root2_sum) + "101101";		-- 45/64 = 0.703125, ideal is .707 for 14, later .606 for 12 down (which is stupid)
+				t_attack		:= env_shape(2);
+				t_alternate		:= env_shape(2);
+				t_hold			:= '1';
+			end if;							
+			t_stop				:= t_hold and n_env_step(4);
+			t_doalt				:= t_alternate and n_env_step(4);
 
-				n_pwm_sum_left 			:= ("0"&r_pwm_sum_left ) + ("0"&pwm_add_left );
-				n_pwm_sum_right			:= ("0"&r_pwm_sum_right) + ("0"&pwm_add_right);
-	
-				r_pwm_sum_left			:= n_pwm_sum_left(7 downto 0);
-				r_pwm_sum_right			:= n_pwm_sum_right(7 downto 0);
-	
-				pwm_left			<= n_pwm_sum_left(8);
-				pwm_right			<= n_pwm_sum_right(8);
+			-- this next bit is complicated...
+			--
+			-- env_shape(0) = hold		'1' = limit to one cycle, holding at 0000 or 1111 depending on count-up or -down
+			-- env_shape(1)	= alternate	'1' = reverse direction after each cycle
+			-- env_shape(2) = attack	'1' = count up 0000->1111, '0' = count down 1111->0000
+			-- env_shape(3)	= continue	'1' = defined by hold, '0' reset to 0000 after each cycle and hold it there
+
+			-- however, this description is clearly wrong when looking at figure 7...
+			-- 1011 should hold at 0, but shows it at 1. therefore hold also counts to "10000" and holds it depending on alternate
+			-- best to work it out from a table based on figure 7 (reordered)
+
+			-- CTLH							
+			-- 1000		\\\\
+			-- 1010		\/\/
+			
+			-- 1100		////
+			-- 1110		/\/\
+			
+			-- 1011		\111
+			-- 1101		/111
+			
+			-- 1001		\000
+			-- 1111		/000							
+			
+			-- 00xx		\000	synonym: 1001
+			-- 01xx		/000	synonym: 1111
+
+			-- calculate envelope value
+			if t_stop='1' then
+				t_xor_bit		:= t_attack xor t_alternate;
+				n_env_actual		:= t_xor_bit & t_xor_bit & t_xor_bit & t_xor_bit;
+
+			else
+				t_xor_bit		:= t_attack xor t_doalt;
+				n_env_actual		:= n_env_step(3 downto 0) xnor (t_xor_bit & t_xor_bit & t_xor_bit & t_xor_bit);
 			end if;
+
+			-- and do the count
+			n_env_step			:= n_env_step + ("0000"&(not t_stop));
+
+			env_volume			<= n_env_actual;
 		end if;
 	end process;
+
+
+
+	do_pwm: process(pwm_clk, nRESET)
+		variable	r_left_sum, r_right_sum				: std_logic_vector(6 downto 0);
+		variable	r_selector					: std_logic_vector(1 downto 0);
+
+		variable	n_left_sum, n_right_sum				: std_logic_vector(7 downto 0);
+		variable	t_left_v, t_right_v				: std_logic_vector(7 downto 0);		-- thing to add to sum this time
+		variable	t_left_a, t_right_a				: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
+		variable	t_left,   t_right				: std_logic;
+
+		variable	t_root2_bit					: std_logic;
+		variable	r_root2_sum					: std_logic_vector(6 downto 0);
+		variable	n_root2_sum					: std_logic_vector(6 downto 0);
+	begin
+		if nRESET='0' or env_restart='1' then
+			r_selector			:= (others=>'0');
+			r_left_sum			:= (others=>'0');
+			r_right_sum			:= (others=>'0');
+			r_root2_sum			:= (others=>'0');
+
+			pwm_left			<= '0';
+			pwm_right			<= '0';
+
+		elsif rising_edge(pwm_clk) then
+			n_left_sum			:= "0"&r_left_sum;
+			n_right_sum			:= "0"&r_right_sum;
+			n_root2_sum			:= r_root2_sum;
+
+			t_root2_bit			:= r_root2_sum(6);
+
+			if r_selector(1)='0' then
+				--		normal		mono
+				--	L	L1,L3		L1,R3
+				--	R	R1,R3		L1,R3
+
+				if (r_selector(0) and is_mono)='0' then
+					t_left		:= (en_noise_a and noise_bit) xor (en_tone_a and tone_out_a);	t_left_a:= amp_a;
+				else
+					t_left		:= (en_noise_c and noise_bit) xor (en_tone_c and tone_out_c);	t_left_a:= amp_c;		-- play C in left only on 01 & mono
+				end if;
+
+				if ((not r_selector(0)) and is_mono)='0' then
+					t_right		:= (en_noise_c and noise_bit) xor (en_tone_c and tone_out_c);	t_right_a:= amp_c;
+				else
+					t_right		:= (en_noise_a and noise_bit) xor (en_tone_a and tone_out_c);	t_right_a:= amp_a;		-- play A in right only on 00 & mono
+				end if;
+
+			elsif r_selector(0)='0' then
+					t_left		:= (en_noise_b and noise_bit) xor (en_tone_b and tone_out_b);	t_left_a:= amp_b;
+					t_right		:= (en_noise_b and noise_bit) xor (en_tone_b and tone_out_b);	t_right_a:= amp_b;
+			else
+					t_left		:= tape_noise;							t_left_a:= "01110";
+					t_right		:= tape_noise;							t_right_a:= "01110";
+
+					-- also, update the root 2 malarky every 4th cycle
+					n_root2_sum	:= ("0"+n_root2_sum(5 downto 0)) + "0101101";		-- 45/64 is 0.703, sqrt(2)=0.707
+			end if;
+
+			-- use envelope amplitude instead of channel if bit 4 set
+			if t_left_a(4)='1' then
+				t_left_a(3 downto 0)	:= env_volume;
+			end if;
+			if t_right_a(4)='1' then
+				t_right_a(3 downto 0)	:= env_volume;
+			end if;
+
+			-- calculate the contribution to the pwm bit
+			case t_left_a(3 downto 1) is
+				when "111" => t_left_v	:= "10000000";
+				when "110" => t_left_v	:= "01000000";
+				when "101" => t_left_v	:= "00100000";
+				when "100" => t_left_v	:= "00010000";
+				when "011" => t_left_v	:= "00001000";
+				when "010" => t_left_v	:= "00000100";
+				when "001" => t_left_v	:= "00000010";
+				when others=> t_left_v	:= "0000000" & t_left_a(0);		-- special case "0000" is complete silence, not based on t_root2_bit
+			end case;
+			case t_right_a(3 downto 1) is
+				when "111" => t_right_v	:= "10000000";
+				when "110" => t_right_v	:= "01000000";
+				when "101" => t_right_v	:= "00100000";
+				when "100" => t_right_v	:= "00010000";
+				when "011" => t_right_v	:= "00001000";
+				when "010" => t_right_v	:= "00000100";
+				when "001" => t_right_v	:= "00000010";
+				when others=> t_right_v	:= "0000000" & t_right_a(0);		-- special case "0000" is complete silence, not based on t_root2_bit
+			end case;
+
+			-- add this contribution every cycle or every 0.707 cycles depending on lower bit
+			if (t_left and (t_left_a(0) or t_root2_bit))='1' then
+				n_left_sum		:= n_left_sum + t_left_v;
+			end if;
+			if (t_right and (t_right_a(0) or t_root2_bit))='1' then
+				n_right_sum		:= n_right_sum + t_right_v;
+			end if;
+
+			r_left_sum			:= n_left_sum(6 downto 0);
+			r_right_sum			:= n_right_sum(6 downto 0);
+			r_selector			:= r_selector + 1;
+			r_root2_sum			:= n_root2_sum;
+
+			pwm_left			<= n_left_sum(7);
+			pwm_right			<= n_right_sum(7);
+		end if;
+	end process;
+
 end impl;
 

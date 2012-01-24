@@ -262,7 +262,7 @@ architecture impl of cpc is
 	component ay8912 is port(
 		nRESET				: in	std_logic;
 		clk				: in	std_logic;
-		pcm_clk				: in	std_logic;
+		pwm_clk				: in	std_logic;
 		
 		-- z80 databus interface
 		bdir_bc1			: in	std_logic_vector(1 downto 0);			-- bc2, a8 are pulled high, so won't bother
@@ -273,12 +273,15 @@ architecture impl of cpc is
 		io_a				: in	std_logic_vector(7 downto 0);			-- really this should be inout, but cpc is input
 	
 		-- sound
+		tape_noise			: in	std_logic;
+		is_mono				: in	std_logic;
 		pwm_left, pwm_right		: out	std_logic);
 	end component;
 	signal	psg_clk				: std_logic;
 	signal	psg_databus_in			: std_logic_vector(7 downto 0);
 	signal	psg_databus_out			: std_logic_vector(7 downto 0);
 	signal	psg_bdir_bc1			: std_logic_vector(1 downto 0);
+	signal	psg_tape_noise			: std_logic;
 
 	-- keyboard
 	component ps2input is port(
@@ -360,9 +363,10 @@ architecture impl of cpc is
 	cas_in <= pushsw(3); --'0';
 
 	-- ay 8912 psg
-	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, pcm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
-				 io_a=>keyboard_column, pwm_left=>audio_left, pwm_right=>audio_right );
-	video_sound <= audio_left xor cas_out xor cas_in;
+	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, pwm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
+				 io_a=>keyboard_column, pwm_left=>audio_left, pwm_right=>audio_right, tape_noise=>psg_tape_noise, is_mono=>dipsw(6) );
+	psg_tape_noise <= cas_out xor cas_in;
+	video_sound <= audio_left;
 	video_sound2 <= audio_right;
 
 	-- keyboard

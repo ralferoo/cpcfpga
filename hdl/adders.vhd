@@ -89,12 +89,11 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 entity clock_divider is
---	generic ( width : integer := 12 );
 	port	(
 		clk		: in  std_logic;
-		load		: in  std_logic;
---		divisor		: in  std_logic_vector( width-1 downto 0 );
-		divisor		: in  std_logic_vector;
+		load		: in  std_logic := '0';
+		reset		: in  std_logic := '1';
+		divisor		: in  std_logic_vector;						-- note that divider is actually by 2*divisor
 		osc		: out std_logic;
 		output		: out std_logic);
 end entity;
@@ -113,7 +112,7 @@ begin
 
 	begin
 		if rising_edge(clk) then
-			if load='1' then						-- reset to divisor - 2 on load
+			if (reset='0' or load='1') then					-- reset to divisor - 2 on load
 				t_divisor	:= divisor;				-- reorder bits in case constant passed in
 				t_bit0		:= t_divisor(0);			-- bit 0 untouched
 				t_carry0	:= '1';					-- always carry into bit 1
