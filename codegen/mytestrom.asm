@@ -35,10 +35,14 @@ entry:
 	ret
 
 test:
-	ld hl,hello_msg
-	ld a,(hl)
-	xor #20
-	ld (hl),a
+	ld hl,plustest_start
+	ld de,#8000
+	ld bc,plustest_length
+	ldir
+
+	ld c,#ff
+	ld hl,#8000
+	jp #1b			; disable rom/ram, call #8000
 
 hello:
 	ld hl,hello_msg
@@ -58,3 +62,6 @@ entry_msg:
 hello_msg:
 	defb "Hello mate!",13,10,0
 
+plustest_start:
+	incbin plustest/plustest.bin
+plustest_length equ ($-plustest_start)
