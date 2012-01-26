@@ -46,3 +46,30 @@ set_io clock          \
     -pinname 15       \
     -fixed yes        \
     -DIRECTION Input
+
+
+set_io video_sync_outpin     \
+    -pinname 97         \
+    -fixed yes         \
+    -DIRECTION Output
+
+set_io video_blank_outpin     \
+    -pinname 98         \
+    -fixed yes         \
+    -DIRECTION Output
+
+set_io video_r_outpin     \
+    -pinname 94         \
+    -fixed yes         \
+    -DIRECTION Output
+
+set_io video_g_outpin     \
+    -pinname 93         \
+    -fixed yes         \
+    -DIRECTION Output
+
+set_io video_b_outpin     \
+    -pinname 92         \
+    -fixed yes         \
+    -DIRECTION Output
+

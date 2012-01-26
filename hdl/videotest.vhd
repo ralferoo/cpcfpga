@@ -9,12 +9,16 @@ entity videotest is
 		nRESET			: in  std_logic;
 		clock			: in  std_logic;
 
+        video_sync_outpin, video_blank_outpin, video_r_outpin, video_g_outpin, video_b_outpin: out std_logic;
+
 		video_sync2,video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
 		video_sound                                 : out  std_logic
 	);
 end videotest;
 
 architecture impl of videotest is
+
+	signal	out_video_sync2,out_video_r2,out_video_g2,out_video_b2      : std_logic_vector(1 downto 0);
 
 	component clock_divider is
 		port	(
@@ -33,6 +37,36 @@ begin
 	clkgen_1mhz: clock_divider port map( clk=>clock, load=>clk_load, divisor=>"1010", osc=>clk1mhz);	-- divide by 2 then by 10, 20mhz->1mhz
 
 	video_sound <= '0';
+	video_sync2 <= out_video_sync2;
+	video_r2 <= out_video_r2;
+	video_g2 <= out_video_g2;
+	video_b2 <= out_video_b2;
+
+	process(clock, nRESET)
+		variable	which			: std_logic;
+	begin
+		if nRESET='0' then
+			which				:= '0';
+
+		elsif rising_edge(clock) then
+			which				:= not which;
+
+			if which='1' then
+				video_r_outpin		<= out_video_r2(0);
+				video_g_outpin		<= out_video_g2(0);
+				video_b_outpin		<= out_video_b2(0);
+				video_sync_outpin	<= out_video_sync2(0);
+			else
+				video_r_outpin		<= out_video_r2(1);
+				video_g_outpin		<= out_video_g2(1);
+				video_b_outpin		<= out_video_b2(1);
+				video_sync_outpin	<= out_video_sync2(1);
+			end if;
+			video_blank_outpin		<= '1';
+
+		end if;
+	end process;
+
 
 	process(clk1mhz,nRESET)
 		variable	  counter		: std_logic_vector(14 downto 0);
@@ -50,10 +84,10 @@ begin
 				-- reset
 				counter			:= (others=>'0');
 
-				video_sync2		<= "00";
-				video_r2		<= "00";
-				video_g2		<= "00";
-				video_b2		<= "00";
+				out_video_sync2		<= "00";
+				out_video_r2		<= "00";
+				out_video_g2		<= "00";
+				out_video_b2		<= "00";
 			else
 				-- normal operations
 
@@ -89,20 +123,20 @@ begin
 				end if;
 
 				if (t_vsync or t_hsync)='1' then
-					video_sync2	<= "00";
-					video_r2	<= "00";
-					video_g2	<= "00";
-					video_b2	<= "00";
+					out_video_sync2	<= "00";
+					out_video_r2	<= "00";
+					out_video_g2	<= "00";
+					out_video_b2	<= "00";
 				elsif t_de='0' then
-					video_sync2	<= "10";
-					video_r2	<= "00";
-					video_g2	<= "00";
-					video_b2	<= "00";
+					out_video_sync2	<= "10";
+					out_video_r2	<= "00";
+					out_video_g2	<= "00";
+					out_video_b2	<= "00";
 				else
-					video_sync2	<= "10";
-					video_r2	<= t_horiz(3 downto 2);
-					video_g2	<= t_horiz(1 downto 0);
-					video_b2	<= t_vert(4 downto 3);
+					out_video_sync2	<= "10";
+					out_video_r2	<= t_horiz(3 downto 2);
+					out_video_g2	<= t_horiz(1 downto 0);
+					out_video_b2	<= t_vert(4 downto 3);
 				end if;
 
 				counter			:= n_counter(n_counter'high-1 downto 0);
