@@ -4213,8 +4213,8 @@ common emitter</description>
 
 <device name="-TO92-E1" package="TO92-E1">
 <connects>
-<connect gate="G$1" pin="B" pad="1"/>
-<connect gate="G$1" pin="C" pad="2"/>
+<connect gate="G$1" pin="C" pad="1"/>
+<connect gate="G$1" pin="B" pad="2"/>
 <connect gate="G$1" pin="E" pad="3"/>
 </connects>
 <technologies>
@@ -4226,8 +4226,8 @@ common emitter</description>
 
 <device name="-TO92-E1-REV" package="TO92-E1-REV">
 <connects>
-<connect gate="G$1" pin="B" pad="1"/>
-<connect gate="G$1" pin="C" pad="2"/>
+<connect gate="G$1" pin="C" pad="1"/>
+<connect gate="G$1" pin="B" pad="2"/>
 <connect gate="G$1" pin="E" pad="3"/>
 </connects>
 <technologies>
