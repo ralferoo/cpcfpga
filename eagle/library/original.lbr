@@ -56,8 +56,6 @@
 </layers>
 <library>
 <packages>
-<package name="3X20">
-</package>
 <package name="MA20-2">
 <description>&lt;b&gt;PIN HEADER&lt;/b&gt;</description>
 <wire x1="-24.765" y1="2.54" x2="-23.495" y2="2.54" width="0.1524" layer="21"/>
