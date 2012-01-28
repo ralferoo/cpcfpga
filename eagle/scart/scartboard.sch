@@ -7841,6 +7841,177 @@ package type ST</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="sram">
+<packages>
+<package name="SOP32">
+<description>&lt;b&gt;SMALL OUTLINE PACKAGE&lt;/b&gt;</description>
+<wire x1="-10.9" y1="7.9" x2="10.9" y2="7.9" width="0.1998" layer="39"/>
+<wire x1="10.9" y1="7.9" x2="10.9" y2="-7.9" width="0.1998" layer="39"/>
+<wire x1="-10.9" y1="-7.9" x2="-10.9" y2="7.9" width="0.1998" layer="39"/>
+<wire x1="10.7" y1="5.81" x2="10.7" y2="-5.81" width="0.2032" layer="51"/>
+<wire x1="10.7" y1="-5.81" x2="-10.7" y2="-5.81" width="0.2032" layer="51"/>
+<wire x1="-10.7" y1="-5.81" x2="-10.7" y2="5.81" width="0.2032" layer="51"/>
+<wire x1="-10.7" y1="5.81" x2="10.7" y2="5.81" width="0.2032" layer="51"/>
+<wire x1="10.9" y1="-7.9" x2="-10.9" y2="-7.9" width="0.1998" layer="39"/>
+<smd name="A18" x="-9.525" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A16" x="-8.255" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A14" x="-6.985" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A12" x="-5.715" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A7" x="-4.445" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A6" x="-3.175" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A5" x="-1.905" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A4" x="-0.635" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A3" x="0.635" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A2" x="1.905" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A1" x="3.175" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A0" x="4.445" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="DQ0" x="5.715" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="DQ1" x="6.985" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="DQ2" x="8.255" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="GND" x="9.525" y="-6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="DQ3" x="9.525" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="DQ4" x="8.255" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="DQ5" x="6.985" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="DQ6" x="5.715" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="DQ7" x="4.445" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="CE" x="3.175" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A10" x="1.905" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="OE" x="0.635" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A11" x="-0.635" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A9" x="-1.905" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A8" x="-3.175" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A13" x="-4.445" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="WE" x="-5.715" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A17" x="-6.985" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="A15" x="-8.255" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<smd name="VCC" x="-9.525" y="6.4" dx="0.6" dy="2.2" layer="1"/>
+<text x="-9.525" y="1.27" size="1.27" layer="25">&gt;NAME</text>
+<text x="-9.525" y="-2.54" size="1.27" layer="27">&gt;VALUE</text>
+<text x="-8.89" y="-4.3101" size="1.27" layer="21" rot="R90">1</text>
+<rectangle x1="-9.7749" y1="-7.24" x2="-9.2751" y2="-5.9101" layer="51"/>
+<rectangle x1="-8.5049" y1="-7.24" x2="-8.0051" y2="-5.9101" layer="51"/>
+<rectangle x1="-7.2349" y1="-7.24" x2="-6.7351" y2="-5.9101" layer="51"/>
+<rectangle x1="-5.9649" y1="-7.24" x2="-5.4651" y2="-5.9101" layer="51"/>
+<rectangle x1="-4.6949" y1="-7.24" x2="-4.1951" y2="-5.9101" layer="51"/>
+<rectangle x1="-3.4249" y1="-7.24" x2="-2.9251" y2="-5.9101" layer="51"/>
+<rectangle x1="-2.1549" y1="-7.24" x2="-1.6551" y2="-5.9101" layer="51"/>
+<rectangle x1="-0.8849" y1="-7.24" x2="-0.3851" y2="-5.9101" layer="51"/>
+<rectangle x1="0.3851" y1="-7.24" x2="0.8849" y2="-5.9101" layer="51"/>
+<rectangle x1="1.6551" y1="-7.24" x2="2.1549" y2="-5.9101" layer="51"/>
+<rectangle x1="2.9251" y1="-7.24" x2="3.4249" y2="-5.9101" layer="51"/>
+<rectangle x1="4.1951" y1="-7.24" x2="4.6949" y2="-5.9101" layer="51"/>
+<rectangle x1="5.4651" y1="-7.24" x2="5.9649" y2="-5.9101" layer="51"/>
+<rectangle x1="6.7351" y1="-7.24" x2="7.2349" y2="-5.9101" layer="51"/>
+<rectangle x1="8.0051" y1="-7.24" x2="8.5049" y2="-5.9101" layer="51"/>
+<rectangle x1="9.2751" y1="-7.24" x2="9.7749" y2="-5.9101" layer="51"/>
+<rectangle x1="9.2751" y1="5.9101" x2="9.7749" y2="7.24" layer="51"/>
+<rectangle x1="8.0051" y1="5.9101" x2="8.5049" y2="7.24" layer="51"/>
+<rectangle x1="6.7351" y1="5.9101" x2="7.2349" y2="7.24" layer="51"/>
+<rectangle x1="5.4651" y1="5.9101" x2="5.9649" y2="7.24" layer="51"/>
+<rectangle x1="4.1951" y1="5.9101" x2="4.6949" y2="7.24" layer="51"/>
+<rectangle x1="2.9251" y1="5.9101" x2="3.4249" y2="7.24" layer="51"/>
+<rectangle x1="1.6551" y1="5.9101" x2="2.1549" y2="7.24" layer="51"/>
+<rectangle x1="0.3851" y1="5.9101" x2="0.8849" y2="7.24" layer="51"/>
+<rectangle x1="-0.8849" y1="5.9101" x2="-0.3851" y2="7.24" layer="51"/>
+<rectangle x1="-2.1549" y1="5.9101" x2="-1.6551" y2="7.24" layer="51"/>
+<rectangle x1="-3.4249" y1="5.9101" x2="-2.9251" y2="7.24" layer="51"/>
+<rectangle x1="-4.6949" y1="5.9101" x2="-4.1951" y2="7.24" layer="51"/>
+<rectangle x1="-5.9649" y1="5.9101" x2="-5.4651" y2="7.24" layer="51"/>
+<rectangle x1="-7.2349" y1="5.9101" x2="-6.7351" y2="7.24" layer="51"/>
+<rectangle x1="-8.5049" y1="5.9101" x2="-8.0051" y2="7.24" layer="51"/>
+<rectangle x1="-9.7749" y1="5.9101" x2="-9.2751" y2="7.24" layer="51"/>
+</package>
+</packages>
+<symbols>
+<symbol name="AS6C4008">
+<pin name="A0" x="-15.24" y="22.86" length="middle"/>
+<pin name="A1" x="-15.24" y="20.32" length="middle"/>
+<pin name="A2" x="-15.24" y="17.78" length="middle"/>
+<pin name="A3" x="-15.24" y="15.24" length="middle"/>
+<pin name="A4" x="-15.24" y="12.7" length="middle"/>
+<pin name="A6" x="-15.24" y="7.62" length="middle"/>
+<pin name="A5" x="-15.24" y="10.16" length="middle"/>
+<pin name="A7" x="-15.24" y="5.08" length="middle"/>
+<pin name="A8" x="-15.24" y="2.54" length="middle"/>
+<pin name="A9" x="-15.24" y="0" length="middle"/>
+<pin name="A10" x="-15.24" y="-2.54" length="middle"/>
+<pin name="A11" x="-15.24" y="-5.08" length="middle"/>
+<pin name="A12" x="-15.24" y="-7.62" length="middle"/>
+<pin name="A13" x="-15.24" y="-10.16" length="middle"/>
+<pin name="A14" x="-15.24" y="-12.7" length="middle"/>
+<pin name="A16" x="-15.24" y="-17.78" length="middle"/>
+<pin name="A15" x="-15.24" y="-15.24" length="middle"/>
+<pin name="A17" x="-15.24" y="-20.32" length="middle"/>
+<pin name="A18" x="-15.24" y="-22.86" length="middle"/>
+<pin name="DQ0" x="15.24" y="22.86" length="middle" rot="R180"/>
+<pin name="DQ1" x="15.24" y="20.32" length="middle" rot="R180"/>
+<pin name="DQ3" x="15.24" y="15.24" length="middle" rot="R180"/>
+<pin name="DQ2" x="15.24" y="17.78" length="middle" rot="R180"/>
+<pin name="DQ4" x="15.24" y="12.7" length="middle" rot="R180"/>
+<pin name="DQ5" x="15.24" y="10.16" length="middle" rot="R180"/>
+<pin name="DQ6" x="15.24" y="7.62" length="middle" rot="R180"/>
+<pin name="DQ7" x="15.24" y="5.08" length="middle" rot="R180"/>
+<pin name="CE" x="15.24" y="-5.08" length="middle" rot="R180"/>
+<pin name="OE" x="15.24" y="-7.62" length="middle" rot="R180"/>
+<pin name="WE" x="15.24" y="-10.16" length="middle" rot="R180"/>
+<pin name="VCC" x="15.24" y="-17.78" length="middle" rot="R180"/>
+<pin name="GND" x="15.24" y="-20.32" length="middle" rot="R180"/>
+<wire x1="-10.16" y1="25.4" x2="10.16" y2="25.4" width="0.254" layer="97"/>
+<wire x1="10.16" y1="25.4" x2="10.16" y2="-25.4" width="0.254" layer="97"/>
+<wire x1="10.16" y1="-25.4" x2="-10.16" y2="-25.4" width="0.254" layer="97"/>
+<wire x1="-10.16" y1="-25.4" x2="-10.16" y2="25.4" width="0.254" layer="97"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="AS6C4008">
+<description>AS6C4008 static ram</description>
+<gates>
+<gate name="G$1" symbol="AS6C4008" x="7.62" y="15.24"/>
+</gates>
+<devices>
+<device name="" package="SOP32">
+<connects>
+<connect gate="G$1" pin="A0" pad="A0"/>
+<connect gate="G$1" pin="A1" pad="A1"/>
+<connect gate="G$1" pin="A10" pad="A10"/>
+<connect gate="G$1" pin="A11" pad="A11"/>
+<connect gate="G$1" pin="A12" pad="A12"/>
+<connect gate="G$1" pin="A13" pad="A13"/>
+<connect gate="G$1" pin="A14" pad="A14"/>
+<connect gate="G$1" pin="A15" pad="A15"/>
+<connect gate="G$1" pin="A16" pad="A16"/>
+<connect gate="G$1" pin="A17" pad="A17"/>
+<connect gate="G$1" pin="A18" pad="A18"/>
+<connect gate="G$1" pin="A2" pad="A2"/>
+<connect gate="G$1" pin="A3" pad="A3"/>
+<connect gate="G$1" pin="A4" pad="A4"/>
+<connect gate="G$1" pin="A5" pad="A5"/>
+<connect gate="G$1" pin="A6" pad="A6"/>
+<connect gate="G$1" pin="A7" pad="A7"/>
+<connect gate="G$1" pin="A8" pad="A8"/>
+<connect gate="G$1" pin="A9" pad="A9"/>
+<connect gate="G$1" pin="CE" pad="CE"/>
+<connect gate="G$1" pin="DQ0" pad="DQ0"/>
+<connect gate="G$1" pin="DQ1" pad="DQ1"/>
+<connect gate="G$1" pin="DQ2" pad="DQ2"/>
+<connect gate="G$1" pin="DQ3" pad="DQ3"/>
+<connect gate="G$1" pin="DQ4" pad="DQ4"/>
+<connect gate="G$1" pin="DQ5" pad="DQ5"/>
+<connect gate="G$1" pin="DQ6" pad="DQ6"/>
+<connect gate="G$1" pin="DQ7" pad="DQ7"/>
+<connect gate="G$1" pin="GND" pad="GND"/>
+<connect gate="G$1" pin="OE" pad="OE"/>
+<connect gate="G$1" pin="VCC" pad="VCC"/>
+<connect gate="G$1" pin="WE" pad="WE"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -7900,6 +8071,7 @@ package type ST</description>
 <part name="IC1" library="microchip" deviceset="25*" device="SN" technology="LC080"/>
 <part name="JP5" library="jumper" deviceset="JP2E" device=""/>
 <part name="C1" library="rcl" deviceset="C-EU" device="C0603"/>
+<part name="U$1" library="sram" deviceset="AS6C4008" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -7952,6 +8124,7 @@ package type ST</description>
 <instance part="IC1" gate="G$1" x="203.2" y="114.3"/>
 <instance part="JP5" gate="1" x="172.72" y="121.92" rot="R90"/>
 <instance part="C1" gate="G$1" x="88.9" y="127" rot="R180"/>
+<instance part="U$1" gate="G$1" x="241.3" y="-10.16"/>
 </instances>
 <busses>
 </busses>
@@ -8153,12 +8326,22 @@ package type ST</description>
 <label x="215.9" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="13"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A16"/>
+<wire x1="213.36" y1="-27.94" x2="226.06" y2="-27.94" width="0.1524" layer="91"/>
+<label x="213.36" y="-27.94" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A14" class="0">
 <segment>
 <wire x1="218.44" y1="55.88" x2="218.44" y2="35.56" width="0.1524" layer="91"/>
 <label x="218.44" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="15"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A14"/>
+<wire x1="213.36" y1="-22.86" x2="226.06" y2="-22.86" width="0.1524" layer="91"/>
+<label x="213.36" y="-22.86" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_A12" class="0">
@@ -8167,12 +8350,22 @@ package type ST</description>
 <label x="220.98" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="17"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A12"/>
+<wire x1="213.36" y1="-17.78" x2="226.06" y2="-17.78" width="0.1524" layer="91"/>
+<label x="213.36" y="-17.78" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A7" class="0">
 <segment>
 <wire x1="223.52" y1="55.88" x2="223.52" y2="35.56" width="0.1524" layer="91"/>
 <label x="223.52" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="19"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A7"/>
+<wire x1="213.36" y1="-5.08" x2="226.06" y2="-5.08" width="0.1524" layer="91"/>
+<label x="213.36" y="-5.08" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_A6" class="0">
@@ -8181,12 +8374,22 @@ package type ST</description>
 <label x="226.06" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="21"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A6"/>
+<wire x1="213.36" y1="-2.54" x2="226.06" y2="-2.54" width="0.1524" layer="91"/>
+<label x="213.36" y="-2.54" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A5" class="0">
 <segment>
 <wire x1="228.6" y1="55.88" x2="228.6" y2="35.56" width="0.1524" layer="91"/>
 <label x="228.6" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="23"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A5"/>
+<wire x1="213.36" y1="0" x2="226.06" y2="0" width="0.1524" layer="91"/>
+<label x="213.36" y="0" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_A4" class="0">
@@ -8195,12 +8398,22 @@ package type ST</description>
 <label x="231.14" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="25"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A4"/>
+<wire x1="213.36" y1="2.54" x2="226.06" y2="2.54" width="0.1524" layer="91"/>
+<label x="213.36" y="2.54" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A3" class="0">
 <segment>
 <wire x1="233.68" y1="55.88" x2="233.68" y2="35.56" width="0.1524" layer="91"/>
 <label x="233.68" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="27"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A3"/>
+<wire x1="213.36" y1="5.08" x2="226.06" y2="5.08" width="0.1524" layer="91"/>
+<label x="213.36" y="5.08" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_A2" class="0">
@@ -8209,12 +8422,22 @@ package type ST</description>
 <label x="236.22" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="29"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A2"/>
+<wire x1="213.36" y1="7.62" x2="226.06" y2="7.62" width="0.1524" layer="91"/>
+<label x="213.36" y="7.62" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A1" class="0">
 <segment>
 <wire x1="238.76" y1="55.88" x2="238.76" y2="35.56" width="0.1524" layer="91"/>
 <label x="238.76" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="31"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A1"/>
+<wire x1="213.36" y1="10.16" x2="226.06" y2="10.16" width="0.1524" layer="91"/>
+<label x="213.36" y="10.16" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_A0" class="0">
@@ -8223,12 +8446,22 @@ package type ST</description>
 <label x="241.3" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="33"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A0"/>
+<wire x1="213.36" y1="12.7" x2="226.06" y2="12.7" width="0.1524" layer="91"/>
+<label x="213.36" y="12.7" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_DQ0" class="0">
 <segment>
 <wire x1="243.84" y1="55.88" x2="243.84" y2="35.56" width="0.1524" layer="91"/>
 <label x="243.84" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="35"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="DQ0"/>
+<wire x1="266.7" y1="12.7" x2="256.54" y2="12.7" width="0.1524" layer="91"/>
+<label x="266.7" y="12.7" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_DQ1" class="0">
@@ -8237,12 +8470,22 @@ package type ST</description>
 <label x="246.38" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="37"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="DQ1"/>
+<wire x1="266.7" y1="10.16" x2="256.54" y2="10.16" width="0.1524" layer="91"/>
+<label x="266.7" y="10.16" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_DQ2" class="0">
 <segment>
 <wire x1="248.92" y1="55.88" x2="248.92" y2="35.56" width="0.1524" layer="91"/>
 <label x="248.92" y="35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="39"/>
+</segment>
+<segment>
+<wire x1="266.7" y1="7.62" x2="256.54" y2="7.62" width="0.1524" layer="91"/>
+<pinref part="U$1" gate="G$1" pin="DQ2"/>
+<label x="266.7" y="7.62" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="VCC_B2" class="0">
@@ -8323,12 +8566,22 @@ package type ST</description>
 <label x="213.36" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="12"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A18"/>
+<wire x1="213.36" y1="-33.02" x2="226.06" y2="-33.02" width="0.1524" layer="91"/>
+<label x="213.36" y="-33.02" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A15" class="0">
 <segment>
 <wire x1="215.9" y1="71.12" x2="215.9" y2="73.66" width="0.1524" layer="91"/>
 <label x="215.9" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="14"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A15"/>
+<wire x1="213.36" y1="-25.4" x2="226.06" y2="-25.4" width="0.1524" layer="91"/>
+<label x="213.36" y="-25.4" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_A17" class="0">
@@ -8337,12 +8590,22 @@ package type ST</description>
 <label x="218.44" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="16"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A17"/>
+<wire x1="213.36" y1="-30.48" x2="226.06" y2="-30.48" width="0.1524" layer="91"/>
+<label x="213.36" y="-30.48" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_WE" class="0">
 <segment>
 <wire x1="220.98" y1="71.12" x2="220.98" y2="73.66" width="0.1524" layer="91"/>
 <label x="220.98" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="18"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="WE"/>
+<wire x1="266.7" y1="-20.32" x2="256.54" y2="-20.32" width="0.1524" layer="91"/>
+<label x="266.7" y="-20.32" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_A13" class="0">
@@ -8351,12 +8614,22 @@ package type ST</description>
 <label x="223.52" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="20"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A13"/>
+<wire x1="213.36" y1="-20.32" x2="226.06" y2="-20.32" width="0.1524" layer="91"/>
+<label x="213.36" y="-20.32" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A8" class="0">
 <segment>
 <wire x1="226.06" y1="71.12" x2="226.06" y2="73.66" width="0.1524" layer="91"/>
 <label x="226.06" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="22"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A8"/>
+<wire x1="213.36" y1="-7.62" x2="226.06" y2="-7.62" width="0.1524" layer="91"/>
+<label x="213.36" y="-7.62" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_A9" class="0">
@@ -8365,12 +8638,23 @@ package type ST</description>
 <label x="228.6" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="24"/>
 </segment>
+<segment>
+<wire x1="213.36" y1="-10.16" x2="226.06" y2="-10.16" width="0.1524" layer="91"/>
+<pinref part="U$1" gate="G$1" pin="A9"/>
+<label x="213.36" y="-10.16" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A11" class="0">
 <segment>
 <wire x1="231.14" y1="71.12" x2="231.14" y2="73.66" width="0.1524" layer="91"/>
 <label x="231.14" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="26"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A11"/>
+<wire x1="213.36" y1="-15.24" x2="226.06" y2="-15.24" width="0.1524" layer="91"/>
+<label x="213.36" y="-15.24" size="1.778" layer="95"/>
+<label x="213.36" y="-15.24" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_OE" class="0">
@@ -8379,12 +8663,22 @@ package type ST</description>
 <label x="233.68" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="28"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="OE"/>
+<wire x1="266.7" y1="-17.78" x2="256.54" y2="-17.78" width="0.1524" layer="91"/>
+<label x="266.7" y="-17.78" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_A10" class="0">
 <segment>
 <wire x1="236.22" y1="71.12" x2="236.22" y2="73.66" width="0.1524" layer="91"/>
 <label x="236.22" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="30"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A10"/>
+<wire x1="213.36" y1="-12.7" x2="226.06" y2="-12.7" width="0.1524" layer="91"/>
+<label x="213.36" y="-12.7" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_DQ7" class="0">
@@ -8393,12 +8687,22 @@ package type ST</description>
 <label x="238.76" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="32"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="DQ7"/>
+<wire x1="266.7" y1="-5.08" x2="256.54" y2="-5.08" width="0.1524" layer="91"/>
+<label x="266.7" y="-5.08" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_DQ6" class="0">
 <segment>
 <wire x1="241.3" y1="71.12" x2="241.3" y2="73.66" width="0.1524" layer="91"/>
 <label x="241.3" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="34"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="DQ6"/>
+<wire x1="266.7" y1="-2.54" x2="256.54" y2="-2.54" width="0.1524" layer="91"/>
+<label x="266.7" y="-2.54" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SRAM_DQ5" class="0">
@@ -8407,6 +8711,11 @@ package type ST</description>
 <label x="243.84" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="36"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="DQ5"/>
+<wire x1="266.7" y1="0" x2="256.54" y2="0" width="0.1524" layer="91"/>
+<label x="266.7" y="0" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_DQ4" class="0">
 <segment>
@@ -8414,12 +8723,22 @@ package type ST</description>
 <label x="246.38" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="38"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="DQ4"/>
+<wire x1="266.7" y1="2.54" x2="256.54" y2="2.54" width="0.1524" layer="91"/>
+<label x="266.7" y="2.54" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SRAM_DQ3" class="0">
 <segment>
 <wire x1="248.92" y1="71.12" x2="248.92" y2="73.66" width="0.1524" layer="91"/>
 <label x="248.92" y="73.66" size="1.778" layer="95" rot="R90"/>
 <pinref part="SV8" gate="G$1" pin="40"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="DQ3"/>
+<wire x1="266.7" y1="5.08" x2="256.54" y2="5.08" width="0.1524" layer="91"/>
+<label x="266.7" y="5.08" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SPI_DO" class="0">
@@ -8485,6 +8804,11 @@ package type ST</description>
 <pinref part="C1" gate="G$1" pin="2"/>
 <wire x1="88.9" y1="132.08" x2="78.74" y2="132.08" width="0.1524" layer="91"/>
 <label x="78.74" y="132.08" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="VCC"/>
+<wire x1="266.7" y1="-27.94" x2="256.54" y2="-27.94" width="0.1524" layer="91"/>
+<label x="266.7" y="-27.94" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="VCC_B1" class="0">
@@ -8963,6 +9287,16 @@ package type ST</description>
 <pinref part="C1" gate="G$1" pin="1"/>
 <wire x1="78.74" y1="124.46" x2="88.9" y2="124.46" width="0.1524" layer="91"/>
 <label x="78.74" y="124.46" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="GND"/>
+<wire x1="266.7" y1="-30.48" x2="256.54" y2="-30.48" width="0.1524" layer="91"/>
+<label x="266.7" y="-30.48" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="CE"/>
+<wire x1="266.7" y1="-15.24" x2="256.54" y2="-15.24" width="0.1524" layer="91"/>
+<label x="266.7" y="-15.24" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="B_SPARE" class="0">
