@@ -8064,8 +8064,8 @@ package type ST</description>
 <part name="Q4" library="bc548" deviceset="BC548*" device="-TO92-E1-REV"/>
 <part name="R8" library="rcl" deviceset="R-EU_" device="R0805" value="75"/>
 <part name="R9" library="rcl" deviceset="R-EU_" device="R0805" value="750"/>
-<part name="R10" library="rcl" deviceset="R-EU_" device="R0805" value="1000"/>
-<part name="R11" library="rcl" deviceset="R-EU_" device="R0805" value="1000"/>
+<part name="R10" library="rcl" deviceset="R-EU_" device="R0805" value="560"/>
+<part name="R11" library="rcl" deviceset="R-EU_" device="R0805" value="560"/>
 <part name="JP4" library="pinhead" deviceset="PINHD-2X3" device=""/>
 <part name="Q2" library="transistor-npn" deviceset="BC548*" device=""/>
 <part name="IC1" library="microchip" deviceset="25*" device="SN" technology="LC080"/>
