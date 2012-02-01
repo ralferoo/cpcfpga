@@ -27,8 +27,10 @@ entity evalboard is
 		spi_di			: out  std_logic;
 		spi_do			: in   std_logic;
 		spi_flash_cs		: out  std_logic;
-		video_sync2,video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
-		video_sound                                 : out  std_logic
+		video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
+		video_sync_out			: out  std_logic;
+		video_sound_left		: out  std_logic;
+		video_sound_right		: out  std_logic
 	);
 end evalboard;
 
@@ -63,8 +65,10 @@ architecture impl of evalboard is
 		spi_di			: out  std_logic;
 		spi_do			: in   std_logic;
 		spi_flash_cs		: out  std_logic;
-		video_sync2,video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
-		video_sound                                 : out  std_logic
+		video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
+		video_sync_out			: out  std_logic;
+		video_sound_left		: out  std_logic;
+		video_sound_right		: out  std_logic
 	);
 end component;
 
@@ -115,10 +119,11 @@ end component;
 		spi_di => spi_di,
 		spi_do => spi_do,
 		spi_flash_cs => spi_flash_cs,
-		video_sync2 => video_sync2,
 		video_r2 => video_r2,
 		video_g2 => video_g2,
 		video_b2 => video_b2,
-		video_sound => video_sound
+		video_sync_out => video_sync_out,
+		video_sound_left => video_sound_left,
+		video_sound_right => video_sound_right
 	);
 end impl;

@@ -22,19 +22,23 @@
 # 
 
 
-set_io {video_r2[1]}  -pinname 6 -fixed yes -SLEW High -DIRECTION Output
-set_io {video_r2[0]}  -pinname 7 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_r2[1]}  -pinname 2 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_r2[0]}  -pinname 3 -fixed yes -SLEW High -DIRECTION Output
 
 set_io {video_g2[1]}  -pinname 4 -fixed yes -SLEW High -DIRECTION Output
 set_io {video_g2[0]}  -pinname 5 -fixed yes -SLEW High -DIRECTION Output
 
-set_io {video_b2[1]}  -pinname 2 -fixed yes -SLEW High -DIRECTION Output
-set_io {video_b2[0]}  -pinname 3 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_b2[1]}  -pinname 6 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_b2[0]}  -pinname 7 -fixed yes -SLEW High -DIRECTION Output
 
-set_io {video_sync2[1]}  -pinname  8 -fixed yes -SLEW High -DIRECTION Output
-set_io {video_sync2[0]}  -pinname 11 -fixed yes -SLEW High -DIRECTION Output
+#set_io {video_sync2[1]}  -pinname  8 -fixed yes -SLEW High -DIRECTION Output
+#set_io {video_sync2[0]}  -pinname 11 -fixed yes -SLEW High -DIRECTION Output
+#set_io video_sound -pinname 13 -fixed yes -DIRECTION Output
 
-set_io video_sound -pinname 13 -fixed yes -DIRECTION Output
+set_io {video_sync_out}  -pinname  8 -fixed yes -SLEW High -DIRECTION Output
+
+#set_io video_sound_left -pinname 11 -fixed yes -DIRECTION Output
+#set_io video_sound_right -pinname 13 -fixed yes -DIRECTION Output
 
 # these pins were formally leds[6,7], now bidirectional ps2 keyboard interface
 set_io {ps2_data} 	 	-pinname 44 -fixed yes -DIRECTION Output

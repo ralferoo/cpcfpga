@@ -39,13 +39,14 @@ entity cpc is
 		spi_do			: in   std_logic;				-- connected to SPI slave DO
 		spi_flash_cs		: out  std_logic;				-- connected to flash rom CS
 
-		video_sync2,video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
-		video_sound                                 : out  std_logic
+		video_r2,video_g2,video_b2      : out std_logic_vector(1 downto 0);
+		video_sync_out			: out  std_logic;
+		video_sound_left		: out  std_logic;
+		video_sound_right		: out  std_logic
 	);
 end cpc;
 
 architecture impl of cpc is
-	signal video_sound2 		: std_logic;			-- should be in entity definition
 	signal audio_left, audio_right	: std_logic;
 
 	-- t80 from opencores.org
@@ -322,12 +323,12 @@ architecture impl of cpc is
 	process(video_sync, video_red, video_green, video_blue)
 	begin
 		if video_sync='1' then
-			video_sync2	<= "00";
+			video_sync_out	<= '0';
 			video_r2	<= "00";
 			video_g2	<= "00";
 			video_b2	<= "00";
 		else
-			video_sync2	<= "10"; --dipsw(0) & (not dipsw(0));
+			video_sync_out	<= '1'; --dipsw(0) & (not dipsw(0));
 			video_r2	<= video_red;
 			video_g2	<= video_green;
 			video_b2	<= video_blue;
@@ -365,9 +366,9 @@ architecture impl of cpc is
 	-- ay 8912 psg
 	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, pwm_clk=>psg_clk, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
 				 io_a=>keyboard_column, pwm_left=>audio_left, pwm_right=>audio_right, tape_noise=>psg_tape_noise, is_mono=>dipsw(6) );
-	psg_tape_noise <= cas_out xor cas_in;
-	video_sound <= audio_left;
-	video_sound2 <= audio_right;
+	psg_tape_noise <= cas_out; -- xor cas_in;  -- cas_in makes a hideous noise and causes sync interference
+	video_sound_left <= audio_left;
+	video_sound_right <= audio_right;
 
 	-- keyboard
 	kbd_0 : ps2input port map ( nRESET=>nRESET, clk=>psg_clk, clk16=>clk16,
