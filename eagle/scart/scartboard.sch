@@ -8129,28 +8129,16 @@ package type ST</description>
 <busses>
 </busses>
 <nets>
-<net name="ARIGHT" class="0">
-<segment>
-<pinref part="X1" gate="G$1" pin="2"/>
-<wire x1="45.72" y1="20.32" x2="53.34" y2="20.32" width="0.1524" layer="91"/>
-<label x="55.88" y="20.32" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="JP4" gate="A" pin="4"/>
-<wire x1="12.7" y1="-33.02" x2="20.32" y2="-33.02" width="0.1524" layer="91"/>
-<label x="12.7" y="-33.02" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="ALEFT" class="0">
-<segment>
-<pinref part="X1" gate="G$1" pin="6"/>
-<wire x1="45.72" y1="30.48" x2="53.34" y2="30.48" width="0.1524" layer="91"/>
-<label x="55.88" y="30.48" size="1.778" layer="95"/>
-</segment>
+<net name="AOUTLEFT" class="0">
 <segment>
 <pinref part="JP4" gate="A" pin="6"/>
 <wire x1="20.32" y1="-30.48" x2="12.7" y2="-30.48" width="0.1524" layer="91"/>
 <label x="12.7" y="-30.48" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="X1" gate="G$1" pin="3"/>
+<wire x1="22.86" y1="22.86" x2="30.48" y2="22.86" width="0.1524" layer="91"/>
+<label x="15.24" y="22.86" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="D_FASTBLANKING" class="0">
@@ -8167,21 +8155,6 @@ package type ST</description>
 <wire x1="55.88" y1="-12.7" x2="55.88" y2="-10.16" width="0.1524" layer="91"/>
 <junction x="53.34" y="-15.24"/>
 <label x="55.88" y="-10.16" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="COMP" class="0">
-<segment>
-<pinref part="X1" gate="G$1" pin="20"/>
-<wire x1="45.72" y1="66.04" x2="53.34" y2="66.04" width="0.1524" layer="91"/>
-<label x="55.88" y="66.04" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="R13" gate="G$1" pin="1"/>
-<wire x1="-12.7" y1="-35.56" x2="-5.08" y2="-35.56" width="0.1524" layer="91"/>
-<label x="-5.08" y="-35.56" size="1.778" layer="95"/>
-<pinref part="R14" gate="G$1" pin="1"/>
-<wire x1="-20.32" y1="-35.56" x2="-12.7" y2="-35.56" width="0.1524" layer="91"/>
-<junction x="-12.7" y="-35.56"/>
 </segment>
 </net>
 <net name="BLUE" class="0">
@@ -9419,6 +9392,54 @@ package type ST</description>
 <pinref part="IC1" gate="G$1" pin="!WP"/>
 <wire x1="175.26" y1="121.92" x2="190.5" y2="121.92" width="0.1524" layer="91"/>
 <pinref part="JP5" gate="1" pin="2"/>
+</segment>
+</net>
+<net name="AOUTRIGHT" class="0">
+<segment>
+<pinref part="X1" gate="G$1" pin="1"/>
+<wire x1="22.86" y1="17.78" x2="30.48" y2="17.78" width="0.1524" layer="91"/>
+<label x="15.24" y="17.78" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="JP4" gate="A" pin="4"/>
+<wire x1="12.7" y1="-33.02" x2="20.32" y2="-33.02" width="0.1524" layer="91"/>
+<label x="12.7" y="-33.02" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="COMPOUT" class="0">
+<segment>
+<pinref part="X1" gate="G$1" pin="19"/>
+<wire x1="22.86" y1="63.5" x2="30.48" y2="63.5" width="0.1524" layer="91"/>
+<label x="15.24" y="63.5" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="R13" gate="G$1" pin="1"/>
+<wire x1="-12.7" y1="-35.56" x2="-5.08" y2="-35.56" width="0.1524" layer="91"/>
+<label x="-5.08" y="-35.56" size="1.778" layer="95"/>
+<pinref part="R14" gate="G$1" pin="1"/>
+<wire x1="-20.32" y1="-35.56" x2="-12.7" y2="-35.56" width="0.1524" layer="91"/>
+<junction x="-12.7" y="-35.56"/>
+</segment>
+</net>
+<net name="AINLEFT" class="0">
+<segment>
+<pinref part="X1" gate="G$1" pin="6"/>
+<wire x1="45.72" y1="30.48" x2="53.34" y2="30.48" width="0.1524" layer="91"/>
+<label x="55.88" y="30.48" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="AINRIGHT" class="0">
+<segment>
+<pinref part="X1" gate="G$1" pin="2"/>
+<wire x1="45.72" y1="20.32" x2="53.34" y2="20.32" width="0.1524" layer="91"/>
+<label x="55.88" y="20.32" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="COMPIN" class="0">
+<segment>
+<pinref part="X1" gate="G$1" pin="20"/>
+<wire x1="45.72" y1="66.04" x2="53.34" y2="66.04" width="0.1524" layer="91"/>
+<label x="55.88" y="66.04" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
