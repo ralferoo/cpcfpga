@@ -124,9 +124,9 @@ begin
 
 				if (t_vsync or t_hsync)='1' then
 					out_video_sync2	<= "00";
-					out_video_r2	<= "10";
-					out_video_g2	<= "10";
-					out_video_b2	<= "10";
+					out_video_r2	<= "00";
+					out_video_g2	<= "00";
+					out_video_b2	<= "00";
 				elsif t_de='0' then
 					out_video_sync2	<= "11";
 					out_video_r2	<= "00";
