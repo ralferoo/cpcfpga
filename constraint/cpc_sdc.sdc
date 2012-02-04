@@ -29,4 +29,5 @@ define_clock -name {n:cpc_0.gate_array_0.current_cycle[3]} -freq 4
 define_clock -name {n:cpc_0.psg_0.env_div.counter[16]} -freq 1
 define_clock -name {n:cpc_0.psg_0.env_div_clock_gen.counter[4]} -freq 1
 define_clock -name {n:cpc_0.psg_0.tone_div_clock_gen.counter[4]} -freq 1
+define_clock -name {n:cpc_0.crtc_0.v_hsync} -freq 1
 
