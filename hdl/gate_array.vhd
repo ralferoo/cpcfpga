@@ -67,6 +67,8 @@ architecture impl of gate_array is
 	
 	signal	local_z80_clk			: std_logic;
 	signal	video_mode			: std_logic_vector(1 downto 0);
+	signal	vm_shift_add			: std_logic_vector(2 downto 0);
+	signal	vm_pixel_mask			: std_logic_vector(3 downto 0);
 	signal	palette				: t_palette;
 	signal	upper_rom_paging_disable	: std_logic;
 	signal	lower_rom_paging_disable	: std_logic;
@@ -173,7 +175,7 @@ begin
 		variable		out_sram_oe		: std_logic;
 
 		variable		out_video_byte_data	: std_logic_vector(7 downto 0);
-		variable		out_video_shift_count	: std_logic_vector(2 downto 0);
+		variable		out_video_shift_count	: std_logic_vector(1 downto 0);
 		variable		out_video_byte_clock	: std_logic;
 		variable		out_crtc_clock		: std_logic;
 		variable		out_de			: std_logic;
@@ -234,7 +236,7 @@ begin
 		end procedure init_current_cycle;
 
 		procedure update_video_pixel(	variable	n_out_video_byte_data	: inout std_logic_vector(7 downto 0); 
-						variable	n_out_video_shift_count	: inout std_logic_vector(2 downto 0);
+						variable	n_out_video_shift_count	: inout std_logic_vector(1 downto 0);
 						variable	n_out_de		: in	std_logic;
 						variable	n_out_hsync		: in	std_logic;
 						variable	n_out_hsync_delayed	: in	std_logic;
@@ -246,34 +248,25 @@ begin
 			variable	t_colour_index	: std_logic_vector(3 downto 0);			
 			variable	t_colour_data	: std_logic_vector(4 downto 0);	
 			variable	t_rgb		: std_logic_vector(5 downto 0);	
-			variable	t_shift_count	: std_logic_vector(3 downto 0);	
+			variable	t_shift_count	: std_logic_vector(2 downto 0);	
 			variable	t_shift		: std_logic;	
 		begin
 			-- colour index selection
-			if video_mode = "10" then
-				t_colour_index		:= "000" & n_out_video_byte_data(7);
-			elsif video_mode(0) = '1' then
-				t_colour_index		:= "00" & n_out_video_byte_data(3) & n_out_video_byte_data(7);
-			else
-				t_colour_index		:= n_out_video_byte_data(1) & n_out_video_byte_data(5) &
-							   n_out_video_byte_data(3) & n_out_video_byte_data(7);
-			end if;
+			t_colour_index	:= n_out_video_byte_data(1) & n_out_video_byte_data(5) &
+					   n_out_video_byte_data(3) & n_out_video_byte_data(7);
+
+			t_colour_index	:= t_colour_index and vm_pixel_mask;
 
 			-- move to next pixel at appropriate time
-			t_shift_count			:= ('0' & n_out_video_shift_count) + 2;
-			if video_mode = "10" then
-				t_shift			:= t_shift_count(1);
-				t_shift_count(1)	:= '0';
-			elsif video_mode = "01" then
-				t_shift			:= t_shift_count(2);
-				t_shift_count(2)	:= '0';
-			else
-				t_shift			:= t_shift_count(3);
-			end if;
+			t_shift_count			:= ('0' & n_out_video_shift_count) + vm_shift_add;
+			t_shift				:= t_shift_count(2);
+
 			if t_shift='1' then
 				n_out_video_byte_data	:= n_out_video_byte_data(6 downto 0) & '0';
+				n_out_video_shift_count	:= (others=>'0');
+			else
+				n_out_video_shift_count	:= t_shift_count(1 downto 0);
 			end if;
-			n_out_video_shift_count		:= t_shift_count(2 downto 0);
 
 			-- lookup colour
 			if n_out_de='0' then
@@ -347,7 +340,7 @@ begin
 			variable	n_out_sram_oe		: std_logic;
 
 			variable	n_out_video_byte_data	: std_logic_vector(7 downto 0);
-			variable	n_out_video_shift_count	: std_logic_vector(2 downto 0);
+			variable	n_out_video_shift_count	: std_logic_vector(1 downto 0);
 			variable	n_out_video_byte_clock	: std_logic;
 			variable	n_out_crtc_clock	: std_logic;
 			variable	n_out_de		: std_logic;
@@ -603,6 +596,25 @@ begin
 		end if;
 		update_ports;
 	end process;
+
+	-- update mode at the end of hsync
+	mode_on_hsync: process(crtc_hsync, video_mode) is
+	begin
+		if rising_edge(crtc_hsync) then
+			case video_mode is
+				when "10" =>	vm_shift_add <= "100";
+				when "01" =>	vm_shift_add <= "010";
+				when others =>	vm_shift_add <= "001";
+			end case;
+
+			case video_mode is
+				when "10" =>	vm_pixel_mask <= "0001";
+				when "00" =>	vm_pixel_mask <= "1111";
+				when others =>	vm_pixel_mask <= "0011";
+			end case;
+		end if;
+	end process;
+
 
 	-- watch the gate array ports
 	watch_ports: process(nRESET, local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
