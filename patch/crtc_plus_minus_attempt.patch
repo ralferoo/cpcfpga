@@ -1,0 +1,103 @@
+diff --git a/hdl/crtc.vhd b/hdl/crtc.vhd
+index f98ed7d..e666364 100755
+--- a/hdl/crtc.vhd
++++ b/hdl/crtc.vhd
+@@ -119,19 +119,24 @@ begin
+ 	-- this process is clocked on the pixel clock...
+ 	process(nRESET, CLK, r_startaddress_h, r_startaddress_l)
+ 		variable	v_hpos		: std_logic_vector(7 downto 0);		-- current char
++		variable	v_hpos_plus_1	: std_logic_vector(7 downto 0);		-- current char
+ 		variable	v_hdisp		: std_logic;				-- display enabled (horizontally)
+ 		variable	v_hsynccount	: std_logic_vector(3 downto 0);		-- counter before we turn off hsync
+ 		variable	v_hsync		: std_logic;				-- is the hsync enabled currently
+ 
+ 		variable	v_vpos		: std_logic_vector(6 downto 0);		-- current character line
++		variable	v_vpos_plus_1	: std_logic_vector(6 downto 0);		-- current character line
+ 		variable	v_vdisp		: std_logic;				-- display enabled (vertically)
+ 
+ 		variable	v_rpos		: std_logic_vector(3 downto 0);		-- current row within a character
++		variable	v_rpos_plus_1	: std_logic_vector(3 downto 0);		-- current row within a character
+ 
+ 		variable	v_ma		: std_logic_vector(13 downto 0);	-- current MA address
++		variable	v_ma_plus_1	: std_logic_vector(13 downto 0);	-- current MA address
+ 		variable	v_ma_this_line	: std_logic_vector(13 downto 0);	-- MA address for the beginning of this line
+ 
+ 		variable	v_vsynccount	: std_logic_vector(3 downto 0);		-- counter before we turn off vsync
++		variable	v_vsynccount_minus_1	: std_logic_vector(3 downto 0);		-- counter before we turn off vsync
+ 		variable	v_vsync		: std_logic;				-- is the vsync enabled currently
+ 		variable	v_vsync_out	: std_logic;				-- vsync delayed until the next hsync
+ 
+@@ -165,14 +170,19 @@ begin
+ 			v_hpos			:= (others=>'0');
+ 			v_vpos			:= (others=>'0');
+ 			v_rpos			:= (others=>'0');
++			v_hpos_plus_1		:= (others=>'0');
++			v_vpos_plus_1		:= (others=>'0');
++			v_rpos_plus_1		:= (others=>'0');
+ 			v_hdisp			:= '1';
+ 			v_vdisp			:= '1';
+-			v_ma			:= r_startaddress_h & r_startaddress_l;
+-			v_ma_this_line		:= v_ma;
++			v_ma			:= (others=>'0');
++			v_ma_plus_1		:= (others=>'0');
++			v_ma_this_line		:= (others=>'0');
+ 
+ 			v_hsynccount		:= (others=>'0');
+ 			v_hsync			:= '0';
+ 			v_vsynccount		:= (others=>'0');
++			v_vsynccount_minus_1	:= (others=>'0');
+ 			v_vsync			:= '0';
+ 			v_vsync_out		:= '0';
+ 			v_inadjust		:= '0';
+@@ -202,8 +212,8 @@ begin
+ 
+ 			-- if we're still in the middle of a line, process line contents
+ 			if n_hpos /= r_htotal then
+-				n_hpos			:= n_hpos + 1;				-- update the character position
+-				n_ma			:= n_ma + ("0"&n_hdisp);		-- only update if we're still display things though (we'll use this later)
++				n_hpos			:= v_hpos_plus_1;			-- update the character position
++				n_ma			:= v_ma_plus_1;				-- only update if we're still display things though (we'll use this later)
+ 
+ 				-- check to see if we need to start a hsync
+ 				if n_hpos = r_hsyncpos then
+@@ -246,14 +256,14 @@ begin
+ 				n_hdisp			:= '1';					-- re-enable horiz output
+ 
+ 				-- count down the pulses in the vsync pulse
+-				n_vsynccount	:= n_vsynccount - 1;
++				n_vsynccount	:= v_vsynccount_minus_1;
+ 				if n_vsynccount = 0 then
+ 					n_vsync	:= '0';						-- clear the vsync pulse when it gets low enough
+ 				end if;
+ 
+ 				-- update row line counter
+ 				if reached_maxscanlinecount='0' then
+-					n_rpos			:= n_rpos + 1;			-- increment character row count
++					n_rpos			:= v_rpos_plus_1;			-- increment character row count
+ 				else
+ 					n_rpos			:= (others=>'0');		-- reset the row count to 0
+ 
+@@ -278,7 +288,7 @@ begin
+ 
+ 					else
+ 						n_inadjust	:= islastline;		-- set adjust flag if we have an adjustment line
+-						n_vpos		:= n_vpos + 1;			-- progress to next line
++						n_vpos		:= v_vpos_plus_1;			-- progress to next line
+ 					end if;
+ 
+ 					-- do the vsync pulse if required
+@@ -315,6 +325,14 @@ begin
+ 			v_vsync_out		:= n_vsync_out;
+ 			v_inadjust		:= n_inadjust;
+ 
++--			v_hsynccount_minus_1	:= n_hsynccount - 1;
++			v_vsynccount_minus_1	:= n_vsynccount - 1;
++
++			v_hpos_plus_1		:= n_hpos + 1;
++			v_rpos_plus_1		:= n_rpos + 1;
++			v_vpos_plus_1		:= n_vpos + 1;
++			v_ma_plus_1		:= n_ma + ("0"&n_hdisp);		-- only update if we're still display things though (we'll use this later)
++
+ 			-- and copy relevant things to the signals
+ 			MA 			<= n_ma;
+ 			RA 			<= n_rpos;
