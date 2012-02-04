@@ -1,0 +1,140 @@
+diff --git a/hdl/gate_array.vhd b/hdl/gate_array.vhd
+index 4dd330f..105f09d 100755
+--- a/hdl/gate_array.vhd
++++ b/hdl/gate_array.vhd
+@@ -63,7 +63,9 @@ architecture impl of gate_array is
+ 	signal d_idle				: std_logic;
+ 	signal d_us_count			: std_logic_vector(7 downto 0);
+ 
+-	type t_palette is array(0 to 16) of std_logic_vector(4 downto 0);
++	type t_palette is array(0 to 16) of std_logic_vector(5 downto 0);
++
++	signal	hardware_colour			: std_logic_vector(5 downto 0);
+ 	
+ 	signal	local_z80_clk			: std_logic;
+ 	signal	video_mode			: std_logic_vector(1 downto 0);
+@@ -244,7 +246,6 @@ begin
+ 						variable	n_out_video_blue	: out   std_logic_vector(1 downto 0);
+ 						variable	n_out_video_sync	: out   std_logic ) is
+ 			variable	t_colour_index	: std_logic_vector(3 downto 0);			
+-			variable	t_colour_data	: std_logic_vector(4 downto 0);	
+ 			variable	t_rgb		: std_logic_vector(5 downto 0);	
+ 			variable	t_shift_count	: std_logic_vector(3 downto 0);	
+ 			variable	t_shift		: std_logic;	
+@@ -277,43 +278,11 @@ begin
+ 
+ 			-- lookup colour
+ 			if n_out_de='0' then
+-				t_colour_data		:= palette(16);
++				t_rgb			:= palette(16);
+ 			else
+-				t_colour_data		:= palette( to_integer(ieee.numeric_std.unsigned(t_colour_index)) );
++				t_rgb			:= palette( to_integer(ieee.numeric_std.unsigned(t_colour_index)) );
+ 			end if;
+ 
+-			-- and map from that into real colours
+-			case t_colour_data is
+-				when "00000" | "00001"	=> t_rgb := "010101";	-- white
+-				when "00010" | "10001"	=> t_rgb := "001101";	-- sea green
+-				when "00011" | "01001"	=> t_rgb := "111101";	-- pastel yellow
+-				when "00100" | "10000"	=> t_rgb := "000001";	-- blue
+-				when "00101" | "01000"	=> t_rgb := "110001";	-- purple
+-				when "00110"		=> t_rgb := "000101";	-- cyan
+-				when "00111"		=> t_rgb := "110101";	-- pink
+-				when "01010"		=> t_rgb := "111100";	-- bright yellow
+-				when "01011"		=> t_rgb := "111111";	-- bright white
+-				when "01100"		=> t_rgb := "110000";	-- bright red
+-				when "01101"		=> t_rgb := "110011";	-- bright magenta
+-				when "01110"		=> t_rgb := "110100";	-- orange
+-				when "01111"		=> t_rgb := "110111";	-- pastel magenta
+-				when "10010"		=> t_rgb := "001100";	-- bright green
+-				when "10011"		=> t_rgb := "001111";	-- bright cyan
+-				when "10100"		=> t_rgb := "000000";	-- black
+-				when "10101"		=> t_rgb := "000011";	-- bright blue
+-				when "10110"		=> t_rgb := "000100";	-- green
+-				when "10111"		=> t_rgb := "000111";	-- sky blue
+-				when "11000"		=> t_rgb := "010001";	-- magenta
+-				when "11001"		=> t_rgb := "011101";	-- pastel green
+-				when "11010"		=> t_rgb := "011100";	-- lime
+-				when "11011"		=> t_rgb := "011111";	-- pastel cyan
+-				when "11100"		=> t_rgb := "010000";	-- red
+-				when "11101"		=> t_rgb := "010011";	-- mauve
+-				when "11110"		=> t_rgb := "010100";	-- yellow
+-				when others		=> t_rgb := "010111";	-- pastel blue
+-			end case;
+-
+-
+ 			-- and from there render the pixel
+ 			if (n_out_HSYNC or n_out_HSYNC_delayed or n_out_VSYNC)='1' then		-- ensure black level if in front/back porch
+ 				n_out_video_red		:= "00";
+@@ -686,32 +655,61 @@ begin
+ 		end if;
+ 	end process;
+ 
++	-- map the palette into hardware colours
++	palette_mapper: process(z80_dout) is
++	begin
++			case z80_dout(4 downto 0) is
++				when "00000" | "00001"	=> hardware_colour <= "010101";	-- white
++				when "00010" | "10001"	=> hardware_colour <= "001101";	-- sea green
++				when "00011" | "01001"	=> hardware_colour <= "111101";	-- pastel yellow
++				when "00100" | "10000"	=> hardware_colour <= "000001";	-- blue
++				when "00101" | "01000"	=> hardware_colour <= "110001";	-- purple
++				when "00110"		=> hardware_colour <= "000101";	-- cyan
++				when "00111"		=> hardware_colour <= "110101";	-- pink
++				when "01010"		=> hardware_colour <= "111100";	-- bright yellow
++				when "01011"		=> hardware_colour <= "111111";	-- bright white
++				when "01100"		=> hardware_colour <= "110000";	-- bright red
++				when "01101"		=> hardware_colour <= "110011";	-- bright magenta
++				when "01110"		=> hardware_colour <= "110100";	-- orange
++				when "01111"		=> hardware_colour <= "110111";	-- pastel magenta
++				when "10010"		=> hardware_colour <= "001100";	-- bright green
++				when "10011"		=> hardware_colour <= "001111";	-- bright cyan
++				when "10100"		=> hardware_colour <= "000000";	-- black
++				when "10101"		=> hardware_colour <= "000011";	-- bright blue
++				when "10110"		=> hardware_colour <= "000100";	-- green
++				when "10111"		=> hardware_colour <= "000111";	-- sky blue
++				when "11000"		=> hardware_colour <= "010001";	-- magenta
++				when "11001"		=> hardware_colour <= "011101";	-- pastel green
++				when "11010"		=> hardware_colour <= "011100";	-- lime
++				when "11011"		=> hardware_colour <= "011111";	-- pastel cyan
++				when "11100"		=> hardware_colour <= "010000";	-- red
++				when "11101"		=> hardware_colour <= "010011";	-- mauve
++				when "11110"		=> hardware_colour <= "010100";	-- yellow
++				when others		=> hardware_colour <= "010111";	-- pastel blue
++			end case;
++	end process;
++
++
+ 	-- watch the gate array port for palette things
+-	palette_updater: process(nRESET, local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout) is
++	palette_updater: process(nRESET, local_z80_clk,z80_a,z80_wr_n,z80_iorq_n,z80_dout,hardware_colour) is
+ 		variable	r_pal_index	: std_logic_vector(4 downto 0);
+---		variable	r_palette	: t_palette;
+ 
+ 		variable	n_pal_index	: std_logic_vector(4 downto 0);
+---		variable	n_palette	: t_palette;
+ 	begin
+ 		if rising_edge(local_z80_clk) then
+ 			if nRESET='0' then
+ 				n_pal_index				:= (others=>'0');
+ 
+---				for i in 0 to 16 loop
+---					palette(i)            		<= "10100";
+---				end loop;
+-				
+ 			else
+ 				n_pal_index				:= r_pal_index;
+ 
+ 				if z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 14)="01" and z80_dout(7)='0' then
+ 					if z80_dout(6)='1' then
+ 						if r_pal_index(4)='1' then
+-							palette(16)	<= z80_dout(4 downto 0);
++							palette(16)	<= hardware_colour;
+ 						else
+ 							palette( to_integer(ieee.numeric_std.unsigned(r_pal_index)) )
+-									<= z80_dout(4 downto 0);
++									<= hardware_colour;
+ 						end if;
+ 					else
+ 						n_pal_index		:= z80_dout(4 downto 0);
