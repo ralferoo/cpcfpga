@@ -1,6 +1,28 @@
 
 	org #0000
 
+
+
+	ld bc,#7f40
+dohalt:
+
+noclear:
+	inc c			; 1
+	res 5,c			; 2
+	out (c),c		; 4
+
+        ld a,#f5		; 2
+	in a,(0)		; 3
+	rra			; 1
+	jr nc,noclear		; 3 taken
+
+	jr dohalt
+
+
+
+
+
+
 	ld bc,#fefe
 	ld a,#a0
 	out (c),a		; make upper ROM writeable, leave boot rom active

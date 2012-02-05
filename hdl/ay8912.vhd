@@ -61,13 +61,13 @@ architecture impl of ay8912 is
 	signal noise_bit				: std_logic;
 begin
 
-	tone_div_clock_gen: clock_divider port map( clk=>clk, output=>tone_divider_clock, reset=>nRESET, divisor=>"1000");
+	tone_div_clock_gen: clock_divider port map( clk=>clk, output=>tone_divider_clock, reset=>nRESET, divisor=>"1000", load=>'0');
 	env_div_clock_gen: clock_divider port map( clk=>tone_divider_clock, output=>env_divider_clock, reset=>nRESET, load=>env_restart, divisor=>"1000");
 
-	tone_div_a: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_a, osc=>tone_out_a);
-	tone_div_b: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_b, osc=>tone_out_b);
-	tone_div_c: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_c, osc=>tone_out_c);
-	noise_div: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>noise, output=>noise_clock);
+	tone_div_a: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_a, osc=>tone_out_a, load=>'0');
+	tone_div_b: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_b, osc=>tone_out_b, load=>'0');
+	tone_div_c: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>tone_c, osc=>tone_out_c, load=>'0');
+	noise_div: clock_divider port map( clk=>tone_divider_clock, reset=>nRESET, divisor=>noise, output=>noise_clock, load=>'0');
 
 --	env_divider_load <= (not nRESET) or env_restart;
 	env_div: clock_divider port map( clk=>env_divider_clock, reset=>nRESET, load=>env_restart, divisor=>env_period, output=>env_clock);
