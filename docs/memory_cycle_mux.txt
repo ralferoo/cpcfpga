@@ -162,9 +162,9 @@ are valid.
 IO behaviour
 ------------
 
-Not important to us... we are only concerned about concurrency on the Z80 bus.
-
-LIES! The CPC does also seem to stretch IO requests. Probably a bug!
+The gate arry also has to stretch IO accesses because in the rare case the IO
+request is for the gate array itself, it needs to be able to read the databus
+through the IO lines without seeing the data coming from the video system.
 
 IN A,(nn)	3 on CPC	4,3,4		expected, but I think because T1 of last gets pushed forward
 OUT (nn),A	3 on CPC			instr+mem(nn)+in(5)
@@ -469,4 +469,117 @@ M1	MREQ	IORQ	RD	WR
 0	1	1	1	1	interrupt request	(5 cycles)
 
 Note, we can't yet do anything about the IO request...
+
+				--------------------
+				--------------------
+				--------------------
+				--------------------
+
+Hmmm, my current logic doesn't work... Quick revisiting:
+
+From a memory access POV, T1 can be considered to be the last cycle of the
+previous phase. So, really we want to align the "normal T2" to the memory access
+and the "normal T3 in IO" to the memory access.
+
+
+Instruction Fetch
+-----------------
+
+T2:	M1=0, MREQ=0, RD=0		no wait on cycle 0, otherwise wait
+T3:	Same conditions are still valid on cycle 1, no wait if we just did cycle 0
+T4:	M1=1, MREQ=0, RD=1, RFSH=0	no wait
+T1:	M1=1, MREQ=1, RD=1, RFSH=0	no wait
+
+so, e.g. loop of NOPS for instance, never hits a wait except maybe before 1st instruction
+
+Memory Read
+-----------
+
+T2:	M1=1, MREQ=0, RD=0		no wait on cycle 0, otherwise wait
+T3:	same conditions valid, no wait if we just did cycle 0
+T1:	M1=1, MREQ=1, RD=1		prepare for next cycle
+
+Memory Write
+------------
+
+TW:	M1=1, MREQ=0, RD=1, WR=1	no wait on cycle 0, otherwise wait
+T3:	M1=1, MREQ=0, RD=1, WR=0	no wait
+T1:	M1=1, MREQ=1, RD=1, WR=1	prepare for next cycle
+
+IO Read/Write
+-------------
+
+TW:	M1=1, IORQ=0, RD/WR=0		no wait on cycle 0, otherwise wait
+T3:	same conditions			no wait if we just did cycle 0
+T1/T2	M1=1, IORQ=1, RD/WR=1		prepare for next cycle
+
+INT ACK
+-------
+
+Here, our idea of "T2" is actually the second TW
+
+(T2/TW1:M1=0, IORQ=1, RD=1		maybe useful for ID, probably not)
+
+TW2:	M1=0, IORQ=0, RD=1		no wait if cycle 0, otherwise wait
+T3:	same conditions valid, no wait if we just did cycle 0
+T4:	M1=1, MREQ=0, RD=1, RFSH=0	no wait - refresh after IM read
+T1:	M1=1, MREQ=1, RD=1, RFSH=0	no wait - refresh after IM read
+
+Summary
+-------
+
+If MREQ=0 or IORQ=0, no wait if in cycle 0 or 1
+If MREQ=0 and M1=1 in cycle 2 or 3, then no wait if cycle 0 and cycle 1 were M1=0
+
+cycle	idle	mreq	iorq	m1 /0 ->wait	idle	m1_0	notes
+0	1	0	1	0	no	0	0	IF/T2
+1	0	0	1	0	no	0		IF/T3
+2	0	0	1	1  / 0	no	0		IF/T4
+3	0	1	1	1  / 0	no	1		next T1
+
+0	1	1	0	0	no	0	0	INTACK/2nd TW (our T2)
+1	0	1	0	0	no	0		INTACK/T3
+2	0	0	1	1  / 0	no	0		INTACK/T4
+3	0	1	1	1  / 0	no	1		next T1
+
+0	1	0	1	1	no	0	1	MEM/T2
+1	0	0	1	1	no	0		MEM/T3
+2	0	1	1	1	no	1		next T1
+
+0	1	1	0	1	no	0	1	IO/TW (our T2)
+1	0	1	0	1	no	0		IO/T3
+2	0	1	1	1	no	1		next T1
+
+Other cases:
+x	1	1	1	x	no	1		nothing issued
+
+
+So:
+
+if (iorq=0 or mreq=0) then
+	if cycle=0 then				-- start on cycle 0
+		wait	:= no
+		idle	:= 0
+		m1_0	:= m1
+
+	elif idle=1 then			-- else wait until not idle
+		wait	:= yes
+
+	elif cycle=2 and m1_0=0			-- allow mreq on cycle 2 after IF or INTACK
+		wait	:= no
+
+	else
+		wait	:= yes
+	end if
+else
+	wait	:= no				-- never wait unless iorq/mreq asserted
+end if
+
+if cycle=2 and idle=0 then
+	idle	:= m1_0				-- idle=0 for 3 states on IF/INTACK, 2 otherwise
+
+elif cycle=3 then
+	idle	:= 1				-- idle at end of IF/INTACK
+end if;
+
 
