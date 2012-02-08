@@ -22,14 +22,14 @@
 # 
 
 
-set_io {video_r2[1]}  -pinname 2 -fixed yes -SLEW High -DIRECTION Output
-set_io {video_r2[0]}  -pinname 3 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_r2[0]}  -pinname 2 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_r2[1]}  -pinname 3 -fixed yes -SLEW High -DIRECTION Output
 
-set_io {video_g2[1]}  -pinname 4 -fixed yes -SLEW High -DIRECTION Output
-set_io {video_g2[0]}  -pinname 5 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_g2[0]}  -pinname 4 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_g2[1]}  -pinname 5 -fixed yes -SLEW High -DIRECTION Output
 
-set_io {video_b2[1]}  -pinname 6 -fixed yes -SLEW High -DIRECTION Output
-set_io {video_b2[0]}  -pinname 7 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_b2[0]}  -pinname 6 -fixed yes -SLEW High -DIRECTION Output
+set_io {video_b2[1]}  -pinname 7 -fixed yes -SLEW High -DIRECTION Output
 
 #set_io {video_sync2[1]}  -pinname  8 -fixed yes -SLEW High -DIRECTION Output
 #set_io {video_sync2[0]}  -pinname 11 -fixed yes -SLEW High -DIRECTION Output
