@@ -12,7 +12,7 @@ noclear:
 	out (c),c		; 4
 
         ld a,#f5		; 2
-	in a,(0)		; 3
+	in a,(9)		; 3
 	rra			; 1
 	jr nc,noclear		; 3 taken
 

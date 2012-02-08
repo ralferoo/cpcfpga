@@ -61,6 +61,7 @@ architecture impl of gate_array is
 
 	signal d_tstate				: std_logic_vector(1 downto 0);
 	signal d_idle				: std_logic;
+	signal d_m1_n_on_t2			: std_logic;
 	signal d_us_count			: std_logic_vector(7 downto 0);
 
 	type t_palette is array(0 to 16) of std_logic_vector(4 downto 0);
@@ -91,30 +92,53 @@ begin
 		procedure calculate_wait(			iorq_n,mreq_n,m1_n	: in std_logic;
 						variable	tstate			: in std_logic_vector(1 downto 0); 
 						variable	idle			: inout std_logic;
+						variable	m1_n_on_t2		: inout std_logic;
 						variable	wait_n			: inout std_logic) is
+			variable	idle_in	: std_logic;
+			variable	m1_n_on_t2_in	: std_logic;
 		begin
-			wait_n	:= '1';
+			idle_in		:= idle;
+			m1_n_on_t2_in		:= m1_n_on_t2;
 
-			if tstate="11" then							-- if we've reached T1, all signals should be normal
-				idle	:= '1';							-- and we can transition back to the idle state
+			wait_n	:= '1';						-- never wait unless iorq/mreq asserted
+
+			if iorq_n='0' or mreq_n='0' then
+				wait_n		:= '0';				-- if iorq or mreq, assume we need to wait
+
+				if tstate="00" and mreq_n='0' then
+					wait_n	:= '1';				-- memory request, it's fine
+					idle	:= '0';				-- move out of idle mode
+
+				elsif tstate="00" and iorq_n='0' and idle='0' then
+					wait_n	:= '1';				-- iorq, already started
+
+				elsif tstate="11" and iorq_n='0' then
+					wait_n	:= '0';				-- iorq, need extra cycle here due to bug in t80
+					idle	:= '0';
+
+				elsif tstate="01" and idle='0' then
+					wait_n	:= '1';				-- already started, it's fine
+
+				elsif tstate="10" and idle='0' and mreq_n='0' and m1_n_on_t2='0' then
+					wait_n	:= '1';				-- legitimate refresh cycle after IF/INTACK
+
+				end if;
 			end if;
 
-			if (iorq_n='0' and m1_n='0') then					-- we're acknowledging an interrupt, T4->T2(instr)
-				if tstate="00" then
-					wait_n	:= '1';						-- we can proceed out Tw that's a T2
-				else
-					wait_n	:= '0';						-- wait until T2
-				end if;
-				idle	:= '0';							-- and go into busy state just in case
-			elsif idle='1' and (iorq_n='0' or mreq_n='0') then			-- we're in the idle state and IO/mem requested
-				if tstate="00" then
-					idle	:= '0';						-- from T2 we can transition into busy state
-					wait_n	:= iorq_n; --not m1_n;				-- but add a wait state unless it's instruction fetch
-				else
-					wait_n	:= '0';						-- not in T2, force them to wait until the next block
-				end if;
+			if tstate="00" then
+				m1_n_on_t2	:= m1_n;
+			end if;
+
+			if tstate="10" then
+				idle		:= m1_n_on_t2;			-- extend into 3rd cycle for IF/INTACK
+			
+			elsif tstate="11" then
+				idle		:= iorq_n;			-- set idle, unless we happen to have an interrupt (bug in t80)
 
 			end if;
+
+--			report "iorq " & std_logic'image(iorq_n) & " mreq " & std_logic'image(mreq_n) & " m1 " & std_logic'image(m1_n) & " idle " & std_logic'image(idle_in) & " tstate " & std_logic'image(tstate(1))  & std_logic'image(tstate(0)) & " -> wait " & std_logic'image(wait_n) & " idle " & std_logic'image(idle);
+			
 		end procedure calculate_wait;
 
 		------------------------------------------------------------------------------------------------------------
@@ -160,6 +184,7 @@ begin
 		--
 		-- current cycle
 		variable		current_cycle		: std_logic_vector(3 downto 0);	
+		variable		m1_n_on_t2		: std_logic;	
 		variable		z80_bus_is_idle		: std_logic;	
 
 		variable		out_z80_clock		: std_logic;
@@ -326,6 +351,7 @@ begin
 
 		procedure update_current_cycle is
 			variable	n_current_cycle		: std_logic_vector(3 downto 0);
+			variable	n_m1_n_on_t2		: std_logic;	
 
 			variable	n_out_z80_clock		: std_logic;
 			variable	tstate			: std_logic_vector(1 downto 0);
@@ -369,6 +395,7 @@ begin
 
 			-- update variables
 			n_current_cycle		:= current_cycle + 1;
+			n_m1_n_on_t2		:= m1_n_on_t2;
 			n_z80_bus_is_idle	:= z80_bus_is_idle;
 			n_out_z80_din		:= out_z80_din;
 			n_out_z80_wait_n	:= out_z80_wait_n;
@@ -448,6 +475,7 @@ begin
 						m1_n	=> z80_m1_n,
 						tstate	=> tstate,
 						idle	=> n_z80_bus_is_idle,
+						m1_n_on_t2=> n_m1_n_on_t2,
 						wait_n 	=> n_out_z80_wait_n );
 
 				-- handle video data transfer
@@ -504,6 +532,7 @@ begin
 
 			-- do all the assignments together
 			current_cycle		:= n_current_cycle;
+			m1_n_on_t2		:= n_m1_n_on_t2;
 			z80_bus_is_idle		:= n_z80_bus_is_idle;
 			out_z80_wait_n		:= n_out_z80_wait_n;
 			out_z80_din		:= n_out_z80_din;
@@ -561,6 +590,7 @@ begin
 
 			d_tstate		<= current_cycle(3 downto 2);
 			d_idle			<= z80_bus_is_idle;
+			d_m1_n_on_t2		<= m1_n_on_t2;
 			d_us_count		<= out_d_us_count;
 
 			psg_clk			<= current_cycle(3);

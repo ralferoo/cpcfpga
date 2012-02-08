@@ -546,9 +546,10 @@ cycle	idle	mreq	iorq	m1 /0 ->wait	idle	m1_0	notes
 1	0	0	1	1	no	0		MEM/T3
 2	0	1	1	1	no	1		next T1
 
-0	1	1	0	1	no	0	1	IO/TW (our T2)
-1	0	1	0	1	no	0		IO/T3
-2	0	1	1	1	no	1		next T1
+0	1	1	0	1	yes	0	1	IO/T2 (stupid T80 core does this a cycle early)
+1	0	1	0	1	no	0	1	IO/TW (our T2)
+2	0	1	0	1	no	0		IO/T3
+3	0	1	1	1	no	1		next T1
 
 Other cases:
 x	1	1	1	x	no	1		nothing issued
