@@ -133,7 +133,7 @@ begin
 				idle		:= m1_n_on_t2;			-- extend into 3rd cycle for IF/INTACK
 			
 			elsif tstate="11" then
-				idle		:= iorq_n;			-- set idle, unless we happen to have an interrupt (bug in t80)
+				idle		:= iorq_n;			-- set idle, unless we have an io request (bug in t80)
 
 			end if;
 
