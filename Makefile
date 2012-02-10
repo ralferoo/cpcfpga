@@ -24,9 +24,9 @@ UFC_NAME=smartgen/bootrom_internal/bootrom_internal
 EDN_NAME = $(TOP_NAME).edn
 PDB_NAME = $(TOP_NAME).pdb
 
-CODEGEN_ASM_FILES = $(sort $(wildcard codegen/*.asm))
+CODEGEN_ASM_FILES = $(sort $(wildcard codegen/*.asm)) $(sort $(wildcard rom/installer_*.asm))
 CODEGEN_SCR_FILES = $(sort $(wildcard codegen/*.scr))
-CODEGEN_SREC_FILES = $(patsubst codegen/%.asm,image/%.srec,$(CODEGEN_ASM_FILES)) $(patsubst codegen/%.scr,image/%.srec,$(CODEGEN_SCR_FILES))
+CODEGEN_SREC_FILES = $(patsubst codegen/%.asm,image/%.srec,$(patsubst rom/%.asm,image/%.srec,$(CODEGEN_ASM_FILES))) $(patsubst codegen/%.scr,image/%.srec,$(CODEGEN_SCR_FILES))
 
 FLASHPRO	= flashpro
 SYNPLIFY	= C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe
@@ -191,10 +191,13 @@ hdl/evalboard.vhd: codegen/evalboard.pl hdl/cpc.vhd hdl/bootrom.vhd
 hdl/bench_cpc.vhd: codegen/bench_cpc.pl hdl/cpc.vhd hdl/bench_cpc_bootrom.vhd
 	codegen/bench_cpc.pl <hdl/cpc.vhd >$@
 
+build/%.bin: rom/%.asm build/.dummy
+	pasmo $< build/$*.bin build/$*.sym
+
 build/%.bin: codegen/%.asm build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 
-image/rom_c000.srec: codegen/rom_c000.asm build/.dummy image/.dummy
+image/rom_c000.srec: rom/rom_c000.asm build/.dummy image/.dummy
 	pasmo $< build/rom_c000.bin build/rom_c000.sym
 	objcopy --change-addresses=49152 -I binary build/rom_c000.bin -O srec $@
 
@@ -202,13 +205,17 @@ image/%.srec: codegen/%.asm build/.dummy image/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
+image/%.srec: rom/%.asm build/.dummy image/.dummy
+	pasmo $< build/$*.bin build/$*.sym
+	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
+
 image/%.srec: codegen/%.scr build/.dummy image/.dummy
 	objcopy --change-addresses=16384 -I binary $< -O srec build/$*.srec
 	perl -ne '{print unless m/^S9/;}' <build/$*.srec >$@
 
-image/rom_installer_recovery.srec: build/rom_c000.bin
-image/rom_installer.srec: build/boot_into_basic.bin
-image/rom_installer_myrom.srec: build/mytestrom.bin
+image/installer_recovery.srec: build/rom_c000.bin
+image/installer.srec: build/boot_into_basic.bin
+image/installer_myrom.srec: build/mytestrom.bin
 
 
 
