@@ -24,9 +24,9 @@ UFC_NAME=smartgen/bootrom_internal/bootrom_internal
 EDN_NAME = $(TOP_NAME).edn
 PDB_NAME = $(TOP_NAME).pdb
 
-CODEGEN_ASM_FILES = $(sort $(wildcard codegen/*.asm)) $(sort $(wildcard rom/installer_*.asm))
+CODEGEN_ASM_FILES = $(sort $(wildcard codegen/*.asm)) $(sort $(wildcard test/*.asm)) $(sort $(wildcard rom/installer_*.asm))
 CODEGEN_SCR_FILES = $(sort $(wildcard codegen/*.scr))
-CODEGEN_SREC_FILES = $(patsubst codegen/%.asm,image/%.srec,$(patsubst rom/%.asm,image/%.srec,$(CODEGEN_ASM_FILES))) $(patsubst codegen/%.scr,image/%.srec,$(CODEGEN_SCR_FILES))
+CODEGEN_SREC_FILES = $(patsubst codegen/%.asm,image/%.srec,$(patsubst rom/%.asm,image/%.srec,$(patsubst test/%.asm,image/%.srec,$(CODEGEN_ASM_FILES)))) $(patsubst codegen/%.scr,image/%.srec,$(CODEGEN_SCR_FILES))
 
 FLASHPRO	= flashpro
 SYNPLIFY	= C:\\Actel\\Libero_v9.1\\Synopsys\\synplify_E201009A-1\\bin\\mbin\\synplify.exe
@@ -206,6 +206,10 @@ image/%.srec: codegen/%.asm build/.dummy image/.dummy
 	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
 image/%.srec: rom/%.asm build/.dummy image/.dummy
+	pasmo $< build/$*.bin build/$*.sym
+	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
+
+image/%.srec: test/%.asm build/.dummy image/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
