@@ -35,11 +35,23 @@ prloop:	call &bb5a
 
 infloop:
 	halt
-;	ld e,10
-;	call waitrowe
 
-;	ld bc,#7f9d
-;	out (c),c
+	exx
+	ld a,c
+	exx
+	cp #45
+	jr nz,infloop
+
+	ld e,33
+	call waitrowe
+
+	ld bc,#7f9d
+	out (c),c
+
+	ld de,#52
+	out (c),d
+	out (c),e
+
 ;	ld bc,#7f8d
 ;	out (c),c
 
@@ -86,6 +98,11 @@ docolour:
        	out (c),c
        	out (c),e
        	out (c),c
+
+
+	jp doret
+
+
 
 	ld a,#45
 	sub c
@@ -184,8 +201,9 @@ marker:
         ld (#c384+4*#800),a
         ld (#c388+5*#800),a
         ld (#c38c+6*#800),a
-        defs 63-8*4
+;        defs 63-8*4
 
+doret:
 	exx
 	ex af,af'
 
