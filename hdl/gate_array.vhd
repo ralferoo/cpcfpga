@@ -788,7 +788,7 @@ begin
 			generate_interrupt			:= '0';
 			z80_int_n				<= '1';
 			
-		elsif falling_edge(local_z80_clk) then
+		elsif rising_edge(local_z80_clk) then
 			-- get local copy of variables
 			n_line_counter				:= line_counter;
 			n_vsync_sense				:= "0" & vsync_sense;
@@ -799,15 +799,14 @@ begin
 			if n_last_hsync='0' and last_hsync='1' then					-- falling edge of hsync
 				-- process hsync counter
 				n_line_counter			:= n_line_counter + 1;
+
+				-- generate interrupt on 52nd line
 				if n_line_counter = "110100" then
 					n_generate_interrupt	:= '1';
 					n_line_counter		:= (others=>'0');
 				end if;
 	
 				-- process vsync reset on 2nd hsync after vsync
-				if crtc_vsync = '1' then
-					report "vysnc";
-				end if;
 				n_vsync_sense			:= vsync_sense & crtc_vsync;
 				if n_vsync_sense = "011" then
 					if n_line_counter(5)='0' then

@@ -12,6 +12,8 @@ entity ps2input is port(
 	clk			: in	std_logic;					-- 1mhz clock
 	clk16			: in  std_logic;				-- master clock input @ 16 MHz
 
+	break_key		: out	std_logic;
+
 	-- ps/2 keyboard interface
 	ps2_clock		: inout std_logic;
 	ps2_data		: inout std_logic;
@@ -171,6 +173,7 @@ begin
 		variable	r_parity	: std_logic;
 		variable	r_keystate	: std_logic;
 		variable	r_extended	: std_logic;
+		variable	r_break_key	: std_logic;
 
 		variable	n_timeout	: std_logic_vector(13 downto 0);
 		variable	n_clock		: std_logic;
@@ -181,6 +184,7 @@ begin
 		variable	n_parity	: std_logic;
 		variable	n_keystate	: std_logic;
 		variable	n_extended	: std_logic;
+		variable	n_break_key	: std_logic;
 
 		variable	t_scancode	: std_logic_vector(11 downto 0);
 	begin
@@ -195,6 +199,7 @@ begin
 			n_extended	:= '0';
 			n_data		:= '0';
 			n_data2		:= '0';
+			n_break_key	:= '0';
 
 			-- set the buses to high-Z
 			ps2_clock	<= 'Z';
@@ -296,6 +301,7 @@ begin
 			n_extended	:= r_extended;
 			n_data		:= r_data;
 			n_data2		:= r_data2;
+			n_break_key	:= r_break_key;
 
 			-- manage the timeout, if we go over 8192us without a clock pulse then empty out the shift register
 			n_timeout		:= n_timeout + 1;
@@ -338,6 +344,8 @@ begin
 						raw_scancode	<= n_shift_reg(8 downto 1);
 						raw_scancode_clk	<= '1';
 
+						n_break_key	:= '0';
+
 						case t_scancode is
 							when x"014" =>		key_ctrl_l	<= r_keystate;		-- left control
 							when x"114" =>		key_ctrl_r	<= r_keystate;		-- right control
@@ -349,6 +357,8 @@ begin
 							when x"0f0" =>		n_keystate	:= '1';			-- next key is release
 							when x"1f0" =>		n_keystate	:= '1';			-- next key is release
 										n_extended	:= '1';			-- maintain extended
+
+							when x"07e" =>		n_break_key	:= '1';			-- scroll lock press = break
 
 -- grep n_dout hdl/ps2input.vhd |perl -ne '$a=$_;{while ($a=~s/(key_[^\s;\)]+)//) {print "\t\t\t\t\t\twhen \"x000\" =>\t$1\t\t<= r_keystate;\n";}}' 
 	
@@ -458,6 +468,9 @@ begin
 		r_extended	:= n_extended;
 		r_data		:= n_data;
 		r_data2		:= n_data2;
+		r_break_key	:= n_break_key;
+
+		break_key	<= r_break_key;
 	end process;
 end impl;
 

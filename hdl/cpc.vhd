@@ -289,6 +289,8 @@ architecture impl of cpc is
 		nRESET				: in	std_logic;
 		clk				: in	std_logic;					-- 1mhz clock
 		clk16				: in  std_logic;				-- master clock input @ 16 MHz
+
+		break_key			: out	std_logic;
 	
 		-- ps/2 keyboard interface
 		ps2_clock			: inout std_logic;
@@ -314,8 +316,30 @@ architecture impl of cpc is
 	signal	joystick_1			: std_logic_vector(5 downto 0);
 	signal	joystick_2			: std_logic_vector(5 downto 0);
 
+	signal	reset_n				: std_logic;
+	signal	keyboard_reset			: std_logic;
+
 	-----------------------------------------------------------------------------------------------------------------------
 	begin
+
+
+	process(nRESET,clk16,keyboard_reset)
+		variable	keyboard_reset_count	: std_logic_vector(8 downto 0);
+	begin
+		if nRESET='0' then
+			keyboard_reset_count		:= (others=>'0');
+
+		elsif rising_edge(clk16) then
+			if keyboard_reset='1' then
+				keyboard_reset_count	:= (others=>'0');
+
+			elsif keyboard_reset_count(keyboard_reset_count'high)='0' then
+				keyboard_reset_count	:= keyboard_reset_count + 1;
+			end if;
+		end if;
+
+		reset_n					<= keyboard_reset_count(keyboard_reset_count'high);
+	end process;
 
 	--leds(3) <= clklock;
 
@@ -342,7 +366,7 @@ architecture impl of cpc is
 
         -- z80
         z80 : T80s generic map ( mode=>0, T2Write=>1, IOWait=>1 )
-		   port map ( RESET_n=>nRESET, CLK_n=>z80_clk, 
+		   port map ( RESET_n=>reset_n, CLK_n=>z80_clk, 
                               WAIT_n=>z80_WAIT_n, INT_n=>z80_INT_n, NMI_n=>z80_NMI_n, BUSRQ_n=>z80_BUSRQ_n,
                               M1_n=>z80_M1_n, MREQ_n=>z80_MREQ_n, IORQ_n=>z80_IORQ_n, RD_n=>z80_RD_n, WR_n=>z80_WR_n, RFSH_n=>z80_RFSH_n, HALT_n=>z80_HALT_n, BUSAK_n=>z80_BUSAK_n,
                               A=>z80_A, DI=>z80_DI, DO=>z80_DO );
@@ -354,13 +378,13 @@ architecture impl of cpc is
         z80_BUSRQ_n <= '1'; --pushsw(3);
 
 	-- crtc
-	crtc_0 : crtc port map( nRESET=>nRESET, MA=>crtc_MA, DE=>crtc_DE, CLK=>crtc_CLK,
+	crtc_0 : crtc port map( nRESET=>reset_n, MA=>crtc_MA, DE=>crtc_DE, CLK=>crtc_CLK,
 				RW=>z80_A(9), E=>crtc_E, RS=>z80_A(8), nCS=>z80_A(14),
 				DIN=>z80_DO, DOUT=>crtc_DOUT, RA=>crtc_RA, HSYNC=>crtc_HSYNC, VSYNC=>crtc_VSYNC);
 	crtc_E	 <= z80_IORD_n nand z80_IOWR_n;
 
 	-- ppi 8255
-	ppi_0 : ppi8255 port map ( nRESET=>nRESET, clk=>z80_clk, rd_n => z80_iord_n, wr_n => z80_iowr_n,
+	ppi_0 : ppi8255 port map ( nRESET=>reset_n, clk=>z80_clk, rd_n => z80_iord_n, wr_n => z80_iowr_n,
 				   cs_n => z80_a(11), a => z80_a(9 downto 8),
 				   din => z80_DO, dout=>ppi_dout,
 				   psg_databus_in => psg_databus_in, psg_databus_out => psg_databus_out,
@@ -369,14 +393,15 @@ architecture impl of cpc is
 	cas_in <= pushsw(3); --'0';
 
 	-- ay 8912 psg
-	psg_0 : ay8912 port map (nRESET => nRESET, clk=>psg_clk, pwm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
+	psg_0 : ay8912 port map (nRESET => reset_n, clk=>psg_clk, pwm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
 				 io_a=>keyboard_column, pwm_left=>audio_left, pwm_right=>audio_right, tape_noise=>psg_tape_noise, is_mono=>dipsw(6) );
 	psg_tape_noise <= cas_out; -- xor cas_in;  -- cas_in makes a hideous noise and causes sync interference
 	video_sound_left <= audio_left;
 	video_sound_right <= audio_right;	-- although in general, connecting audio up to scart at all causes interference... maybe voltage too high?
 
 	-- keyboard
-	kbd_0 : ps2input port map ( nRESET=>nRESET, clk=>psg_clk, clk16=>clk16,
+	kbd_0 : ps2input port map ( nRESET=>reset_n, clk=>psg_clk, clk16=>clk16,
+					break_key=>keyboard_reset,
 				    	ps2_clock=>ps2_clock, ps2_data=>ps2_data,
 					keyboard_row=>keyboard_row, keyboard_column=>keyboard_column,
 					raw_scancode=>raw_scancode, raw_scancode_clk=>raw_scancode_clk,
@@ -395,7 +420,7 @@ architecture impl of cpc is
 
 	-- gate array
 	gate_array_0 : gate_array port map (
-			nRESET				=> nRESET,
+			nRESET				=> reset_n,
 			clk16				=> clk16, 
 	
 			-- z80 basic functionality
@@ -443,9 +468,9 @@ architecture impl of cpc is
 	    bootrom_clk <= z80_clk;
 
         -- add switch input to port #fade
-        process(nRESET,z80_clk,z80_IORQ_n,z80_RD_n,z80_A)
+        process(reset_n,z80_clk,z80_IORQ_n,z80_RD_n,z80_A)
         begin
-            if nRESET = '0' then
+            if reset_n = '0' then
 		uart_rx_clear <= '0';
 	    	z80_DI_is_from_iorq <= '0';
     	        z80_DI_from_iorq <= (others=>'0');
@@ -494,9 +519,9 @@ architecture impl of cpc is
         -- add SPI output to port #ffxx
 	-- note, this is a special case as just reading from the port also triggers a dummy transfer, although we need to be
 	-- careful as the "dummy" byte might actually be useful!
-	process(nRESET,z80_IORQ_n,z80_WR_n,z80_RD_n,z80_A,z80_DO)
+	process(reset_n,z80_IORQ_n,z80_WR_n,z80_RD_n,z80_A,z80_DO)
 	begin
-		if nRESET = '0' then
+		if reset_n = '0' then
 			spi_write		<= (others=>'0');
 			spi_load 		<= '0';
             
@@ -516,9 +541,9 @@ architecture impl of cpc is
         end process;
 
         -- add LED output to port #fade
-        process(nRESET,z80_clk,z80_IORQ_n,z80_WR_n,z80_A)
+        process(reset_n,z80_clk,z80_IORQ_n,z80_WR_n,z80_A)
         begin
-		if nRESET = '0' then
+		if reset_n = '0' then
 			leds(3 downto 0)	<= (others=>'0');
 			uart_tx_data		<= (others=>'0');
 			uart_tx_load		<= '0';
@@ -551,15 +576,15 @@ architecture impl of cpc is
                  pushsw  (0) xor pushsw  (1) xor pushsw  (2) xor pushsw  (3);
 
         -- uart
-        uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>uart_tx_load , data=>uart_tx_data , empty=>uart_tx_empty );
---        uart_tx_0  : uart_tx port map( nrst=>nreset, clk16mhz=>clk16, txd=>uart_tx_txd , load=>raw_scancode_clk , data=>raw_scancode , empty=>uart_tx_empty );
+        uart_tx_0  : uart_tx port map( nrst=>reset_n, clk16mhz=>clk16, txd=>uart_tx_txd , load=>uart_tx_load , data=>uart_tx_data , empty=>uart_tx_empty );
+--        uart_tx_0  : uart_tx port map( nrst=>reset_n, clk16mhz=>clk16, txd=>uart_tx_txd , load=>raw_scancode_clk , data=>raw_scancode , empty=>uart_tx_empty );
         txd <= uart_tx_txd;
 
-        uart_rx_0  : uart_rx port map( nrst=>nreset, clk16mhz=>clk16, rxd=>uart_rx_rxd , avail=>uart_rx_avail , data=>uart_rx_data , clear=>uart_rx_clear, errorfound=>uart_rx_error );
+        uart_rx_0  : uart_rx port map( nrst=>reset_n, clk16mhz=>clk16, rxd=>uart_rx_rxd , avail=>uart_rx_avail , data=>uart_rx_data , clear=>uart_rx_clear, errorfound=>uart_rx_error );
 	uart_rx_rxd <= rxd;
 
 	-- spi
-	spi_0 : spi port map( nRESET=>nreset, clk16=>clk16, read=>spi_read, write=>spi_write, busy=>spi_busy, load=>spi_load,
+	spi_0 : spi port map( nRESET=>reset_n, clk16=>clk16, read=>spi_read, write=>spi_write, busy=>spi_busy, load=>spi_load,
 				clock_when_idle=>spi_clock_when_idle, spi_clk=>spi_clk, spi_di=>spi_di, spi_do=>spi_do );
 
 	-- tape
