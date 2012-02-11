@@ -320,13 +320,18 @@ architecture impl of cpc is
 	--leds(3) <= clklock;
 
         -- video
-	process(video_sync, video_red, video_green, video_blue)
+	process(video_sync, clk16, video_red, video_green, video_blue)
 	begin
 		if video_sync='1' then
 			video_sync_out	<= '0';
 			video_r2	<= "00";
 			video_g2	<= "00";
 			video_b2	<= "00";
+		elsif clk16='1' then
+			video_sync_out	<= '1'; --dipsw(0) & (not dipsw(0));
+			video_r2	<= video_red(0)   & video_red(1);
+			video_g2	<= video_green(0) & video_green(1);
+			video_b2	<= video_blue(0)  & video_blue(1);
 		else
 			video_sync_out	<= '1'; --dipsw(0) & (not dipsw(0));
 			video_r2	<= video_red;
