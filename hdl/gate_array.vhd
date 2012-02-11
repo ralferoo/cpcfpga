@@ -811,6 +811,9 @@ begin
 				if n_vsync_sense = "011" then
 					if n_line_counter(5)='1' then
 						n_generate_interrupt	:= '1';
+
+						-- it turns out that the information on this page can't be trusted: http://www.cepece.info/amstrad/docs/ints.html
+						-- but this information on the same site can: http://www.cepece.info/amstrad/docs/gaint.html
 					end if;
 					n_line_counter		:= (others=>'0');
 				end if;
