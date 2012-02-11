@@ -197,21 +197,27 @@ build/%.bin: rom/%.asm build/.dummy
 build/%.bin: codegen/%.asm build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 
+build/%.bin: test/%.asm build/.dummy
+	pasmo $< build/$*.bin build/$*.sym
+
 image/rom_c000.srec: rom/rom_c000.asm build/.dummy image/.dummy
 	pasmo $< build/rom_c000.bin build/rom_c000.sym
 	objcopy --change-addresses=49152 -I binary build/rom_c000.bin -O srec $@
 
-image/%.srec: codegen/%.asm build/.dummy image/.dummy
-	pasmo $< build/$*.bin build/$*.sym
+image/%.srec: build/%.bin image/.dummy
 	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
-image/%.srec: rom/%.asm build/.dummy image/.dummy
-	pasmo $< build/$*.bin build/$*.sym
-	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
+#image/%.srec: codegen/%.asm build/.dummy image/.dummy
+#	pasmo $< build/$*.bin build/$*.sym
+#	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
-image/%.srec: test/%.asm build/.dummy image/.dummy
-	pasmo $< build/$*.bin build/$*.sym
-	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
+#image/%.srec: rom/%.asm build/.dummy image/.dummy
+#	pasmo $< build/$*.bin build/$*.sym
+#	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
+
+#image/%.srec: test/%.asm build/.dummy image/.dummy
+#	pasmo $< build/$*.bin build/$*.sym
+#	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
 image/%.srec: codegen/%.scr build/.dummy image/.dummy
 	objcopy --change-addresses=16384 -I binary $< -O srec build/$*.srec
