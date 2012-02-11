@@ -688,8 +688,6 @@ begin
 					when others	=>	null;
 				end case;
 	
-				force_interrupt_ack	<= t_force_int_ack;
-	
 			elsif z80_wr_n='0' and z80_iorq_n='0' and z80_a(13)='0' then		-- DFxx
 				t_upper_rom_base	:= "01000";					-- default to BASIC rom
 	
@@ -728,6 +726,8 @@ begin
 				rom_enabled		<= z80_dout;
 
 			end if;
+	
+			force_interrupt_ack		<= t_force_int_ack;
 	
 		end if;
 	end process;
@@ -796,7 +796,7 @@ begin
 			n_last_hsync				:= crtc_hsync;
 
 			-- process hsync pulses (and reset on 2nd after vysnc)
-			if n_last_hsync='1' and last_hsync='0' then					-- rising edge of hsync
+			if n_last_hsync='0' and last_hsync='1' then					-- falling edge of hsync
 				-- process hsync counter
 				n_line_counter			:= n_line_counter + 1;
 				if n_line_counter = "110100" then
@@ -819,18 +819,13 @@ begin
 
 			-- process acknowledge from code
 			if force_interrupt_ack='1' then
---				force_interrupt_ack		<= '0';
 				n_line_counter			:= (others=>'0');
+				n_generate_interrupt		:= '0';
 
 			-- process acknowledge from z80
 			elsif z80_iorq_n='0' and z80_m1_n='0' then
 				n_line_counter(5)		:= '0';
 				n_generate_interrupt		:= '0';
---				force_interrupt_ack		<= '0';
-
-			-- reset the int line at start of next instruction
---			elsif z80_m1_n='0' then
---				n_generate_interrupt		:= '0';
 			end if;
 
 			-- update variables
