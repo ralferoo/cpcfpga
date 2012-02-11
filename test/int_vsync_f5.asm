@@ -1,6 +1,17 @@
 
 	org #4000
+
+	ld a,1
+	call &bc0e
 	
+	ld b,4
+prloop2:
+	ld a, 32
+prloop:	call &bb5a
+	inc a
+	jr nz,prloop
+	djnz prloop2
+
 	ld a,#c3
 	ld hl,intvec
 
@@ -16,13 +27,39 @@
 	di
 	ld (#38),a
 	ld (#39),hl
+
+	exx
+	ex af,af'
+
 	ei
 
 infloop:
 	halt
+;	ld e,10
+;	call waitrowe
+
+;	ld bc,#7f9d
+;	out (c),c
+;	ld bc,#7f8d
+;	out (c),c
+
 	jr infloop
+
+waitrowe:
+	ld b,14
+lpwtrow:
+	djnz lpwtrow
+	nop
+	nop
+	nop
+	dec e
+	jr nz,waitrowe
+	ret
 	
 intvec:
+	exx
+	ex af,af'
+
        	ld a,#f5
        	in a,(0)
        	rra
@@ -56,7 +93,7 @@ docolour:
 	sbc a,a				; A=FF for C=48, 00 otherwise
 	
 
-	defs 30+64				; move to an appropriate bit of screen		
+	defs 30				; move to an appropriate bit of screen		
 	
 marker:
         ld (#c370+0*#800),a
@@ -148,6 +185,9 @@ marker:
         ld (#c388+5*#800),a
         ld (#c38c+6*#800),a
         defs 63-8*4
+
+	exx
+	ex af,af'
 
        	ei
        	ret
