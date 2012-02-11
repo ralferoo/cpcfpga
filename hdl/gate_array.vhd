@@ -809,7 +809,7 @@ begin
 				-- process vsync reset on 2nd hsync after vsync
 				n_vsync_sense			:= vsync_sense & crtc_vsync;
 				if n_vsync_sense = "011" then
-					if n_line_counter(5)='0' then
+					if n_line_counter(5)='1' then
 						n_generate_interrupt	:= '1';
 					end if;
 					n_line_counter		:= (others=>'0');

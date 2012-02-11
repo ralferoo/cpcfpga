@@ -42,7 +42,7 @@ infloop:
 	cp #45
 	jr nz,infloop
 
-	ld e,33
+	ld e,13
 	call waitrowe
 
 	ld bc,#7f9d
