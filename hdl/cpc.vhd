@@ -372,10 +372,28 @@ architecture impl of cpc is
                               A=>z80_A, DI=>z80_DI, DO=>z80_DO );
 	z80_IORD_n <= z80_IORQ_n OR z80_RD_n;
 	z80_IOWR_n <= z80_IORQ_n OR z80_WR_n;
+	bootrom_clk <= z80_clk;
 
         --z80_INT_n <=   '1'; --pushsw(1);
         z80_NMI_n <=   '1'; --pushsw(2);
         z80_BUSRQ_n <= '1'; --pushsw(3);
+
+        -- z80 signal lines
+	z80_DI <= z80_DI_from_iorq when z80_DI_is_from_iorq='1' else z80_DI_from_mem;
+--	z80_di_value: process(z80_di_is_from_iorq,z80_di_from_iorq,z80_di_from_mem, z80_iorq_n, z80_m1_n)
+--	begin
+--		-- was z80_DI <= z80_DI_from_iorq when z80_DI_is_from_iorq='1' else z80_DI_from_mem;
+--		if z80_iorq_n='0' and z80_m1_n='0' then
+--			z80_di	<= (others=>'1');		-- pretend bus pulled high
+--
+--		elsif z80_di_is_from_iorq='1' then
+--			z80_di	<= z80_di_from_iorq;
+--
+--		else
+--			z80_di	<= z80_di_from_mem;
+--			
+--		end if;
+--	end process;
 
 	-- crtc
 	crtc_0 : crtc port map( nRESET=>reset_n, MA=>crtc_MA, DE=>crtc_DE, CLK=>crtc_CLK,
@@ -463,28 +481,23 @@ architecture impl of cpc is
 			-- sram interface
 			sram_address=>sram_address, sram_data=>sram_data, sram_we=>sram_we, sram_ce=>sram_ce, sram_oe=>sram_oe );
 
-        -- memory
-	    z80_DI <= z80_DI_from_iorq when z80_DI_is_from_iorq='1' else z80_DI_from_mem;
-	    bootrom_clk <= z80_clk;
-
         -- add switch input to port #fade
         process(reset_n,z80_clk,z80_IORQ_n,z80_RD_n,z80_A)
         begin
             if reset_n = '0' then
 		uart_rx_clear <= '0';
 	    	z80_DI_is_from_iorq <= '0';
-    	        z80_DI_from_iorq <= (others=>'0');
+    	        z80_DI_from_iorq <= (others=>'1');
             
 	    elsif rising_edge(z80_clk) then
 		uart_rx_clear <= '0';
-	    	z80_DI_is_from_iorq <= '0';
-    	        z80_DI_from_iorq <= (others=>'0');
+	    	z80_DI_is_from_iorq <= (not z80_IORQ_n) and (z80_rd_n nand z80_m1_n);
+    	        z80_DI_from_iorq <= (others=>'1');
 
 	    	if z80_IORQ_n = '0' and z80_RD_n = '0' then
-
 			if    z80_A(15 downto 0) = x"FADE" then				-- dip switches
 				z80_DI_from_iorq <= not dipsw(7 downto 0);
-				z80_DI_is_from_iorq <= '1';
+--				z80_DI_is_from_iorq <= '1';
             
 		    	elsif z80_A(15 downto 0) = x"FADD" then
 				z80_DI_from_iorq(7) <= uart_tx_empty;       		-- uart status and push buttons
@@ -492,25 +505,25 @@ architecture impl of cpc is
 				z80_DI_from_iorq(5) <= uart_rx_error;         
 	
 				z80_DI_from_iorq(3 downto 0) <= not pushsw(3 downto 0);
-				z80_DI_is_from_iorq <= '1';
+--				z80_DI_is_from_iorq <= '1';
 
 		    	elsif z80_A(15 downto 0) = x"FADC" then				-- uart data
 				z80_DI_from_iorq <= uart_rx_data;
-				z80_DI_is_from_iorq <= '1';
+--				z80_DI_is_from_iorq <= '1';
 				uart_rx_clear <= '1';
 
 		    	elsif z80_A(14)='0' then					-- crtc
 				z80_DI_from_iorq <= crtc_DOUT;
-				z80_DI_is_from_iorq <= '1';
+--				z80_DI_is_from_iorq <= '1';
 
 		    	elsif z80_A(11)='0' then					-- ppi
 				z80_DI_from_iorq <= ppi_DOUT;
-				z80_DI_is_from_iorq <= '1';
+--				z80_DI_is_from_iorq <= '1';
 
 		    	elsif z80_A(15 downto 8) = x"FF" or				-- spi data
 		    	      z80_A(15 downto 0) = x"FEFF" then				-- spi peek
 				z80_DI_from_iorq <= spi_read;
-				z80_DI_is_from_iorq <= '1';
+--				z80_DI_is_from_iorq <= '1';
 			end if;
 		end if;
             end if;
