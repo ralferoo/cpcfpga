@@ -25,14 +25,14 @@ fill:	ld (hl),a
 	ld bc,#7f81		; enable upper/lower ROM
 	out (c),c
 
-	ld bc,#fefd
+	ld bc,#fab5
 	ld a,#80
 	out (c),a		; enabled AMSDOS rom
 
 	ld bc,#df07
 	out (c),c		; select AMSDOS rom
 
-	ld bc,#fefe
+	ld bc,#fab6
 	ld a,#c0
 	out (c),a		; make ROM writeable...	 ;)
 
@@ -77,7 +77,7 @@ xferloop:
         dec b
         out (c),c                               ; finish with SPI bus
 
-	ld bc,#fefe
+	ld bc,#fab6
 	xor a
 	out (c),a		; protect ROM from writes...	 ;)
 

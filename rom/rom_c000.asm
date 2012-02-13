@@ -9,6 +9,9 @@
 
 	ld sp,#bffe
 
+	ld bc,#feff
+	out (c),c			; turn off SPI
+
 	ld bc,#bc0c
 	out (c),c
 	ld bc,#bd10

@@ -24,7 +24,7 @@ UFC_NAME=smartgen/bootrom_internal/bootrom_internal
 EDN_NAME = $(TOP_NAME).edn
 PDB_NAME = $(TOP_NAME).pdb
 
-CODEGEN_ASM_FILES = $(sort $(wildcard codegen/*.asm)) $(sort $(wildcard test/*.asm)) $(sort $(wildcard rom/installer_*.asm))
+CODEGEN_ASM_FILES = $(sort $(wildcard codegen/*.asm)) $(sort $(wildcard test/*.asm)) $(sort $(wildcard rom/installer*.asm))
 CODEGEN_SCR_FILES = $(sort $(wildcard codegen/*.scr))
 CODEGEN_SREC_FILES = $(patsubst codegen/%.asm,image/%.srec,$(patsubst rom/%.asm,image/%.srec,$(patsubst test/%.asm,image/%.srec,$(CODEGEN_ASM_FILES)))) $(patsubst codegen/%.scr,image/%.srec,$(CODEGEN_SCR_FILES))
 

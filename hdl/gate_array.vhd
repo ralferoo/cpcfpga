@@ -720,12 +720,12 @@ begin
 				end case;
 				upper_rom_base		<= t_upper_rom_base;
 	
-			elsif z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFE" then
+			elsif z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FAB6" then		-- was FEFE
 				upper_rom_writeable	<= z80_dout(7);
 				lower_rom_writeable	<= z80_dout(6);
-				use_boot_rom		<= z80_dout(5);
+				use_boot_rom		<= z80_dout(5) and use_boot_rom;		-- don't ever allow boot rom to be re-enabled!
 	
-			elsif z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FEFD" then
+			elsif z80_wr_n='0' and z80_iorq_n='0' and z80_a(15 downto 0)=x"FAB5" then		-- was FEFD
 				rom_enabled		<= z80_dout;
 
 			end if;
