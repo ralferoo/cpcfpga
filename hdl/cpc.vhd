@@ -137,6 +137,7 @@ architecture impl of cpc is
 			sram_oe				: out std_logic					-- could even tie this low
 		);
 	end component;
+	signal ga_INT_n	: std_logic;     
     
 	-- uart
 	component uart_tx is port (
@@ -344,14 +345,21 @@ architecture impl of cpc is
 	--leds(3) <= clklock;
 
         -- video
-	process(video_sync, clk16, video_red, video_green, video_blue)
+	process(video_sync, clk16, dipsw, video_red, video_green, video_blue)
+		variable sel : std_logic;
 	begin
+		case dipsw(2 downto 1) is
+			when "10"	=>	sel := '1';
+			when "01"	=>	sel := '0';
+			when others	=>	sel := clk16;
+		end case;
+
 		if video_sync='1' then
 			video_sync_out	<= '0';
 			video_r2	<= "00";
 			video_g2	<= "00";
 			video_b2	<= "00";
-		elsif clk16='1' then
+		elsif sel='1' then
 			video_sync_out	<= '1'; --dipsw(0) & (not dipsw(0));
 			video_r2	<= video_red(0)   & video_red(1);
 			video_g2	<= video_green(0) & video_green(1);
@@ -374,7 +382,24 @@ architecture impl of cpc is
 	z80_IOWR_n <= z80_IORQ_n OR z80_WR_n;
 	bootrom_clk <= z80_clk;
 
-        --z80_INT_n <=   '1'; --pushsw(1);
+        z80_INT_n <=   ga_INT_n;
+--	process(reset_n,ga_INT_n,z80_a,z80_rd_n,z80_mreq_n,z80_m1_n,z80_iorq_n)
+--		variable fake_int : std_logic;
+--	begin
+--		if reset_n='0' then
+--			fake_int := '1';
+--
+--		elsif z80_a = "0000000000001000" and z80_rd_n='0' and z80_mreq_n='0' then
+--			fake_int := '0';
+--
+--		elsif z80_m1_n='0' and z80_iorq_n='0' then
+--			fake_int := '1';
+--
+--		end if;
+--
+--        	z80_INT_n <= ga_INT_n and fake_int;
+--	end process;
+
         z80_NMI_n <=   '1'; --pushsw(2);
         z80_BUSRQ_n <= '1'; --pushsw(3);
 
@@ -456,7 +481,7 @@ architecture impl of cpc is
 			z80_wait_n			=> z80_WAIT_n,
 
 			-- interrupt generation
-			z80_int_n			=> z80_INT_n,
+			z80_int_n			=> ga_INT_n,
 	
 			video_sync			=> video_sync,
 			video_red			=> video_red,

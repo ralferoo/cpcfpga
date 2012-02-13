@@ -1,6 +1,20 @@
 
 	org #0000
 
+begin:
+	im 0
+	ei
+
+	org 7
+	ld bc,#1234
+
+	jr begin
+
+	org #38
+
+	ret
+
+	end
 
 
 	ld bc,#7f40

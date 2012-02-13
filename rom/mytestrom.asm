@@ -67,6 +67,7 @@ hello_msg:
 
 plustest_start:
 	incbin plustest/plustest.bin
+;	incbin plustest/plustest-ed4.bin
 plustest_length equ ($-plustest_start)
 
 

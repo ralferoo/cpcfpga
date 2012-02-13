@@ -113,14 +113,17 @@ begin
 					wait_n	:= '1';				-- iorq, already started
 
 				elsif tstate="11" and iorq_n='0' then
-					wait_n	:= '0';				-- iorq, need extra cycle here due to bug in t80
-					idle	:= '0';
+					wait_n	:= m1_n;			-- iorq, need extra cycle here
+					idle	:= not m1_n;
 
 				elsif tstate="01" and idle='0' then
 					wait_n	:= '1';				-- already started, it's fine
 
 				elsif tstate="10" and idle='0' and mreq_n='0' and m1_n_on_t2='0' then
 					wait_n	:= '1';				-- legitimate refresh cycle after IF/INTACK
+
+				elsif tstate="00" and iorq_n='0' and m1_n='0' then
+					wait_n	:= '1';				-- correct ioreq ack
 
 				end if;
 			end if;
@@ -133,7 +136,7 @@ begin
 				idle		:= m1_n_on_t2;			-- extend into 3rd cycle for IF/INTACK
 			
 			elsif tstate="11" then
-				idle		:= iorq_n;			-- set idle, unless we have an io request (bug in t80)
+				idle		:= iorq_n or not m1_n;		-- set idle, unless we have an io request
 
 			end if;
 
