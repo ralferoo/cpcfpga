@@ -26,18 +26,18 @@ fill:	ld (hl),a
 	out (c),c
 
 	ld bc,#fab5
-	ld a,#80
-	out (c),a		; enabled AMSDOS rom
-
-	ld bc,#df07
-	out (c),c		; select AMSDOS rom
+	ld a,#c0
+	out (c),a		; enabled AMSDOS rom + SPIDOS rom
 
 	ld bc,#fab6
 	ld a,#c0
-	out (c),a		; make ROM writeable...	 ;)
+	out (c),a		; make ROMs writeable...	 ;)
 
-        ld de,#0307                             ; D=READ
-        ld hl,#0000                             ; EHL = transfer address
+	ld bc,#df06
+	out (c),c		; select SPIDOS rom
+
+        ld de,#0306                             ; D=READ
+        ld hl,#c000                             ; EHL = transfer address
 
         ld bc,#feff
         out (c),c                               ; ensure SPI bus is idle
@@ -51,8 +51,19 @@ fill:	ld (hl),a
 
         in a,(c)                ; dummy read
 
-						; read in the amsdoc rom
+						; read in the spidos rom
 	ld a,#00				; end address (hi byte)
+spixferloop:
+	ini
+	inc b
+        cp h
+        jr nz,spixferloop			; loop until we reach #0000
+
+	ld bc,#df07
+	out (c),c		; select AMSDOS rom
+
+	ld bc,#ffff				; restore xfer reg
+
 	ld h,#c0				; start address (low byte)
 amsxferloop:
 	ini
