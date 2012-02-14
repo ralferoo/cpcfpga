@@ -170,7 +170,7 @@ jump_vector:
 	ld c,a
 	ld b,#74				; restore BC' manually
 
-	ld de,spi_jump_table-#bc77-3		; HL=vector+3
+	ld de,spi_jump_table-#bc7a		; HL=vector+3
 	add hl,de				; HL=correct vector
 	push hl
 
@@ -188,6 +188,7 @@ spi_jump_table:
 	jp	spi_cas_return
 	jp	spi_cas_test_eof
 	jp	spi_cas_out_open
+	jp	spi_cas_out_close
 	jp	spi_cas_out_abandon
 	jp	spi_cas_out_char
 	jp	spi_cas_out_direct
@@ -333,6 +334,11 @@ spi_cas_out_open:
         ld hl,spi_cas_out_open_message
         jp print
 spi_cas_out_open_message: defb "spi_cas_out_open",13,10,0
+
+spi_cas_out_close:
+        ld hl,spi_cas_out_close_message
+        jp print
+spi_cas_out_close_message: defb "spi_cas_out_close",13,10,0
 
 spi_cas_out_abandon:
         ld hl,spi_cas_out_abandon_message
