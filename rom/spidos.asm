@@ -45,6 +45,42 @@ iy_data_area_size		equ (iy_saved_cas_vectors+13*3)
 ; xxxx	FILE_DATA
 
 
+; actually, thinking about it, type might be better with bits in other order:
+;
+;    FF=end of catalog
+;    7F=garbage to end of catalog
+;    3F=abandoned, skip to NEXT_RECORD
+;    3E=flash end address block 
+;    3D=volume name block
+;    3C=chained directory block
+; 3B-30=special SPIDOS records, e.g. directories if I want to add them etc
+; 2F-20=reserved (so system can check ether bits 4 or 5 for AMSDOS)
+; 1F-11=block contains AMSDOS file data (hidden)
+; 0F-01=block contains AMSDOS file data
+;    00=block has been deleted
+;
+; (type&0xc0)!=0x00	terminate search
+; (type&0xc0)==0x00	contains some kind of data
+;
+; (type&0x20)==0x20	contains SPIDOS data
+; (type&0x20)==0x00	contains AMSDOS data
+;
+; (type&0x10)==0x10	contains system data
+; (type&0x10)==0x00	contains visible data
+;
+; (type&0xF0)==0x00	visible AMSDOS data
+; (type&0xF0)==0x10	hidden AMSDOS data
+; (type&0xF0)==0x20	reserved
+; (type&0xF0)==0x30	SPIDOS
+;
+; (type&0x0F)==0x00	deleted
+;
+; type 7F (garbage) hasn't has it's NEXT_RECORD populated yet, so readers should
+; treat it as the end of the catalog, just like type FF. writers, however, could
+; seek forward until they find the end of data (which should be FF bytes until
+; the end of flash memory)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	defb 1			; background
@@ -540,12 +576,12 @@ catalog_loop:
 	bit 3,a
 	jr nz,catalog_loop		; found something, but it's not a file
 
-	bit 7,a
-	jr z,catalog_loop		; found a deleted file, skip over it
+	bit 5,a
+	jr z,catalog_loop		; found a deleted or invisible file, skip over it
 
 	push de
 	push hl				; save address	
-	inc b
+	inc b				; back to data input
 
 	ld d,16
 catalog_name_loop:
@@ -580,6 +616,7 @@ catalog_name_nopad:
 
  	pop hl
 	pop de
+	dec b
 	jr catalog_loop			; next entry
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
