@@ -1,12 +1,49 @@
 
+SPI_PORT			equ	#feff
+AMSDOS_HEADER_SIZE		equ 64
 
-saved_cas_vectors	equ 0
-long_jump_vector	equ (saved_cas_vectors+13*3)
-existing_tape_in	equ (long_jump_vector+3)
-existing_tape_out	equ (existing_tape_in+4)
-data_area_size		equ (existing_tape_out+4)
+iy_is_writing			equ 0
+iy_write_spi_offset		equ (iy_is_writing+1)
+iy_is_reading			equ (iy_write_spi_offset+3)
+iy_read_spi_offset	 	equ (iy_is_reading+1)
+iy_long_jump_vector		equ (iy_read_spi_offset+3)
+iy_existing_tape_in		equ (iy_long_jump_vector+3)
+iy_existing_tape_out		equ (iy_existing_tape_in+4)
+
+iy_amsdos_header_write		equ (iy_existing_tape_out+4)
+iy_amsdos_header_read		equ (iy_amsdos_header_write+AMSDOS_HEADER_SIZE)
+iy_saved_cas_vectors		equ (iy_amsdos_header_read+AMSDOS_HEADER_SIZE)
+
+iy_data_area_size		equ (iy_saved_cas_vectors+13*3)
 
 	org #c000
+
+;;;;;;;;;; SPIDOS record format
+;
+; Designed to be very, very simple, starts the disk at SPI address #010000
+; and proceeds until it hits unwritten flash data
+;
+; 1	ENTRY_TYPE
+;								FF = free
+;			bit 0 - 0=started writing		FE = garbage
+;			bit 1 - 0=updated NEXT_RECORD		FC = abandoned
+;			bit 2 - 0=valid data block		F8 = special file
+;			bit 3 - 0=valid AMSDOS header		F0 = AMSDOS file
+;			bit 4 -					E0 = ???
+;			bit 5 - 0=entry is "system file"	C0 = invisible file
+;			bit 6					80 = ???
+;			bit 7 - 0=deleted			00 = deleted
+;
+;			file can be considered valid if bit7=1 and bit3=0, i.e.
+;			(entry_type & 0x88)==0x80
+;
+; 3	NEXT_RECORD
+;			FFFFFF = end of disk / unknown length
+;			xxxxxx = address of next record (LSB first)
+; 64	AMSDOS_HDR
+;			used by AMSDOS etc
+; xxxx	FILE_DATA
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -42,7 +79,7 @@ spi_dos_entry:
 	push iy					; can't corrupt IY
 
 	push de					; save lowest byte
-	ld de,-data_area_size
+	ld de,-iy_data_area_size
 	add hl,de
 	push hl					; save updated highest byte
 
@@ -80,36 +117,40 @@ spi_dos_welcome_text:
 
 setup_data_area:
 	ld hl,#bc77				; copy the tape vectors to a safe place
-	ld de,saved_cas_vectors
+	ld de,iy_saved_cas_vectors
 	call add_iy_to_de
 	ld bc,13*3
 	ldir
 
 	ld de,jump_vector
-	ld (iy+long_jump_vector+0),e
-	ld (iy+long_jump_vector+1),d
+	ld (iy+iy_long_jump_vector+0),e
+	ld (iy+iy_long_jump_vector+1),d
 	call #b912				; KL_CURR_SELECTION
-	ld (iy+long_jump_vector+2),a
+	ld (iy+iy_long_jump_vector+2),a
 
 ;	ld hl,cmd_tape
 ;	call kl_find_command
-;	ld (iy+existing_tape+0),l
-;	ld (iy+existing_tape+1),h
-;	ld (iy+existing_tape+2),c
+;	ld (iy+iy_existing_tape+0),l
+;	ld (iy+iy_existing_tape+1),h
+;	ld (iy+iy_existing_tape+2),c
 
 	ld hl,cmd_tape_in
 	call kl_find_command
-	ld (iy+existing_tape_in+0),l
-	ld (iy+existing_tape_in+1),h
-	ld (iy+existing_tape_in+2),c
-	ld (iy+existing_tape_in+3),a
+	ld (iy+iy_existing_tape_in+0),l
+	ld (iy+iy_existing_tape_in+1),h
+	ld (iy+iy_existing_tape_in+2),c
+	ld (iy+iy_existing_tape_in+3),a
 
 	ld hl,cmd_tape_out
 	call kl_find_command
-	ld (iy+existing_tape_out+0),l
-	ld (iy+existing_tape_out+1),h
-	ld (iy+existing_tape_out+2),c
-	ld (iy+existing_tape_out+3),a
+	ld (iy+iy_existing_tape_out+0),l
+	ld (iy+iy_existing_tape_out+1),h
+	ld (iy+iy_existing_tape_out+2),c
+	ld (iy+iy_existing_tape_out+3),a
+
+	xor a
+	ld (iy+iy_is_reading),a
+	ld (iy+iy_is_writing),a
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -217,7 +258,7 @@ set_spi_vectors:
 	or a
 	jr nz, invalid_command
 
-	ld de,long_jump_vector
+	ld de,iy_long_jump_vector
 	call add_iy_to_de
 
 set_spi_vectors_loop:
@@ -240,46 +281,50 @@ set_cas_vectors_in:
 	or a
 	jr nz, invalid_command
 
-	ld l,(iy+existing_tape_in+0)
-	ld h,(iy+existing_tape_in+1)
-	ld c,(iy+existing_tape_in+2)
-	ld a,(iy+existing_tape_in+3)	; FF if exists
+	ld l,(iy+iy_existing_tape_in+0)
+	ld h,(iy+iy_existing_tape_in+1)
+	ld c,(iy+iy_existing_tape_in+2)
+	ld a,(iy+iy_existing_tape_in+3)	; FF if exists
 	inc a
 	jp z,#1b			; delegate to amsdos call
 
-	ld hl,saved_cas_vectors
+	ld hl,iy_saved_cas_vectors
 	ld de,#bc77		
 	call add_iy_to_hl
 	ld bc,7*3
 	ldir				; restore input related vectors
 
-	ld hl,saved_cas_vectors+#bc9b-#bc77
+	ld hl,iy_saved_cas_vectors+#bc9b-#bc77
 	ld de,#bc9b
 	call add_iy_to_hl
 	ld bc,3
 	ldir				; restore cas catalog
 
-	rra				; A=0, carry set (A was 1)
+	call	spi_cas_in_abandon
+	xor a
+	scf
 	ret
 
 set_cas_vectors_out:
 	or a
 	jr nz, invalid_command
 
-	ld l,(iy+existing_tape_out+0)
-	ld h,(iy+existing_tape_out+1)
-	ld c,(iy+existing_tape_out+2)
-	ld a,(iy+existing_tape_out+3)	; FF if exists
+	ld l,(iy+iy_existing_tape_out+0)
+	ld h,(iy+iy_existing_tape_out+1)
+	ld c,(iy+iy_existing_tape_out+2)
+	ld a,(iy+iy_existing_tape_out+3)	; FF if exists
 	inc a
 	jp z,#1b			; delegate to amsdos call
 
-	ld hl,saved_cas_vectors+#bc8c-#bc77
+	ld hl,iy_saved_cas_vectors+#bc8c-#bc77
 	ld de,#bc8c
 	call add_iy_to_hl
 	ld bc,5*3
 	ldir				; restore input related vectors
 
-	rra				; A=0, carry set (A was 1)
+	call	spi_cas_out_abandon
+	xor a
+	scf
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -335,15 +380,104 @@ spi_cas_out_open:
         jp print
 spi_cas_out_open_message: defb "spi_cas_out_open",13,10,0
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 spi_cas_out_close:
-        ld hl,spi_cas_out_close_message
-        jp print
-spi_cas_out_close_message: defb "spi_cas_out_close",13,10,0
+	ld a,(iy+iy_is_writing)
+	or a
+	jr z,clear_c_clear_z_return_0e
+
+	ld d,#f0
+	call spi_cas_terminate_stream
+
+set_c_clear_z_return_00:
+	xor a	
+	scf
+	ret
+
+clear_c_clear_z_return_0e:
+	ld a,#e
+	or a
+	ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 spi_cas_out_abandon:
-        ld hl,spi_cas_out_abandon_message
-        jp print
-spi_cas_out_abandon_message: defb "spi_cas_out_abandon",13,10,0
+	ld d,#f8				; abandoned status
+
+spi_cas_terminate_stream:
+
+	ld a,(iy+iy_is_writing)
+	or a					; 00 -> Z=1,C=0
+	jr z,set_c_clear_z_return_00		; return 0 if closed, stream(#0e) if open
+
+	; abandon any partial write in progress
+	ld bc,SPI_PORT
+	out (c),c				; turn off CE
+	call wait_while_wip			; wait for any active write to finish
+
+	; update the header
+	ld bc,SPI_PORT
+	out (c),b				; turn on flash rom CE
+
+
+; 1	ENTRY_TYPE
+;								FF = free
+;			bit 0 - 0=started writing		FE = garbage
+;			bit 1 - 0=updated NEXT_RECORD		FC = abandoned
+;			bit 2 - 0=valid data block		F8 = special file
+;			bit 3 - 0=valid AMSDOS header		F0 = AMSDOS file
+;			bit 4 -					E0 = ???
+;			bit 5 - 0=entry is "system file"	C0 = invisible file
+;			bit 6					80 = ???
+;			bit 7 - 0=deleted			00 = deleted
+;
+;			file can be considered valid if bit7=1 and bit3=0, i.e.
+;			(entry_type & 0x88)==0x80
+;
+; 3	NEXT_RECORD
+;			FFFFFF = end of disk / unknown length
+;			xxxxxx = address of next record (LSB first)
+; 64	AMSDOS_HDR
+
+	ld l,(iy+iy_write_spi_offset)
+	ld h,(iy+iy_write_spi_offset+1)
+	ld e,(iy+iy_write_spi_offset+2)
+
+	inc b					; change to SPI data port
+	ld a,#2
+	out (c),a				; program page data
+	out (c),e				; send address
+	out (c),h
+	out (c),l
+
+	push de
+	push hl
+	xor a
+	ld l,(iy+iy_amsdos_header_write+19)	; lo byte of length
+	ld h,(iy+iy_amsdos_header_write+20)	; hi byte of length
+	ld de,AMSDOS_HEADER_SIZE
+	add hl,de
+	adc a,a					; A:HL = length of file + header
+
+	pop de
+	add hl,de
+	pop de
+	add a,e					; A:HL = length of file + header + write_spi_offset
+
+	out (c),d				; write status flag
+	out (c),l
+	out (c),h
+	out (c),a				; and offset of free data
+
+	dec b
+	out (c),c				; turn off CE
+	call wait_while_wip			; wait for any active write to finish
+
+	ld (iy+iy_is_writing),0
+	jr clear_c_clear_z_return_0e
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 spi_cas_out_char:
         ld hl,spi_cas_out_char_message
@@ -355,19 +489,131 @@ spi_cas_out_direct:
         jp print
 spi_cas_out_direct_message: defb "spi_cas_out_direct",13,10,0
 
-spi_cas_catalog:
-        ld hl,spi_cas_catalog_message
-        jp print
-spi_cas_catalog_message: defb "spi_cas_catalog",13,10,0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+get_start_address:				; E:HL is the start address of this block
+	ld de,#301				; D is read command
+	ld hl,0
+	ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+spi_cas_catalog:
+	call spi_cas_out_abandon		; abandon any writes before we do a catalog
+
+	ld bc,SPI_PORT
+
+	call get_start_address
+catalog_loop:
+	out (c),c				; turn off CE
+	out (c),b				; turn on flash rom CE
+	inc b
+	out (c),d				; start read
+	out (c),e
+	out (c),h
+	out (c),l
+	in a,(c)				; read dummy byte
+
+	in a,(c)				; get type byte
+	in e,(c)
+	in h,(c)
+	in l,(c)				; get next address
+	dec b
+
+; 1	ENTRY_TYPE
+;								FF = free
+;			bit 0 - 0=started writing		FE = garbage
+;			bit 1 - 0=updated NEXT_RECORD		FC = abandoned
+;			bit 2 - 0=valid data block		F8 = special file
+;			bit 3 - 0=valid AMSDOS header		F0 = AMSDOS file
+;			bit 4 -					E0 = ???
+;			bit 5 - 0=entry is "system file"	C0 = invisible file
+;			bit 6					80 = ???
+;			bit 7 - 0=deleted			00 = deleted
+;
+;			file can be considered valid if bit7=1 and bit3=0, i.e.
+;			(entry_type & 0x88)==0x80
+
+	bit 1,a
+	ret nz				; free or garbage block found, abort
+
+	bit 3,a
+	jr nz,catalog_loop		; found something, but it's not a file
+
+	bit 7,a
+	jr z,catalog_loop		; found a deleted file, skip over it
+
+	push de
+	push hl				; save address	
+	inc b
+
+	ld d,16
+catalog_name_loop:
+	in a,(c)
+	jr nz, catalog_name_nopad
+	ld a,32
+catalog_name_nopad:
+	push de
+	push bc
+	call #bb5d
+	pop bc
+	pop de
+	dec d
+	ld a,d
+	or a
+	jr nz,catalog_name_loop
+
+	ld a,32
+	call #bb5a
+
+	in a,(c)			; block #
+	in a,(c)			; last block
+	in a,(c)			; file type
+
+	add a,#24			; format
+	call #bb5a
+
+	ld a,13
+	call #bb5a
+	ld a,10
+	call #bb5a
+
+ 	pop hl
+	pop de
+	jr catalog_loop			; next entry
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 
+wait_while_wip:
+	ld bc,SPI_PORT
+	out (c),c				; turn off CE
+	out (c),b				; turn on flash rom CE
+	inc b					; change to SPI data port
+	ld a,#5
+	out (c),a				; read status
+	in a,(c)		; KLUDGE
+wait_wip_loop:
+	in a,(c)				; read status
+	rrca
+	jr c,wait_wip_loop			; bit still 1, not finished write operation
+	dec b
+	out (c),c				; turn off CE
+	ret
 
 
-
+send_write_enable:
+	ld bc,SPI_PORT
+	out (c),c				; turn off CE
+	out (c),b				; turn on flash rom CE
+	inc b					; change to SPI data port
+	ld a,#06
+	out (c),a				; write enable
+	dec b
+	out (c),c				; turn off CE
+	ret
+;;;
 
 
 

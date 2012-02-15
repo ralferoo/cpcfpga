@@ -25,8 +25,8 @@
 	ld ix, romimage_length 
 	call writebytes
 
-	ld de,#6c0
-	call dumpcontents
+;	ld de,#6c0
+;	call dumpcontents
 
 ;	call dumpstatusreg
 ;	call modifycontents
