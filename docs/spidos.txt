@@ -1,0 +1,74 @@
+
+SPIDOS is a very simple abstraction for the SPI flash that intercepts the
+regular tape vectors in just the same way that AMSDOS does for disks.
+
+The SPIDOS disk structure starts at #010000 (i.e. 64K into the disk) and
+consists of a linked list of blocks. These blocks are designed so that
+in the ideal situation, they can be written to without erasing. So, FF is
+the expected default value and bits are cleared as things happen.
+
+Offset	Length	Name		Description
+
+   0	   1	ENTRY_TYPE	Purpose of this block
+   1	   2	NEXT_RECORD	Address of the next block's page (LSB first)
+   3	   1	RESERVED	Must be FF
+   4	   n	DATA		Data contained in this block
+
+Entry types:
+  FF	end of allocated disk space, remainder of flash is empty
+  7F	started writing into block, NEXT_RECORD invalid
+ 3F-31	completed SPIDOS block, NEXT_RECORD valid
+ 2F-21	reserved
+ 1F-11	invisible AMSDOS block, NEXT_RECORD valid
+ 0F-01	completed AMSDOS block, NEXT_RECORD valid
+  00	block has been deleted
+
+bit 7 = 1 - block available for writing
+bit 6 = 0 - block has a successor
+
+  30	block has been abandoned, candidate for recycling
+  31	block contains information about the flash (e.g. end page)
+  
+;    3E=flash end address block 
+;    3D=volume name block
+;    3C=chained directory block
+; 3B-30=special SPIDOS records, e.g. directories if I want to add them etc
+; 2F-20=reserved (so system can check ether bits 4 or 5 for AMSDOS)
+; 1F-11=block contains AMSDOS file data (hidden)
+; 0F-01=block contains AMSDOS file data
+;    00=block has been deleted
+;
+; (type&0xc0)!=0x00	terminate search
+; (type&0xc0)==0x00	contains some kind of data
+;
+; (type&0x20)==0x20	contains SPIDOS data
+; (type&0x20)==0x00	contains AMSDOS data
+;
+; (type&0x10)==0x10	contains system data
+; (type&0x10)==0x00	contains visible data
+;
+; (type&0xF0)==0x00	visible AMSDOS data
+; (type&0xF0)==0x10	hidden AMSDOS data
+; (type&0xF0)==0x20	reserved
+; (type&0xF0)==0x30	SPIDOS
+;
+; (type&0x0F)==0x00	deleted
+;
+; type 7F (garbage) hasn't has it's NEXT_RECORD populated yet, so readers should
+; treat it as the end of the catalog, just like type FF. writers, however, could
+; seek forward until they find the end of data (which should be FF bytes until
+; the end of flash memory)
+
+
+
+
+
+
+Both read and write operations need to share the SPI bus, so we have:
+
+iy_spi_last_op		0(idle), 1(read), 2(write)
+iy_spi_last_read_addr	3 bytes		(byte in page, page LSB, page MSB)
+iy_spi_last_write_addr	3 bytes
+
+can enter idle state after catalog etc
+
