@@ -375,41 +375,122 @@ invalid_command_message:
 	defb "Bad command",13,10,0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; HL=address of filename
+;  B=length of filename
+; DE=2K buffer
+;
+; Opened OK
+;	Carry true, Zero false, HL=file header, DE=data location, BC=file length, A=file type
+;
+; Stream in use
+;	Carry false, Zero false, A=#0E
+;
+; Hit escape
+;	Carry false, Zero true, A=#00
 
 spi_cas_in_open:
+
         ld hl,spi_cas_in_open_message
         jp print
 spi_cas_in_open_message: defb "spi_cas_in_open",13,10,0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Closed OK
+;	Carry true, Zero false
+;
+; Stream not open
+;	Carry false, Zero false, A=#0E
 
 spi_cas_in_close:
         ld hl,spi_cas_in_close_message
         jp print
 spi_cas_in_close_message: defb "spi_cas_in_close",13,10,0
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 spi_cas_in_abandon:
         ld hl,spi_cas_in_abandon_message
         jp print
 spi_cas_in_abandon_message: defb "spi_cas_in_abandon",13,10,0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Read OK
+;	Carry true, Zero false, A=character
+;
+; Stream not open
+;	Carry false, Zero false, A=#0E
+;
+; EOF
+;	Carry false, Zero false, A=#0F
+;
+; Soft EOF
+;	Carry false, Zero false, A=#1A
 
 spi_cas_in_char:
         ld hl,spi_cas_in_char_message
         jp print
 spi_cas_in_char_message: defb "spi_cas_in_char",13,10,0
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; HL=destination address
+;
+; Read OK
+;	Carry true, Zero false, HL=entry address
+;
+; Stream not open
+;	Carry false, Zero false, A=#0E
+
 spi_cas_in_direct:
         ld hl,spi_cas_in_direct_message
         jp print
 spi_cas_in_direct_message: defb "spi_cas_in_direct",13,10,0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Everything preserved
 
 spi_cas_return:
         ld hl,spi_cas_return_message
         jp print
 spi_cas_return_message: defb "spi_cas_return",13,10,0
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Not EOF
+;	Carry true, Zero false
+;
+; Stream not open
+;	Carry false, Zero false, A=#0E
+;
+; EOF
+;	Carry false, Zero false, A=#0F
+;
+; Soft EOF
+;	Carry false, Zero false, A=#1A
+
 spi_cas_test_eof:
         ld hl,spi_cas_test_eof_message
         jp print
 spi_cas_test_eof_message: defb "spi_cas_test_eof",13,10,0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; HL=address of filename
+;  B=length of filename
+; DE=2K buffer
+;
+; Opened OK
+;	Carry true, Zero false, HL=file header
+;
+; Stream in use
+;	Carry false, Zero false, A=#0E
+;
+; Hit escape
+;	Carry false, Zero true, A=#00
 
 spi_cas_out_open:
         ld hl,spi_cas_out_open_message
@@ -417,6 +498,14 @@ spi_cas_out_open:
 spi_cas_out_open_message: defb "spi_cas_out_open",13,10,0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; nothing written if length==0
+;
+; Closed OK
+;	Carry true, Zero false
+;
+; Stream not open
+;	Carry false, Zero false, A=#0E
 
 spi_cas_out_close:
 	ld a,(iy+iy_is_writing)
@@ -514,11 +603,27 @@ spi_cas_terminate_stream:
 	jr clear_c_clear_z_return_0e
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Write OK
+;	Carry true, Zero false, HL=entry address
+;
+; Stream not open
+;	Carry false, Zero false, A=#0E
 
 spi_cas_out_char:
         ld hl,spi_cas_out_char_message
         jp print
 spi_cas_out_char_message: defb "spi_cas_out_char",13,10,0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; HL=address, DE=length of data, BC=entry address, A=file type
+;
+; Write OK
+;	Carry true, Zero false
+;
+; Stream not open
+;	Carry false, Zero false, A=#0E
 
 spi_cas_out_direct:
         ld hl,spi_cas_out_direct_message
@@ -533,6 +638,14 @@ get_start_address:				; E:HL is the start address of this block
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Catalog OK
+;	Carry true, Zero false
+;
+; Stream in use
+;	Carry false, Zero false, A=#0E
 
 spi_cas_catalog:
 	call spi_cas_out_abandon		; abandon any writes before we do a catalog
