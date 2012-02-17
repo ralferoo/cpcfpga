@@ -2,7 +2,8 @@
 SPI_PORT			equ	#feff
 AMSDOS_HEADER_SIZE		equ 64
 
-iy_is_writing			equ 0
+iy_current_spi_status		equ 0
+iy_is_writing			equ (iy_current_spi_status+1)
 iy_write_spi_offset		equ (iy_is_writing+1)
 iy_is_reading			equ (iy_write_spi_offset+3)
 iy_read_spi_offset	 	equ (iy_is_reading+1)
@@ -16,70 +17,22 @@ iy_saved_cas_vectors		equ (iy_amsdos_header_read+AMSDOS_HEADER_SIZE)
 
 iy_data_area_size		equ (iy_saved_cas_vectors+13*3)
 
-	org #c000
 
-;;;;;;;;;; SPIDOS record format
-;
-; Designed to be very, very simple, starts the disk at SPI address #010000
-; and proceeds until it hits unwritten flash data
-;
-; 1	ENTRY_TYPE
-;								FF = free
-;			bit 0 - 0=started writing		FE = garbage
-;			bit 1 - 0=updated NEXT_RECORD		FC = abandoned
-;			bit 2 - 0=valid data block		F8 = special file
-;			bit 3 - 0=valid AMSDOS header		F0 = AMSDOS file
-;			bit 4 -					E0 = ???
-;			bit 5 - 0=entry is "system file"	C0 = invisible file
-;			bit 6					80 = ???
-;			bit 7 - 0=deleted			00 = deleted
-;
-;			file can be considered valid if bit7=1 and bit3=0, i.e.
-;			(entry_type & 0x88)==0x80
-;
-; 3	NEXT_RECORD
-;			FFFFFF = end of disk / unknown length
-;			xxxxxx = address of next record (LSB first)
-; 64	AMSDOS_HDR
-;			used by AMSDOS etc
-; xxxx	FILE_DATA
+SPI_STATUS_IDLE			equ 0
+SPI_STATUS_READING		equ 1
+SPI_STATUS_WRITING		equ 2
 
+ENTRY_TYPE_FREE			equ #ff
+ENTRY_TYPE_DIRTY		equ #7f
+ENTRY_TYPE_DIRTY_MASK		equ #c0
 
-; actually, thinking about it, type might be better with bits in other order:
-;
-;    FF=end of catalog
-;    7F=garbage to end of catalog
-;    3F=abandoned, skip to NEXT_RECORD
-;    3E=flash end address block 
-;    3D=volume name block
-;    3C=chained directory block
-; 3B-30=special SPIDOS records, e.g. directories if I want to add them etc
-; 2F-20=reserved (so system can check ether bits 4 or 5 for AMSDOS)
-; 1F-11=block contains AMSDOS file data (hidden)
-; 0F-01=block contains AMSDOS file data
-;    00=block has been deleted
-;
-; (type&0xc0)!=0x00	terminate search
-; (type&0xc0)==0x00	contains some kind of data
-;
-; (type&0x20)==0x20	contains SPIDOS data
-; (type&0x20)==0x00	contains AMSDOS data
-;
-; (type&0x10)==0x10	contains system data
-; (type&0x10)==0x00	contains visible data
-;
-; (type&0xF0)==0x00	visible AMSDOS data
-; (type&0xF0)==0x10	hidden AMSDOS data
-; (type&0xF0)==0x20	reserved
-; (type&0xF0)==0x30	SPIDOS
-;
-; (type&0x0F)==0x00	deleted
-;
-; type 7F (garbage) hasn't has it's NEXT_RECORD populated yet, so readers should
-; treat it as the end of the catalog, just like type FF. writers, however, could
-; seek forward until they find the end of data (which should be FF bytes until
-; the end of flash memory)
+ENTRY_TYPE_MASK			equ #3f
+ENTRY_TYPE_NON_AMSDOS_MASK	equ #20		; 00=AMSDOS
+ENTRY_TYPE_DELETED		equ #00
 
+ENTRY_TYPE_HIDDEN_MASK		equ #10
+ENTRY_TYPE_HIDDEN_INVMASK	equ #2f
+ENTRY_TYPE_NORMAL_FILE		equ #01
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -376,6 +329,49 @@ invalid_command_message:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
+; iterate all blocks in the filesystem, calling the function at IX for each
+; non-deleted record
+
+iterate_records:
+
+; HL=filename, B=length of filename, DE=offset to add to IY
+; BC,DE,HL,AF corrupt
+
+copy_filename_to_header:
+	call add_iy_to_de			; DE=file header
+	ld c,16					; B=name length, C=buffer length
+filename_loop:
+	ld a,c
+	or a
+	ret z					; return if all 16 bytes copied
+
+	ld a,(hl)
+	inc hl					; A=character
+	cp 'a'
+	jr c,nocap
+	cp 'z'+1
+	jr nc,nocap
+	and #df					; make uppercase
+nocap:
+	ld (de),a
+	inc de					; store uppercase char
+	dec c
+	djnz filename_loop			; copy all input chars
+
+	ld a,c
+	or a
+	ret z					; return if no characters left to pad
+
+	ld b,c
+	xor a
+null_rest_loop:
+	ld (de),a
+	inc de
+	djnz null_rest_loop			; pad the rest of the filename buffer
+	ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
 ; HL=address of filename
 ;  B=length of filename
 ; DE=2K buffer
@@ -390,10 +386,104 @@ invalid_command_message:
 ;	Carry false, Zero true, A=#00
 
 spi_cas_in_open:
+	ld (iy+iy_read_scratch_buffer+0),e
+	ld (iy+iy_read_scratch_buffer+1),d
+	ld (iy+iy_read_name+0),l
+	ld (iy+iy_read_name+1),h
+	ld (iy+iy_read_name_len),b
 
-        ld hl,spi_cas_in_open_message
-        jp print
-spi_cas_in_open_message: defb "spi_cas_in_open",13,10,0
+	ld de,iy_amsdos_header_read
+	call copy_filename_to_header
+
+	ld a,(iy+iy_is_writing)			; make sure we're not currently writing anything
+	and a
+	jr nz, stream_already_in_use
+
+	call wait_while_wip			; ensure anything being written has finished
+	ld hl,#0100				; HL is start page (0100.00)
+
+try_next_file:
+	ld de,#300				; D is read command
+	out (c),b				; turn on flash rom CE
+	out (c),d				; read
+	out (c),h				; page high
+	out (c),l				; page low
+	out (c),e				; offset 0 in page
+	inc b
+	in a,(c)				; pull first byte in
+
+	in e,(c)				; get status byte
+	ld a,ENTRY_TYPE_DIRTY_MASK
+	and e					; check block valid bits
+	jr nz, file_not_found			; either end of file or damaged block
+
+	ld a,e
+	in e,(c)
+	ld d,(c)				; DE = next page
+	push de					; store next block on stack
+
+	and ENTRY_TYPE_HIDDEN_INVMASK		; get file type mask, ignoring visible bit
+	cp ENTRY_TYPE_NORMAL_FILE
+	jr nz, not_this_file			; deleted, skip
+
+	inc hl
+	ld (iy+iy_page_low),l
+	ld (iy+iy_page_high),h
+
+	ld hl,iy_amsdos_header_read
+	call add_iy_to_hl			; HL=file header (file name)
+	ld d,16					; maximum length
+checkname:
+	in a,(c)
+	cp (hl)
+	jr nz, not_this_file			; filename isn't a match
+	inc hl
+	dec d
+	jr nz, checkname			; check remaining chars
+
+	; now we have a file match
+	ld (iy+iy_page_ofs),0
+
+	ld d,AMSDOS_HEADER_SIZE-16
+copy_header:
+	in a,(c)
+	ld (hl),a
+	inc hl
+	dec d
+	jr nz, copy_header			; read in the rest of the header
+
+	dec b
+	out (c),c				; turn off flash rom CE
+	pop hl					; pull next block off stack (junked)
+
+	ld hl,iy_amsdos_header_read
+	call add_iy_to_hl			; HL=file header (file name)
+
+;	Carry true, Zero false, HL=file header, DE=data location, BC=file length, A=file type
+
+	scf
+	sbc a,a					; carry set, zero clear, A=FF
+	ld (iy+iy_is_writing),a			; mark stream as in use
+
+	ld e,(iy+iy_amsdos_header_read+AMSDOS_ADDR+0)
+	ld d,(iy+iy_amsdos_header_read+AMSDOS_ADDR+1)
+	ld c,(iy+iy_amsdos_header_read+AMSDOS_LEN+0)
+	ld b,(iy+iy_amsdos_header_read+AMSDOS_LEN+1)
+	ld a,(iy+iy_amsdos_header_read+AMSDOS_TYPE)
+
+	ret					; return success
+
+not_this_file:
+	dec b
+	out (c),c				; turn off flash rom CE
+	pop hl					; pull next block off stack
+	jr try_next_file
+
+file-not_file:
+	dec b
+	out (c),c				; turn off flash rom CE
+	xor a					; clear A, zero, carry
+	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
@@ -738,6 +828,10 @@ catalog_name_nopad:
 
 wait_while_wip:
 	ld bc,SPI_PORT
+	ld a,(iy+iy_current_spi_status)		; see if we're in an SPI write
+	cp SPI_STATUS_WRITING
+	jr nz,write_finished
+
 	out (c),c				; turn off CE
 	out (c),b				; turn on flash rom CE
 	inc b					; change to SPI data port
@@ -750,6 +844,9 @@ wait_wip_loop:
 	jr c,wait_wip_loop			; bit still 1, not finished write operation
 	dec b
 	out (c),c				; turn off CE
+
+write_finished:
+	ld (iy+iy_current_spi_status),SPI_STATUS_IDLE
 	ret
 
 

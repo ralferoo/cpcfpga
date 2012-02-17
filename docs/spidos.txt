@@ -11,8 +11,7 @@ Offset	Length	Name		Description
 
    0	   1	ENTRY_TYPE	Purpose of this block
    1	   2	NEXT_RECORD	Address of the next block's page (LSB first)
-   3	   1	RESERVED	Must be FF
-   4	   n	DATA		Data contained in this block
+   3	   253	DATA/HEADER	Data contained in this block
 
 Entry types:
   FF	end of allocated disk space, remainder of flash is empty

@@ -228,7 +228,7 @@ image/bb4cpc.srec: bb4cpc/BB4CPC.BAS build/.dummy image/.dummy
 
 
 image/installer_recovery.srec: build/rom_c000.bin
-image/installer.srec: build/boot_into_basic.bin
+image/installer_boot_into_basic.srec: build/boot_into_basic.bin
 image/installer_myrom.srec: build/mytestrom.bin
 image/installer_spidos.srec: build/spidos.bin
 
