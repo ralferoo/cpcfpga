@@ -1,6 +1,9 @@
 
 SPI_PORT			equ	#feff
 AMSDOS_HEADER_SIZE		equ 64
+AMSDOS_ADDR			equ 18	; CHECK
+AMSDOS_LEN			equ 20	; CHECK
+AMSDOS_TYPE			equ 22	; CHECK
 
 iy_current_spi_status		equ 0
 iy_is_writing			equ (iy_current_spi_status+1)
@@ -11,7 +14,14 @@ iy_long_jump_vector		equ (iy_read_spi_offset+3)
 iy_existing_tape_in		equ (iy_long_jump_vector+3)
 iy_existing_tape_out		equ (iy_existing_tape_in+4)
 
-iy_amsdos_header_write		equ (iy_existing_tape_out+4)
+iy_read_scratch_buffer		equ (iy_existing_tape_out+2)
+iy_read_name			equ (iy_read_scratch_buffer+2)
+iy_read_name_len		equ (iy_read_name+1)
+iy_read_page_low		equ (iy_read_name_len+1)
+iy_read_page_high		equ (iy_read_page_low+1)
+iy_read_page_ofs		equ (iy_read_page_high+1)
+
+iy_amsdos_header_write		equ (iy_read_page_ofs+4)
 iy_amsdos_header_read		equ (iy_amsdos_header_write+AMSDOS_HEADER_SIZE)
 iy_saved_cas_vectors		equ (iy_amsdos_header_read+AMSDOS_HEADER_SIZE)
 
@@ -419,7 +429,7 @@ try_next_file:
 
 	ld a,e
 	in e,(c)
-	ld d,(c)				; DE = next page
+	in d,(c)				; DE = next page
 	push de					; store next block on stack
 
 	and ENTRY_TYPE_HIDDEN_INVMASK		; get file type mask, ignoring visible bit
@@ -427,8 +437,8 @@ try_next_file:
 	jr nz, not_this_file			; deleted, skip
 
 	inc hl
-	ld (iy+iy_page_low),l
-	ld (iy+iy_page_high),h
+	ld (iy+iy_read_page_low),l
+	ld (iy+iy_read_page_high),h
 
 	ld hl,iy_amsdos_header_read
 	call add_iy_to_hl			; HL=file header (file name)
@@ -442,7 +452,7 @@ checkname:
 	jr nz, checkname			; check remaining chars
 
 	; now we have a file match
-	ld (iy+iy_page_ofs),0
+	ld (iy+iy_read_page_ofs),0
 
 	ld d,AMSDOS_HEADER_SIZE-16
 copy_header:
@@ -479,10 +489,15 @@ not_this_file:
 	pop hl					; pull next block off stack
 	jr try_next_file
 
-file-not_file:
+file_not_found:
 	dec b
 	out (c),c				; turn off flash rom CE
 	xor a					; clear A, zero, carry
+	ret
+
+stream_already_in_use:
+	ld a,#0e
+	and a					; clear A, zero, carry
 	ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
