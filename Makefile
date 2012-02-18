@@ -23,7 +23,7 @@ UCF_FILE  = constraint/$(XILINX_TOP_NAME).ucf
 #
 # generic rules
 
-all: $(PDB_NAME)
+all: pdb
 
 clean:
 	$(RM) -rf build/ $(PDB_NAME) stdout.log $(PDB_NAME).depends image/
