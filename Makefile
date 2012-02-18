@@ -17,7 +17,7 @@ XILINX_VHD_FILES = $(sort hdl/$(XILINX_TOP_NAME).vhd $(VHD_FILES))
 
 PDC_FILES =constraint/$(ACTEL_TOP_NAME)_pins.pdc
 SDC_FILES =$(wildcard constraint/$(ACTEL_TOP_NAME)_sdc.sdc)
-UCF_FILE  = constraint/$(XILINX_TOP_NAME).ucf
+#UCF_FILE  = constraint/$(XILINX_TOP_NAME).ucf
 
 ###########################################################################
 #
@@ -27,6 +27,9 @@ all: pdb
 
 clean:
 	$(RM) -rf build/ $(PDB_NAME) stdout.log $(PDB_NAME).depends image/
+
+.PRECIOUS:
+.SECONDARY:
 
 ###########################################################################
 #
@@ -278,12 +281,12 @@ image/installer_spidos.srec: build/spidos.bin
 XILINX_WRAPPER		= build/xilinx-wrapper
 INTSTYLE		= -intstyle silent 
 XST_FLAGS		= $(INTSTYLE)
-NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo  # ngdbuild flags
-NGDBUILD_FLAGS   += $(if $(UCF_FILE),-uc,) ../$(UCF_FILE)         # append the UCF file option if it is specified
+NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo -nt timestamp  # ngdbuild flags
+NGDBUILD_FLAGS   += $(if $(UCF_FILE),-uc ../$(UCF_FILE),-i)         # append the UCF file option if it is specified
 
 MAP_FLAGS        ?= $(INTSTYLE) -cm area -ir off -pr off -c 100
 #MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -k 4 -c 100 -tx off
-PAR_FLAGS        ?= $(INTSTYLE) -w -ol std -t 1
+PAR_FLAGS        ?= $(INTSTYLE) -w -ol high -t 1
 TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
 PROMGEN_FLAGS    ?= -u 0                  # flags that control the MCS/EXO file generation
@@ -302,8 +305,8 @@ build/%_map.ncd build/%.pcf: build/%.ngd
 build/%.ncd: build/%_map.ncd build/%.pcf
 	$(XILINX_WRAPPER) par $(PAR_FLAGS) $*_map.ncd $*.ncd $*.pcf
 
-build/%.bit: build/%.ncd $(BITGEN_OPTIONS_FILE)
-	$(XILINX_WRAPPER) bitgen $(BITGEN_FLAGS) -f $(BITGEN_OPTIONS_FILE) $*.ncd
+build/%.bit: build/%.ncd build/$(XILINX_TOP_NAME).ut
+	$(XILINX_WRAPPER) bitgen $(BITGEN_FLAGS) -f $(XILINX_TOP_NAME).ut $*.ncd
 
 build/%.mcs: build/%.bit
 	$(XILINX_WRAPPER) promgen $(PROMGEN_FLAGS) $*.bit -p mcs
@@ -319,7 +322,7 @@ build/make_xilinx_prj: build/.dummy
 	@echo '#!/bin/bash' >$@
 	@echo 'for i in "$$@"' >>$@
 	@echo do >>$@
-	@echo 'echo vhdl work "../$$i"' >>$@
+	@echo 'echo vhdl work \"../$$i\"' >>$@
 	@echo done >>$@ 
 	@chmod +x $@
 
@@ -330,8 +333,8 @@ build/$(XILINX_TOP_NAME).prj: $(XILINX_VHD_FILES) build/make_xilinx_prj
 build/$(XILINX_TOP_NAME).xst: build/.dummy build/$(XILINX_TOP_NAME).prj
 	@mkdir -p build/projnav.tmp
 	@echo Rebuilding $@
-	@echo set -tmpdir "projnav.tmp" >$@
-	@echo set -xsthdpdir "xst" >>$@
+	@echo set -tmpdir '"projnav.tmp"' >$@
+	@echo set -xsthdpdir '"xst"' >>$@
 	@echo run >>$@
 	@echo -ifn $(XILINX_TOP_NAME).prj >>$@
 	@echo -ifmt mixed >>$@
@@ -387,7 +390,7 @@ build/$(XILINX_TOP_NAME).xst: build/.dummy build/$(XILINX_TOP_NAME).prj
 	@echo -equivalent_register_removal YES >>$@
 	@echo -slice_utilization_ratio_maxmargin 5 >>$@
 
-build/$(XILINX_TOP_NAME).ut: build/.dummy Makefile
+build/$(XILINX_TOP_NAME).ut: build/.dummy
 	@echo Rebuilding $@
 	@echo -w >$@
 	@echo -g DebugBitstream:No >>$@
@@ -416,5 +419,5 @@ build/$(XILINX_TOP_NAME).ut: build/.dummy Makefile
 	@echo -g LCK_cycle:NoWait >>$@
 	@echo -g Match_cycle:Auto >>$@
 	@echo -g Security:None >>$@
-	@echo -g DonePipe:Yes >>$@
+	@echo -g DonePipe:No >>$@
 	@echo -g DriveDone:No >>$@
