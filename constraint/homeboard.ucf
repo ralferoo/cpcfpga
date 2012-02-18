@@ -180,8 +180,3 @@ NET "pushsw[2]" IOSTANDARD = LVCMOS33;
 
 NET "pushsw[3]" LOC = P130;
 NET "pushsw[3]" IOSTANDARD = LVCMOS33;
-
-
-# PlanAhead Generated physical constraints 
-
-NET "leds[2]" LOC = P18;
