@@ -1,0 +1,16 @@
+diff --git a/hdl/cpc.vhd b/hdl/cpc.vhd
+index 2f47427..fd492e1 100755
+--- a/hdl/cpc.vhd
++++ b/hdl/cpc.vhd
+@@ -630,6 +630,9 @@ architecture impl of cpc is
+ 				clock_when_idle=>spi_clock_when_idle, spi_clk=>spi_clk, spi_di=>spi_di, spi_do=>spi_do );
+ 
+ 	-- tape
+-	tape_out <= cas_out;
+-	tape_motor <= cas_motor;
++--	tape_out <= cas_out;
++--	tape_motor <= cas_motor;
++
++	tape_out <= crtc_vsync;
++	tape_motor <= z80_INT_n;
+ end impl;
