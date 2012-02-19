@@ -113,7 +113,7 @@ begin
 					wait_n	:= '1';				-- iorq, already started
 
 				elsif tstate="11" and iorq_n='0' then
-					wait_n	:= m1_n;			-- iorq, need extra cycle here
+					wait_n	:= '0'; --m1_n;			-- iorq, need extra cycle here
 					idle	:= not m1_n;
 
 				elsif tstate="01" and idle='0' then
