@@ -58,18 +58,12 @@ print:
 	jr print
 
 entry_msg:
-	defb " Ralf's test rom 1.01.",13,10
+	defb " Ralf's test rom 1.02.",13,10
 	defb " Try |HELLO or |TEST",13,10
 	defb " Use |SREC to load an SREC file",13,10,13,10,0
 
 hello_msg:
 	defb "Hello mate!",13,10,0
-
-plustest_start:
-	incbin plustest/plustest.bin
-;	incbin plustest/plustest-ed4.bin
-plustest_length equ ($-plustest_start)
-
 
 
 
@@ -206,18 +200,22 @@ read_data:
 
 	ld (hl),a
 	inc hl					; fetch byte
+
+;	ld a,r
+	exx
+	inc c
+	res 5,c
+;	and #1f
+;	or #40
+;	ld c,a
+	out (c),c
+	exx					; flash border
+
 	jr read_data
 
 data_end:
 	call endsrecline			; verify xsum
 	inc ix					; increase line count
-
-	ld a,2
-	exx
-	xor c
-	ld c,a
-	out (c),c
-	exx					; flash border
 
 	ld a,'.'
 	jr printchar_jp_mainloop 		; show progress
@@ -369,7 +367,7 @@ gethex2:
 
 
 welcome_msg:
-	defb 13,10,"SREC loader v0.05 ",164," 2012 Ranulf Doswell",13,10
+	defb 13,10,"SREC loader v0.06 ",164," 2012 Ranulf Doswell",13,10
 	defb       "---------------------------------------",13,10
 	defb 13,10,"Start SREC transfer...",13,10
 exec_msg2:
@@ -379,6 +377,11 @@ exec_msg1:
 error_msg:
 	defb 13,10,"ERROR in SREC data, please restart SREC transfer...",13,10,0
 
-	defb '****'
-progend:
+plustest_start:
+	incbin plustest/plustest.bin
+;	incbin plustest/plustest-ed4.bin
+plustest_length equ ($-plustest_start)
 
+
+
+progend:
