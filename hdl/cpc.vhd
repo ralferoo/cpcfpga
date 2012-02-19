@@ -280,6 +280,8 @@ architecture impl of cpc is
 		pwm_left, pwm_right		: out	std_logic);
 	end component;
 	signal	psg_clk				: std_logic;
+	signal	psg_clk_in			: std_logic;
+	signal	psg_clk_in_kbd			: std_logic;
 	signal	psg_databus_in			: std_logic_vector(7 downto 0);
 	signal	psg_databus_out			: std_logic_vector(7 downto 0);
 	signal	psg_bdir_bc1			: std_logic_vector(1 downto 0);
@@ -436,14 +438,16 @@ architecture impl of cpc is
 	cas_in <= pushsw(3); --'0';
 
 	-- ay 8912 psg
-	psg_0 : ay8912 port map (nRESET => reset_n, clk=>psg_clk, pwm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
+	psg_clk_in <= psg_clk and dipsw(4);
+	psg_0 : ay8912 port map (nRESET => reset_n, clk=>psg_clk_in, pwm_clk=>clk16, bdir_bc1=>psg_bdir_bc1, din=>psg_databus_in, dout=>psg_databus_out,
 				 io_a=>keyboard_column, pwm_left=>audio_left, pwm_right=>audio_right, tape_noise=>psg_tape_noise, is_mono=>dipsw(6) );
 	psg_tape_noise <= cas_out; -- xor cas_in;  -- cas_in makes a hideous noise and causes sync interference
 	video_sound_left <= audio_left;
 	video_sound_right <= audio_right;	-- although in general, connecting audio up to scart at all causes interference... maybe voltage too high?
 
 	-- keyboard
-	kbd_0 : ps2input port map ( nRESET=>reset_n, clk=>psg_clk, clk16=>clk16,
+	psg_clk_in_kbd <= psg_clk and dipsw(3);
+	kbd_0 : ps2input port map ( nRESET=>reset_n, clk=>psg_clk_in_kbd, clk16=>clk16,
 					break_key=>keyboard_reset,
 				    	ps2_clock=>ps2_clock, ps2_data=>ps2_data,
 					keyboard_row=>keyboard_row, keyboard_column=>keyboard_column,

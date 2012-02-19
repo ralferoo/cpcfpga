@@ -596,7 +596,7 @@ begin
 			d_m1_n_on_t2		<= m1_n_on_t2;
 			d_us_count		<= out_d_us_count;
 
-			psg_clk			<= current_cycle(3);
+			psg_clk			<= current_cycle(3) xor current_cycle(2);
 		end procedure update_ports_current_cycle;
 
 		------------------------------------------------------------------------------------------------------------
