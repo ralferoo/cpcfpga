@@ -269,10 +269,10 @@ image/bb4cpc.srec: bb4cpc/BB4CPC.BAS build/.dummy image/.dummy
 	objcopy --change-addresses=240 --set-start=160 -I binary $< -O srec $@
 
 
-image/installer_recovery.srec: build/rom_c000.bin
-image/installer_boot_into_basic.srec: build/boot_into_basic.bin
-image/installer_myrom.srec: build/mytestrom.bin
-image/installer_spidos.srec: build/spidos.bin
+build/installer_recovery.bin: build/rom_c000.bin
+build/installer_boot_into_basic.bin: build/boot_into_basic.bin
+build/installer_myrom.bin: build/mytestrom.bin
+build/installer_spidos.bin: build/spidos.bin
 
 ###########################################################################
 #
