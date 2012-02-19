@@ -133,7 +133,6 @@ begin
 
 		variable	v_vsynccount	: std_logic_vector(3 downto 0);		-- counter before we turn off vsync
 		variable	v_vsync		: std_logic;				-- is the vsync enabled currently
-		variable	v_vsync_out	: std_logic;				-- vsync delayed until the next hsync
 
 		variable	v_inadjust	: std_logic;				-- in adjustment row
 
@@ -151,7 +150,6 @@ begin
 
 		variable	n_vsynccount	: std_logic_vector(3 downto 0);		-- counter before we turn off vsync
 		variable	n_vsync		: std_logic;				-- is the vsync enabled currently
-		variable	n_vsync_out	: std_logic;				-- vsync delayed until the next hsync
 
 		variable	n_inadjust	: std_logic;				-- in adjustment row
 
@@ -174,7 +172,6 @@ begin
 			v_hsync			:= '0';
 			v_vsynccount		:= (others=>'0');
 			v_vsync			:= '0';
-			v_vsync_out		:= '0';
 			v_inadjust		:= '0';
 
 			MA 			<= (others=>'0');
@@ -197,7 +194,6 @@ begin
 
 			n_vsynccount		:= v_vsynccount;
 			n_vsync			:= v_vsync;
-			n_vsync_out		:= v_vsync_out;
 			n_inadjust		:= v_inadjust;
 
 			-- if we're still in the middle of a line, process line contents
@@ -209,7 +205,6 @@ begin
 				if n_hpos = r_hsyncpos then
 					n_hsync		:= '1';					-- start vsync
 					n_hsynccount	:= r_hsyncwidth;			-- repeat for this length
-					n_vsync_out	:= n_vsync;				-- delay vsync line so it transitions with the hsync
 				end if;
 
 				-- count down the hsync counter, clear hsync if it's zero
@@ -312,7 +307,6 @@ begin
 
 			v_vsynccount		:= n_vsynccount;
 			v_vsync			:= n_vsync;
-			v_vsync_out		:= n_vsync_out;
 			v_inadjust		:= n_inadjust;
 
 			-- and copy relevant things to the signals
@@ -320,8 +314,7 @@ begin
 			RA 			<= n_rpos;
 			DE			<= n_vdisp and n_hdisp;
 			HSYNC			<= n_hsync;
-			VSYNC			<= n_vsync; --_out;			-- interestingly, i did the work for this but the real crtc doesn't do this!
-											-- actually, the vsync appears at hpos=r0 (arguably, I'd expect hpos=0)
+			VSYNC			<= n_vsync;
 		end if;
 	end process;
 
