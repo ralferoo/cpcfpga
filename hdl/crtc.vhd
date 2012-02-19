@@ -55,21 +55,36 @@ begin
 		variable	outvalue	: std_logic_vector(7 downto 0);
 	begin
 		if nRESET='0' then
+			r_htotal		<= (others=>'0');	-- r0
+			r_hdisp			<= (others=>'0');	-- r1
+			r_hsyncpos		<= (others=>'0');	-- r2
+			r_hsyncwidth		<= (others=>'0');	-- r3
+
+			r_vtotal		<= (others=>'0');	-- r4
+			r_vtotaladjust		<= (others=>'0');	-- r5
+			r_vdisp			<= (others=>'0');	-- r6
+			r_vsyncpos		<= (others=>'0');	-- r7
+
+			r_maxscanlinecount	<= (others=>'0');	-- r9
+
+			r_startaddress_h	<= (others=>'0');	-- r12
+			r_startaddress_l	<= (others=>'0');	-- r13
+
 			-- these initial values from default CPC config
-			r_htotal		<= x"3f";	-- r0
-			r_hdisp			<= x"28";	-- r1
-			r_hsyncpos		<= x"2e";	-- r2
-			r_hsyncwidth		<= x"e";	-- r3
-
-			r_vtotal		<= "0100110";	-- r4
-			r_vtotaladjust		<= "00000";	-- r5
-			r_vdisp			<= "0011001";	-- r6
-			r_vsyncpos		<= "0011110";	-- r7
-
-			r_maxscanlinecount	<= "00111";	-- r9
-
-			r_startaddress_h	<= "110000";	-- r12		-- start reading from #c000
-			r_startaddress_l	<= x"00";	-- r13
+--			r_htotal		<= x"3f";	-- r0
+--			r_hdisp			<= x"28";	-- r1
+--			r_hsyncpos		<= x"2e";	-- r2
+--			r_hsyncwidth		<= x"e";	-- r3
+--
+--			r_vtotal		<= "0100110";	-- r4
+--			r_vtotaladjust		<= "00000";	-- r5
+--			r_vdisp			<= "0011001";	-- r6
+--			r_vsyncpos		<= "0011110";	-- r7
+--
+--			r_maxscanlinecount	<= "00111";	-- r9
+--
+--			r_startaddress_h	<= "110000";	-- r12		-- start reading from #c000
+--			r_startaddress_l	<= x"00";	-- r13
 
 			DOUT 			<= (others=>'0');
 
