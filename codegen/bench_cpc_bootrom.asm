@@ -1,6 +1,68 @@
 
 	org #0000
 
+	ld hl,#1234
+	ld bc,#f500
+	ld de,#5678
+qqq:
+	ld a,#f5
+	in a,(0)
+	ld (hl),a
+
+	in a,(c)
+	ld (de),a
+
+	jr qqq
+
+	end
+
+
+;	di
+;	ld hl,intvec
+;	ld a,#c3
+;	ld (#38),a
+;	ld (#39),hl
+
+;	ld hl,#c000
+	ei
+
+infloop:
+	halt
+	jr infloop
+
+
+	org #38
+
+intvec:
+
+	ld a,#f5
+	in a,(0)
+	rrca
+	sbc a,a
+	ld h,#c0
+	ld (hl),a
+
+	xor a
+	ld h,#c8
+	ld (hl),a
+	ld h,#d8
+	ld (hl),a
+
+	ld bc,#f500
+	in a,(c)
+	rrca
+	sbc a,a
+	and #0f
+	ld h,#d0
+	ld (hl),a
+
+	inc l
+	ei
+	ret
+
+
+
+
 begin:
 	im 0
 	ei
