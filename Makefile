@@ -274,6 +274,11 @@ build/installer_boot_into_basic.bin: build/boot_into_basic.bin
 build/installer_myrom.bin: build/mytestrom.bin
 build/installer_spidos.bin: build/spidos.bin
 
+%.inc: %.struct
+	codegen/structinc.pl <$< >$@
+
+build/spidos.bin: rom/spidos.asm rom/spidos_iy_regs.inc
+
 ###########################################################################
 #
 # xilinx rules
