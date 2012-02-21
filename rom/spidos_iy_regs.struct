@@ -1,0 +1,23 @@
+iy_current_spi_status		1
+iy_is_writing			1
+iy_write_spi_offset		3
+iy_is_reading			1
+iy_read_spi_offset	 	3
+iy_long_jump_vector		3
+iy_existing_tape_in		2
+iy_existing_tape_out		2
+
+iy_read_scratch_buffer		2
+iy_read_name			2
+iy_read_name_len		1
+iy_read_page_low		1
+iy_read_page_high		1
+iy_read_page_ofs		1
+
+iy_amsdos_header_write		64
+iy_amsdos_header_read		64
+iy_saved_cas_vectors		39
+iy_data_area_size		0
+
+
+
