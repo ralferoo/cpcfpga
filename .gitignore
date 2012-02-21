@@ -1,3 +1,4 @@
+roms/Super*.rom
 junk/
 *.epf
 synthesis/
@@ -47,4 +48,6 @@ simulation/work/
 transcript
 vsim.wlf
 work/
-
+test/*.out
+bb4cpc/*
+demo
