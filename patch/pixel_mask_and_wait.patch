@@ -1,0 +1,82 @@
+diff --git a/hdl/gate_array.vhd b/hdl/gate_array.vhd
+index 4355e64..9eabdd2 100755
+--- a/hdl/gate_array.vhd
++++ b/hdl/gate_array.vhd
+@@ -68,7 +68,7 @@ architecture impl of gate_array is
+ 	signal	local_z80_clk			: std_logic;
+ 	signal	video_mode			: std_logic_vector(1 downto 0);
+ 	signal	vm_shift_add			: std_logic_vector(2 downto 0);
+-	signal	vm_pixel_mask			: std_logic_vector(3 downto 0);
++	signal	vm_pixel_mask			: std_logic_vector(1 downto 0);
+ 	signal	palette				: t_palette;
+ 	signal	upper_rom_paging_disable	: std_logic;
+ 	signal	lower_rom_paging_disable	: std_logic;
+@@ -92,11 +92,13 @@ begin
+ 						variable	tstate			: in std_logic_vector(1 downto 0); 
+ 						variable	idle			: inout std_logic;
+ 						variable	wait_n			: inout std_logic) is
++			variable	n_idle	: std_logic;
+ 		begin
+ 			wait_n	:= '1';
++			n_idle	:= idle;
+ 
+ 			if tstate="11" then							-- if we've reached T1, all signals should be normal
+-				idle	:= '1';							-- and we can transition back to the idle state
++				n_idle	:= '1';							-- and we can transition back to the idle state
+ 			end if;
+ 
+ 			if (iorq_n='0' and m1_n='0') then					-- we're acknowledging an interrupt, T4->T2(instr)
+@@ -105,16 +107,22 @@ begin
+ 				else
+ 					wait_n	:= '0';						-- wait until T2
+ 				end if;
+-				idle	:= '0';							-- and go into busy state just in case
+-			elsif idle='1' and (iorq_n='0' or mreq_n='0') then			-- we're in the idle state and IO/mem requested
++				n_idle	:= '0';							-- and go into busy state just in case
++			elsif n_idle='1' and (iorq_n='0' or mreq_n='0') then			-- we're in the idle state and IO/mem requested
+ 				if tstate="00" then
+-					idle	:= '0';						-- from T2 we can transition into busy state
++					n_idle	:= '0';						-- from T2 we can transition into busy state
+ 					wait_n	:= iorq_n; --not m1_n;				-- but add a wait state unless it's instruction fetch
+ 				else
+ 					wait_n	:= '0';						-- not in T2, force them to wait until the next block
+ 				end if;
+ 
++			elsif n_idle='0' then
++
+ 			end if;
++
++			report "iorq " & std_logic'image(iorq_n) & " mreq " & std_logic'image(mreq_n) & " m1 " & std_logic'image(m1_n) & " idle " & std_logic'image(idle) & " tstate " & std_logic'image(tstate(1))  & std_logic'image(tstate(0)) & " -> wait " & std_logic'image(wait_n) & " idle " & std_logic'image(n_idle)
++
++			idle	:= n_idle;
+ 		end procedure calculate_wait;
+ 
+ 		------------------------------------------------------------------------------------------------------------
+@@ -252,10 +260,10 @@ begin
+ 			variable	t_shift		: std_logic;	
+ 		begin
+ 			-- colour index selection
+-			t_colour_index	:= n_out_video_byte_data(1) & n_out_video_byte_data(5) &
+-					   n_out_video_byte_data(3) & n_out_video_byte_data(7);
+-
+-			t_colour_index	:= t_colour_index and vm_pixel_mask;
++			t_colour_index	:= (vm_pixel_mask(1) and n_out_video_byte_data(1)) & 
++					   (vm_pixel_mask(1) and n_out_video_byte_data(5)) &
++					   (vm_pixel_mask(0) and n_out_video_byte_data(3)) & 
++					   			 n_out_video_byte_data(7);
+ 
+ 			-- move to next pixel at appropriate time
+ 			t_shift_count			:= ('0' & n_out_video_shift_count) + vm_shift_add;
+@@ -608,9 +616,9 @@ begin
+ 			end case;
+ 
+ 			case video_mode is
+-				when "10" =>	vm_pixel_mask <= "0001";
+-				when "00" =>	vm_pixel_mask <= "1111";
+-				when others =>	vm_pixel_mask <= "0011";
++				when "10" =>	vm_pixel_mask <= "00";
++				when "00" =>	vm_pixel_mask <= "11";
++				when others =>	vm_pixel_mask <= "01";
+ 			end case;
+ 		end if;
+ 	end process;
