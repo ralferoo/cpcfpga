@@ -326,8 +326,8 @@
 </package>
 <package name="VIA_DIY">
 <description>Via with wide target on bottom to allow slight alignement problems.</description>
-<smd name="BOTTOM" x="0" y="0" dx="5" dy="5" layer="16" roundness="100"/>
-<smd name="TOP" x="0" y="0" dx="1" dy="1" layer="1" roundness="100"/>
+<smd name="B" x="0" y="0" dx="5" dy="5" layer="16" roundness="100"/>
+<smd name="T" x="0" y="0" dx="1" dy="1" layer="1" roundness="100"/>
 <hole x="0" y="0" drill="0.8"/>
 </package>
 </packages>
@@ -423,9 +423,10 @@
 <pin name="41" x="7.62" y="-27.94" visible="pad" length="middle" direction="pas" swaplevel="1" rot="R180"/>
 </symbol>
 <symbol name="VIA_DIY">
-<circle x="0" y="0" radius="12.7" width="0.254" layer="94"/>
-<pin name="BOTTOM" x="17.78" y="0" length="middle" rot="R180"/>
-<pin name="TOP" x="-17.78" y="0" length="middle"/>
+<pin name="B" x="5.08" y="0" length="point" rot="R180"/>
+<pin name="T" x="-5.08" y="0" length="point"/>
+<circle x="0" y="0" radius="1.27" width="0.254" layer="94"/>
+<wire x1="5.08" y1="0" x2="-5.08" y2="0" width="0.254" layer="94"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -497,8 +498,8 @@
 <devices>
 <device name="" package="VIA_DIY">
 <connects>
-<connect gate="G$1" pin="BOTTOM" pad="BOTTOM"/>
-<connect gate="G$1" pin="TOP" pad="TOP"/>
+<connect gate="G$1" pin="B" pad="B"/>
+<connect gate="G$1" pin="T" pad="T"/>
 </connects>
 <technologies>
 <technology name=""/>
