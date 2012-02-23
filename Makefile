@@ -268,6 +268,8 @@ image/%.srec: codegen/%.scr build/.dummy image/.dummy
 image/bb4cpc.srec: bb4cpc/BB4CPC.BAS build/.dummy image/.dummy
 	objcopy --change-addresses=240 --set-start=160 -I binary $< -O srec $@
 
+image/installer_bubble_bobble.srec: build/installer_bubble_bobble.bin image/.dummy
+	objcopy --change-addresses=2048 -I binary $< -O srec $@
 
 build/installer_recovery.bin: build/rom_c000.bin
 build/installer_boot_into_basic.bin: build/boot_into_basic.bin
