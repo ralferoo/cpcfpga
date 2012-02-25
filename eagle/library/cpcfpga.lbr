@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
@@ -330,6 +330,42 @@
 <smd name="T" x="0" y="0" dx="1" dy="1" layer="1" roundness="100"/>
 <hole x="0" y="0" drill="0.8"/>
 </package>
+<package name="TSOP32">
+<smd name="P9" x="-9.75" y="-0.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P10" x="-9.75" y="-0.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P11" x="-9.75" y="-1.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P12" x="-9.75" y="-1.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P13" x="-9.75" y="-2.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P14" x="-9.75" y="-2.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P15" x="-9.75" y="-3.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P16" x="-9.75" y="-3.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P8" x="-9.75" y="0.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P7" x="-9.75" y="0.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P6" x="-9.75" y="1.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P5" x="-9.75" y="1.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P4" x="-9.75" y="2.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P3" x="-9.75" y="2.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P2" x="-9.75" y="3.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P1" x="-9.75" y="3.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P24" x="10.25" y="-0.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P23" x="10.25" y="-0.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P22" x="10.25" y="-1.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P21" x="10.25" y="-1.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P20" x="10.25" y="-2.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P19" x="10.25" y="-2.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P18" x="10.25" y="-3.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P17" x="10.25" y="-3.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P25" x="10.25" y="0.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P26" x="10.25" y="0.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P27" x="10.25" y="1.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P28" x="10.25" y="1.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P29" x="10.25" y="2.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P30" x="10.25" y="2.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P31" x="10.25" y="3.25" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<smd name="P32" x="10.25" y="3.75" dx="0.2" dy="0.5" layer="1" rot="R270"/>
+<rectangle x1="-9.5" y1="-4.5" x2="10" y2="4.5" layer="20"/>
+<circle x="-7.62" y="2.54" radius="1.27" width="0.127" layer="21"/>
+</package>
 </packages>
 <symbols>
 <symbol name="ACTEL_HDR">
@@ -428,6 +464,47 @@
 <circle x="0" y="0" radius="1.27" width="0.254" layer="94"/>
 <wire x1="5.08" y1="0" x2="-5.08" y2="0" width="0.254" layer="94"/>
 </symbol>
+<symbol name="AS6C4008">
+<pin name="A4" x="-27.94" y="-20.32" length="middle"/>
+<pin name="A5" x="-27.94" y="-17.78" length="middle"/>
+<pin name="A6" x="-27.94" y="-15.24" length="middle"/>
+<pin name="A7" x="-27.94" y="-12.7" length="middle"/>
+<pin name="A12" x="-27.94" y="-10.16" length="middle"/>
+<pin name="A14" x="-27.94" y="-7.62" length="middle"/>
+<pin name="A16" x="-27.94" y="-5.08" length="middle"/>
+<pin name="A18" x="-27.94" y="-2.54" length="middle"/>
+<pin name="VCC" x="-27.94" y="0" length="middle"/>
+<pin name="A15" x="-27.94" y="2.54" length="middle"/>
+<pin name="A17" x="-27.94" y="5.08" length="middle"/>
+<pin name="WE" x="-27.94" y="7.62" length="middle"/>
+<pin name="A13" x="-27.94" y="10.16" length="middle"/>
+<pin name="A8" x="-27.94" y="12.7" length="middle"/>
+<pin name="A9" x="-27.94" y="15.24" length="middle"/>
+<pin name="A11" x="-27.94" y="17.78" length="middle"/>
+<pin name="OE" x="27.94" y="17.78" length="middle" rot="R180"/>
+<pin name="A10" x="27.94" y="15.24" length="middle" rot="R180"/>
+<pin name="CE" x="27.94" y="12.7" length="middle" rot="R180"/>
+<pin name="DQ7" x="27.94" y="10.16" length="middle" rot="R180"/>
+<pin name="DQ6" x="27.94" y="7.62" length="middle" rot="R180"/>
+<pin name="DQ5" x="27.94" y="5.08" length="middle" rot="R180"/>
+<pin name="DQ4" x="27.94" y="2.54" length="middle" rot="R180"/>
+<pin name="DQ3" x="27.94" y="0" length="middle" rot="R180"/>
+<pin name="VSS" x="27.94" y="-2.54" length="middle" rot="R180"/>
+<pin name="DQ2" x="27.94" y="-5.08" length="middle" rot="R180"/>
+<pin name="DQ1" x="27.94" y="-7.62" length="middle" rot="R180"/>
+<pin name="DQ0" x="27.94" y="-10.16" length="middle" rot="R180"/>
+<pin name="A0" x="27.94" y="-12.7" length="middle" rot="R180"/>
+<pin name="A1" x="27.94" y="-15.24" length="middle" rot="R180"/>
+<pin name="A2" x="27.94" y="-17.78" length="middle" rot="R180"/>
+<pin name="A3" x="27.94" y="-20.32" length="middle" rot="R180"/>
+<wire x1="-22.86" y1="20.32" x2="22.86" y2="20.32" width="0.254" layer="97"/>
+<wire x1="22.86" y1="20.32" x2="22.86" y2="-22.86" width="0.254" layer="97"/>
+<wire x1="22.86" y1="-22.86" x2="-22.86" y2="-22.86" width="0.254" layer="97"/>
+<wire x1="-22.86" y1="-22.86" x2="-22.86" y2="20.32" width="0.254" layer="97"/>
+<text x="-5.08" y="5.08" size="1.27" layer="97">AS6C4008</text>
+<text x="-5.08" y="2.54" size="1.27" layer="97">TSOP32</text>
+<circle x="-12.7" y="12.7" radius="2.54" width="0.254" layer="94"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="ACTEL_HDR" prefix="SV" uservalue="yes">
@@ -500,6 +577,52 @@
 <connects>
 <connect gate="G$1" pin="B" pad="B"/>
 <connect gate="G$1" pin="T" pad="T"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="AS6C4008">
+<gates>
+<gate name="G$1" symbol="AS6C4008" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="TSOP32">
+<connects>
+<connect gate="G$1" pin="A0" pad="P20"/>
+<connect gate="G$1" pin="A1" pad="P19"/>
+<connect gate="G$1" pin="A10" pad="P31"/>
+<connect gate="G$1" pin="A11" pad="P1"/>
+<connect gate="G$1" pin="A12" pad="P12"/>
+<connect gate="G$1" pin="A13" pad="P4"/>
+<connect gate="G$1" pin="A14" pad="P11"/>
+<connect gate="G$1" pin="A15" pad="P7"/>
+<connect gate="G$1" pin="A16" pad="P10"/>
+<connect gate="G$1" pin="A17" pad="P6"/>
+<connect gate="G$1" pin="A18" pad="P9"/>
+<connect gate="G$1" pin="A2" pad="P18"/>
+<connect gate="G$1" pin="A3" pad="P17"/>
+<connect gate="G$1" pin="A4" pad="P16"/>
+<connect gate="G$1" pin="A5" pad="P15"/>
+<connect gate="G$1" pin="A6" pad="P14"/>
+<connect gate="G$1" pin="A7" pad="P13"/>
+<connect gate="G$1" pin="A8" pad="P3"/>
+<connect gate="G$1" pin="A9" pad="P2"/>
+<connect gate="G$1" pin="CE" pad="P30"/>
+<connect gate="G$1" pin="DQ0" pad="P21"/>
+<connect gate="G$1" pin="DQ1" pad="P22"/>
+<connect gate="G$1" pin="DQ2" pad="P23"/>
+<connect gate="G$1" pin="DQ3" pad="P25"/>
+<connect gate="G$1" pin="DQ4" pad="P26"/>
+<connect gate="G$1" pin="DQ5" pad="P27"/>
+<connect gate="G$1" pin="DQ6" pad="P28"/>
+<connect gate="G$1" pin="DQ7" pad="P29"/>
+<connect gate="G$1" pin="OE" pad="P32"/>
+<connect gate="G$1" pin="VCC" pad="P8"/>
+<connect gate="G$1" pin="VSS" pad="P24"/>
+<connect gate="G$1" pin="WE" pad="P5"/>
 </connects>
 <technologies>
 <technology name=""/>
