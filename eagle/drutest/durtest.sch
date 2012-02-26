@@ -4974,6 +4974,12 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="-55.88" y1="-58.42" x2="-30.48" y2="-58.42" width="0.1524" layer="91"/>
 <label x="-40.64" y="-58.42" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="U1" gate="B4" pin="IO_L31N_4INIT_B"/>
+<wire x1="109.22" y1="-40.64" x2="109.22" y2="-50.8" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="-50.8" x2="119.38" y2="-50.8" width="0.1524" layer="91"/>
+<label x="114.3" y="-50.8" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="N$39" class="0">
 <segment>
@@ -5034,6 +5040,12 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="IC1" gate="G$1" pin="DO"/>
 <wire x1="-55.88" y1="-40.64" x2="-30.48" y2="-40.64" width="0.1524" layer="91"/>
 <label x="-40.64" y="-40.64" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B4" pin="IO_L27N_4DIND0"/>
+<wire x1="106.68" y1="-40.64" x2="106.68" y2="-53.34" width="0.1524" layer="91"/>
+<wire x1="106.68" y1="-53.34" x2="119.38" y2="-53.34" width="0.1524" layer="91"/>
+<label x="114.3" y="-53.34" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="VCCINT" class="0">
