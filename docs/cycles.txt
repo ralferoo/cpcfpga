@@ -1,0 +1,50 @@
+                        n_out_z80_clock         := n_current_cycle(1);
+                        tstate                  := n_current_cycle(3 downto 2);
+                        tstate_for_video        := n_current_cycle(2);
+                        lsb_of_video_address    := n_current_cycle(3);
+
+if tstate_for_video='1' then do video stuff
+if out_z80_clock='1' and n_out_z80_clock='0' then stuff	-- i.e. 1..0 == 0
+
+
+input clock = 16Mhz, (0)=8, (1)=4, (2)=2, (3)=1
+
+	3 2 1 0
+	-------
+
+	0 0 x x		Z80 cycle
+	0 1 x x		video access
+	1 0 x x		spare
+	1 1 x x		video access
+
+Essentially, all these things happen when 1..0 == "00" though and the memory
+accesses are completed on the next cycle, so 1..0 == "01"
+
+We want to store a copy of the video access cycles as they were read, so
+probably on the 2..0=="101" cycles
+
+Z80 could be doing an output to BCxx/BDxx/7Fxx each cycle (in theory), so
+saving address and this data might be useful...
+
+CRTC settings don't really need to be recorded though, except for "start of
+line and char pos in line"... maybe use a latch instead of 2nd set of counter
+
+bits that need to be saved per cycle:
+	hsync vsync	2
+	ga reg mode	2
+	palette 	5
+
+time per frame = 64us * 312 = 19968us = 79872 bytes (4), 59904 (3)
+
+possibly:
+
+	"sync signal"	1
+	ga reg mode	2
+	palette 	5
+
+if "sync signal" set, then ignore pixel data bits and instead use them for
+extra data, such as what sync signals are actually present and "other data"
+
+64KB would give us enough to store 341 lines of data at 3 bytes per mhz...
+some things go up to 317 lines per screen, so this is more than adequate.
+
