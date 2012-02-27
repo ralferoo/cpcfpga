@@ -11467,6 +11467,8 @@ package type ST</description>
 <part name="R50" library="resistor" deviceset="R-EU_" device="M0805" value="2k2"/>
 <part name="R51" library="resistor" deviceset="R-EU_" device="M0805" value="2k2"/>
 <part name="SJ2" library="jumper" deviceset="SJ2W" device=""/>
+<part name="RESET_SW" library="jumper" deviceset="JP1Q" device=""/>
+<part name="R52" library="resistor" deviceset="R-EU_" device="M0805" value="4K7"/>
 </parts>
 <sheets>
 <sheet>
@@ -11587,6 +11589,8 @@ package type ST</description>
 <instance part="R50" gate="G$1" x="259.08" y="-50.8" rot="MR0"/>
 <instance part="R51" gate="G$1" x="259.08" y="-60.96" rot="MR0"/>
 <instance part="SJ2" gate="G$1" x="246.38" y="-60.96" rot="R180"/>
+<instance part="RESET_SW" gate="A" x="81.28" y="-76.2" rot="R90"/>
+<instance part="R52" gate="G$1" x="81.28" y="-83.82"/>
 </instances>
 <busses>
 </busses>
@@ -12050,6 +12054,11 @@ package type ST</description>
 <pinref part="C5" gate="G$1" pin="1"/>
 <pinref part="SUPPLY7" gate="GND" pin="GND"/>
 </segment>
+<segment>
+<pinref part="RESET_SW" gate="A" pin="2"/>
+<wire x1="73.66" y1="-76.2" x2="66.04" y2="-76.2" width="0.1524" layer="91"/>
+<label x="66.04" y="-76.2" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="VCC" class="0">
 <segment>
@@ -12241,6 +12250,11 @@ package type ST</description>
 <wire x1="246.38" y1="-71.12" x2="241.3" y2="-71.12" width="0.1524" layer="91"/>
 <label x="241.3" y="-71.12" size="1.778" layer="95"/>
 <pinref part="SJ2" gate="G$1" pin="1"/>
+</segment>
+<segment>
+<pinref part="R52" gate="G$1" pin="1"/>
+<wire x1="66.04" y1="-83.82" x2="76.2" y2="-83.82" width="0.1524" layer="91"/>
+<label x="66.04" y="-83.82" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TCK" class="0">
@@ -13113,11 +13127,11 @@ package type ST</description>
 </net>
 <net name="N$50" class="0">
 <segment>
+<pinref part="U$2" gate="G$1" pin="OUT"/>
+<wire x1="162.56" y1="-68.58" x2="162.56" y2="-88.9" width="0.1524" layer="91"/>
 <pinref part="U1" gate="B5" pin="IO_L32P_5GCLK2"/>
 <wire x1="132.08" y1="-40.64" x2="132.08" y2="-68.58" width="0.1524" layer="91"/>
-<pinref part="U$2" gate="G$1" pin="OUT"/>
 <wire x1="132.08" y1="-68.58" x2="162.56" y2="-68.58" width="0.1524" layer="91"/>
-<wire x1="162.56" y1="-68.58" x2="162.56" y2="-88.9" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$51" class="0">
@@ -13185,6 +13199,19 @@ package type ST</description>
 <pinref part="R51" gate="G$1" pin="2"/>
 <wire x1="254" y1="-60.96" x2="251.46" y2="-60.96" width="0.1524" layer="91"/>
 <pinref part="SJ2" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="RESET" class="0">
+<segment>
+<pinref part="R52" gate="G$1" pin="2"/>
+<pinref part="RESET_SW" gate="A" pin="1"/>
+<wire x1="86.36" y1="-83.82" x2="88.9" y2="-83.82" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="-83.82" x2="88.9" y2="-76.2" width="0.1524" layer="91"/>
+<pinref part="U1" gate="B5" pin="IO_L31N_5D4"/>
+<wire x1="88.9" y1="-76.2" x2="137.16" y2="-76.2" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="-76.2" x2="137.16" y2="-40.64" width="0.1524" layer="91"/>
+<junction x="88.9" y="-76.2"/>
+<label x="93.98" y="-76.2" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
