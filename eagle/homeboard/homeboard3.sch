@@ -11734,7 +11734,7 @@ package type ST</description>
 <part name="SUPPLY5" library="supply2" deviceset="GND" device=""/>
 <part name="IC2" library="microchip" deviceset="25*" device="SN" technology="LC080"/>
 <part name="R47" library="rcl" deviceset="R-EU_" device="R0805" value="4K7"/>
-<part name="JP1" library="jumper" deviceset="JP1Q" device=""/>
+<part name="WR_PROT" library="jumper" deviceset="JP1Q" device=""/>
 <part name="R48" library="resistor" deviceset="R-EU_" device="M0805"/>
 <part name="C1" library="resistor" deviceset="C-EU" device="C0603"/>
 <part name="C5" library="resistor" deviceset="C-EU" device="C0603"/>
@@ -11857,7 +11857,7 @@ package type ST</description>
 <instance part="SUPPLY5" gate="GND" x="83.82" y="17.78"/>
 <instance part="IC2" gate="G$1" x="-76.2" y="-121.92"/>
 <instance part="R47" gate="G$1" x="-104.14" y="-109.22" rot="R90"/>
-<instance part="JP1" gate="A" x="-104.14" y="-124.46"/>
+<instance part="WR_PROT" gate="A" x="-104.14" y="-124.46"/>
 <instance part="R48" gate="G$1" x="144.78" y="147.32"/>
 <instance part="C1" gate="G$1" x="132.08" y="142.24" rot="R180"/>
 <instance part="C5" gate="G$1" x="132.08" y="124.46" rot="R180"/>
@@ -12076,7 +12076,7 @@ package type ST</description>
 <wire x1="-66.04" y1="-132.08" x2="-66.04" y2="-137.16" width="0.1524" layer="91"/>
 <junction x="-66.04" y="-132.08"/>
 <wire x1="-66.04" y1="-137.16" x2="-104.14" y2="-137.16" width="0.1524" layer="91"/>
-<pinref part="JP1" gate="A" pin="1"/>
+<pinref part="WR_PROT" gate="A" pin="1"/>
 <wire x1="-104.14" y1="-137.16" x2="-104.14" y2="-132.08" width="0.1524" layer="91"/>
 </segment>
 <segment>
@@ -13184,7 +13184,7 @@ package type ST</description>
 <pinref part="IC2" gate="G$1" pin="!WP"/>
 <wire x1="-104.14" y1="-114.3" x2="-88.9" y2="-114.3" width="0.1524" layer="91"/>
 <pinref part="R47" gate="G$1" pin="1"/>
-<pinref part="JP1" gate="A" pin="2"/>
+<pinref part="WR_PROT" gate="A" pin="2"/>
 <wire x1="-104.14" y1="-116.84" x2="-104.14" y2="-114.3" width="0.1524" layer="91"/>
 <junction x="-104.14" y="-114.3"/>
 </segment>
