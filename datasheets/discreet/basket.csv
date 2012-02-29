@@ -1,0 +1,17 @@
+
+"Line No.","Order Code","Qty","Description","Mftr. & Part No.","RoHS","Unit Price","Avail.","Line Price","Line note"
+
+1,"2057265","10","LDO, 1.2V, 1%, SOT223","NXP - NX1117C12Z","YES ","0.17","In Stock","1.7",""
+2,"2057272","10","LDO, 2.5V, 1%, SOT223","NXP - NX1117C25Z","YES ","0.17","In Stock","1.7",""
+
+3,"1562902","2","SRAM, 4MB, 2.7V-5.5V, 512KX8, TSOP32","ALLIANCE MEMORY - AS6C4008-55TIN","YES ","3.75","In Stock","7.5",""
+4,"1562904","1","SRAM, 8MB, 2.7-5.5V, 1024KX8, TSOP44","ALLIANCE MEMORY - AS6C8008-55ZIN","YES ","8.22","In Stock","8.22",""
+
+5,"1661053","1","IC, ENCODER RGB TO NTSC, 16SOIC","ANALOG DEVICES - AD724JRZ","YES ","9.72","In Stock","9.72",""
+"","","","","","","","",""
+"","","","","","","","Goods Subtotal:","28.84"
+"","","","","","","","Promotion Code Discount:","0.0"
+"","","","","","","","Delivery Charges:","Unknown"
+"","","","","","","","Goods Total:","28.84"
+"","","","","","","","VAT:","5.77"
+"","","","","","","","Total:","34.61"
