@@ -12702,10 +12702,10 @@ package type ST</description>
 <label x="106.68" y="226.06" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B5" pin="IO_L28N_5D6"/>
-<wire x1="142.24" y1="-40.64" x2="142.24" y2="-63.5" width="0.1524" layer="91"/>
-<wire x1="142.24" y1="-63.5" x2="106.68" y2="-63.5" width="0.1524" layer="91"/>
-<label x="106.68" y="-63.5" size="1.778" layer="95"/>
+<wire x1="185.42" y1="-78.74" x2="162.56" y2="-78.74" width="0.1524" layer="91"/>
+<wire x1="162.56" y1="-78.74" x2="162.56" y2="-40.64" width="0.1524" layer="91"/>
+<pinref part="U1" gate="B4" pin="IO_L32P_4GCLK0"/>
+<label x="185.42" y="-78.74" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="R0" class="0">
@@ -12715,10 +12715,10 @@ package type ST</description>
 <label x="106.68" y="218.44" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B5" pin="IO_L31P_5D5"/>
-<wire x1="106.68" y1="-66.04" x2="134.62" y2="-66.04" width="0.1524" layer="91"/>
-<wire x1="134.62" y1="-66.04" x2="134.62" y2="-40.64" width="0.1524" layer="91"/>
-<label x="106.68" y="-66.04" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IO_L31P_4DOUTBUSY"/>
+<wire x1="185.42" y1="-73.66" x2="177.8" y2="-73.66" width="0.1524" layer="91"/>
+<wire x1="177.8" y1="-73.66" x2="177.8" y2="-40.64" width="0.1524" layer="91"/>
+<label x="185.42" y="-73.66" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="G1" class="0">
@@ -12728,10 +12728,10 @@ package type ST</description>
 <label x="106.68" y="200.66" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B5" pin="IO_L31N_5D4"/>
-<wire x1="137.16" y1="-40.64" x2="137.16" y2="-68.58" width="0.1524" layer="91"/>
-<wire x1="137.16" y1="-68.58" x2="106.68" y2="-68.58" width="0.1524" layer="91"/>
-<label x="106.68" y="-68.58" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IO_L30P_4D3"/>
+<wire x1="185.42" y1="-71.12" x2="165.1" y2="-71.12" width="0.1524" layer="91"/>
+<wire x1="165.1" y1="-71.12" x2="165.1" y2="-40.64" width="0.1524" layer="91"/>
+<label x="185.42" y="-71.12" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="G0" class="0">
@@ -12741,10 +12741,10 @@ package type ST</description>
 <label x="106.68" y="193.04" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="185.42" y1="-78.74" x2="162.56" y2="-78.74" width="0.1524" layer="91"/>
-<wire x1="162.56" y1="-78.74" x2="162.56" y2="-40.64" width="0.1524" layer="91"/>
-<pinref part="U1" gate="B4" pin="IO_L32P_4GCLK0"/>
-<label x="185.42" y="-78.74" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IO_L30N_4D2"/>
+<wire x1="185.42" y1="-68.58" x2="167.64" y2="-68.58" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="-68.58" x2="167.64" y2="-40.64" width="0.1524" layer="91"/>
+<label x="185.42" y="-68.58" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="B1" class="0">
@@ -12754,10 +12754,10 @@ package type ST</description>
 <label x="106.68" y="175.26" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B4" pin="IO_L32N_4GCLK1"/>
-<wire x1="185.42" y1="-76.2" x2="160.02" y2="-76.2" width="0.1524" layer="91"/>
-<wire x1="160.02" y1="-76.2" x2="160.02" y2="-40.64" width="0.1524" layer="91"/>
-<label x="185.42" y="-76.2" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IO_L27P_4D1"/>
+<wire x1="185.42" y1="-66.04" x2="170.18" y2="-66.04" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="-66.04" x2="170.18" y2="-40.64" width="0.1524" layer="91"/>
+<label x="185.42" y="-66.04" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="B0" class="0">
@@ -12767,10 +12767,10 @@ package type ST</description>
 <label x="106.68" y="167.64" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B4" pin="IO_L31P_4DOUTBUSY"/>
-<wire x1="185.42" y1="-73.66" x2="177.8" y2="-73.66" width="0.1524" layer="91"/>
-<wire x1="177.8" y1="-73.66" x2="177.8" y2="-40.64" width="0.1524" layer="91"/>
-<label x="185.42" y="-73.66" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IO_L01P_4VRN_4"/>
+<wire x1="185.42" y1="-58.42" x2="182.88" y2="-58.42" width="0.1524" layer="91"/>
+<wire x1="182.88" y1="-58.42" x2="182.88" y2="-40.64" width="0.1524" layer="91"/>
+<label x="185.42" y="-58.42" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="CSYNC" class="0">
@@ -12780,10 +12780,10 @@ package type ST</description>
 <label x="106.68" y="254" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B5" pin="IO_L28P_5D7"/>
-<wire x1="106.68" y1="-60.96" x2="139.7" y2="-60.96" width="0.1524" layer="91"/>
-<wire x1="139.7" y1="-60.96" x2="139.7" y2="-40.64" width="0.1524" layer="91"/>
-<label x="106.68" y="-60.96" size="1.778" layer="95"/>
+<pinref part="U1" gate="B5" pin="IO_L32N_5GCLK3"/>
+<wire x1="129.54" y1="-40.64" x2="129.54" y2="-73.66" width="0.1524" layer="91"/>
+<wire x1="106.68" y1="-73.66" x2="129.54" y2="-73.66" width="0.1524" layer="91"/>
+<label x="106.68" y="-73.66" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="CASIN" class="0">
@@ -13135,12 +13135,6 @@ package type ST</description>
 <wire x1="-127" y1="-144.78" x2="-134.62" y2="-144.78" width="0.1524" layer="91"/>
 <label x="-127" y="-144.78" size="1.778" layer="95"/>
 </segment>
-<segment>
-<pinref part="U1" gate="B4" pin="IOVREF_4"/>
-<wire x1="185.42" y1="-53.34" x2="157.48" y2="-53.34" width="0.1524" layer="91"/>
-<wire x1="157.48" y1="-53.34" x2="157.48" y2="-40.64" width="0.1524" layer="91"/>
-<label x="185.42" y="-53.34" size="1.778" layer="95"/>
-</segment>
 </net>
 <net name="MOSI" class="0">
 <segment>
@@ -13152,12 +13146,6 @@ package type ST</description>
 <pinref part="U$3" gate="G$1" pin="PB2(PDI/MOSI)"/>
 <wire x1="-127" y1="-142.24" x2="-134.62" y2="-142.24" width="0.1524" layer="91"/>
 <label x="-127" y="-142.24" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U1" gate="B4" pin="IO_L01N_4VRP_4"/>
-<wire x1="185.42" y1="-55.88" x2="180.34" y2="-55.88" width="0.1524" layer="91"/>
-<wire x1="180.34" y1="-55.88" x2="180.34" y2="-40.64" width="0.1524" layer="91"/>
-<label x="185.42" y="-55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="MISO" class="0">
@@ -13171,24 +13159,12 @@ package type ST</description>
 <wire x1="-127" y1="-139.7" x2="-134.62" y2="-139.7" width="0.1524" layer="91"/>
 <label x="-127" y="-139.7" size="1.778" layer="95"/>
 </segment>
-<segment>
-<pinref part="U1" gate="B4" pin="IO_L27P_4D1"/>
-<wire x1="185.42" y1="-66.04" x2="170.18" y2="-66.04" width="0.1524" layer="91"/>
-<wire x1="170.18" y1="-66.04" x2="170.18" y2="-40.64" width="0.1524" layer="91"/>
-<label x="185.42" y="-66.04" size="1.778" layer="95"/>
-</segment>
 </net>
 <net name="SPI_SEL0" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="!CS"/>
 <wire x1="228.6" y1="-76.2" x2="236.22" y2="-76.2" width="0.1524" layer="91"/>
 <label x="228.6" y="-76.2" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U1" gate="B4" pin="IO_L01P_4VRN_4"/>
-<wire x1="185.42" y1="-58.42" x2="182.88" y2="-58.42" width="0.1524" layer="91"/>
-<wire x1="182.88" y1="-58.42" x2="182.88" y2="-40.64" width="0.1524" layer="91"/>
-<label x="185.42" y="-58.42" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$49" class="0">
@@ -13242,10 +13218,10 @@ package type ST</description>
 <label x="91.44" y="147.32" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B4" pin="IO_L30P_4D3"/>
-<wire x1="185.42" y1="-71.12" x2="165.1" y2="-71.12" width="0.1524" layer="91"/>
-<wire x1="165.1" y1="-71.12" x2="165.1" y2="-40.64" width="0.1524" layer="91"/>
-<label x="185.42" y="-71.12" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IO_L01N_4VRP_4"/>
+<wire x1="185.42" y1="-55.88" x2="180.34" y2="-55.88" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="-55.88" x2="180.34" y2="-40.64" width="0.1524" layer="91"/>
+<label x="185.42" y="-55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FPGA_AUDIO_RIGHT" class="0">
@@ -13255,10 +13231,10 @@ package type ST</description>
 <label x="91.44" y="129.54" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B4" pin="IO_L30N_4D2"/>
-<wire x1="185.42" y1="-68.58" x2="167.64" y2="-68.58" width="0.1524" layer="91"/>
-<wire x1="167.64" y1="-68.58" x2="167.64" y2="-40.64" width="0.1524" layer="91"/>
-<label x="185.42" y="-68.58" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IOVREF_4"/>
+<wire x1="185.42" y1="-53.34" x2="157.48" y2="-53.34" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="-53.34" x2="157.48" y2="-40.64" width="0.1524" layer="91"/>
+<label x="185.42" y="-53.34" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$66" class="0">
@@ -13279,10 +13255,10 @@ package type ST</description>
 <label x="251.46" y="-121.92" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B5" pin="IO_L32N_5GCLK3"/>
-<wire x1="129.54" y1="-40.64" x2="129.54" y2="-73.66" width="0.1524" layer="91"/>
-<wire x1="106.68" y1="-73.66" x2="129.54" y2="-73.66" width="0.1524" layer="91"/>
-<label x="106.68" y="-73.66" size="1.778" layer="95"/>
+<wire x1="106.68" y1="-71.12" x2="132.08" y2="-71.12" width="0.1524" layer="91"/>
+<label x="106.68" y="-71.12" size="1.778" layer="95"/>
+<pinref part="U1" gate="B5" pin="IO_L32P_5GCLK2"/>
+<wire x1="132.08" y1="-40.64" x2="132.08" y2="-71.12" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCCAUX_R" class="0">
@@ -13601,10 +13577,10 @@ package type ST</description>
 <label x="266.7" y="-106.68" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="106.68" y1="-71.12" x2="132.08" y2="-71.12" width="0.1524" layer="91"/>
-<label x="106.68" y="-71.12" size="1.778" layer="95"/>
-<pinref part="U1" gate="B5" pin="IO_L32P_5GCLK2"/>
-<wire x1="132.08" y1="-40.64" x2="132.08" y2="-71.12" width="0.1524" layer="91"/>
+<pinref part="U1" gate="B4" pin="IO_L32N_4GCLK1"/>
+<wire x1="185.42" y1="-76.2" x2="160.02" y2="-76.2" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="-76.2" x2="160.02" y2="-40.64" width="0.1524" layer="91"/>
+<label x="185.42" y="-76.2" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="XG1" class="0">
@@ -13671,6 +13647,38 @@ package type ST</description>
 <label x="86.36" y="93.98" size="1.778" layer="95"/>
 <pinref part="U1" gate="B0" pin="IO_L27N_0"/>
 <wire x1="134.62" y1="93.98" x2="134.62" y2="73.66" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="X6" class="0">
+<segment>
+<pinref part="U1" gate="B5" pin="IO_L31N_5D4"/>
+<wire x1="137.16" y1="-40.64" x2="137.16" y2="-68.58" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="-68.58" x2="106.68" y2="-68.58" width="0.1524" layer="91"/>
+<label x="106.68" y="-68.58" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="X7" class="0">
+<segment>
+<pinref part="U1" gate="B5" pin="IO_L31P_5D5"/>
+<wire x1="106.68" y1="-66.04" x2="134.62" y2="-66.04" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="-66.04" x2="134.62" y2="-40.64" width="0.1524" layer="91"/>
+<label x="106.68" y="-66.04" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="X8" class="0">
+<segment>
+<pinref part="U1" gate="B5" pin="IO_L28N_5D6"/>
+<wire x1="142.24" y1="-40.64" x2="142.24" y2="-63.5" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="-63.5" x2="106.68" y2="-63.5" width="0.1524" layer="91"/>
+<label x="106.68" y="-63.5" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="X9" class="0">
+<segment>
+<pinref part="U1" gate="B5" pin="IO_L28P_5D7"/>
+<wire x1="106.68" y1="-60.96" x2="139.7" y2="-60.96" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="-60.96" x2="139.7" y2="-40.64" width="0.1524" layer="91"/>
+<label x="106.68" y="-60.96" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
