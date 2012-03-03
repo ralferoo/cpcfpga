@@ -21113,8 +21113,16 @@ Source: www.cypressindustries.com</description>
 </segment>
 <segment>
 <pinref part="X3" gate="G$1" pin="PE2"/>
-<wire x1="279.4" y1="-236.22" x2="309.88" y2="-236.22" width="0.1524" layer="91"/>
+<wire x1="279.4" y1="-236.22" x2="292.1" y2="-236.22" width="0.1524" layer="91"/>
 <label x="309.88" y="-236.22" size="1.778" layer="95"/>
+<pinref part="X3" gate="G$1" pin="PE1"/>
+<wire x1="292.1" y1="-236.22" x2="309.88" y2="-236.22" width="0.1524" layer="91"/>
+<wire x1="292.1" y1="-231.14" x2="292.1" y2="-236.22" width="0.1524" layer="91"/>
+<junction x="292.1" y="-236.22"/>
+<pinref part="X3" gate="G$1" pin="PE3"/>
+<wire x1="266.7" y1="-231.14" x2="266.7" y2="-236.22" width="0.1524" layer="91"/>
+<wire x1="266.7" y1="-236.22" x2="279.4" y2="-236.22" width="0.1524" layer="91"/>
+<junction x="279.4" y="-236.22"/>
 </segment>
 <segment>
 <pinref part="U$2" gate="G$1" pin="GND"/>
