@@ -13493,9 +13493,9 @@ package type ST</description>
 <pinref part="JP3" gate="A" pin="2"/>
 </segment>
 <segment>
-<wire x1="-203.2" y1="-63.5" x2="-215.9" y2="-63.5" width="0.1524" layer="91"/>
-<label x="-203.2" y="-63.5" size="1.778" layer="95"/>
-<pinref part="IC3" gate="G$1" pin="PB7(OC0A/OC1C/PCINT7)"/>
+<label x="-203.2" y="-78.74" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="PC7(ICP1/INT4/CLKO)"/>
+<wire x1="-203.2" y1="-78.74" x2="-215.9" y2="-78.74" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="TDO_FPGA" class="0">
@@ -13514,9 +13514,9 @@ package type ST</description>
 <label x="-187.96" y="-20.32" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC3" gate="G$1" pin="PD6(INT6/AIN5/RTS)"/>
-<wire x1="-203.2" y1="-35.56" x2="-215.9" y2="-35.56" width="0.1524" layer="91"/>
-<label x="-203.2" y="-35.56" size="1.778" layer="95"/>
+<wire x1="-203.2" y1="-63.5" x2="-215.9" y2="-63.5" width="0.1524" layer="91"/>
+<label x="-203.2" y="-63.5" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="PB7(OC0A/OC1C/PCINT7)"/>
 </segment>
 </net>
 </nets>
