@@ -14901,6 +14901,11 @@ package type ST</description>
 <junction x="-144.78" y="-71.12"/>
 <junction x="-144.78" y="-73.66"/>
 </segment>
+<segment>
+<pinref part="R50" gate="G$1" pin="2"/>
+<wire x1="205.74" y1="276.86" x2="193.04" y2="276.86" width="0.1524" layer="91"/>
+<label x="203.2" y="276.86" size="1.778" layer="95" rot="MR0"/>
+</segment>
 </net>
 <net name="D_FASTBLANKING" class="0">
 <segment>
@@ -15612,13 +15617,6 @@ package type ST</description>
 <label x="106.68" y="-71.12" size="1.778" layer="95"/>
 <pinref part="U1" gate="B5" pin="IO_L32P_5GCLK2"/>
 <wire x1="132.08" y1="-40.64" x2="132.08" y2="-71.12" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="VCCAUX_R" class="0">
-<segment>
-<pinref part="R50" gate="G$1" pin="2"/>
-<wire x1="205.74" y1="276.86" x2="193.04" y2="276.86" width="0.1524" layer="91"/>
-<label x="203.2" y="276.86" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
 <net name="SPI_SEL" class="0">
