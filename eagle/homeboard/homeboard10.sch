@@ -14005,11 +14005,14 @@ package type ST</description>
 <part name="C25" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
 <part name="SUPPLY10" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY11" library="supply2" deviceset="GND" device=""/>
+<part name="R47" library="rcl" deviceset="R-EU_" device="R0805" value="270"/>
+<part name="R51" library="rcl" deviceset="R-EU_" device="R0805" value="270"/>
 </parts>
 <sheets>
 <sheet>
 <plain>
 <text x="-167.64" y="86.36" size="1.778" layer="91">Choose one of these 3.3v regs</text>
+<text x="271.78" y="-254" size="1.778" layer="91">Possible alternative:</text>
 </plain>
 <instances>
 <instance part="U1" gate="B0" x="137.16" y="68.58" rot="R90"/>
@@ -14150,6 +14153,8 @@ package type ST</description>
 <instance part="C25" gate="G$1" x="-127" y="35.56"/>
 <instance part="SUPPLY10" gate="GND" x="-149.86" y="50.8"/>
 <instance part="SUPPLY11" gate="GND" x="-149.86" y="27.94"/>
+<instance part="R47" gate="G$1" x="254" y="-261.62" rot="R180"/>
+<instance part="R51" gate="G$1" x="307.34" y="-261.62" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -15206,6 +15211,12 @@ package type ST</description>
 <junction x="228.6" y="-193.04"/>
 <label x="224.536" y="-196.342" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="236.22" y1="-261.62" x2="248.92" y2="-261.62" width="0.1524" layer="91"/>
+<junction x="236.22" y="-261.62"/>
+<label x="232.156" y="-264.922" size="1.778" layer="95"/>
+<pinref part="R47" gate="G$1" pin="2"/>
+</segment>
 </net>
 <net name="PS2DAT" class="0">
 <segment>
@@ -15216,6 +15227,12 @@ package type ST</description>
 <junction x="299.72" y="-193.04"/>
 <junction x="292.1" y="-193.04"/>
 <label x="286.004" y="-196.088" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="292.1" y1="-261.62" x2="302.26" y2="-261.62" width="0.1524" layer="91"/>
+<junction x="292.1" y="-261.62"/>
+<label x="286.004" y="-264.668" size="1.778" layer="95"/>
+<pinref part="R51" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="DATA_5V" class="0">
@@ -15234,6 +15251,12 @@ package type ST</description>
 <label x="309.88" y="-228.6" size="1.778" layer="95"/>
 <label x="309.88" y="-228.6" size="1.778" layer="95"/>
 </segment>
+<segment>
+<junction x="332.74" y="-261.62"/>
+<label x="331.724" y="-264.922" size="1.778" layer="95"/>
+<pinref part="R51" gate="G$1" pin="1"/>
+<wire x1="312.42" y1="-261.62" x2="332.74" y2="-261.62" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="CLK_5V" class="0">
 <segment>
@@ -15249,6 +15272,12 @@ package type ST</description>
 <pinref part="X3" gate="G$1" pin="6"/>
 <wire x1="292.1" y1="-220.98" x2="309.88" y2="-220.98" width="0.1524" layer="91"/>
 <label x="309.88" y="-220.98" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="259.08" y1="-261.62" x2="269.24" y2="-261.62" width="0.1524" layer="91"/>
+<junction x="269.24" y="-261.62"/>
+<label x="268.478" y="-264.668" size="1.778" layer="95"/>
+<pinref part="R47" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="VCC5" class="0">
