@@ -14343,6 +14343,56 @@ Source: www.cypressindustries.com</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="powersupply">
+<packages>
+<package name="DC-21MM">
+<description>DC 2.1mm Jack</description>
+<wire x1="-2.8575" y1="-6.35" x2="-5.08" y2="-6.35" width="0.127" layer="21"/>
+<wire x1="-5.08" y1="-6.35" x2="-5.08" y2="-6.0325" width="0.127" layer="21"/>
+<wire x1="2.54" y1="-6.35" x2="3.9116" y2="-6.35" width="0.127" layer="21"/>
+<wire x1="3.9116" y1="-6.35" x2="3.9116" y2="3.6576" width="0.127" layer="21"/>
+<wire x1="3.9116" y1="3.6576" x2="3.9116" y2="7.1374" width="0.127" layer="21"/>
+<wire x1="3.9116" y1="7.1374" x2="-5.08" y2="7.1374" width="0.127" layer="21"/>
+<wire x1="-5.08" y1="7.1374" x2="-5.08" y2="-0.635" width="0.127" layer="21"/>
+<wire x1="-5.0546" y1="3.6576" x2="3.9116" y2="3.6576" width="0.127" layer="21"/>
+<pad name="1" x="-5.08" y="-3.3528" drill="3.302" diameter="4.826" shape="octagon"/>
+<pad name="2" x="-0.0762" y="-6.35" drill="3.302" diameter="4.826" shape="octagon"/>
+<pad name="3" x="-0.0762" y="-0.3556" drill="3.302" diameter="4.826" shape="octagon" first="yes"/>
+<text x="6.35" y="-6.35" size="1.778" layer="25" ratio="5" rot="R90">&gt;NAME</text>
+<text x="8.89" y="-6.35" size="1.778" layer="27" ratio="5" rot="R90">&gt;VALUE</text>
+</package>
+</packages>
+<symbols>
+<symbol name="DC21PWR">
+<wire x1="-10.16" y1="5.08" x2="10.16" y2="5.08" width="0.254" layer="94"/>
+<wire x1="10.16" y1="5.08" x2="10.16" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-5.08" x2="-10.16" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="-5.08" x2="-10.16" y2="5.08" width="0.254" layer="94"/>
+<pin name="1" x="-5.08" y="-10.16" length="middle" direction="pwr" rot="R90"/>
+<pin name="2" x="5.08" y="-10.16" length="middle" direction="pwr" rot="R90"/>
+<pin name="3" x="15.24" y="0" length="middle" direction="pwr" rot="R180"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="DC21MM">
+<gates>
+<gate name="G$1" symbol="DC21PWR" x="0" y="0"/>
+</gates>
+<devices>
+<device name="X" package="DC-21MM">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -14353,6 +14403,9 @@ Source: www.cypressindustries.com</description>
 </class>
 <class number="1" name="power" width="0.6" drill="1.1">
 <clearance class="1" value="0.4"/>
+</class>
+<class number="2" name="gnd" width="0.3048" drill="0.508">
+<clearance class="2" value="0.1524"/>
 </class>
 </classes>
 <parts>
@@ -14479,6 +14532,8 @@ Source: www.cypressindustries.com</description>
 <part name="R53" library="rcl" deviceset="R-EU_" device="R0805" value="22"/>
 <part name="R54" library="rcl" deviceset="R-EU_" device="R0805" value="22"/>
 <part name="SUPPLY12" library="supply2" deviceset="GND" device=""/>
+<part name="X8" library="powersupply" deviceset="DC21MM" device="X"/>
+<part name="SUPPLY13" library="supply2" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -14638,6 +14693,8 @@ Source: www.cypressindustries.com</description>
 <instance part="R53" gate="G$1" x="-281.94" y="-33.02" rot="MR180"/>
 <instance part="R54" gate="G$1" x="-287.02" y="-35.56" rot="MR180"/>
 <instance part="SUPPLY12" gate="GND" x="-292.1" y="-78.74"/>
+<instance part="X8" gate="G$1" x="-256.54" y="106.68"/>
+<instance part="SUPPLY13" gate="GND" x="-261.62" y="83.82"/>
 </instances>
 <busses>
 </busses>
@@ -14963,6 +15020,17 @@ Source: www.cypressindustries.com</description>
 <pinref part="SUPPLY12" gate="GND" pin="GND"/>
 <wire x1="-292.1" y1="-76.2" x2="-292.1" y2="-73.66" width="0.1524" layer="91"/>
 <wire x1="-292.1" y1="-73.66" x2="-274.32" y2="-73.66" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="X8" gate="G$1" pin="3"/>
+<wire x1="-241.3" y1="106.68" x2="-238.76" y2="106.68" width="0.1524" layer="91"/>
+<wire x1="-238.76" y1="106.68" x2="-238.76" y2="91.44" width="0.1524" layer="91"/>
+<pinref part="X8" gate="G$1" pin="1"/>
+<wire x1="-238.76" y1="91.44" x2="-261.62" y2="91.44" width="0.1524" layer="91"/>
+<wire x1="-261.62" y1="91.44" x2="-261.62" y2="96.52" width="0.1524" layer="91"/>
+<pinref part="SUPPLY13" gate="GND" pin="GND"/>
+<wire x1="-261.62" y1="86.36" x2="-261.62" y2="91.44" width="0.1524" layer="91"/>
+<junction x="-261.62" y="91.44"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -15866,6 +15934,10 @@ Source: www.cypressindustries.com</description>
 <wire x1="-203.2" y1="114.3" x2="-208.28" y2="114.3" width="0.1524" layer="91"/>
 <wire x1="-208.28" y1="114.3" x2="-208.28" y2="91.44" width="0.1524" layer="91"/>
 <junction x="-208.28" y="91.44"/>
+<pinref part="X8" gate="G$1" pin="2"/>
+<wire x1="-251.46" y1="96.52" x2="-226.06" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="-226.06" y1="96.52" x2="-226.06" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="-226.06" y1="73.66" x2="-208.28" y2="73.66" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$53" class="0">
