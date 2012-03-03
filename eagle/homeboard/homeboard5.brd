@@ -4207,7 +4207,8 @@ Please make sure your boards conform to these design rules.</description>
 <via x="10" y="19.25" extent="1-16" drill="0.6" shape="square"/>
 <wire x1="10" y1="19.25" x2="9.5" y2="19.25" width="0.254" layer="1"/>
 <wire x1="9.5" y1="19.25" x2="8.5" y2="20.25" width="0.254" layer="1"/>
-<wire x1="55.5" y1="51.17" x2="55.5" y2="54.25" width="0.254" layer="1"/>
+<wire x1="55.5" y1="51.17" x2="55.5" y2="52.5" width="0.254" layer="1"/>
+<wire x1="55.5" y1="52.5" x2="55.5" y2="54.25" width="0.254" layer="1"/>
 <wire x1="55.5" y1="54.25" x2="52.5" y2="57.25" width="0.254" layer="1"/>
 <wire x1="8.5" y1="20.25" x2="11.5" y2="23.25" width="0.254" layer="1"/>
 <wire x1="11.5" y1="23.25" x2="12.33" y2="23.25" width="0.254" layer="1"/>
@@ -4224,15 +4225,16 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="26.5" y1="29.75" x2="27.5" y2="30.75" width="0.254" layer="1"/>
 <wire x1="1" y1="20.25" x2="1" y2="20.2" width="0.254" layer="1"/>
 <wire x1="1" y1="20.2" x2="2" y2="19.2" width="0.254" layer="1"/>
+<wire x1="49.845" y1="53.345" x2="54.655" y2="53.345" width="0.254" layer="1"/>
+<wire x1="54.655" y1="53.345" x2="55.5" y2="52.5" width="0.254" layer="1"/>
 <wire x1="90.9" y1="64.5" x2="92.45" y2="68" width="0" layer="19" extent="1-16"/>
 <wire x1="73.984" y1="67.5094" x2="90.9" y2="64.5" width="0" layer="19" extent="1-16"/>
 <wire x1="72" y1="72.55" x2="72.0094" y2="72.5094" width="0" layer="19" extent="16-16"/>
-<wire x1="21.5" y1="57.25" x2="72" y2="66" width="0" layer="19" extent="1-1"/>
-<wire x1="49.845" y1="53.345" x2="52.5" y2="57.25" width="0" layer="19" extent="1-1"/>
-<wire x1="45.5" y1="33.33" x2="45.75" y2="33.25" width="0" layer="19" extent="1-1"/>
-<wire x1="71.5" y1="46.5" x2="21.5" y2="57.25" width="0" layer="19" extent="1-1"/>
 <wire x1="97.45" y1="47" x2="90.9" y2="64.5" width="0" layer="19" extent="1-1"/>
 <wire x1="98.45" y1="32.5" x2="97.45" y2="38.5" width="0" layer="19" extent="1-1"/>
+<wire x1="71.5" y1="46.5" x2="72" y2="66" width="0" layer="19" extent="1-1"/>
+<wire x1="55.5" y1="51.17" x2="71.5" y2="46.5" width="0" layer="19" extent="1-1"/>
+<wire x1="45.5" y1="33.33" x2="45.75" y2="33.25" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="TCK">
 <contactref element="IC1" pad="6"/>
