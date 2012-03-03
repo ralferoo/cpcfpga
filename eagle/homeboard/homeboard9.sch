@@ -14863,22 +14863,10 @@ package type ST</description>
 </net>
 <net name="VCCAUX" class="0">
 <segment>
-<pinref part="U1" gate="BVCCAUX" pin="VCCAUX3"/>
-<wire x1="-154.94" y1="-73.66" x2="-152.4" y2="-73.66" width="0.1524" layer="91"/>
-<label x="-142.24" y="-73.66" size="1.778" layer="95"/>
-<pinref part="U1" gate="BVCCAUX" pin="VCCAUX0"/>
-<wire x1="-152.4" y1="-73.66" x2="-142.24" y2="-73.66" width="0.1524" layer="91"/>
-<wire x1="-154.94" y1="-66.04" x2="-152.4" y2="-66.04" width="0.1524" layer="91"/>
-<wire x1="-152.4" y1="-66.04" x2="-152.4" y2="-73.66" width="0.1524" layer="91"/>
-<junction x="-152.4" y="-73.66"/>
-</segment>
-<segment>
 <pinref part="REG2.5" gate="G$1" pin="VOUT2"/>
 <wire x1="-172.72" y1="53.34" x2="-170.18" y2="53.34" width="0.1524" layer="91"/>
-<label x="-167.64" y="53.34" size="1.778" layer="95"/>
 <pinref part="C19" gate="G$1" pin="1"/>
 <pinref part="C20" gate="G$1" pin="1"/>
-<wire x1="-170.18" y1="53.34" x2="-167.64" y2="53.34" width="0.1524" layer="91"/>
 <wire x1="-142.24" y1="60.96" x2="-134.62" y2="60.96" width="0.1524" layer="91"/>
 <junction x="-142.24" y="60.96"/>
 <pinref part="C21" gate="G$1" pin="1"/>
@@ -14892,8 +14880,26 @@ package type ST</description>
 <wire x1="-142.24" y1="60.96" x2="-170.18" y2="60.96" width="0.1524" layer="91"/>
 <wire x1="-170.18" y1="60.96" x2="-172.72" y2="60.96" width="0.1524" layer="91"/>
 <wire x1="-170.18" y1="53.34" x2="-170.18" y2="60.96" width="0.1524" layer="91"/>
-<junction x="-170.18" y="53.34"/>
 <junction x="-170.18" y="60.96"/>
+</segment>
+<segment>
+<pinref part="U1" gate="BVCCAUX" pin="VCCAUX1"/>
+<wire x1="-154.94" y1="-68.58" x2="-144.78" y2="-68.58" width="0.1524" layer="91"/>
+<wire x1="-144.78" y1="-68.58" x2="-144.78" y2="-71.12" width="0.1524" layer="91"/>
+<pinref part="U1" gate="BVCCAUX" pin="VCCAUX2"/>
+<wire x1="-154.94" y1="-71.12" x2="-144.78" y2="-71.12" width="0.1524" layer="91"/>
+<pinref part="U1" gate="BVCCAUX" pin="VCCAUX3"/>
+<wire x1="-154.94" y1="-73.66" x2="-152.4" y2="-73.66" width="0.1524" layer="91"/>
+<label x="-142.24" y="-73.66" size="1.778" layer="95"/>
+<pinref part="U1" gate="BVCCAUX" pin="VCCAUX0"/>
+<wire x1="-152.4" y1="-73.66" x2="-144.78" y2="-73.66" width="0.1524" layer="91"/>
+<wire x1="-144.78" y1="-73.66" x2="-142.24" y2="-73.66" width="0.1524" layer="91"/>
+<wire x1="-154.94" y1="-66.04" x2="-152.4" y2="-66.04" width="0.1524" layer="91"/>
+<wire x1="-152.4" y1="-66.04" x2="-152.4" y2="-73.66" width="0.1524" layer="91"/>
+<junction x="-152.4" y="-73.66"/>
+<wire x1="-144.78" y1="-71.12" x2="-144.78" y2="-73.66" width="0.1524" layer="91"/>
+<junction x="-144.78" y="-71.12"/>
+<junction x="-144.78" y="-73.66"/>
 </segment>
 </net>
 <net name="D_FASTBLANKING" class="0">
@@ -15609,17 +15615,6 @@ package type ST</description>
 </segment>
 </net>
 <net name="VCCAUX_R" class="0">
-<segment>
-<pinref part="U1" gate="BVCCAUX" pin="VCCAUX1"/>
-<wire x1="-154.94" y1="-68.58" x2="-144.78" y2="-68.58" width="0.1524" layer="91"/>
-<wire x1="-144.78" y1="-68.58" x2="-144.78" y2="-71.12" width="0.1524" layer="91"/>
-<wire x1="-144.78" y1="-71.12" x2="-144.78" y2="-78.74" width="0.1524" layer="91"/>
-<wire x1="-144.78" y1="-78.74" x2="-142.24" y2="-78.74" width="0.1524" layer="91"/>
-<pinref part="U1" gate="BVCCAUX" pin="VCCAUX2"/>
-<wire x1="-154.94" y1="-71.12" x2="-144.78" y2="-71.12" width="0.1524" layer="91"/>
-<junction x="-144.78" y="-71.12"/>
-<label x="-142.24" y="-78.74" size="1.778" layer="95"/>
-</segment>
 <segment>
 <pinref part="R50" gate="G$1" pin="2"/>
 <wire x1="205.74" y1="276.86" x2="193.04" y2="276.86" width="0.1524" layer="91"/>
