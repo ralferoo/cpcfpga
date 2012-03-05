@@ -20778,6 +20778,8 @@ Source: www.cypressindustries.com</description>
 <part name="SUPPLY15" library="supply2" deviceset="GND" device=""/>
 <part name="U$6" library="cpcfpga" deviceset="AS6C4008" device=""/>
 <part name="C34" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
+<part name="C35" library="rcl" deviceset="CPOL-EU" device="D" value="100u"/>
+<part name="C36" library="rcl" deviceset="CPOL-EU" device="D" value="100u"/>
 </parts>
 <sheets>
 <sheet>
@@ -20943,10 +20945,18 @@ Source: www.cypressindustries.com</description>
 <attribute name="VALUE" x="-233.934" y="65.5066" size="1.778" layer="96"/>
 </instance>
 <instance part="SUPPLY14" gate="GND" x="-226.06" y="58.42"/>
-<instance part="U$5" gate="G$1" x="-121.92" y="86.36"/>
+<instance part="U$5" gate="G$1" x="-187.96" y="86.36"/>
 <instance part="SUPPLY15" gate="GND" x="48.26" y="-43.18"/>
 <instance part="U$6" gate="G$1" x="45.72" y="20.32" rot="MR270"/>
 <instance part="C34" gate="G$1" x="-93.98" y="127"/>
+<instance part="C35" gate="G$1" x="-238.76" y="66.04" smashed="yes">
+<attribute name="NAME" x="-244.221" y="68.0466" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-246.634" y="65.5066" size="1.778" layer="96"/>
+</instance>
+<instance part="C36" gate="G$1" x="-251.46" y="66.04" smashed="yes">
+<attribute name="NAME" x="-254.381" y="68.0466" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-256.794" y="65.5066" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -21145,6 +21155,7 @@ Source: www.cypressindustries.com</description>
 <wire x1="-203.2" y1="106.68" x2="-205.74" y2="106.68" width="0.1524" layer="91"/>
 <wire x1="-205.74" y1="106.68" x2="-205.74" y2="83.82" width="0.1524" layer="91"/>
 <junction x="-205.74" y="83.82"/>
+<pinref part="U$5" gate="G$1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="SUPPLY5" gate="GND" pin="GND"/>
@@ -21298,6 +21309,12 @@ Source: www.cypressindustries.com</description>
 <pinref part="SUPPLY14" gate="GND" pin="GND"/>
 <pinref part="C33" gate="G$1" pin="-"/>
 <wire x1="-226.06" y1="60.96" x2="-226.06" y2="63.5" width="0.1524" layer="91"/>
+<pinref part="C36" gate="G$1" pin="-"/>
+<pinref part="C35" gate="G$1" pin="-"/>
+<wire x1="-251.46" y1="60.96" x2="-238.76" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="-238.76" y1="60.96" x2="-226.06" y2="60.96" width="0.1524" layer="91"/>
+<junction x="-238.76" y="60.96"/>
+<junction x="-226.06" y="60.96"/>
 </segment>
 <segment>
 <pinref part="U$6" gate="G$1" pin="VSS"/>
@@ -21567,6 +21584,10 @@ Source: www.cypressindustries.com</description>
 <pinref part="C34" gate="G$1" pin="1"/>
 <wire x1="-93.98" y1="129.54" x2="-101.6" y2="129.54" width="0.1524" layer="91"/>
 <junction x="-101.6" y="129.54"/>
+<pinref part="U$5" gate="G$1" pin="VOUT1"/>
+<pinref part="U$5" gate="G$1" pin="VOUT4"/>
+<pinref part="U$5" gate="G$1" pin="VOUT2"/>
+<pinref part="U$5" gate="G$1" pin="VOUT3"/>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="AVCC"/>
@@ -22224,6 +22245,14 @@ Source: www.cypressindustries.com</description>
 <pinref part="C33" gate="G$1" pin="+"/>
 <wire x1="-226.06" y1="71.12" x2="-226.06" y2="73.66" width="0.1524" layer="91"/>
 <junction x="-226.06" y="73.66"/>
+<pinref part="U$5" gate="G$1" pin="VCC"/>
+<pinref part="C35" gate="G$1" pin="+"/>
+<wire x1="-226.06" y1="73.66" x2="-238.76" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="-238.76" y1="73.66" x2="-238.76" y2="68.58" width="0.1524" layer="91"/>
+<pinref part="C36" gate="G$1" pin="+"/>
+<wire x1="-238.76" y1="73.66" x2="-251.46" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="-251.46" y1="73.66" x2="-251.46" y2="68.58" width="0.1524" layer="91"/>
+<junction x="-238.76" y="73.66"/>
 </segment>
 </net>
 <net name="N$53" class="0">
