@@ -1,0 +1,42 @@
+serial programming
+
+p259
+PB2,PB3,PB1	= PDI,PDO,SCLK			also need reset
+
+these are SPI pins too
+
+PC7  = CLKO, might be useful with cheap osc into atmega
+
+PB0-PB3 = SPI
+
+
+PD3,PD2		= TXD,RXD
+PD6,PD7		= RTS,CTS
+
+PD7		= HWB
+
+p188: self-powered 3.0-3.6V i/o
+
+ext	AVR
+VBUS	VBUS
+UDP	D+
+UDM	D-
+UVSS	UGND
+UID	UID
+
+power	UVCC
+power	AVCC
+power	VCC
+cap,gnd	UCAP
+gnd	GND,GND
+
+xtal	XTAL1,XTAL2 both with cap to GND
+
+
+see REGCR p196
+
+
+PB4-PB7		= JTAG maybe?
+PC6		= JTAG_HDR_TDI maybe?
+
+PC7		= CLKO
