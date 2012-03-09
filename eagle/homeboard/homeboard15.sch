@@ -21178,6 +21178,99 @@ W = angled&lt;p&gt;
 </deviceset>
 </devicesets>
 </library>
+<library name="con-jack">
+<description>&lt;b&gt;Jacks&lt;/b&gt;&lt;p&gt;
+Power Connectors&lt;br&gt;
+Phone Connectors&lt;br&gt;
+Cinch Connectors&lt;br&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
+<packages>
+<package name="DCJ0303">
+<description>&lt;b&gt;DC POWER JACK&lt;/b&gt; Pad shape changed to LONG 2007.07.26&lt;p&gt;
+Source: DCJ0303.pdf</description>
+<wire x1="1.65" y1="2.6" x2="-1.65" y2="2.6" width="0" layer="46"/>
+<wire x1="-1.65" y1="2.6" x2="-1.65" y2="3.6" width="0" layer="46"/>
+<wire x1="-1.65" y1="3.6" x2="1.65" y2="3.6" width="0" layer="46"/>
+<wire x1="1.65" y1="3.6" x2="1.65" y2="2.6" width="0" layer="46"/>
+<wire x1="5.3" y1="1.4" x2="4.3" y2="1.4" width="0" layer="46"/>
+<wire x1="4.3" y1="1.4" x2="4.3" y2="-1.4" width="0" layer="46"/>
+<wire x1="4.3" y1="-1.4" x2="5.3" y2="-1.4" width="0" layer="46"/>
+<wire x1="5.3" y1="-1.4" x2="5.3" y2="1.4" width="0" layer="46"/>
+<wire x1="1.4" y1="-3.5" x2="-1.4" y2="-3.5" width="0" layer="46"/>
+<wire x1="-1.4" y1="-3.5" x2="-1.4" y2="-2.5" width="0" layer="46"/>
+<wire x1="-1.4" y1="-2.5" x2="1.4" y2="-2.5" width="0" layer="46"/>
+<wire x1="1.4" y1="-2.5" x2="1.4" y2="-3.5" width="0" layer="46"/>
+<wire x1="-4.3" y1="-10.4" x2="4.3" y2="-10.4" width="0.2032" layer="21"/>
+<wire x1="4.3" y1="-10.4" x2="4.3" y2="3.9" width="0.2032" layer="51"/>
+<wire x1="4.3" y1="3.9" x2="-4.3" y2="3.9" width="0.2032" layer="51"/>
+<wire x1="-4.3" y1="3.9" x2="-4.3" y2="-10.4" width="0.2032" layer="21"/>
+<wire x1="-2.7" y1="3.9" x2="-4.3" y2="3.9" width="0.2032" layer="21"/>
+<wire x1="4.3" y1="3.9" x2="2.7" y2="3.9" width="0.2032" layer="21"/>
+<wire x1="-3" y1="-10.275" x2="-3" y2="-3" width="0.2032" layer="51" style="shortdash"/>
+<wire x1="3" y1="-10.3" x2="3" y2="-3" width="0.2032" layer="51" style="shortdash"/>
+<wire x1="3" y1="-3" x2="-3" y2="-3" width="0.2032" layer="51" style="shortdash"/>
+<wire x1="-0.9" y1="-9" x2="-0.9" y2="-4.5" width="0.2032" layer="51" style="shortdash"/>
+<wire x1="0.9" y1="-9" x2="0.9" y2="-4.5" width="0.2032" layer="51" style="shortdash"/>
+<wire x1="-0.9" y1="-9" x2="0.9" y2="-9" width="0.2032" layer="51" curve="166.57811"/>
+<wire x1="4.3" y1="-10.4" x2="4.3" y2="-2.45" width="0.2032" layer="21"/>
+<wire x1="4.3" y1="2.3" x2="4.3" y2="3.9" width="0.2032" layer="21"/>
+<pad name="1" x="0" y="3.1" drill="1" diameter="2" shape="long" rot="R180"/>
+<pad name="3" x="0" y="-3" drill="1" diameter="2" shape="long" rot="R180"/>
+<pad name="2" x="4.8" y="0" drill="1" diameter="2" shape="long" rot="R90"/>
+<text x="6.35" y="-10.16" size="1.27" layer="25" rot="R90">&gt;NAME</text>
+<text x="-5.08" y="-10.16" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+</package>
+</packages>
+<symbols>
+<symbol name="DC-JACK-SWITCH">
+<wire x1="5.08" y1="2.54" x2="-2.54" y2="2.54" width="0.1524" layer="94"/>
+<wire x1="-2.54" y1="2.54" x2="-2.54" y2="1.27" width="0.1524" layer="94"/>
+<wire x1="5.08" y1="0" x2="2.54" y2="0" width="0.1524" layer="94"/>
+<wire x1="2.54" y1="0" x2="2.54" y2="-2.54" width="0.1524" layer="94"/>
+<wire x1="5.08" y1="-2.54" x2="2.54" y2="-2.54" width="0.1524" layer="94"/>
+<wire x1="2.54" y1="-2.54" x2="0.762" y2="-2.54" width="0.1524" layer="94"/>
+<wire x1="0.762" y1="-2.54" x2="0" y2="-1.016" width="0.1524" layer="94"/>
+<wire x1="0" y1="-1.016" x2="-0.762" y2="-2.54" width="0.1524" layer="94"/>
+<text x="-2.54" y="3.81" size="1.778" layer="95">&gt;NAME</text>
+<text x="-2.54" y="-6.35" size="1.778" layer="96">&gt;VALUE</text>
+<rectangle x1="-3.302" y1="-2.54" x2="-1.778" y2="1.27" layer="94"/>
+<pin name="1" x="7.62" y="2.54" visible="pad" length="short" direction="pas" rot="R180"/>
+<pin name="2" x="7.62" y="0" visible="pad" length="short" direction="pas" rot="R180"/>
+<pin name="3" x="7.62" y="-2.54" visible="pad" length="short" direction="pas" rot="R180"/>
+<polygon width="0.1524" layer="94">
+<vertex x="2.54" y="-2.54"/>
+<vertex x="2.032" y="-1.27"/>
+<vertex x="3.048" y="-1.27"/>
+</polygon>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="DCJ0303" prefix="J" uservalue="yes">
+<description>&lt;b&gt;DC POWER JACK&lt;/b&gt;&lt;p&gt;
+Source: DCJ0303.pdf</description>
+<gates>
+<gate name="G$1" symbol="DC-JACK-SWITCH" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="DCJ0303">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="MF" value="" constant="no"/>
+<attribute name="MPN" value="" constant="no"/>
+<attribute name="OC_FARNELL" value="unknown" constant="no"/>
+<attribute name="OC_NEWARK" value="unknown" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -21316,7 +21409,6 @@ W = angled&lt;p&gt;
 <part name="R53" library="rcl" deviceset="R-EU_" device="R0805" value="22"/>
 <part name="R54" library="rcl" deviceset="R-EU_" device="R0805" value="22"/>
 <part name="SUPPLY12" library="supply2" deviceset="GND" device=""/>
-<part name="X8" library="powersupply" deviceset="DC21MM" device="X"/>
 <part name="SUPPLY13" library="supply2" deviceset="GND" device=""/>
 <part name="C33" library="rcl" deviceset="CPOL-EU" device="D" value="100u"/>
 <part name="SUPPLY14" library="supply2" deviceset="GND" device=""/>
@@ -21332,6 +21424,9 @@ W = angled&lt;p&gt;
 <part name="U$3" library="adafruit" deviceset="PINHD-1X10" device=""/>
 <part name="SV1" library="con-lstb" deviceset="MA10-1" device=""/>
 <part name="SUPPLY17" library="supply2" deviceset="GND" device=""/>
+<part name="J1" library="con-jack" deviceset="DCJ0303" device=""/>
+<part name="X7" library="powersupply" deviceset="DC21MM" device="X"/>
+<part name="SUPPLY18" library="supply2" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -21490,7 +21585,6 @@ W = angled&lt;p&gt;
 <instance part="R53" gate="G$1" x="-281.94" y="-33.02" rot="MR180"/>
 <instance part="R54" gate="G$1" x="-287.02" y="-35.56" rot="MR180"/>
 <instance part="SUPPLY12" gate="GND" x="-292.1" y="-78.74"/>
-<instance part="X8" gate="G$1" x="-256.54" y="106.68"/>
 <instance part="SUPPLY13" gate="GND" x="-261.62" y="83.82"/>
 <instance part="C33" gate="G$1" x="-226.06" y="68.58" smashed="yes">
 <attribute name="NAME" x="-231.521" y="68.0466" size="1.778" layer="95"/>
@@ -21515,6 +21609,9 @@ W = angled&lt;p&gt;
 <instance part="U$3" gate="G$1" x="22.86" y="-149.86" rot="R180"/>
 <instance part="SV1" gate="1" x="43.18" y="-58.42" rot="R270"/>
 <instance part="SUPPLY17" gate="GND" x="22.86" y="-68.58" rot="R270"/>
+<instance part="J1" gate="G$1" x="-271.78" y="93.98"/>
+<instance part="X7" gate="G$1" x="-309.88" y="88.9"/>
+<instance part="SUPPLY18" gate="GND" x="-294.64" y="86.36"/>
 </instances>
 <busses>
 </busses>
@@ -21853,17 +21950,6 @@ W = angled&lt;p&gt;
 <wire x1="-292.1" y1="-73.66" x2="-274.32" y2="-73.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="X8" gate="G$1" pin="3"/>
-<wire x1="-241.3" y1="106.68" x2="-238.76" y2="106.68" width="0.1524" layer="91"/>
-<wire x1="-238.76" y1="106.68" x2="-238.76" y2="91.44" width="0.1524" layer="91"/>
-<pinref part="X8" gate="G$1" pin="1"/>
-<wire x1="-238.76" y1="91.44" x2="-261.62" y2="91.44" width="0.1524" layer="91"/>
-<wire x1="-261.62" y1="91.44" x2="-261.62" y2="96.52" width="0.1524" layer="91"/>
-<pinref part="SUPPLY13" gate="GND" pin="GND"/>
-<wire x1="-261.62" y1="86.36" x2="-261.62" y2="91.44" width="0.1524" layer="91"/>
-<junction x="-261.62" y="91.44"/>
-</segment>
-<segment>
 <pinref part="SUPPLY14" gate="GND" pin="GND"/>
 <pinref part="C33" gate="G$1" pin="-"/>
 <wire x1="-226.06" y1="60.96" x2="-226.06" y2="63.5" width="0.1524" layer="91"/>
@@ -21894,6 +21980,16 @@ W = angled&lt;p&gt;
 <wire x1="35.56" y1="-66.04" x2="35.56" y2="-68.58" width="0.1524" layer="91"/>
 <pinref part="SUPPLY17" gate="GND" pin="GND"/>
 <wire x1="35.56" y1="-68.58" x2="25.4" y2="-68.58" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="SUPPLY13" gate="GND" pin="GND"/>
+<wire x1="-261.62" y1="86.36" x2="-261.62" y2="91.44" width="0.1524" layer="91"/>
+<pinref part="J1" gate="G$1" pin="3"/>
+<wire x1="-261.62" y1="91.44" x2="-264.16" y2="91.44" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="X7" gate="G$1" pin="3"/>
+<pinref part="SUPPLY18" gate="GND" pin="GND"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -22818,8 +22914,6 @@ W = angled&lt;p&gt;
 <wire x1="-203.2" y1="114.3" x2="-208.28" y2="114.3" width="0.1524" layer="91"/>
 <wire x1="-208.28" y1="114.3" x2="-208.28" y2="91.44" width="0.1524" layer="91"/>
 <junction x="-208.28" y="91.44"/>
-<pinref part="X8" gate="G$1" pin="2"/>
-<wire x1="-251.46" y1="96.52" x2="-226.06" y2="96.52" width="0.1524" layer="91"/>
 <wire x1="-226.06" y1="96.52" x2="-226.06" y2="73.66" width="0.1524" layer="91"/>
 <wire x1="-226.06" y1="73.66" x2="-208.28" y2="73.66" width="0.1524" layer="91"/>
 <pinref part="C33" gate="G$1" pin="+"/>
@@ -22833,6 +22927,16 @@ W = angled&lt;p&gt;
 <wire x1="-238.76" y1="73.66" x2="-251.46" y2="73.66" width="0.1524" layer="91"/>
 <wire x1="-251.46" y1="73.66" x2="-251.46" y2="68.58" width="0.1524" layer="91"/>
 <junction x="-238.76" y="73.66"/>
+<pinref part="J1" gate="G$1" pin="1"/>
+<wire x1="-226.06" y1="96.52" x2="-256.54" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="-256.54" y1="96.52" x2="-264.16" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="-279.4" y1="73.66" x2="-279.4" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="-279.4" y1="101.6" x2="-256.54" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="-256.54" y1="101.6" x2="-256.54" y2="96.52" width="0.1524" layer="91"/>
+<junction x="-256.54" y="96.52"/>
+<pinref part="X7" gate="G$1" pin="2"/>
+<wire x1="-304.8" y1="78.74" x2="-304.8" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="-304.8" y1="73.66" x2="-279.4" y2="73.66" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$53" class="0">
