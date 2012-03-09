@@ -22693,10 +22693,10 @@ Source: DCJ0303.pdf</description>
 <label x="106.68" y="226.06" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B5" pin="IO_L31N_5D4"/>
-<wire x1="99.06" y1="-73.66" x2="137.16" y2="-73.66" width="0.1524" layer="91"/>
-<wire x1="137.16" y1="-73.66" x2="137.16" y2="-40.64" width="0.1524" layer="91"/>
-<label x="99.06" y="-73.66" size="1.778" layer="95"/>
+<pinref part="U1" gate="B5" pin="IO_L32N_5GCLK3"/>
+<wire x1="129.54" y1="-78.74" x2="129.54" y2="-40.64" width="0.1524" layer="91"/>
+<wire x1="129.54" y1="-78.74" x2="99.06" y2="-78.74" width="0.1524" layer="91"/>
+<label x="99.06" y="-78.74" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="R0" class="0">
@@ -22706,10 +22706,10 @@ Source: DCJ0303.pdf</description>
 <label x="106.68" y="218.44" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B4" pin="IO_L32P_4GCLK0"/>
-<wire x1="162.56" y1="-40.64" x2="162.56" y2="-81.28" width="0.1524" layer="91"/>
-<wire x1="162.56" y1="-81.28" x2="185.42" y2="-81.28" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="-81.28" x2="185.42" y2="-81.28" width="0.1524" layer="91"/>
 <label x="185.42" y="-81.28" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IO_L32N_4GCLK1"/>
+<wire x1="160.02" y1="-81.28" x2="160.02" y2="-40.64" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G1" class="0">
@@ -24047,20 +24047,10 @@ Source: DCJ0303.pdf</description>
 <net name="XXX" class="0">
 <segment>
 <pinref part="SV1" gate="1" pin="10"/>
-<wire x1="160.02" y1="-83.82" x2="55.88" y2="-83.82" width="0.1524" layer="91"/>
+<wire x1="162.56" y1="-83.82" x2="55.88" y2="-83.82" width="0.1524" layer="91"/>
 <wire x1="55.88" y1="-83.82" x2="55.88" y2="-66.04" width="0.1524" layer="91"/>
-<pinref part="U1" gate="B4" pin="IO_L32N_4GCLK1"/>
-<wire x1="160.02" y1="-40.64" x2="160.02" y2="-83.82" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$1113" class="0">
-<segment>
-<pinref part="U1" gate="B5" pin="IO_L32N_5GCLK3"/>
-<wire x1="129.54" y1="-78.74" x2="129.54" y2="-40.64" width="0.1524" layer="91"/>
-<pinref part="SV1" gate="1" pin="9"/>
-<wire x1="129.54" y1="-78.74" x2="53.34" y2="-78.74" width="0.1524" layer="91"/>
-<wire x1="53.34" y1="-78.74" x2="53.34" y2="-66.04" width="0.1524" layer="91"/>
-<label x="99.06" y="-78.74" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IO_L32P_4GCLK0"/>
+<wire x1="162.56" y1="-40.64" x2="162.56" y2="-83.82" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$104" class="0">
@@ -24087,16 +24077,26 @@ Source: DCJ0303.pdf</description>
 <wire x1="78.74" y1="-96.52" x2="78.74" y2="-71.12" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="QQQ" class="0">
+<net name="AASA" class="0">
 <segment>
-<pinref part="U1" gate="B5" pin="IO_L32P_5GCLK2"/>
-<wire x1="132.08" y1="-76.2" x2="132.08" y2="-40.64" width="0.1524" layer="91"/>
-<wire x1="132.08" y1="-76.2" x2="81.28" y2="-76.2" width="0.1524" layer="91"/>
-<label x="99.06" y="-76.2" size="1.778" layer="95"/>
+<pinref part="U1" gate="B5" pin="IO_L31N_5D4"/>
+<wire x1="81.28" y1="-73.66" x2="137.16" y2="-73.66" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="-73.66" x2="137.16" y2="-40.64" width="0.1524" layer="91"/>
+<label x="99.06" y="-73.66" size="1.778" layer="95"/>
 <pinref part="SV1" gate="1" pin="8"/>
 <wire x1="81.28" y1="-99.06" x2="50.8" y2="-99.06" width="0.1524" layer="91"/>
 <wire x1="50.8" y1="-99.06" x2="50.8" y2="-66.04" width="0.1524" layer="91"/>
-<wire x1="81.28" y1="-76.2" x2="81.28" y2="-99.06" width="0.1524" layer="91"/>
+<wire x1="81.28" y1="-73.66" x2="81.28" y2="-99.06" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="SAA" class="0">
+<segment>
+<pinref part="U1" gate="B5" pin="IO_L32P_5GCLK2"/>
+<wire x1="132.08" y1="-76.2" x2="132.08" y2="-40.64" width="0.1524" layer="91"/>
+<label x="99.06" y="-76.2" size="1.778" layer="95"/>
+<pinref part="SV1" gate="1" pin="9"/>
+<wire x1="132.08" y1="-76.2" x2="53.34" y2="-76.2" width="0.1524" layer="91"/>
+<wire x1="53.34" y1="-76.2" x2="53.34" y2="-66.04" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
