@@ -21338,7 +21338,7 @@ W = angled&lt;p&gt;
 <instance part="R34" gate="G$1" x="124.46" y="129.54"/>
 <instance part="C3" gate="G$1" x="154.94" y="147.32" rot="R90"/>
 <instance part="C4" gate="G$1" x="154.94" y="129.54" rot="R90"/>
-<instance part="U$2" gate="G$1" x="243.84" y="-106.68"/>
+<instance part="U$2" gate="G$1" x="50.8" y="104.14"/>
 <instance part="REG2.5" gate="G$1" x="-195.58" y="58.42"/>
 <instance part="REG1.2" gate="G$1" x="-195.58" y="35.56"/>
 <instance part="SUPPLY3" gate="GND" x="-205.74" y="20.32"/>
@@ -21604,8 +21604,8 @@ W = angled&lt;p&gt;
 </segment>
 <segment>
 <pinref part="U$2" gate="G$1" pin="GND"/>
-<wire x1="231.14" y1="-111.76" x2="223.52" y2="-111.76" width="0.1524" layer="91"/>
-<label x="220.98" y="-111.76" size="1.778" layer="95"/>
+<wire x1="38.1" y1="99.06" x2="30.48" y2="99.06" width="0.1524" layer="91"/>
+<label x="27.94" y="99.06" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="REG1.2" gate="G$1" pin="GND"/>
@@ -21890,8 +21890,8 @@ W = angled&lt;p&gt;
 </segment>
 <segment>
 <pinref part="U$2" gate="G$1" pin="VDD"/>
-<wire x1="231.14" y1="-101.6" x2="223.52" y2="-101.6" width="0.1524" layer="91"/>
-<label x="220.98" y="-101.6" size="1.778" layer="95"/>
+<wire x1="38.1" y1="109.22" x2="30.48" y2="109.22" width="0.1524" layer="91"/>
+<label x="27.94" y="109.22" size="1.778" layer="95"/>
 </segment>
 <segment>
 <label x="-30.48" y="195.58" size="1.778" layer="95"/>
@@ -23087,12 +23087,18 @@ W = angled&lt;p&gt;
 <net name="CLK16" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="OUT"/>
-<wire x1="256.54" y1="-106.68" x2="266.7" y2="-106.68" width="0.1524" layer="91"/>
-<label x="266.7" y="-106.68" size="1.778" layer="95"/>
+<wire x1="63.5" y1="104.14" x2="73.66" y2="104.14" width="0.1524" layer="91"/>
+<label x="73.66" y="104.14" size="1.778" layer="95"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="-124.46" x2="134.62" y2="-124.46" width="0.1524" layer="91"/>
 <label x="76.2" y="-124.46" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B1" pin="IO_L32N_1GCLK5"/>
+<wire x1="182.88" y1="73.66" x2="182.88" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="182.88" y1="116.84" x2="149.86" y2="116.84" width="0.1524" layer="91"/>
+<label x="149.86" y="116.84" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="X6" class="0">
