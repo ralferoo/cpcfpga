@@ -22113,14 +22113,14 @@ W = angled&lt;p&gt;
 <label x="-83.82" y="-20.32" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="375.92" y1="68.58" x2="363.22" y2="68.58" width="0.1524" layer="91"/>
-<label x="375.92" y="68.58" size="1.778" layer="95"/>
-<pinref part="IC3" gate="G$1" pin="PB4(T1/PCINT4)"/>
-</segment>
-<segment>
 <pinref part="JP3" gate="A" pin="3"/>
 <wire x1="-187.96" y1="-22.86" x2="-175.26" y2="-22.86" width="0.1524" layer="91"/>
 <label x="-187.96" y="-22.86" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="375.92" y1="66.04" x2="363.22" y2="66.04" width="0.1524" layer="91"/>
+<label x="375.92" y="66.04" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="PB5(PCINT5)"/>
 </segment>
 </net>
 <net name="TMS" class="0">
@@ -22136,14 +22136,14 @@ W = angled&lt;p&gt;
 <label x="-83.82" y="-22.86" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="375.92" y1="66.04" x2="363.22" y2="66.04" width="0.1524" layer="91"/>
-<label x="375.92" y="66.04" size="1.778" layer="95"/>
-<pinref part="IC3" gate="G$1" pin="PB5(PCINT5)"/>
-</segment>
-<segment>
 <pinref part="JP3" gate="A" pin="5"/>
 <wire x1="-187.96" y1="-25.4" x2="-175.26" y2="-25.4" width="0.1524" layer="91"/>
 <label x="-187.96" y="-25.4" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="375.92" y1="68.58" x2="363.22" y2="68.58" width="0.1524" layer="91"/>
+<label x="375.92" y="68.58" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="PB4(T1/PCINT4)"/>
 </segment>
 </net>
 <net name="TDI_FPGA" class="0">
@@ -23220,9 +23220,9 @@ W = angled&lt;p&gt;
 <label x="-187.96" y="-20.32" size="1.778" layer="95"/>
 </segment>
 <segment>
-<label x="375.92" y="45.72" size="1.778" layer="95"/>
-<pinref part="IC3" gate="G$1" pin="PC7(ICP1/INT4/CLKO)"/>
-<wire x1="375.92" y1="45.72" x2="363.22" y2="45.72" width="0.1524" layer="91"/>
+<pinref part="IC3" gate="G$1" pin="PC6(OC1A/PCINT8)"/>
+<wire x1="375.92" y1="48.26" x2="363.22" y2="48.26" width="0.1524" layer="91"/>
+<label x="375.92" y="48.26" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$36" class="0">
@@ -23675,6 +23675,19 @@ W = angled&lt;p&gt;
 <pinref part="U1" gate="B0" pin="IO_L32P_0GCLK6"/>
 <wire x1="106.68" y1="111.76" x2="147.32" y2="111.76" width="0.1524" layer="91"/>
 <wire x1="147.32" y1="111.76" x2="147.32" y2="73.66" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="FPGA_RESET" class="0">
+<segment>
+<pinref part="U1" gate="B1" pin="IO_L32P_1GCLK4"/>
+<wire x1="180.34" y1="73.66" x2="180.34" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="114.3" x2="149.86" y2="114.3" width="0.1524" layer="91"/>
+<label x="149.86" y="114.3" size="1.778" layer="95"/>
+</segment>
+<segment>
+<label x="375.92" y="45.72" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="PC7(ICP1/INT4/CLKO)"/>
+<wire x1="375.92" y1="45.72" x2="363.22" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
