@@ -23981,8 +23981,8 @@ W = angled&lt;p&gt;
 <net name="EXTCLK" class="0">
 <segment>
 <pinref part="SJ1" gate="G$1" pin="3"/>
-<wire x1="274.32" y1="78.74" x2="256.54" y2="78.74" width="0.1524" layer="91"/>
-<label x="256.54" y="78.74" size="1.778" layer="95"/>
+<wire x1="274.32" y1="78.74" x2="254" y2="78.74" width="0.1524" layer="91"/>
+<label x="254" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$12" class="0">
