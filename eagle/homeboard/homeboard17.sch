@@ -21510,6 +21510,8 @@ W = angled&lt;p&gt;
 <part name="SUPPLY20" library="supply2" deviceset="GND" device=""/>
 <part name="C39" library="rcl" deviceset="CPOL-EU" device="D" value="100u"/>
 <part name="C40" library="rcl" deviceset="CPOL-EU" device="D" value="100u"/>
+<part name="PWR_HDR" library="jumper" deviceset="JP1Q" device=""/>
+<part name="SUPPLY21" library="supply2" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -21707,6 +21709,8 @@ W = angled&lt;p&gt;
 <attribute name="NAME" x="263.6266" y="61.341" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="261.0866" y="63.754" size="1.778" layer="96" rot="R270"/>
 </instance>
+<instance part="PWR_HDR" gate="A" x="-297.18" y="50.8" rot="R90"/>
+<instance part="SUPPLY21" gate="GND" x="-289.56" y="38.1"/>
 </instances>
 <busses>
 </busses>
@@ -22082,6 +22086,11 @@ W = angled&lt;p&gt;
 <pinref part="SUPPLY20" gate="GND" pin="GND"/>
 <wire x1="254" y1="43.18" x2="254" y2="50.8" width="0.1524" layer="91"/>
 <junction x="254" y="50.8"/>
+</segment>
+<segment>
+<pinref part="SUPPLY21" gate="GND" pin="GND"/>
+<pinref part="PWR_HDR" gate="A" pin="1"/>
+<wire x1="-289.56" y1="40.64" x2="-289.56" y2="50.8" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -23025,6 +23034,11 @@ W = angled&lt;p&gt;
 <pinref part="X7" gate="G$1" pin="2"/>
 <wire x1="-304.8" y1="78.74" x2="-304.8" y2="73.66" width="0.1524" layer="91"/>
 <wire x1="-304.8" y1="73.66" x2="-279.4" y2="73.66" width="0.1524" layer="91"/>
+<pinref part="PWR_HDR" gate="A" pin="2"/>
+<wire x1="-304.8" y1="50.8" x2="-309.88" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="-309.88" y1="50.8" x2="-309.88" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="-309.88" y1="73.66" x2="-304.8" y2="73.66" width="0.1524" layer="91"/>
+<junction x="-304.8" y="73.66"/>
 </segment>
 </net>
 <net name="N$53" class="0">
