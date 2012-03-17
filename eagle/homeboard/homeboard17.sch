@@ -22893,8 +22893,8 @@ W = angled&lt;p&gt;
 <segment>
 <pinref part="U1" gate="B1" pin="IO_L31N_1VREF_1"/>
 <wire x1="177.8" y1="73.66" x2="177.8" y2="114.3" width="0.1524" layer="91"/>
-<wire x1="177.8" y1="114.3" x2="154.94" y2="114.3" width="0.1524" layer="91"/>
-<label x="154.94" y="114.3" size="1.778" layer="95"/>
+<wire x1="177.8" y1="114.3" x2="162.56" y2="114.3" width="0.1524" layer="91"/>
+<label x="162.56" y="114.3" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="PS2CLK" class="0">
@@ -23454,8 +23454,8 @@ W = angled&lt;p&gt;
 <label x="76.2" y="-124.46" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="147.32" y1="119.38" x2="149.86" y2="119.38" width="0.1524" layer="91"/>
-<label x="149.86" y="119.38" size="1.778" layer="95"/>
+<wire x1="147.32" y1="119.38" x2="162.56" y2="119.38" width="0.1524" layer="91"/>
+<label x="162.56" y="119.38" size="1.778" layer="95"/>
 <pinref part="U1" gate="B0" pin="IO_L32P_0GCLK6"/>
 <wire x1="147.32" y1="73.66" x2="147.32" y2="119.38" width="0.1524" layer="91"/>
 </segment>
@@ -24007,17 +24007,17 @@ W = angled&lt;p&gt;
 <net name="N$8" class="0">
 <segment>
 <pinref part="SV3" gate="1" pin="10"/>
-<pinref part="U1" gate="B1" pin="IO_L32P_1GCLK4"/>
-<wire x1="106.68" y1="111.76" x2="180.34" y2="111.76" width="0.1524" layer="91"/>
-<wire x1="180.34" y1="111.76" x2="180.34" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="106.68" y1="111.76" x2="182.88" y2="111.76" width="0.1524" layer="91"/>
+<pinref part="U1" gate="B1" pin="IO_L32N_1GCLK5"/>
+<wire x1="182.88" y1="111.76" x2="182.88" y2="73.66" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="FPGA_RESET" class="0">
 <segment>
-<wire x1="182.88" y1="116.84" x2="149.86" y2="116.84" width="0.1524" layer="91"/>
-<label x="149.86" y="116.84" size="1.778" layer="95"/>
-<pinref part="U1" gate="B1" pin="IO_L32N_1GCLK5"/>
-<wire x1="182.88" y1="73.66" x2="182.88" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="116.84" x2="162.56" y2="116.84" width="0.1524" layer="91"/>
+<label x="162.56" y="116.84" size="1.778" layer="95"/>
+<pinref part="U1" gate="B1" pin="IO_L32P_1GCLK4"/>
+<wire x1="180.34" y1="116.84" x2="180.34" y2="73.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <label x="375.92" y="45.72" size="1.778" layer="95"/>
