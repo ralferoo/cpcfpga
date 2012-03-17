@@ -5067,9 +5067,9 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="47.17165" y1="55.17165" x2="49.25" y2="57.25" width="0.254" layer="1"/>
 <wire x1="49.25" y1="57.25" x2="58.5" y2="57.25" width="0.254" layer="1"/>
 <wire x1="58.5" y1="57.25" x2="58.5" y2="53.5" width="0.254" layer="1"/>
-<wire x1="58.5" y1="53.5" x2="61" y2="51" width="0.254" layer="1"/>
-<via x="61" y="51" extent="1-16" drill="0.6" shape="square"/>
-<wire x1="61" y1="51" x2="64" y2="48" width="0.254" layer="16"/>
+<wire x1="58.5" y1="53.5" x2="61.5" y2="50.5" width="0.254" layer="1"/>
+<via x="61.5" y="50.5" extent="1-16" drill="0.6" shape="square"/>
+<wire x1="61.5" y1="50.5" x2="64" y2="48" width="0.254" layer="16"/>
 <wire x1="64" y1="48" x2="64" y2="46" width="0.254" layer="16"/>
 <wire x1="64" y1="46" x2="61.5" y2="43.5" width="0.254" layer="16"/>
 <via x="61" y="43.5" extent="1-16" drill="0.6" shape="square"/>
@@ -5097,10 +5097,8 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="46.10225" y1="57.35225" x2="46.5" y2="58" width="0.254" layer="1"/>
 <wire x1="46.5" y1="58" x2="59" y2="58" width="0.254" layer="1"/>
 <wire x1="59" y1="58" x2="59.5" y2="57.5" width="0.254" layer="1"/>
-<wire x1="59.5" y1="57.5" x2="59.5" y2="55" width="0.254" layer="1"/>
-<via x="59.5" y="55" extent="1-16" drill="0.6" shape="square"/>
-<wire x1="59.5" y1="55" x2="59.5" y2="54" width="0.254" layer="16"/>
-<wire x1="59.5" y1="54" x2="65" y2="48.5" width="0.254" layer="16"/>
+<via x="61.5" y="52" extent="1-16" drill="0.6" shape="square"/>
+<wire x1="61.5" y1="52" x2="65" y2="48.5" width="0.254" layer="16"/>
 <wire x1="65" y1="48.5" x2="65" y2="46" width="0.254" layer="16"/>
 <wire x1="65" y1="46" x2="61" y2="42" width="0.254" layer="16"/>
 <wire x1="61" y1="42" x2="60.5" y2="41.75" width="0.254" layer="16"/>
@@ -5114,6 +5112,8 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="56.5" y1="37.5" x2="61" y2="42" width="0.254" layer="16"/>
 <wire x1="59.5" y1="57.5" x2="82.71" y2="66.27" width="0" layer="19" extent="1-1"/>
 <wire x1="47.443396875" y1="27.987409375" x2="47.5" y2="28" width="0" layer="19" extent="1-1"/>
+<wire x1="59.5" y1="57.5" x2="59.5" y2="54" width="0.254" layer="1"/>
+<wire x1="59.5" y1="54" x2="61.5" y2="52" width="0.254" layer="1"/>
 </signal>
 <signal name="TDI_FPGA">
 <contactref element="R1" pad="2"/>
