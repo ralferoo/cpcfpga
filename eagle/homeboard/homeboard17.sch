@@ -23558,18 +23558,28 @@ W = angled&lt;p&gt;
 <label x="454.66" y="116.84" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="RXD" class="0">
+<net name="PD2" class="0">
 <segment>
 <pinref part="IC3" gate="G$1" pin="PD2(INT2/AIN1/RXD1)"/>
 <wire x1="454.66" y1="129.54" x2="441.96" y2="129.54" width="0.1524" layer="91"/>
 <label x="454.66" y="129.54" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L23P_2"/>
+<wire x1="231.14" y1="35.56" x2="210.82" y2="35.56" width="0.1524" layer="91"/>
+<label x="231.14" y="35.56" size="1.778" layer="95"/>
+</segment>
 </net>
-<net name="TXD" class="0">
+<net name="PD3" class="0">
 <segment>
 <pinref part="IC3" gate="G$1" pin="PD3(INT3/TXD1)"/>
 <wire x1="454.66" y1="127" x2="441.96" y2="127" width="0.1524" layer="91"/>
 <label x="454.66" y="127" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L24P_2"/>
+<wire x1="231.14" y1="33.02" x2="210.82" y2="33.02" width="0.1524" layer="91"/>
+<label x="231.14" y="33.02" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TDO_PROM" class="0">
@@ -24124,6 +24134,78 @@ W = angled&lt;p&gt;
 <wire x1="50.8" y1="-99.06" x2="50.8" y2="-66.04" width="0.1524" layer="91"/>
 <pinref part="SV1" gate="1" pin="8"/>
 <wire x1="81.28" y1="-71.12" x2="81.28" y2="-99.06" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="PC2" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="PC2(AIN2/PCIN11)"/>
+<wire x1="454.66" y1="86.36" x2="441.96" y2="86.36" width="0.1524" layer="91"/>
+<label x="454.66" y="86.36" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L22N_2"/>
+<wire x1="231.14" y1="38.1" x2="210.82" y2="38.1" width="0.1524" layer="91"/>
+<label x="231.14" y="38.1" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="PD0" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="PD0(INT0/OC0B)"/>
+<wire x1="454.66" y1="134.62" x2="441.96" y2="134.62" width="0.1524" layer="91"/>
+<label x="454.66" y="134.62" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L22P_2"/>
+<wire x1="231.14" y1="40.64" x2="210.82" y2="40.64" width="0.1524" layer="91"/>
+<label x="231.14" y="40.64" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="PD1" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="PD1(INT1/AIN0)"/>
+<wire x1="454.66" y1="132.08" x2="441.96" y2="132.08" width="0.1524" layer="91"/>
+<label x="454.66" y="132.08" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L23N_2VREF_2"/>
+<wire x1="231.14" y1="25.4" x2="210.82" y2="25.4" width="0.1524" layer="91"/>
+<label x="231.14" y="25.4" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="PD4" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="PD4(INT5/AIN3)"/>
+<wire x1="454.66" y1="124.46" x2="441.96" y2="124.46" width="0.1524" layer="91"/>
+<label x="454.66" y="124.46" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L40N_2"/>
+<wire x1="231.14" y1="27.94" x2="210.82" y2="27.94" width="0.1524" layer="91"/>
+<label x="231.14" y="27.94" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="PD5" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="PD5(XCK/AIN4/PCINT12)"/>
+<wire x1="454.66" y1="121.92" x2="441.96" y2="121.92" width="0.1524" layer="91"/>
+<label x="454.66" y="121.92" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L40P_2VREF_2"/>
+<wire x1="231.14" y1="22.86" x2="210.82" y2="22.86" width="0.1524" layer="91"/>
+<label x="231.14" y="22.86" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="PD6" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="PD6(INT6/AIN5/RTS)"/>
+<wire x1="454.66" y1="119.38" x2="441.96" y2="119.38" width="0.1524" layer="91"/>
+<label x="454.66" y="119.38" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L24N_2"/>
+<wire x1="231.14" y1="30.48" x2="210.82" y2="30.48" width="0.1524" layer="91"/>
+<label x="231.14" y="30.48" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
