@@ -239,6 +239,9 @@ build/%.bin: rom/%.asm build/.dummy
 build/%.bin: codegen/%.asm build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 
+build/%.bin: codegen/obsolete/%.asm build/.dummy
+	pasmo $< build/$*.bin build/$*.sym
+
 build/%.bin: test/%.asm build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 

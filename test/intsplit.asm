@@ -14,6 +14,11 @@ hpos equ 48	; 49 maximum for crtc 2, 50 best for other crtc
 
 	; set up the initial sync wait interrupt
 
+	ld sp,#9000
+
+	ld a,'!'
+	call ttyout
+
 	di
 	ld hl,initial_sync
 	ld (intvec),hl
@@ -53,24 +58,52 @@ width equ 48
         out (c),c
 	ld bc,&bd00+width
         out (c),b
-
+xx:
+	ld a,'#'
+	call ttyout
 
 	; enable interrupts so we can wait for interrupts
 
 	ei
 
+	ld a,'@'
+	call ttyout
 
-	ld hl,#4000
-	call fill	
+;	ld hl,#4000
+;	call fill	
+
+	ld a,'1'
+	call ttyout
+
 	ld hl,#8000
-	call fill	
+;	call fill	
+
+	ld a,'2'
+	call ttyout
+
 	ld hl,#c000
-	call fill	
+;	call fill	
+
+	ld a,'3'
+	call ttyout
+
+	ld bc,#7f8c
+	out (c),c
+
+	ld a,'#'
+	call ttyout
 
 	ld bc,#7f10
 	out (c),c
 
-waste:	halt
+	ld a,'4'
+	call ttyout
+
+waste:	jr waste
+	halt
+
+	ld a,'5'
+	call ttyout
 
 ;	out (c),c
 
@@ -99,6 +132,9 @@ ccc	djnz ccc
 
 	ld bc,&bd00+width
         out (c),c
+
+	ld a,'6'
+	call ttyout
 
 	call keyboard_reset
 	
@@ -169,6 +205,9 @@ keyboard_reset:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 initial_sync:
+	ld a,'-'
+	call ttyout
+
 	exx     
 	ld bc,#7f10
 	out (c),c
@@ -330,3 +369,20 @@ int5:
 	ei
 	ret
 	     			    	
+
+ttyout:
+	push bc
+	push af
+tryserial:
+        ld bc,#fadd
+        in a,(c)
+        rlca
+        jr nc,tryserial                         ; skip if no serial data
+
+        dec c
+	pop af
+        out (c),a                               ; output the updated character
+	pop bc
+	ret
+
+
