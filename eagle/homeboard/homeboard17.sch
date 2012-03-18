@@ -22213,9 +22213,9 @@ W = angled&lt;p&gt;
 <label x="495.3" y="91.44" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="SV2" gate="1" pin="5"/>
-<wire x1="495.3" y1="129.54" x2="508" y2="129.54" width="0.1524" layer="91"/>
-<label x="495.3" y="129.54" size="1.778" layer="95"/>
+<pinref part="SV2" gate="1" pin="6"/>
+<wire x1="535.94" y1="129.54" x2="523.24" y2="129.54" width="0.1524" layer="91"/>
+<label x="535.94" y="129.54" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -22512,9 +22512,9 @@ W = angled&lt;p&gt;
 <wire x1="556.26" y1="93.98" x2="523.24" y2="93.98" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="SV2" gate="1" pin="3"/>
-<wire x1="495.3" y1="132.08" x2="508" y2="132.08" width="0.1524" layer="91"/>
-<label x="495.3" y="132.08" size="1.778" layer="95"/>
+<pinref part="SV2" gate="1" pin="5"/>
+<wire x1="495.3" y1="129.54" x2="508" y2="129.54" width="0.1524" layer="91"/>
+<label x="495.3" y="129.54" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TCK" class="0">
@@ -23467,9 +23467,9 @@ W = angled&lt;p&gt;
 <pinref part="IC3" gate="G$1" pin="PB1(SCK/PCINT1)"/>
 </segment>
 <segment>
-<pinref part="SV2" gate="1" pin="2"/>
-<wire x1="535.94" y1="134.62" x2="523.24" y2="134.62" width="0.1524" layer="91"/>
-<label x="535.94" y="134.62" size="1.778" layer="95" rot="MR0"/>
+<pinref part="SV2" gate="1" pin="3"/>
+<wire x1="495.3" y1="132.08" x2="508" y2="132.08" width="0.1524" layer="91"/>
+<label x="495.3" y="132.08" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SPI_MOSI" class="0">
@@ -23479,9 +23479,9 @@ W = angled&lt;p&gt;
 <pinref part="IC3" gate="G$1" pin="PB2(PDI/MOSI/PCINT2)"/>
 </segment>
 <segment>
-<pinref part="SV2" gate="1" pin="4"/>
-<wire x1="535.94" y1="132.08" x2="523.24" y2="132.08" width="0.1524" layer="91"/>
-<label x="535.94" y="132.08" size="1.778" layer="95" rot="MR0"/>
+<pinref part="SV2" gate="1" pin="2"/>
+<wire x1="535.94" y1="134.62" x2="523.24" y2="134.62" width="0.1524" layer="91"/>
+<label x="535.94" y="134.62" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
 <net name="SPI_MISO" class="0">
@@ -23491,9 +23491,9 @@ W = angled&lt;p&gt;
 <pinref part="IC3" gate="G$1" pin="PB3(PDO/MISO/PCINT3)"/>
 </segment>
 <segment>
-<pinref part="SV2" gate="1" pin="6"/>
-<wire x1="535.94" y1="129.54" x2="523.24" y2="129.54" width="0.1524" layer="91"/>
-<label x="535.94" y="129.54" size="1.778" layer="95" rot="MR0"/>
+<pinref part="SV2" gate="1" pin="4"/>
+<wire x1="535.94" y1="132.08" x2="523.24" y2="132.08" width="0.1524" layer="91"/>
+<label x="535.94" y="132.08" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
 <net name="FL_SEL" class="0">
