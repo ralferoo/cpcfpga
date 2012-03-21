@@ -1227,6 +1227,100 @@ KS-S stereo microphone/headphone jack&lt;p&gt;
 <hole x="26.75" y="-1.75" drill="3.5"/>
 <hole x="-26.75" y="-1.75" drill="3.5"/>
 </package>
+<package name="SCDA">
+<wire x1="-14" y1="-26.3" x2="-14" y2="2.8" width="0.127" layer="21"/>
+<wire x1="-14" y1="2.8" x2="14.1" y2="2.8" width="0.127" layer="21"/>
+<wire x1="14.1" y1="2.8" x2="14.1" y2="-26.3" width="0.127" layer="21"/>
+<wire x1="14.1" y1="-26.3" x2="12" y2="-26.3" width="0.127" layer="21"/>
+<wire x1="12" y1="-26.3" x2="-12.4" y2="-26.3" width="0.127" layer="21"/>
+<wire x1="-12.4" y1="-26.3" x2="-14" y2="-26.3" width="0.127" layer="21"/>
+<wire x1="-12.4" y1="-25.5" x2="12" y2="-25.7" width="0.127" layer="21" curve="-27.095878"/>
+<wire x1="-12.4" y1="-25.5" x2="-12.4" y2="-26.3" width="0.127" layer="21"/>
+<wire x1="12" y1="-25.7" x2="12" y2="-26.3" width="0.127" layer="21"/>
+<smd name="12" x="-14.2" y="-23.5" dx="1.7" dy="3.1" layer="1"/>
+<smd name="13" x="14.2" y="-24.1" dx="1.9" dy="1.9" layer="1"/>
+<smd name="11" x="-14.1" y="-1.7" dx="1.7" dy="1.8" layer="1"/>
+<smd name="10" x="-12.8" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="8" x="-10.4" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="7" x="-8.4" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="6" x="-6.1" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="5" x="-3.6" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="2" x="3.9" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="4" x="-1.1" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="1" x="6.4" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="3" x="1.4" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="9" x="8.9" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
+<rectangle x1="-14" y1="-26.3" x2="-11.7" y2="-20.2" layer="39"/>
+<rectangle x1="11.3" y1="-26.3" x2="14.1" y2="-20.8" layer="39"/>
+<hole x="-13" y="0" drill="1"/>
+<hole x="13" y="0" drill="1"/>
+<polygon width="0.127" layer="39">
+<vertex x="14.1" y="-2.8"/>
+<vertex x="11.3" y="-2.8"/>
+<vertex x="11.3" y="-0.5"/>
+<vertex x="-11.8" y="-0.4"/>
+<vertex x="-11.8" y="-3.2"/>
+<vertex x="-14" y="-3.2"/>
+<vertex x="-14" y="4.7"/>
+<vertex x="14.1" y="4.7"/>
+</polygon>
+</package>
+<package name="SDCARD-NOHOLE">
+<wire x1="28.5" y1="-28.71" x2="28.5" y2="0.09" width="0.127" layer="22"/>
+<wire x1="28.5" y1="0.09" x2="0" y2="0.09" width="0.127" layer="22"/>
+<wire x1="0" y1="0.09" x2="0" y2="-28.71" width="0.127" layer="22"/>
+<wire x1="0" y1="-28.71" x2="2.5" y2="-28.71" width="0.127" layer="22"/>
+<wire x1="2.5" y1="-28.71" x2="26.9" y2="-28.71" width="0.127" layer="22"/>
+<wire x1="26.9" y1="-28.71" x2="28.5" y2="-28.71" width="0.127" layer="22"/>
+<wire x1="26.9" y1="-27.91" x2="2.5" y2="-28.11" width="0.127" layer="22" curve="27.095878"/>
+<wire x1="26.9" y1="-27.91" x2="26.9" y2="-28.71" width="0.127" layer="22"/>
+<wire x1="2.5" y1="-28.11" x2="2.5" y2="-28.71" width="0.127" layer="22"/>
+<smd name="MT3" x="0" y="-20.5" dx="1.9" dy="1.9" layer="16" rot="R180"/>
+<smd name="WP" x="27.3" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="8" x="24.5" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="7" x="22.8" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="6" x="20.5" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="5" x="18" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="2" x="10.3" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="4" x="15.3" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="1" x="7.8" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="CD" x="12" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="9" x="5.3" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+<smd name="MT1" x="28.5" y="-21.5" dx="2.032" dy="2.032" layer="16" rot="R180"/>
+<hole x="26.3" y="-23.21" drill="1.5"/>
+<hole x="2.3" y="-23.21" drill="1"/>
+<smd name="3" x="13.5" y="0.99" dx="4" dy="0.8" layer="16" rot="R90"/>
+</package>
+<package name="06132">
+<wire x1="-13.2" y1="-25.1" x2="-13.2" y2="0" width="0.127" layer="21"/>
+<wire x1="-13.2" y1="0" x2="10.6" y2="0" width="0.127" layer="21"/>
+<wire x1="10.6" y1="0" x2="10.6" y2="-2.5" width="0.127" layer="21"/>
+<wire x1="10.6" y1="-2.5" x2="13.2" y2="-2.5" width="0.127" layer="21"/>
+<wire x1="13.2" y1="-2.5" x2="13.3" y2="-25.1" width="0.127" layer="21"/>
+<wire x1="13.3" y1="-25.1" x2="12.2" y2="-25.1" width="0.127" layer="21"/>
+<wire x1="12.2" y1="-25.1" x2="-12.3" y2="-25.1" width="0.127" layer="21"/>
+<wire x1="-12.3" y1="-25.1" x2="-13.2" y2="-25.1" width="0.127" layer="21"/>
+<wire x1="-12.4" y1="-24.8" x2="12" y2="-25" width="0.127" layer="21" curve="-27.095878"/>
+<wire x1="-12.4" y1="-24.8" x2="-12.3" y2="-25.1" width="0.127" layer="21"/>
+<wire x1="12" y1="-25" x2="12.2" y2="-25.1" width="0.127" layer="21"/>
+<smd name="GP" x="-13.8" y="-21.8" dx="2.8" dy="2" layer="1" rot="R90"/>
+<smd name="GP2" x="14.1" y="-21.8" dx="2.8" dy="2" layer="1" rot="R90"/>
+<smd name="GP4" x="-13.9" y="-1" dx="2.8" dy="2" layer="1" rot="R90"/>
+<smd name="WP" x="-12.2" y="0.9" dx="4" dy="0.7" layer="1" rot="R90"/>
+<smd name="8" x="-9.7" y="0.9" dx="4" dy="0.7" layer="1" rot="R90"/>
+<smd name="7" x="-8.1" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="6" x="-5.6" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="5" x="-3.1" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="2" x="4.4" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="4" x="-0.6" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="1" x="6.9" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="3" x="1.9" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="9" x="9.4" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
+<smd name="CD" x="-11" y="0.9" dx="4" dy="0.7" layer="1" rot="R90"/>
+<smd name="GP3" x="11.7" y="-0.9" dx="2.8" dy="2" layer="1" rot="R90"/>
+<hole x="-11.6" y="-2.1" drill="1.1"/>
+<hole x="9.5" y="-2.1" drill="1.6"/>
+</package>
 </packages>
 <symbols>
 <symbol name="AS6C4008">
@@ -1479,6 +1573,27 @@ KS-S stereo microphone/headphone jack&lt;p&gt;
 <pin name="20" x="7.62" y="22.86" visible="pad" length="short" direction="pas" rot="R180"/>
 <pin name="21" x="-7.62" y="25.4" visible="pad" length="short" direction="pas"/>
 </symbol>
+<symbol name="SD-MMC">
+<wire x1="-10.16" y1="22.86" x2="-10.16" y2="-20.32" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="-20.32" x2="-7.62" y2="-22.86" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="-22.86" x2="15.24" y2="-22.86" width="0.254" layer="94"/>
+<wire x1="15.24" y1="-22.86" x2="15.24" y2="22.86" width="0.254" layer="94"/>
+<wire x1="15.24" y1="22.86" x2="-10.16" y2="22.86" width="0.254" layer="94"/>
+<text x="-2.54" y="-7.62" size="2.1844" layer="94">SD &amp; MMC</text>
+<pin name="CS" x="-12.7" y="2.54" length="short" direction="in"/>
+<pin name="DATA_IN" x="-12.7" y="7.62" length="short" direction="in"/>
+<pin name="VSS1" x="-12.7" y="-10.16" length="short" direction="sup"/>
+<pin name="VDD" x="-12.7" y="-7.62" length="short" direction="sup"/>
+<pin name="SCLK" x="-12.7" y="5.08" length="short" direction="in"/>
+<pin name="VSS2" x="-12.7" y="-12.7" length="short" direction="sup"/>
+<pin name="DATA_OUT" x="-12.7" y="10.16" length="short" direction="out"/>
+<pin name="DAT1" x="-12.7" y="0" length="short"/>
+<pin name="DAT2" x="-12.7" y="-2.54" length="short"/>
+<pin name="WRITE_PROTECT" x="-12.7" y="15.24" length="short" direction="pas"/>
+<pin name="CARD_DETECT" x="-12.7" y="20.32" length="short" direction="pas"/>
+<pin name="COMMON_SW" x="-12.7" y="17.78" length="short" direction="pas"/>
+<pin name="GND" x="-12.7" y="-17.78" length="short" direction="sup"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="AS6C4008">
@@ -1645,6 +1760,76 @@ modified from adafruit library</description>
 <attribute name="OC_FARNELL" value="unknown" constant="no"/>
 <attribute name="OC_NEWARK" value="unknown" constant="no"/>
 </technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="SDMMC">
+<description>&lt;b&gt;SD MMC Card holder&lt;/b&gt;
+&lt;p&gt;
+4UCON part #06132 - easy to solder</description>
+<gates>
+<gate name="G$1" symbol="SD-MMC" x="-2.54" y="0"/>
+</gates>
+<devices>
+<device name="SCDA" package="SCDA">
+<connects>
+<connect gate="G$1" pin="CARD_DETECT" pad="10"/>
+<connect gate="G$1" pin="COMMON_SW" pad="11"/>
+<connect gate="G$1" pin="CS" pad="1"/>
+<connect gate="G$1" pin="DAT1" pad="8"/>
+<connect gate="G$1" pin="DAT2" pad="9"/>
+<connect gate="G$1" pin="DATA_IN" pad="2"/>
+<connect gate="G$1" pin="DATA_OUT" pad="7"/>
+<connect gate="G$1" pin="GND" pad="13"/>
+<connect gate="G$1" pin="SCLK" pad="5"/>
+<connect gate="G$1" pin="VDD" pad="4"/>
+<connect gate="G$1" pin="VSS1" pad="3"/>
+<connect gate="G$1" pin="VSS2" pad="6"/>
+<connect gate="G$1" pin="WRITE_PROTECT" pad="12"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="NOHOLE" package="SDCARD-NOHOLE">
+<connects>
+<connect gate="G$1" pin="CARD_DETECT" pad="CD"/>
+<connect gate="G$1" pin="COMMON_SW" pad="MT1"/>
+<connect gate="G$1" pin="CS" pad="1"/>
+<connect gate="G$1" pin="DAT1" pad="8"/>
+<connect gate="G$1" pin="DAT2" pad="9"/>
+<connect gate="G$1" pin="DATA_IN" pad="2"/>
+<connect gate="G$1" pin="DATA_OUT" pad="7"/>
+<connect gate="G$1" pin="GND" pad="MT3"/>
+<connect gate="G$1" pin="SCLK" pad="5"/>
+<connect gate="G$1" pin="VDD" pad="4"/>
+<connect gate="G$1" pin="VSS1" pad="3"/>
+<connect gate="G$1" pin="VSS2" pad="6"/>
+<connect gate="G$1" pin="WRITE_PROTECT" pad="WP"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="06132" package="06132">
+<connects>
+<connect gate="G$1" pin="CARD_DETECT" pad="CD"/>
+<connect gate="G$1" pin="COMMON_SW" pad="GP3"/>
+<connect gate="G$1" pin="CS" pad="1"/>
+<connect gate="G$1" pin="DAT1" pad="8"/>
+<connect gate="G$1" pin="DAT2" pad="9"/>
+<connect gate="G$1" pin="DATA_IN" pad="2"/>
+<connect gate="G$1" pin="DATA_OUT" pad="7"/>
+<connect gate="G$1" pin="GND" pad="GP"/>
+<connect gate="G$1" pin="SCLK" pad="5"/>
+<connect gate="G$1" pin="VDD" pad="4"/>
+<connect gate="G$1" pin="VSS1" pad="3"/>
+<connect gate="G$1" pin="VSS2" pad="6"/>
+<connect gate="G$1" pin="WRITE_PROTECT" pad="WP"/>
+</connects>
+<technologies>
+<technology name=""/>
 </technologies>
 </device>
 </devices>
@@ -20393,114 +20578,6 @@ package type ST</description>
 <rectangle x1="-2.2286" y1="3.556" x2="-1.7714" y2="4.5466" layer="51"/>
 <rectangle x1="-3.0286" y1="3.556" x2="-2.5714" y2="4.5466" layer="51"/>
 </package>
-<package name="SCDA">
-<wire x1="-14" y1="-26.3" x2="-14" y2="2.8" width="0.127" layer="21"/>
-<wire x1="-14" y1="2.8" x2="14.1" y2="2.8" width="0.127" layer="21"/>
-<wire x1="14.1" y1="2.8" x2="14.1" y2="-26.3" width="0.127" layer="21"/>
-<wire x1="14.1" y1="-26.3" x2="12" y2="-26.3" width="0.127" layer="21"/>
-<wire x1="12" y1="-26.3" x2="-12.4" y2="-26.3" width="0.127" layer="21"/>
-<wire x1="-12.4" y1="-26.3" x2="-14" y2="-26.3" width="0.127" layer="21"/>
-<wire x1="-12.4" y1="-25.5" x2="12" y2="-25.7" width="0.127" layer="21" curve="-27.095878"/>
-<wire x1="-12.4" y1="-25.5" x2="-12.4" y2="-26.3" width="0.127" layer="21"/>
-<wire x1="12" y1="-25.7" x2="12" y2="-26.3" width="0.127" layer="21"/>
-<smd name="12" x="-14.2" y="-23.5" dx="1.7" dy="3.1" layer="1"/>
-<smd name="13" x="14.2" y="-24.1" dx="1.9" dy="1.9" layer="1"/>
-<smd name="11" x="-14.1" y="-1.7" dx="1.7" dy="1.8" layer="1"/>
-<smd name="10" x="-12.8" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="8" x="-10.4" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="7" x="-8.4" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="6" x="-6.1" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="5" x="-3.6" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="2" x="3.9" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="4" x="-1.1" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="1" x="6.4" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="3" x="1.4" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="9" x="8.9" y="3.7" dx="4" dy="1.2" layer="1" rot="R90"/>
-<rectangle x1="-14" y1="-26.3" x2="-11.7" y2="-20.2" layer="39"/>
-<rectangle x1="11.3" y1="-26.3" x2="14.1" y2="-20.8" layer="39"/>
-<hole x="-13" y="0" drill="1"/>
-<hole x="13" y="0" drill="1"/>
-<polygon width="0.127" layer="39">
-<vertex x="14.1" y="-2.8"/>
-<vertex x="11.3" y="-2.8"/>
-<vertex x="11.3" y="-0.5"/>
-<vertex x="-11.8" y="-0.4"/>
-<vertex x="-11.8" y="-3.2"/>
-<vertex x="-14" y="-3.2"/>
-<vertex x="-14" y="4.7"/>
-<vertex x="14.1" y="4.7"/>
-</polygon>
-</package>
-<package name="SDCARD">
-<wire x1="-14.2" y1="-28.81" x2="-14.2" y2="-0.01" width="0.127" layer="21"/>
-<wire x1="-14.2" y1="-0.01" x2="14.3" y2="-0.01" width="0.127" layer="21"/>
-<wire x1="14.3" y1="-0.01" x2="14.3" y2="-28.81" width="0.127" layer="21"/>
-<wire x1="14.3" y1="-28.81" x2="11.8" y2="-28.81" width="0.127" layer="21"/>
-<wire x1="11.8" y1="-28.81" x2="-12.6" y2="-28.81" width="0.127" layer="21"/>
-<wire x1="-12.6" y1="-28.81" x2="-14.2" y2="-28.81" width="0.127" layer="21"/>
-<wire x1="-12.6" y1="-28.01" x2="11.8" y2="-28.21" width="0.127" layer="21" curve="-27.095878"/>
-<wire x1="-12.6" y1="-28.01" x2="-12.6" y2="-28.81" width="0.127" layer="21"/>
-<wire x1="11.8" y1="-28.21" x2="11.8" y2="-28.81" width="0.127" layer="21"/>
-<smd name="MT3" x="14.6" y="-19.01" dx="1.9" dy="1.9" layer="1"/>
-<smd name="MT1" x="-14.5" y="-3.91" dx="1.7" dy="1.8" layer="1"/>
-<smd name="CD" x="-12.5" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="8" x="-9.8" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="7" x="-8.1" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="6" x="-5.7" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="5" x="-3.1" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="2" x="4.3" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="4" x="-0.7" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="1" x="6.8" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="3" x="1.8" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="9" x="9.3" y="0.89" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="MT2" x="14.7" y="-3.91" dx="1.9" dy="1.9" layer="1"/>
-<smd name="WP" x="-14.2" y="-19" dx="2.032" dy="2.032" layer="1"/>
-<smd name="COM" x="-14.2" y="-9.3" dx="2.032" dy="2.032" layer="1"/>
-<rectangle x1="-14" y1="-17.41" x2="-11.7" y2="-11.31" layer="39"/>
-<rectangle x1="11.3" y1="-17.41" x2="14.1" y2="-11.91" layer="39"/>
-<hole x="-12" y="-23.31" drill="1.5"/>
-<hole x="12" y="-23.31" drill="1"/>
-<polygon width="0.127" layer="39">
-<vertex x="14.1" y="6.09"/>
-<vertex x="11.3" y="6.09"/>
-<vertex x="11.3" y="8.39"/>
-<vertex x="-11.8" y="8.49"/>
-<vertex x="-11.8" y="5.69"/>
-<vertex x="-14" y="5.69"/>
-<vertex x="-14" y="13.59"/>
-<vertex x="14.1" y="13.59"/>
-</polygon>
-</package>
-<package name="06132">
-<wire x1="-13.2" y1="-25.1" x2="-13.2" y2="0" width="0.127" layer="21"/>
-<wire x1="-13.2" y1="0" x2="10.6" y2="0" width="0.127" layer="21"/>
-<wire x1="10.6" y1="0" x2="10.6" y2="-2.5" width="0.127" layer="21"/>
-<wire x1="10.6" y1="-2.5" x2="13.2" y2="-2.5" width="0.127" layer="21"/>
-<wire x1="13.2" y1="-2.5" x2="13.3" y2="-25.1" width="0.127" layer="21"/>
-<wire x1="13.3" y1="-25.1" x2="12.2" y2="-25.1" width="0.127" layer="21"/>
-<wire x1="12.2" y1="-25.1" x2="-12.3" y2="-25.1" width="0.127" layer="21"/>
-<wire x1="-12.3" y1="-25.1" x2="-13.2" y2="-25.1" width="0.127" layer="21"/>
-<wire x1="-12.4" y1="-24.8" x2="12" y2="-25" width="0.127" layer="21" curve="-27.095878"/>
-<wire x1="-12.4" y1="-24.8" x2="-12.3" y2="-25.1" width="0.127" layer="21"/>
-<wire x1="12" y1="-25" x2="12.2" y2="-25.1" width="0.127" layer="21"/>
-<smd name="GP" x="-13.8" y="-21.8" dx="2.8" dy="2" layer="1" rot="R90"/>
-<smd name="GP2" x="14.1" y="-21.8" dx="2.8" dy="2" layer="1" rot="R90"/>
-<smd name="GP4" x="-13.9" y="-1" dx="2.8" dy="2" layer="1" rot="R90"/>
-<smd name="WP" x="-12.2" y="0.9" dx="4" dy="0.7" layer="1" rot="R90"/>
-<smd name="8" x="-9.7" y="0.9" dx="4" dy="0.7" layer="1" rot="R90"/>
-<smd name="7" x="-8.1" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="6" x="-5.6" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="5" x="-3.1" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="2" x="4.4" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="4" x="-0.6" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="1" x="6.9" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="3" x="1.9" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="9" x="9.4" y="0.9" dx="4" dy="1.2" layer="1" rot="R90"/>
-<smd name="CD" x="-11" y="0.9" dx="4" dy="0.7" layer="1" rot="R90"/>
-<smd name="GP3" x="11.7" y="-0.9" dx="2.8" dy="2" layer="1" rot="R90"/>
-<hole x="-11.6" y="-2.1" drill="1.1"/>
-<hole x="9.5" y="-2.1" drill="1.6"/>
-</package>
 </packages>
 <symbols>
 <symbol name="ATMEGA32U2">
@@ -20542,27 +20619,6 @@ package type ST</description>
 <pin name="/RESET(PC1)" x="-22.86" y="-17.78" length="middle" function="dot"/>
 <pin name="D+" x="-22.86" y="12.7" length="middle"/>
 <pin name="UCAP" x="-22.86" y="7.62" length="middle"/>
-</symbol>
-<symbol name="SD-MMC">
-<wire x1="-10.16" y1="22.86" x2="-10.16" y2="-20.32" width="0.254" layer="94"/>
-<wire x1="-10.16" y1="-20.32" x2="-7.62" y2="-22.86" width="0.254" layer="94"/>
-<wire x1="-7.62" y1="-22.86" x2="15.24" y2="-22.86" width="0.254" layer="94"/>
-<wire x1="15.24" y1="-22.86" x2="15.24" y2="22.86" width="0.254" layer="94"/>
-<wire x1="15.24" y1="22.86" x2="-10.16" y2="22.86" width="0.254" layer="94"/>
-<text x="-2.54" y="-7.62" size="2.1844" layer="94">SD &amp; MMC</text>
-<pin name="CS" x="-12.7" y="2.54" length="short" direction="in"/>
-<pin name="DATA_IN" x="-12.7" y="7.62" length="short" direction="in"/>
-<pin name="VSS1" x="-12.7" y="-10.16" length="short" direction="sup"/>
-<pin name="VDD" x="-12.7" y="-7.62" length="short" direction="sup"/>
-<pin name="SCLK" x="-12.7" y="5.08" length="short" direction="in"/>
-<pin name="VSS2" x="-12.7" y="-12.7" length="short" direction="sup"/>
-<pin name="DATA_OUT" x="-12.7" y="10.16" length="short" direction="out"/>
-<pin name="DAT1" x="-12.7" y="0" length="short"/>
-<pin name="DAT2" x="-12.7" y="-2.54" length="short"/>
-<pin name="WRITE_PROTECT" x="-12.7" y="15.24" length="short" direction="pas"/>
-<pin name="CARD_DETECT" x="-12.7" y="20.32" length="short" direction="pas"/>
-<pin name="COMMON_SW" x="-12.7" y="17.78" length="short" direction="pas"/>
-<pin name="GND" x="-12.7" y="-17.78" length="short" direction="sup"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -20616,76 +20672,6 @@ package type ST</description>
 <connect gate="G$1" pin="VCC" pad="4"/>
 <connect gate="G$1" pin="XTAL1" pad="1"/>
 <connect gate="G$1" pin="XTAL2/PC0" pad="2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="SDMMC">
-<description>&lt;b&gt;SD MMC Card holder&lt;/b&gt;
-&lt;p&gt;
-4UCON part #06132 - easy to solder</description>
-<gates>
-<gate name="G$1" symbol="SD-MMC" x="-2.54" y="0"/>
-</gates>
-<devices>
-<device name="SCDA" package="SCDA">
-<connects>
-<connect gate="G$1" pin="CARD_DETECT" pad="10"/>
-<connect gate="G$1" pin="COMMON_SW" pad="11"/>
-<connect gate="G$1" pin="CS" pad="1"/>
-<connect gate="G$1" pin="DAT1" pad="8"/>
-<connect gate="G$1" pin="DAT2" pad="9"/>
-<connect gate="G$1" pin="DATA_IN" pad="2"/>
-<connect gate="G$1" pin="DATA_OUT" pad="7"/>
-<connect gate="G$1" pin="GND" pad="13"/>
-<connect gate="G$1" pin="SCLK" pad="5"/>
-<connect gate="G$1" pin="VDD" pad="4"/>
-<connect gate="G$1" pin="VSS1" pad="3"/>
-<connect gate="G$1" pin="VSS2" pad="6"/>
-<connect gate="G$1" pin="WRITE_PROTECT" pad="12"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="18650" package="SDCARD">
-<connects>
-<connect gate="G$1" pin="CARD_DETECT" pad="CD"/>
-<connect gate="G$1" pin="COMMON_SW" pad="COM"/>
-<connect gate="G$1" pin="CS" pad="1"/>
-<connect gate="G$1" pin="DAT1" pad="8"/>
-<connect gate="G$1" pin="DAT2" pad="9"/>
-<connect gate="G$1" pin="DATA_IN" pad="2"/>
-<connect gate="G$1" pin="DATA_OUT" pad="7"/>
-<connect gate="G$1" pin="GND" pad="MT1"/>
-<connect gate="G$1" pin="SCLK" pad="5"/>
-<connect gate="G$1" pin="VDD" pad="4"/>
-<connect gate="G$1" pin="VSS1" pad="3"/>
-<connect gate="G$1" pin="VSS2" pad="6"/>
-<connect gate="G$1" pin="WRITE_PROTECT" pad="WP"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="06132" package="06132">
-<connects>
-<connect gate="G$1" pin="CARD_DETECT" pad="CD"/>
-<connect gate="G$1" pin="COMMON_SW" pad="GP3"/>
-<connect gate="G$1" pin="CS" pad="1"/>
-<connect gate="G$1" pin="DAT1" pad="8"/>
-<connect gate="G$1" pin="DAT2" pad="9"/>
-<connect gate="G$1" pin="DATA_IN" pad="2"/>
-<connect gate="G$1" pin="DATA_OUT" pad="7"/>
-<connect gate="G$1" pin="GND" pad="GP"/>
-<connect gate="G$1" pin="SCLK" pad="5"/>
-<connect gate="G$1" pin="VDD" pad="4"/>
-<connect gate="G$1" pin="VSS1" pad="3"/>
-<connect gate="G$1" pin="VSS2" pad="6"/>
-<connect gate="G$1" pin="WRITE_PROTECT" pad="WP"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -21813,7 +21799,7 @@ W = angled&lt;p&gt;
 <part name="R55" library="rcl" deviceset="R-EU_" device="R0805" value="4700"/>
 <part name="SV2" library="con-lstb" deviceset="MA03-2" device=""/>
 <part name="R56" library="rcl" deviceset="R-EU_" device="R0805" value="4700"/>
-<part name="U$1" library="adafruit" deviceset="SDMMC" device="SCDA"/>
+<part name="U$3" library="cpcfpga" deviceset="SDMMC" device="NOHOLE"/>
 </parts>
 <sheets>
 <sheet>
@@ -22011,7 +21997,7 @@ W = angled&lt;p&gt;
 <instance part="R55" gate="G$1" x="548.64" y="91.44" rot="MR0"/>
 <instance part="SV2" gate="1" x="515.62" y="132.08" rot="R180"/>
 <instance part="R56" gate="G$1" x="548.64" y="99.06" rot="MR0"/>
-<instance part="U$1" gate="G$1" x="492.76" y="43.18"/>
+<instance part="U$3" gate="G$1" x="541.02" y="40.64"/>
 </instances>
 <busses>
 </busses>
