@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.05" unitdist="inch" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
@@ -960,6 +960,9 @@ KS-S stereo microphone/headphone jack&lt;p&gt;
 <hole x="-11.6" y="-2.1" drill="1.1"/>
 <hole x="9.5" y="-2.1" drill="1.6"/>
 </package>
+<package name="GNDHOLE">
+<pad name="GND" x="0" y="0" drill="3.2" diameter="8"/>
+</package>
 </packages>
 <symbols>
 <symbol name="XCF02">
@@ -1411,6 +1414,10 @@ KS-S stereo microphone/headphone jack&lt;p&gt;
 <pin name="COMMON_SW" x="-12.7" y="17.78" length="short" direction="pas"/>
 <pin name="GND" x="-12.7" y="-17.78" length="short" direction="sup"/>
 </symbol>
+<symbol name="GNDHOLE">
+<circle x="0" y="0" radius="3.5921" width="0.254" layer="94"/>
+<pin name="GND" x="-7.62" y="0" length="middle"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="XCF02S" prefix="IC">
@@ -1835,6 +1842,21 @@ modified from adafruit library</description>
 <connect gate="G$1" pin="VSS1" pad="3"/>
 <connect gate="G$1" pin="VSS2" pad="6"/>
 <connect gate="G$1" pin="WRITE_PROTECT" pad="WP"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="GNDHOLE">
+<gates>
+<gate name="G$1" symbol="GNDHOLE" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="GNDHOLE">
+<connects>
+<connect gate="G$1" pin="GND" pad="GND"/>
 </connects>
 <technologies>
 <technology name=""/>
