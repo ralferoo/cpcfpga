@@ -23279,10 +23279,12 @@ W = angled&lt;p&gt;
 <label x="523.24" y="-55.88" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B1" pin="IO_L31N_1VREF_1"/>
-<wire x1="177.8" y1="73.66" x2="177.8" y2="114.3" width="0.1524" layer="91"/>
-<wire x1="177.8" y1="114.3" x2="162.56" y2="114.3" width="0.1524" layer="91"/>
-<label x="162.56" y="114.3" size="1.778" layer="95"/>
+<pinref part="U1" gate="B0" pin="IO_L27N_0"/>
+<wire x1="134.62" y1="93.98" x2="134.62" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="81.28" x2="134.62" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="81.28" x2="134.62" y2="81.28" width="0.1524" layer="91"/>
+<junction x="134.62" y="81.28"/>
+<label x="86.36" y="81.28" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="PS2CLK" class="0">
@@ -24373,14 +24375,6 @@ W = angled&lt;p&gt;
 <pinref part="SV1" gate="1" pin="9"/>
 </segment>
 </net>
-<net name="N$1" class="0">
-<segment>
-<pinref part="SV3" gate="1" pin="3"/>
-<pinref part="U1" gate="B0" pin="IO_L27N_0"/>
-<wire x1="106.68" y1="93.98" x2="134.62" y2="93.98" width="0.1524" layer="91"/>
-<wire x1="134.62" y1="93.98" x2="134.62" y2="73.66" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="N$2" class="0">
 <segment>
 <pinref part="SV3" gate="1" pin="4"/>
@@ -24689,6 +24683,14 @@ W = angled&lt;p&gt;
 <segment>
 <pinref part="SV1" gate="1" pin="6"/>
 <wire x1="45.72" y1="-83.82" x2="45.72" y2="-66.04" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="X_CAS" class="0">
+<segment>
+<pinref part="U1" gate="B1" pin="IO_L31N_1VREF_1"/>
+<wire x1="177.8" y1="73.66" x2="177.8" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="177.8" y1="114.3" x2="162.56" y2="114.3" width="0.1524" layer="91"/>
+<label x="162.56" y="114.3" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
