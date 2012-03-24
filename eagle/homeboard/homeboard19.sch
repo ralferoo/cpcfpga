@@ -24550,9 +24550,9 @@ W = angled&lt;p&gt;
 <label x="454.66" y="124.46" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B2" pin="IO_L40N_2"/>
-<wire x1="231.14" y1="27.94" x2="210.82" y2="27.94" width="0.1524" layer="91"/>
-<label x="231.14" y="27.94" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L40N_3VREF_3"/>
+<wire x1="231.14" y1="-22.86" x2="210.82" y2="-22.86" width="0.1524" layer="91"/>
+<label x="231.14" y="-22.86" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="PD5" class="0">
@@ -24562,9 +24562,9 @@ W = angled&lt;p&gt;
 <label x="454.66" y="121.92" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B2" pin="IO_L24P_2"/>
-<wire x1="231.14" y1="33.02" x2="210.82" y2="33.02" width="0.1524" layer="91"/>
-<label x="231.14" y="33.02" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L40P_3"/>
+<wire x1="231.14" y1="-17.78" x2="210.82" y2="-17.78" width="0.1524" layer="91"/>
+<label x="231.14" y="-17.78" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="PD6" class="0">
@@ -24574,9 +24574,9 @@ W = angled&lt;p&gt;
 <label x="454.66" y="119.38" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B3" pin="IO_L40N_3VREF_3"/>
-<wire x1="231.14" y1="-22.86" x2="210.82" y2="-22.86" width="0.1524" layer="91"/>
-<label x="231.14" y="-22.86" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L24N_3"/>
+<wire x1="231.14" y1="-15.24" x2="210.82" y2="-15.24" width="0.1524" layer="91"/>
+<label x="231.14" y="-15.24" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$9" class="0">
@@ -24610,6 +24610,11 @@ W = angled&lt;p&gt;
 <wire x1="441.96" y1="83.82" x2="454.66" y2="83.82" width="0.1524" layer="91"/>
 <label x="454.66" y="83.82" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L24P_2"/>
+<wire x1="231.14" y1="33.02" x2="210.82" y2="33.02" width="0.1524" layer="91"/>
+<label x="231.14" y="33.02" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="PC5" class="0">
 <segment>
@@ -24627,6 +24632,11 @@ W = angled&lt;p&gt;
 <label x="162.56" y="119.38" size="1.778" layer="95"/>
 <pinref part="U1" gate="B1" pin="IO_L32N_1GCLK5"/>
 <wire x1="182.88" y1="73.66" x2="182.88" y2="119.38" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U1" gate="B2" pin="IO_L40N_2"/>
+<wire x1="231.14" y1="27.94" x2="210.82" y2="27.94" width="0.1524" layer="91"/>
+<label x="231.14" y="27.94" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SD_CS" class="0">
