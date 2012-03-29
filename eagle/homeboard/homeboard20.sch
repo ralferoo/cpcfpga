@@ -937,35 +937,6 @@
 <rectangle x1="-2.7432" y1="-3.6576" x2="-1.8796" y2="-1.8034" layer="51"/>
 <rectangle x1="1.8796" y1="-3.6576" x2="2.7432" y2="-1.8034" layer="51"/>
 </package>
-<package name="SO8">
-<description>&lt;b&gt;SMALL OUTLINE INTEGRATED CIRCUIT&lt;/b&gt; SOP-8L&lt;p&gt;
-Source: http://www.diodes.com/datasheets/ds31262.pdf</description>
-<wire x1="2.4" y1="1.9" x2="2.4" y2="-1.4" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.4" x2="2.4" y2="-1.9" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.9" x2="-2.4" y2="-1.9" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="-1.9" x2="-2.4" y2="-1.4" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="-1.4" x2="-2.4" y2="1.9" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="1.9" x2="2.4" y2="1.9" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.4" x2="-2.4" y2="-1.4" width="0.2032" layer="51"/>
-<smd name="2" x="-0.635" y="-2.6" dx="0.6" dy="2.2" layer="1"/>
-<smd name="7" x="-0.635" y="2.6" dx="0.6" dy="2.2" layer="1"/>
-<smd name="1" x="-1.905" y="-2.6" dx="0.6" dy="2.2" layer="1"/>
-<smd name="3" x="0.635" y="-2.6" dx="0.6" dy="2.2" layer="1"/>
-<smd name="4" x="1.905" y="-2.6" dx="0.6" dy="2.2" layer="1"/>
-<smd name="8" x="-1.905" y="2.6" dx="0.6" dy="2.2" layer="1"/>
-<smd name="6" x="0.635" y="2.6" dx="0.6" dy="2.2" layer="1"/>
-<smd name="5" x="1.905" y="2.6" dx="0.6" dy="2.2" layer="1"/>
-<text x="-3.175" y="-1.905" size="1.27" layer="25" rot="R90">&gt;NAME</text>
-<text x="4.445" y="-1.905" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
-<rectangle x1="-2.1501" y1="-3.1001" x2="-1.6599" y2="-2" layer="51"/>
-<rectangle x1="-0.8801" y1="-3.1001" x2="-0.3899" y2="-2" layer="51"/>
-<rectangle x1="0.3899" y1="-3.1001" x2="0.8801" y2="-2" layer="51"/>
-<rectangle x1="1.6599" y1="-3.1001" x2="2.1501" y2="-2" layer="51"/>
-<rectangle x1="1.6599" y1="2" x2="2.1501" y2="3.1001" layer="51"/>
-<rectangle x1="0.3899" y1="2" x2="0.8801" y2="3.1001" layer="51"/>
-<rectangle x1="-0.8801" y1="2" x2="-0.3899" y2="3.1001" layer="51"/>
-<rectangle x1="-2.1501" y1="2" x2="-1.6599" y2="3.1001" layer="51"/>
-</package>
 <package name="20-0137">
 <description>&lt;b&gt;MIC/HEADPHONE JACK&lt;/b&gt;&lt;p&gt;
 KS-S stereo microphone/headphone jack&lt;p&gt;
@@ -1417,20 +1388,6 @@ KS-S stereo microphone/headphone jack&lt;p&gt;
 <text x="5.08" y="5.08" size="1.778" layer="94">VREG</text>
 <text x="2.54" y="-2.54" size="1.778" layer="94">&gt;VALUE</text>
 </symbol>
-<symbol name="VREG4">
-<pin name="VCC" x="-15.24" y="5.08" length="middle"/>
-<pin name="GND" x="-15.24" y="-2.54" length="middle"/>
-<pin name="VOUT1" x="15.24" y="5.08" length="middle" direction="out" swaplevel="1" rot="R180"/>
-<pin name="VOUT4" x="15.24" y="-2.54" length="middle" direction="out" swaplevel="1" rot="R180"/>
-<wire x1="-10.16" y1="10.16" x2="10.16" y2="10.16" width="0.254" layer="94"/>
-<wire x1="10.16" y1="10.16" x2="10.16" y2="-7.62" width="0.254" layer="94"/>
-<wire x1="10.16" y1="-7.62" x2="-10.16" y2="-7.62" width="0.254" layer="94"/>
-<wire x1="-10.16" y1="-7.62" x2="-10.16" y2="10.16" width="0.254" layer="94"/>
-<text x="-2.54" y="7.62" size="1.778" layer="94">VREG</text>
-<text x="-5.08" y="0" size="1.778" layer="94">&gt;VALUE</text>
-<pin name="VOUT2" x="15.24" y="2.54" length="middle" direction="out" swaplevel="1" rot="R180"/>
-<pin name="VOUT3" x="15.24" y="0" length="middle" direction="out" swaplevel="1" rot="R180"/>
-</symbol>
 <symbol name="KS-S">
 <wire x1="1.27" y1="-5.08" x2="2.54" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="2.54" y1="-5.08" x2="2.54" y2="-7.62" width="0.1524" layer="94"/>
@@ -1680,26 +1637,6 @@ http://www.txccrystal.com/images/pdf/7c.pdf</description>
 <connect gate="G$1" pin="VCC" pad="3"/>
 <connect gate="G$1" pin="VOUT1" pad="4"/>
 <connect gate="G$1" pin="VOUT2" pad="2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="MC33269D">
-<gates>
-<gate name="G$1" symbol="VREG4" x="0" y="0"/>
-</gates>
-<devices>
-<device name="" package="SO8">
-<connects>
-<connect gate="G$1" pin="GND" pad="1"/>
-<connect gate="G$1" pin="VCC" pad="4"/>
-<connect gate="G$1" pin="VOUT1" pad="2"/>
-<connect gate="G$1" pin="VOUT2" pad="3"/>
-<connect gate="G$1" pin="VOUT3" pad="6"/>
-<connect gate="G$1" pin="VOUT4" pad="7"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -21873,7 +21810,6 @@ W = angled&lt;p&gt;
 <part name="SUPPLY13" library="supply2" deviceset="GND" device=""/>
 <part name="C33" library="rcl" deviceset="CPOL-EU" device="D" value="100u"/>
 <part name="SUPPLY14" library="supply2" deviceset="GND" device=""/>
-<part name="U$5" library="cpcfpga" deviceset="MC33269D" device=""/>
 <part name="SUPPLY15" library="supply2" deviceset="GND" device=""/>
 <part name="U$6" library="cpcfpga" deviceset="AS6C4008" device=""/>
 <part name="C34" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
@@ -21913,7 +21849,6 @@ W = angled&lt;p&gt;
 <sheets>
 <sheet>
 <plain>
-<text x="-167.64" y="86.36" size="1.778" layer="91">Choose one of these 3.3v regs</text>
 <text x="271.78" y="-254" size="1.778" layer="91">Possible alternative:</text>
 </plain>
 <instances>
@@ -22069,7 +22004,6 @@ W = angled&lt;p&gt;
 <attribute name="VALUE" x="-233.934" y="65.5066" size="1.778" layer="96"/>
 </instance>
 <instance part="SUPPLY14" gate="GND" x="-226.06" y="58.42"/>
-<instance part="U$5" gate="G$1" x="-187.96" y="86.36"/>
 <instance part="SUPPLY15" gate="GND" x="48.26" y="-43.18"/>
 <instance part="U$6" gate="G$1" x="45.72" y="20.32" rot="MR270"/>
 <instance part="C34" gate="G$1" x="-93.98" y="127"/>
@@ -22276,8 +22210,7 @@ W = angled&lt;p&gt;
 <segment>
 <pinref part="REG1.2" gate="G$1" pin="GND"/>
 <pinref part="SUPPLY3" gate="GND" pin="GND"/>
-<wire x1="-203.2" y1="83.82" x2="-205.74" y2="83.82" width="0.1524" layer="91"/>
-<wire x1="-205.74" y1="83.82" x2="-205.74" y2="53.34" width="0.1524" layer="91"/>
+<wire x1="-205.74" y1="106.68" x2="-205.74" y2="53.34" width="0.1524" layer="91"/>
 <pinref part="REG2.5" gate="G$1" pin="GND"/>
 <wire x1="-205.74" y1="53.34" x2="-203.2" y2="53.34" width="0.1524" layer="91"/>
 <wire x1="-205.74" y1="53.34" x2="-205.74" y2="30.48" width="0.1524" layer="91"/>
@@ -22287,9 +22220,6 @@ W = angled&lt;p&gt;
 <junction x="-205.74" y="30.48"/>
 <pinref part="U$4" gate="G$1" pin="GND"/>
 <wire x1="-203.2" y1="106.68" x2="-205.74" y2="106.68" width="0.1524" layer="91"/>
-<wire x1="-205.74" y1="106.68" x2="-205.74" y2="83.82" width="0.1524" layer="91"/>
-<junction x="-205.74" y="83.82"/>
-<pinref part="U$5" gate="G$1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="SUPPLY5" gate="GND" pin="GND"/>
@@ -22730,25 +22660,11 @@ W = angled&lt;p&gt;
 <pinref part="C29" gate="G$1" pin="1"/>
 <wire x1="-109.22" y1="129.54" x2="-101.6" y2="129.54" width="0.1524" layer="91"/>
 <junction x="-109.22" y="129.54"/>
-<wire x1="-167.64" y1="91.44" x2="-170.18" y2="91.44" width="0.1524" layer="91"/>
-<label x="-167.64" y="91.44" size="1.778" layer="95"/>
 <pinref part="U$4" gate="G$1" pin="VOUT1"/>
 <wire x1="-172.72" y1="114.3" x2="-170.18" y2="114.3" width="0.1524" layer="91"/>
 <wire x1="-170.18" y1="114.3" x2="-170.18" y2="111.76" width="0.1524" layer="91"/>
-<wire x1="-170.18" y1="111.76" x2="-170.18" y2="91.44" width="0.1524" layer="91"/>
-<wire x1="-172.72" y1="86.36" x2="-170.18" y2="86.36" width="0.1524" layer="91"/>
-<wire x1="-170.18" y1="86.36" x2="-170.18" y2="88.9" width="0.1524" layer="91"/>
-<junction x="-170.18" y="91.44"/>
-<wire x1="-170.18" y1="88.9" x2="-170.18" y2="91.44" width="0.1524" layer="91"/>
-<wire x1="-172.72" y1="83.82" x2="-170.18" y2="83.82" width="0.1524" layer="91"/>
-<wire x1="-170.18" y1="83.82" x2="-170.18" y2="86.36" width="0.1524" layer="91"/>
-<junction x="-170.18" y="86.36"/>
-<wire x1="-172.72" y1="88.9" x2="-170.18" y2="88.9" width="0.1524" layer="91"/>
-<junction x="-170.18" y="88.9"/>
-<wire x1="-172.72" y1="91.44" x2="-170.18" y2="91.44" width="0.1524" layer="91"/>
 <pinref part="C6" gate="G$1" pin="1"/>
 <wire x1="-170.18" y1="111.76" x2="-165.1" y2="111.76" width="0.1524" layer="91"/>
-<junction x="-170.18" y="111.76"/>
 <pinref part="C7" gate="G$1" pin="1"/>
 <wire x1="-165.1" y1="111.76" x2="-160.02" y2="111.76" width="0.1524" layer="91"/>
 <wire x1="-160.02" y1="111.76" x2="-147.32" y2="111.76" width="0.1524" layer="91"/>
@@ -22790,10 +22706,6 @@ W = angled&lt;p&gt;
 <pinref part="C34" gate="G$1" pin="1"/>
 <wire x1="-93.98" y1="129.54" x2="-101.6" y2="129.54" width="0.1524" layer="91"/>
 <junction x="-101.6" y="129.54"/>
-<pinref part="U$5" gate="G$1" pin="VOUT1"/>
-<pinref part="U$5" gate="G$1" pin="VOUT4"/>
-<pinref part="U$5" gate="G$1" pin="VOUT2"/>
-<pinref part="U$5" gate="G$1" pin="VOUT3"/>
 <pinref part="C39" gate="G$1" pin="+"/>
 <junction x="-160.02" y="111.76"/>
 </segment>
@@ -23538,19 +23450,15 @@ W = angled&lt;p&gt;
 <junction x="-208.28" y="60.96"/>
 <wire x1="-208.28" y1="73.66" x2="-198.12" y2="73.66" width="0.1524" layer="91"/>
 <label x="-198.12" y="73.66" size="1.778" layer="95"/>
-<wire x1="-203.2" y1="91.44" x2="-208.28" y2="91.44" width="0.1524" layer="91"/>
-<wire x1="-208.28" y1="91.44" x2="-208.28" y2="73.66" width="0.1524" layer="91"/>
 <junction x="-208.28" y="73.66"/>
 <pinref part="U$4" gate="G$1" pin="VCC"/>
 <wire x1="-203.2" y1="114.3" x2="-208.28" y2="114.3" width="0.1524" layer="91"/>
-<wire x1="-208.28" y1="114.3" x2="-208.28" y2="91.44" width="0.1524" layer="91"/>
-<junction x="-208.28" y="91.44"/>
+<wire x1="-208.28" y1="114.3" x2="-208.28" y2="73.66" width="0.1524" layer="91"/>
 <wire x1="-226.06" y1="96.52" x2="-226.06" y2="73.66" width="0.1524" layer="91"/>
 <wire x1="-226.06" y1="73.66" x2="-208.28" y2="73.66" width="0.1524" layer="91"/>
 <pinref part="C33" gate="G$1" pin="+"/>
 <wire x1="-226.06" y1="71.12" x2="-226.06" y2="73.66" width="0.1524" layer="91"/>
 <junction x="-226.06" y="73.66"/>
-<pinref part="U$5" gate="G$1" pin="VCC"/>
 <wire x1="-226.06" y1="96.52" x2="-256.54" y2="96.52" width="0.1524" layer="91"/>
 <wire x1="-256.54" y1="96.52" x2="-264.16" y2="96.52" width="0.1524" layer="91"/>
 <wire x1="-279.4" y1="73.66" x2="-279.4" y2="101.6" width="0.1524" layer="91"/>
