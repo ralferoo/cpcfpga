@@ -22763,11 +22763,6 @@ W = angled&lt;p&gt;
 <label x="299.72" y="50.8" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="281.94" y1="30.48" x2="294.64" y2="30.48" width="0.1524" layer="91"/>
-<label x="281.94" y="30.48" size="1.778" layer="95"/>
-<pinref part="SV4" gate="G$1" pin="9"/>
-</segment>
-<segment>
 <pinref part="SV4" gate="G$1" pin="19"/>
 <wire x1="281.94" y1="17.78" x2="294.64" y2="17.78" width="0.1524" layer="91"/>
 <label x="281.94" y="17.78" size="1.778" layer="95"/>
@@ -24882,6 +24877,13 @@ W = angled&lt;p&gt;
 <pinref part="U1" gate="B2" pin="IO_L40P_2VREF_2"/>
 <wire x1="231.14" y1="22.86" x2="210.82" y2="22.86" width="0.1524" layer="91"/>
 <label x="231.14" y="22.86" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N_C" class="0">
+<segment>
+<wire x1="281.94" y1="30.48" x2="294.64" y2="30.48" width="0.1524" layer="91"/>
+<label x="281.94" y="30.48" size="1.778" layer="95"/>
+<pinref part="SV4" gate="G$1" pin="9"/>
 </segment>
 </net>
 </nets>
