@@ -23328,11 +23328,9 @@ W = angled&lt;p&gt;
 <label x="76.2" y="-111.76" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B4" pin="IOVREF_4"/>
-<wire x1="236.22" y1="-45.72" x2="157.48" y2="-45.72" width="0.1524" layer="91"/>
-<wire x1="157.48" y1="-45.72" x2="157.48" y2="-40.64" width="0.1524" layer="91"/>
-<wire x1="236.22" y1="-58.42" x2="236.22" y2="-45.72" width="0.1524" layer="91"/>
-<label x="236.22" y="-58.42" size="1.778" layer="95" rot="R90"/>
+<wire x1="231.14" y1="12.7" x2="210.82" y2="12.7" width="0.1524" layer="91"/>
+<pinref part="U1" gate="B3" pin="IO"/>
+<label x="231.14" y="12.7" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$51" class="0">
@@ -23447,9 +23445,9 @@ W = angled&lt;p&gt;
 <label x="76.2" y="-109.22" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B3" pin="IO_L20N_3"/>
-<wire x1="210.82" y1="2.54" x2="231.14" y2="2.54" width="0.1524" layer="91"/>
-<label x="231.14" y="2.54" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L22P_3"/>
+<wire x1="210.82" y1="-5.08" x2="231.14" y2="-5.08" width="0.1524" layer="91"/>
+<label x="231.14" y="-5.08" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FL_SCLK" class="0">
@@ -23463,9 +23461,9 @@ W = angled&lt;p&gt;
 <label x="76.2" y="-106.68" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B3" pin="IO_L20P_3"/>
-<wire x1="210.82" y1="5.08" x2="231.14" y2="5.08" width="0.1524" layer="91"/>
-<label x="231.14" y="5.08" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L21N_3"/>
+<wire x1="210.82" y1="-2.54" x2="231.14" y2="-2.54" width="0.1524" layer="91"/>
+<label x="231.14" y="-2.54" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FL_DI" class="0">
@@ -23479,9 +23477,9 @@ W = angled&lt;p&gt;
 <label x="76.2" y="-104.14" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="231.14" y1="12.7" x2="210.82" y2="12.7" width="0.1524" layer="91"/>
-<pinref part="U1" gate="B3" pin="IO"/>
-<label x="231.14" y="12.7" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L21P_3"/>
+<wire x1="210.82" y1="0" x2="231.14" y2="0" width="0.1524" layer="91"/>
+<label x="231.14" y="0" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FL_DO" class="0">
@@ -23495,9 +23493,9 @@ W = angled&lt;p&gt;
 <label x="76.2" y="-114.3" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="231.14" y1="10.16" x2="210.82" y2="10.16" width="0.1524" layer="91"/>
-<pinref part="U1" gate="B3" pin="IO_L01P_3VRN_3"/>
-<label x="231.14" y="10.16" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L20P_3"/>
+<wire x1="210.82" y1="5.08" x2="231.14" y2="5.08" width="0.1524" layer="91"/>
+<label x="231.14" y="5.08" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FL_WP" class="0">
@@ -23511,9 +23509,9 @@ W = angled&lt;p&gt;
 <label x="76.2" y="-116.84" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="B3" pin="IO_L01N_3VRP_3"/>
-<wire x1="210.82" y1="7.62" x2="231.14" y2="7.62" width="0.1524" layer="91"/>
-<label x="231.14" y="7.62" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L20N_3"/>
+<wire x1="210.82" y1="2.54" x2="231.14" y2="2.54" width="0.1524" layer="91"/>
+<label x="231.14" y="2.54" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="EMER_BOOT" class="0">
@@ -24324,25 +24322,27 @@ W = angled&lt;p&gt;
 <label x="231.14" y="27.94" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="F" class="0">
+<net name="L" class="0">
 <segment>
-<pinref part="U1" gate="B3" pin="IO_L22P_3"/>
-<wire x1="210.82" y1="-5.08" x2="231.14" y2="-5.08" width="0.1524" layer="91"/>
-<label x="231.14" y="-5.08" size="1.778" layer="95"/>
+<pinref part="U1" gate="B3" pin="IO_L01N_3VRP_3"/>
+<wire x1="210.82" y1="7.62" x2="231.14" y2="7.62" width="0.1524" layer="91"/>
+<label x="231.14" y="7.62" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="G" class="0">
+<net name="M" class="0">
 <segment>
-<pinref part="U1" gate="B3" pin="IO_L21N_3"/>
-<wire x1="210.82" y1="-2.54" x2="231.14" y2="-2.54" width="0.1524" layer="91"/>
-<label x="231.14" y="-2.54" size="1.778" layer="95"/>
+<wire x1="231.14" y1="10.16" x2="210.82" y2="10.16" width="0.1524" layer="91"/>
+<pinref part="U1" gate="B3" pin="IO_L01P_3VRN_3"/>
+<label x="231.14" y="10.16" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="H" class="0">
+<net name="N" class="0">
 <segment>
-<pinref part="U1" gate="B3" pin="IO_L21P_3"/>
-<wire x1="210.82" y1="0" x2="231.14" y2="0" width="0.1524" layer="91"/>
-<label x="231.14" y="0" size="1.778" layer="95"/>
+<pinref part="U1" gate="B4" pin="IOVREF_4"/>
+<wire x1="236.22" y1="-45.72" x2="157.48" y2="-45.72" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="-45.72" x2="157.48" y2="-40.64" width="0.1524" layer="91"/>
+<wire x1="236.22" y1="-58.42" x2="236.22" y2="-45.72" width="0.1524" layer="91"/>
+<label x="236.22" y="-58.42" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 </nets>
