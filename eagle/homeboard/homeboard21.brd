@@ -4349,7 +4349,7 @@ Please make sure your boards conform to these design rules.</description>
 <element name="C42" library="rcl" package="PANASONIC_D" value="100u" x="18.5" y="34.25" rot="R270"/>
 <element name="U$1" library="cpcfpga" package="GNDHOLE" value="GNDHOLE" x="12.5" y="17"/>
 <element name="U$7" library="cpcfpga" package="GNDHOLE" value="GNDHOLE" x="4.5" y="54.5"/>
-<element name="U$8" library="cpcfpga" package="GNDHOLE" value="GNDHOLE" x="89" y="48"/>
+<element name="U$8" library="cpcfpga" package="GNDHOLE" value="GNDHOLE" x="89" y="50"/>
 <element name="U$9" library="cpcfpga" package="GNDHOLE" value="GNDHOLE" x="89" y="10"/>
 <element name="SV5" library="con-lstb" package="MA05-2" value="" x="36.25" y="13.25" rot="R270">
 <attribute name="OC_NEWARK" value="unknown" x="36.25" y="13.25" size="1.016" layer="27" rot="R270" display="off"/>
@@ -4841,7 +4841,7 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="75.8644625" y1="40" x2="75.7019" y2="39.9125625" width="0.254" layer="16"/>
 <wire x1="80.2" y1="50" x2="80.2" y2="54.3" width="0.254" layer="16"/>
 <wire x1="80.2" y1="54.3" x2="79.5" y2="55" width="0.254" layer="16"/>
-<wire x1="89" y1="48" x2="82.2" y2="48" width="0.254" layer="16"/>
+<wire x1="89" y1="50" x2="82.2" y2="48" width="0.254" layer="16"/>
 <wire x1="82.2" y1="48" x2="80.2" y2="50" width="0.254" layer="16"/>
 <wire x1="82.2" y1="48" x2="81.75" y2="48" width="0.254" layer="16"/>
 <via x="81.75" y="48" extent="1-16" drill="0.6" shape="square"/>
