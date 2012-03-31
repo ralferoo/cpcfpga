@@ -5094,9 +5094,9 @@ Please make sure your boards conform to these design rules.</description>
 <contactref element="C39" pad="+"/>
 <contactref element="U$3" pad="4"/>
 <wire x1="29.74" y1="34.45" x2="25" y2="34.45" width="0.8" layer="16"/>
-<wire x1="25" y1="34.45" x2="25" y2="30.25" width="0.8" layer="16"/>
-<via x="25" y="30.25" extent="1-16" drill="0.6" shape="square"/>
-<wire x1="25" y1="30.25" x2="25" y2="27.75" width="0.8" layer="1"/>
+<wire x1="25" y1="34.45" x2="25" y2="31.25" width="0.8" layer="16"/>
+<via x="25" y="31.25" extent="1-16" drill="0.6" shape="square"/>
+<wire x1="25" y1="31.25" x2="25" y2="27.75" width="0.8" layer="1"/>
 <wire x1="25.5" y1="21.5" x2="40" y2="21.5" width="0.8128" layer="1"/>
 <wire x1="40" y1="21.5" x2="42" y2="23.75" width="0.8128" layer="1"/>
 <wire x1="42" y1="23.75" x2="43.25" y2="23.75" width="0.8128" layer="1"/>
@@ -5906,11 +5906,6 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="27.5" y1="9" x2="27.5" y2="12.8" width="0.8" layer="1"/>
 <wire x1="27.5" y1="12.8" x2="26.3" y2="14" width="0.8" layer="1"/>
 <wire x1="26.3" y1="14" x2="25.25" y2="14" width="0.8" layer="1"/>
-<wire x1="3.905" y1="43.405" x2="4" y2="43.5" width="0.8" layer="16"/>
-<via x="4" y="43.5" extent="1-16" drill="0.7" shape="square"/>
-<wire x1="4" y1="43.5" x2="3.5" y2="43.5" width="0.8" layer="1"/>
-<wire x1="3.5" y1="43.5" x2="3" y2="43" width="0.8" layer="1"/>
-<wire x1="3" y1="43" x2="3" y2="41.25" width="0.8" layer="1"/>
 <wire x1="6.5" y1="25.5" x2="3" y2="25.5" width="0.8" layer="1"/>
 <wire x1="17.5" y1="19" x2="18.03" y2="19.59" width="0" layer="19" extent="1-1"/>
 <wire x1="6.401" y1="25.439" x2="6.5" y2="25.5" width="0" layer="19" extent="1-1"/>
@@ -6951,8 +6946,7 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="42" y1="25.5" x2="42" y2="30.75" width="0.254" layer="16"/>
 <wire x1="42" y1="30.75" x2="31.5" y2="30.75" width="0.254" layer="16"/>
 <wire x1="31.5" y1="30.75" x2="30.5" y2="31.75" width="0.254" layer="16"/>
-<wire x1="30.5" y1="31.75" x2="30" y2="31.75" width="0.254" layer="16"/>
-<wire x1="30" y1="31.75" x2="29.74" y2="31.75" width="0" layer="19" extent="16-16"/>
+<wire x1="30.5" y1="31.75" x2="29.74" y2="31.75" width="0.254" layer="16"/>
 </signal>
 <signal name="SD_DI">
 <contactref element="U$3" pad="2"/>
