@@ -21464,7 +21464,6 @@ W = angled&lt;p&gt;
 <part name="C26" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
 <part name="C27" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
 <part name="C29" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
-<part name="C32" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
 <part name="X6" library="con-cypressindustries" deviceset="MINI-USB_4P-" device="85-32004-10X"/>
 <part name="R53" library="rcl" deviceset="R-EU_" device="R0805" value="22"/>
 <part name="R54" library="rcl" deviceset="R-EU_" device="R0805" value="22"/>
@@ -21512,8 +21511,7 @@ W = angled&lt;p&gt;
 <plain>
 <text x="271.78" y="-254" size="1.778" layer="91">Possible alternative:</text>
 <text x="-139.7" y="132.08" size="1.778" layer="91">atmel</text>
-<text x="-154.94" y="132.08" size="1.778" layer="91">bot right</text>
-<text x="-132.08" y="132.08" size="1.778" layer="91">prom</text>
+<text x="-147.32" y="132.08" size="1.778" layer="91">prom</text>
 <text x="-124.46" y="132.08" size="1.778" layer="91">flash</text>
 <text x="-114.3" y="132.08" size="1.778" layer="91">ram</text>
 </plain>
@@ -21651,7 +21649,6 @@ W = angled&lt;p&gt;
 <instance part="C26" gate="G$1" x="-147.32" y="127"/>
 <instance part="C27" gate="G$1" x="-139.7" y="127"/>
 <instance part="C29" gate="G$1" x="-124.46" y="127"/>
-<instance part="C32" gate="G$1" x="-132.08" y="127"/>
 <instance part="X6" gate="G$1" x="358.14" y="119.38" rot="MR0"/>
 <instance part="R53" gate="G$1" x="375.92" y="121.92" rot="MR180"/>
 <instance part="R54" gate="G$1" x="370.84" y="119.38" rot="MR180"/>
@@ -21947,11 +21944,8 @@ W = angled&lt;p&gt;
 <wire x1="-147.32" y1="121.92" x2="-139.7" y2="121.92" width="0.1524" layer="91"/>
 <junction x="-147.32" y="121.92"/>
 <junction x="-139.7" y="121.92"/>
-<pinref part="C32" gate="G$1" pin="2"/>
-<wire x1="-139.7" y1="121.92" x2="-132.08" y2="121.92" width="0.1524" layer="91"/>
 <pinref part="C29" gate="G$1" pin="2"/>
-<wire x1="-132.08" y1="121.92" x2="-124.46" y2="121.92" width="0.1524" layer="91"/>
-<junction x="-132.08" y="121.92"/>
+<wire x1="-139.7" y1="121.92" x2="-124.46" y2="121.92" width="0.1524" layer="91"/>
 <wire x1="-157.48" y1="121.92" x2="-157.48" y2="104.14" width="0.1524" layer="91"/>
 <junction x="-157.48" y="104.14"/>
 <pinref part="C34" gate="G$1" pin="2"/>
@@ -22260,11 +22254,8 @@ W = angled&lt;p&gt;
 <wire x1="-147.32" y1="129.54" x2="-139.7" y2="129.54" width="0.1524" layer="91"/>
 <junction x="-147.32" y="129.54"/>
 <junction x="-139.7" y="129.54"/>
-<pinref part="C32" gate="G$1" pin="1"/>
-<wire x1="-139.7" y1="129.54" x2="-132.08" y2="129.54" width="0.1524" layer="91"/>
 <pinref part="C29" gate="G$1" pin="1"/>
-<wire x1="-132.08" y1="129.54" x2="-124.46" y2="129.54" width="0.1524" layer="91"/>
-<junction x="-132.08" y="129.54"/>
+<wire x1="-139.7" y1="129.54" x2="-124.46" y2="129.54" width="0.1524" layer="91"/>
 <pinref part="U$4" gate="G$1" pin="VOUT1"/>
 <wire x1="-172.72" y1="114.3" x2="-170.18" y2="114.3" width="0.1524" layer="91"/>
 <wire x1="-170.18" y1="114.3" x2="-170.18" y2="111.76" width="0.1524" layer="91"/>
