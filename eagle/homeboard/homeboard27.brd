@@ -7321,7 +7321,7 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="55.5" y1="49" x2="55" y2="49.5" width="0.254" layer="1"/>
 <wire x1="55" y1="49.5" x2="54.5" y2="49.5" width="0.254" layer="1"/>
 <wire x1="54.5" y1="49.5" x2="53.5" y2="50.5" width="0.254" layer="1"/>
-<wire x1="53.5" y1="50.5" x2="53.43" y2="50.5" width="0" layer="19" extent="1-1"/>
+<wire x1="53.5" y1="50.5" x2="53.43" y2="50.5" width="0.254" layer="1"/>
 </signal>
 <signal name="N$8">
 <contactref element="IC3" pad="1"/>
