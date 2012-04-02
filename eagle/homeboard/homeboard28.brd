@@ -3974,8 +3974,8 @@ Please make sure your boards conform to these design rules.</description>
 <param name="mdDrill" value="15mil"/>
 <param name="mdSmdStop" value="0mil"/>
 <param name="msWidth" value="7mil"/>
-<param name="msDrill" value="13mil"/>
-<param name="msMicroVia" value="13mil"/>
+<param name="msDrill" value="15mil"/>
+<param name="msMicroVia" value="15mil"/>
 <param name="msBlindViaRatio" value="0.5"/>
 <param name="rvPadTop" value="0.25"/>
 <param name="rvPadInner" value="0.25"/>
