@@ -537,15 +537,8 @@ Source: www.abracon.com</description>
 <wire x1="2.6" y1="1.7" x2="2.6" y2="-1.7" width="0.127" layer="21"/>
 <wire x1="2.6" y1="-1.7" x2="-2.6" y2="-1.7" width="0.127" layer="21"/>
 <wire x1="-2.6" y1="-1.7" x2="-2.6" y2="1.7" width="0.127" layer="21"/>
-<polygon width="0" layer="21">
-<vertex x="-1.97" y="-0.5"/>
-<vertex x="-1.1" y="-0.5"/>
-<vertex x="-0.57" y="-1"/>
-<vertex x="-0.57" y="-1.7"/>
-<vertex x="-1.97" y="-1.7"/>
-</polygon>
 <text x="-2.2" y="-0.4" size="0.8128" layer="27">&gt;VALUE</text>
-<smd name="ENA" x="-1.27" y="-1.1" dx="1.4" dy="1.2" layer="1"/>
+<smd name="ENA" x="-1.27" y="-1.1" dx="0.7" dy="0.6" layer="1"/>
 </package>
 <package name="EXPHDR">
 <pad name="P$1" x="-11.43" y="-20.32" drill="0.8" shape="offset" rot="R90"/>
