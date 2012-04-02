@@ -5432,8 +5432,6 @@ Please make sure your boards conform to these design rules.</description>
 <via x="80.25" y="36.75" extent="1-16" drill="0.6" shape="square"/>
 <wire x1="80.25" y1="36.75" x2="80.676778125" y2="36.823221875" width="0.254" layer="1"/>
 <wire x1="81.76226875" y1="36.823221875" x2="80.676778125" y2="36.823221875" width="0.254" layer="1"/>
-<wire x1="91.77" y1="28.73" x2="90.5" y2="30" width="0.254" layer="1"/>
-<wire x1="90.5" y1="30" x2="88.5" y2="30" width="0.254" layer="1"/>
 <wire x1="88.5" y1="30" x2="86.5" y2="32" width="0.254" layer="1"/>
 <wire x1="86.5" y1="32" x2="86.5" y2="35" width="0.254" layer="1"/>
 <wire x1="86.5" y1="35" x2="85.5" y2="36" width="0.254" layer="1"/>
@@ -5460,6 +5458,8 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="82.5" y1="40.5" x2="82.5" y2="44" width="0.254" layer="16"/>
 <wire x1="82.5" y1="44" x2="82" y2="44.5" width="0.254" layer="16"/>
 <wire x1="82" y1="44.5" x2="71" y2="44.5" width="0.254" layer="16"/>
+<wire x1="91.77" y1="28.73" x2="90.5" y2="30" width="0.254" layer="1"/>
+<wire x1="90.5" y1="30" x2="88.5" y2="30" width="0.254" layer="1"/>
 </signal>
 <signal name="TDI_FPGA">
 <contactref element="R1" pad="2"/>
@@ -6599,11 +6599,8 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="87.5" y1="36.5" x2="87.5" y2="33" width="0.254" layer="1"/>
 <wire x1="87.5" y1="33" x2="88" y2="32.5" width="0.254" layer="1"/>
 <wire x1="88" y1="32.5" x2="90.5" y2="32.5" width="0.254" layer="1"/>
-<wire x1="90.5" y1="32.5" x2="91.73" y2="31.27" width="0.254" layer="1"/>
-<wire x1="91.73" y1="31.27" x2="91.75" y2="31.25" width="0.254" layer="1"/>
 <wire x1="86.25" y1="37.75" x2="87.5" y2="36.5" width="0.254" layer="1"/>
 <contactref element="SV1" pad="10"/>
-<wire x1="91.77" y1="31.27" x2="91.73" y2="31.27" width="0.254" layer="1"/>
 <wire x1="83.393396875" y1="19.137409375" x2="82.362590625" y2="19.137409375" width="0.254" layer="1"/>
 <wire x1="82.362590625" y1="19.137409375" x2="81.5" y2="20" width="0.254" layer="1"/>
 <wire x1="81.5" y1="20" x2="81.5" y2="20.5" width="0.254" layer="1"/>
@@ -6616,6 +6613,8 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="85" y1="34.5" x2="86.25" y2="35.75" width="0.254" layer="16"/>
 <wire x1="81.76226875" y1="38.423221875" x2="85.576778125" y2="38.423221875" width="0.254" layer="1"/>
 <wire x1="85.576778125" y1="38.423221875" x2="86.25" y2="37.75" width="0.254" layer="1"/>
+<wire x1="91.77" y1="31.27" x2="91.73" y2="31.27" width="0.254" layer="1"/>
+<wire x1="91.73" y1="31.27" x2="90.5" y2="32.5" width="0.254" layer="1"/>
 </signal>
 <signal name="TDO_FPGA">
 <contactref element="IC1" pad="4"/>
@@ -6658,10 +6657,10 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="87" y1="25.5" x2="88" y2="24.5" width="0.254" layer="1"/>
 <wire x1="88" y1="24.5" x2="88" y2="23" width="0.254" layer="1"/>
 <wire x1="88" y1="23" x2="88.5" y2="22.5" width="0.254" layer="1"/>
-<wire x1="88.5" y1="22.5" x2="90.5" y2="22.5" width="0.254" layer="1"/>
-<wire x1="90.5" y1="22.5" x2="91.77" y2="21.23" width="0.254" layer="1"/>
 <contactref element="SV1" pad="18"/>
 <wire x1="91.77" y1="21.11" x2="91.77" y2="21.23" width="0.254" layer="1"/>
+<wire x1="91.77" y1="21.23" x2="90.5" y2="22.5" width="0.254" layer="1"/>
+<wire x1="90.5" y1="22.5" x2="88.5" y2="22.5" width="0.254" layer="1"/>
 </signal>
 <signal name="SPI_MOSI">
 <contactref element="IC3" pad="16"/>
@@ -6676,11 +6675,11 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="87.5" y1="24" x2="87.5" y2="22.5" width="0.254" layer="1"/>
 <wire x1="87.5" y1="22.5" x2="88" y2="22" width="0.254" layer="1"/>
 <wire x1="88" y1="22" x2="88" y2="20.5" width="0.254" layer="1"/>
-<wire x1="88" y1="20.5" x2="88.5" y2="20" width="0.254" layer="1"/>
-<wire x1="88.5" y1="20" x2="90.43" y2="20" width="0.254" layer="1"/>
 <contactref element="SV1" pad="20"/>
-<wire x1="90.43" y1="20" x2="90.43" y2="19.91" width="0.254" layer="1"/>
-<wire x1="90.43" y1="19.91" x2="91.77" y2="18.57" width="0.254" layer="1"/>
+<wire x1="91.77" y1="18.57" x2="91.77" y2="18.73" width="0.254" layer="1"/>
+<wire x1="91.77" y1="18.73" x2="90.5" y2="20" width="0.254" layer="1"/>
+<wire x1="90.5" y1="20" x2="88.5" y2="20" width="0.254" layer="1"/>
+<wire x1="88.5" y1="20" x2="88" y2="20.5" width="0.254" layer="1"/>
 </signal>
 <signal name="SPI_MISO">
 <contactref element="IC3" pad="17"/>
@@ -6692,11 +6691,10 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="85.5" y1="31" x2="87.5" y2="29" width="0.254" layer="1"/>
 <wire x1="87.5" y1="29" x2="87.5" y2="26" width="0.254" layer="1"/>
 <wire x1="87.5" y1="26" x2="88.5" y2="25" width="0.254" layer="1"/>
-<wire x1="88.5" y1="25" x2="90.5" y2="25" width="0.254" layer="1"/>
-<wire x1="90.5" y1="25" x2="91.75" y2="23.75" width="0.254" layer="1"/>
 <contactref element="SV1" pad="16"/>
-<wire x1="91.75" y1="23.75" x2="91.75" y2="23.67" width="0.254" layer="1"/>
-<wire x1="91.75" y1="23.67" x2="91.77" y2="23.65" width="0.254" layer="1"/>
+<wire x1="91.77" y1="23.65" x2="91.77" y2="23.73" width="0.254" layer="1"/>
+<wire x1="91.77" y1="23.73" x2="90.5" y2="25" width="0.254" layer="1"/>
+<wire x1="90.5" y1="25" x2="88.5" y2="25" width="0.254" layer="1"/>
 </signal>
 <signal name="SPI_SEL">
 <contactref element="IC3" pad="14"/>
@@ -6712,15 +6710,13 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="86" y1="31.5" x2="88" y2="29.5" width="0.254" layer="1"/>
 <wire x1="88" y1="29.5" x2="88" y2="28" width="0.254" layer="1"/>
 <wire x1="88" y1="28" x2="88.5" y2="27.5" width="0.254" layer="1"/>
-<wire x1="88.5" y1="27.5" x2="90.5" y2="27.5" width="0.254" layer="1"/>
-<wire x1="90.5" y1="27.5" x2="91.75" y2="26.25" width="0.254" layer="1"/>
-<wire x1="91.75" y1="26.25" x2="91.8" y2="26.25" width="0.254" layer="1"/>
 <contactref element="SV1" pad="14"/>
-<wire x1="91.75" y1="26.25" x2="91.75" y2="26.21" width="0.254" layer="1"/>
-<wire x1="91.75" y1="26.21" x2="91.77" y2="26.19" width="0.254" layer="1"/>
 <wire x1="78.66966875" y1="34.530621875" x2="78.66966875" y2="36.16966875" width="0.254" layer="1"/>
 <wire x1="78.66966875" y1="36.16966875" x2="78.75" y2="36.25" width="0.254" layer="1"/>
 <wire x1="79.25" y1="35.75" x2="78.75" y2="36.25" width="0.254" layer="16"/>
+<wire x1="91.77" y1="26.19" x2="91.77" y2="26.23" width="0.254" layer="1"/>
+<wire x1="91.77" y1="26.23" x2="90.5" y2="27.5" width="0.254" layer="1"/>
+<wire x1="90.5" y1="27.5" x2="88.5" y2="27.5" width="0.254" layer="1"/>
 </signal>
 <signal name="N$36">
 <contactref element="X6" pad="2"/>
@@ -7430,7 +7426,6 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="83.25" y1="25" x2="85.5" y2="25" width="0.254" layer="1"/>
 <via x="85.5" y="25" extent="1-16" drill="0.6" shape="square"/>
 <wire x1="85.5" y1="25" x2="86.25" y2="25" width="0.254" layer="16"/>
-<wire x1="86.25" y1="25" x2="88.5" y2="22" width="0.254" layer="16"/>
 <wire x1="74" y1="32" x2="81.5" y2="32" width="0.254" layer="1"/>
 <contactref element="U1" pad="P84"/>
 <wire x1="63.92" y1="30.5" x2="66.5" y2="30.5" width="0.254" layer="1"/>
@@ -7438,8 +7433,9 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="67" y1="31" x2="73" y2="31" width="0.254" layer="1"/>
 <wire x1="73" y1="31" x2="74" y2="32" width="0.254" layer="1"/>
 <contactref element="SV1" pad="17"/>
+<wire x1="86.25" y1="25" x2="86.25" y2="24.25" width="0.254" layer="16"/>
+<wire x1="86.25" y1="24.25" x2="89.23" y2="21.27" width="0.254" layer="16"/>
 <wire x1="89.23" y1="21.11" x2="89.23" y2="21.27" width="0.254" layer="16"/>
-<wire x1="89.23" y1="21.27" x2="88.5" y2="22" width="0.254" layer="16"/>
 </signal>
 <signal name="HDR_MISO">
 <wire x1="82" y1="32.5" x2="83" y2="31.5" width="0.254" layer="1"/>
