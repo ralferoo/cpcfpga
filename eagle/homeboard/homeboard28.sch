@@ -25446,18 +25446,18 @@ W = angled&lt;p&gt;
 </net>
 <net name="N$6" class="0">
 <segment>
-<pinref part="SV3" gate="1" pin="8"/>
 <pinref part="U1" gate="B0" pin="IO_L32N_0GCLK7"/>
-<wire x1="106.68" y1="106.68" x2="149.86" y2="106.68" width="0.1524" layer="91"/>
-<wire x1="149.86" y1="106.68" x2="149.86" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="149.86" y1="109.22" x2="149.86" y2="73.66" width="0.1524" layer="91"/>
+<pinref part="SV3" gate="1" pin="9"/>
+<wire x1="106.68" y1="109.22" x2="149.86" y2="109.22" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$7" class="0">
 <segment>
-<pinref part="SV3" gate="1" pin="9"/>
 <pinref part="U1" gate="B0" pin="IO_L32P_0GCLK6"/>
-<wire x1="106.68" y1="109.22" x2="147.32" y2="109.22" width="0.1524" layer="91"/>
-<wire x1="147.32" y1="109.22" x2="147.32" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="106.68" x2="147.32" y2="73.66" width="0.1524" layer="91"/>
+<pinref part="SV3" gate="1" pin="8"/>
+<wire x1="147.32" y1="106.68" x2="106.68" y2="106.68" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$16" class="0">
