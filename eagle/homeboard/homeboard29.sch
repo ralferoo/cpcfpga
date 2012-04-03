@@ -22645,7 +22645,7 @@ W = angled&lt;p&gt;
 <part name="SUPPLY7" library="supply2" deviceset="GND" device=""/>
 <part name="R50" library="resistor" deviceset="R-EU_" device="M0805" value="2k2"/>
 <part name="IC3" library="adafruit" deviceset="ATMEGA32U2" device="-TQFP"/>
-<part name="U$4" library="cpcfpga" deviceset="NX1117" device="" value="3.3V"/>
+<part name="REG3.3" library="cpcfpga" deviceset="NX1117" device="" value="3.3V"/>
 <part name="C6" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
 <part name="C7" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
 <part name="C8" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
@@ -22838,7 +22838,7 @@ W = angled&lt;p&gt;
 <instance part="SUPPLY7" gate="GND" x="132.08" y="147.32"/>
 <instance part="R50" gate="G$1" x="124.46" y="304.8" rot="R180"/>
 <instance part="IC3" gate="G$1" x="406.4" y="106.68"/>
-<instance part="U$4" gate="G$1" x="-195.58" y="111.76"/>
+<instance part="REG3.3" gate="G$1" x="-195.58" y="111.76"/>
 <instance part="C6" gate="G$1" x="-147.32" y="109.22"/>
 <instance part="C7" gate="G$1" x="-139.7" y="109.22"/>
 <instance part="C8" gate="G$1" x="-109.22" y="109.22"/>
@@ -23087,7 +23087,7 @@ W = angled&lt;p&gt;
 <wire x1="-205.74" y1="30.48" x2="-203.2" y2="30.48" width="0.1524" layer="91"/>
 <wire x1="-205.74" y1="30.48" x2="-205.74" y2="22.86" width="0.1524" layer="91"/>
 <junction x="-205.74" y="30.48"/>
-<pinref part="U$4" gate="G$1" pin="GND"/>
+<pinref part="REG3.3" gate="G$1" pin="GND"/>
 <wire x1="-203.2" y1="106.68" x2="-205.74" y2="106.68" width="0.1524" layer="91"/>
 </segment>
 <segment>
@@ -23481,7 +23481,7 @@ W = angled&lt;p&gt;
 <junction x="-139.7" y="129.54"/>
 <pinref part="C29" gate="G$1" pin="1"/>
 <wire x1="-139.7" y1="129.54" x2="-124.46" y2="129.54" width="0.1524" layer="91"/>
-<pinref part="U$4" gate="G$1" pin="VOUT1"/>
+<pinref part="REG3.3" gate="G$1" pin="VOUT1"/>
 <wire x1="-172.72" y1="114.3" x2="-170.18" y2="114.3" width="0.1524" layer="91"/>
 <wire x1="-170.18" y1="114.3" x2="-170.18" y2="111.76" width="0.1524" layer="91"/>
 <pinref part="C6" gate="G$1" pin="1"/>
@@ -24233,7 +24233,7 @@ W = angled&lt;p&gt;
 <wire x1="-208.28" y1="73.66" x2="-198.12" y2="73.66" width="0.1524" layer="91"/>
 <label x="-198.12" y="73.66" size="1.778" layer="95"/>
 <junction x="-208.28" y="73.66"/>
-<pinref part="U$4" gate="G$1" pin="VCC"/>
+<pinref part="REG3.3" gate="G$1" pin="VCC"/>
 <wire x1="-203.2" y1="114.3" x2="-208.28" y2="114.3" width="0.1524" layer="91"/>
 <wire x1="-208.28" y1="114.3" x2="-208.28" y2="73.66" width="0.1524" layer="91"/>
 <wire x1="-226.06" y1="96.52" x2="-226.06" y2="73.66" width="0.1524" layer="91"/>
