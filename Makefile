@@ -242,8 +242,14 @@ build/%.bin: codegen/%.asm build/.dummy
 build/%.bin: codegen/obsolete/%.asm build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
 
-build/%.bin: test/%.asm build/.dummy
+build/%.bin: build/%.compat build/.dummy
 	pasmo $< build/$*.bin build/$*.sym
+
+build/%.compat: test/%.asm
+	@echo Making $@
+	@perl -pe '{s/read\s\"([^"]*)\.asm\"/include "$$1.compat"/;s/([xy][lh])/i$$1/g;s/(add\s+)(i)?([xy][lh])/$$1a,i$$3/g;}' <$< >$@
+
+build/linear.bin: build/sinquad.compat build/bresenham.compat
 
 image/rom_c000.srec: rom/rom_c000.asm build/.dummy image/.dummy
 	pasmo $< build/rom_c000.bin build/rom_c000.sym
@@ -277,6 +283,9 @@ image/bb4cpc.srec: bb4cpc/BB4CPC.BAS build/.dummy image/.dummy
 image/installer_bubble_bobble.srec: build/installer_bubble_bobble.bin image/.dummy
 	objcopy --change-addresses=2048 -I binary $< -O srec $@
 
+image/linear.srec: build/linear.bin image/.dummy
+	objcopy --change-addresses=2048 -I binary $< -O srec $@
+
 build/installer_recovery.bin: build/rom_c000.bin
 build/installer_boot_into_basic.bin: build/boot_into_basic.bin
 build/installer_myrom.bin: build/mytestrom.bin
@@ -293,7 +302,7 @@ build/spidos.bin: rom/spidos.asm rom/spidos_iy_regs.inc
 	stty 19200 cs8 -parenb onlcr </dev/ttyUSB0
 #	bin/splat <$< >/dev/ttyUSB0
 	echo | perl -ne '{s/\n/\n\n\n\n\n/g;print;}' >/dev/ttyUSB0
-	perl -ne '{s/\n/\n\n\n\n\n/g;print;}' <$< >/dev/ttyUSB0
+	perl -ne '{s/\n/\n\n\n\n\n\n\n\n\n\n\n\n\n/g;print;}' <$< >/dev/ttyUSB0
 
 serial:
 #	stty 19200 cs8 -parenb -icrnl onlcr </dev/ttyUSB0
