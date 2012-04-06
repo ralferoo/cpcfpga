@@ -692,7 +692,6 @@ putchloop:
 
 
 
-
 file_image_start:
             incbin bb4cpc/BB4CPC.BAS
 file_image_length equ ($-file_image_start)

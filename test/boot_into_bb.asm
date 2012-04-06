@@ -6,39 +6,66 @@
 
     di
 
-	ld de,#100
-	ld hl,bootcode
-	ld bc,bootcode_len
-	ldir
-	jp #100
-
-bootcode:
 
 	ld bc,#7f8d		; disable upper/lower ROM
 	out (c),c
 
-        ld de,#0300                             ; D=READ
-        ld hl,#11                               ; HL = start page
+
+	ld de,#9000
+	ld hl,bootcode
+	ld bc,bootcode_len
+	ldir
+
+
+	jp #9000
+
+bootcode:
+
+	ld bc,#7f10
+	out (c),c
+	ld c,#40
+	out (c),c
+	exx
 
         ld bc,#feff
         out (c),c                               ; ensure SPI bus is idle
 
         out (c),b                               ; turn on flash rom CE
         inc b                                   ; change to SPI data port
-        out (c),d                               ; READ data bytes
-        out (c),h                               ; page high
-        out (c),l                               ; page low
-        out (c),e                               ; zero offset
+
+
+	ld de,#11
+
+	ld hl,#8003
+	out (c),l				; READ data bytes
+	out (c),d				; addr 1
+	out (c),e				; addr 2
+	out (c),h				; addr 3
+
 
         in a,(c)                ; dummy read
 
         ld hl,#170
-        ld a,#85                ; end at #8500 (#170+#82f4=#8464)
 
 spixferloop:
-	ini
-	inc b
-        cp h
+	in a,(c)
+	ld (hl),a
+	inc hl
+;	ini
+;	inc b
+
+	xor a
+	or l
+	jr nz,spixferloop
+
+	exx
+	out (c),c
+	inc c
+	res 5,c
+	exx
+
+        ld a,l
+	cp #86
         jr nz,spixferloop			; loop until we reach #0000
 
     jp #190
