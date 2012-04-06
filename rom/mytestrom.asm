@@ -9,12 +9,14 @@
 
 	jp entry
 	jp do_srec_boot
+	jp do_srec_boot
 	jp hello
 	jp test
 
 names:
 	defb "TEST RO",'M'+#80
 	defb "SRE",'C'+#80
+	defb 'S'+#80
 	defb "HELL",'O'+#80
 	defb "TES",'T'+#80
 	defb 0
@@ -58,7 +60,7 @@ print:
 	jr print
 
 entry_msg:
-	defb " Ralf's test rom 1.02.",13,10
+	defb " Ralf's test rom 1.03.",13,10
 	defb " Try |HELLO or |TEST",13,10
 	defb " Use |SREC to load an SREC file",13,10,13,10,0
 
