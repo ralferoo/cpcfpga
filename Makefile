@@ -271,6 +271,9 @@ image/%.srec: codegen/%.scr build/.dummy image/.dummy
 image/bb4cpc.srec: bb4cpc/BB4CPC.BAS build/.dummy image/.dummy
 	objcopy --change-addresses=240 --set-start=160 -I binary $< -O srec $@
 
+#image/bb4cpc.srec: bb4cpc/bb4cpc.raw build/.dummy image/.dummy
+#	objcopy --change-addresses=368 --set-start=32 -I binary $< -O srec $@
+
 image/installer_bubble_bobble.srec: build/installer_bubble_bobble.bin image/.dummy
 	objcopy --change-addresses=2048 -I binary $< -O srec $@
 
@@ -283,6 +286,20 @@ build/installer_spidos.bin: build/spidos.bin
 	codegen/structinc.pl <$< >$@
 
 build/spidos.bin: rom/spidos.asm rom/spidos_iy_regs.inc
+
+%.run: image/%.srec
+#	stty 19200 cs8 -parenb -icrnl onlcr </dev/ttyUSB0
+#	stty 19200 cs8 -parenb </dev/ttyUSB0
+	stty 19200 cs8 -parenb onlcr </dev/ttyUSB0
+#	bin/splat <$< >/dev/ttyUSB0
+	echo | perl -ne '{s/\n/\n\n\n\n\n/g;print;}' >/dev/ttyUSB0
+	perl -ne '{s/\n/\n\n\n\n\n/g;print;}' <$< >/dev/ttyUSB0
+
+serial:
+#	stty 19200 cs8 -parenb -icrnl onlcr </dev/ttyUSB0
+#	stty 19200 cs8 -parenb </dev/ttyUSB0
+	stty 19200 cs8 -parenb -icrnl </dev/ttyUSB0
+	cat /dev/ttyUSB0
 
 ###########################################################################
 #
