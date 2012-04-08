@@ -41,7 +41,7 @@ vsyncpos equ 17
         
             
 
-	ld d,#40
+	ld d,#48
 
 testloop:
          ei
@@ -61,12 +61,21 @@ pause:	dec bc				; 2
 	inc d
 	res 5,d				; 3
 
+        ld bc,&bc00 + 7
+        out (c),c
 
-	ld a,#46
+        ld e,b
+
+	ld a,#4e
 	cp d
-	jr nz,testloop
-	ld d,#40
+	jr nz,dovsync
+	ld d,#48
 
+        ld e, 52-vsyncpos     ; vsync 2 line before the end of the frame 
+
+dovsync:
+        inc b
+        out (c),e
          
          jr testloop
                          
