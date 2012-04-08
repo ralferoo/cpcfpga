@@ -12,6 +12,16 @@ screen_width      equ 2*40
 render_func       equ render_base_high*256
 
         call create_render
+
+        ld a,#ff
+        ld (#5001),a
+        ld (#5006),a
+        ld (#5156),a
+        ld (#515b),a
+        ld (#5201),a
+        ld (#525b),a
+        ld (#5301),a
+        ld (#530b),a
         
         call render_func          
 
@@ -238,6 +248,11 @@ create_render_row:
         ld a,#ee                     ; EE = xor #xx
         djnz create_render_row
 
+        dec c
+        ld a,c
+        or a
+        jr z,create_render_end 
+
         ld (hl),#c3                  ; C3 = jp #xxxx
         inc hl
         ld b,0
@@ -252,10 +267,11 @@ create_render_row:
 
         pop de
         inc de
-        dec c
-        ld a,c
-        or a
-        jr nz,create_render_column 
+        jr create_render_column
+       
+create_render_end:        
+        ld (hl),#c9                  ; C9 = ret
+        pop de
         ret
               
                             
