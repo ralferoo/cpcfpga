@@ -274,6 +274,9 @@ image/%.srec: codegen/%.scr build/.dummy image/.dummy
 	objcopy --change-addresses=16384 -I binary $< -O srec build/$*.srec
 	perl -ne '{print unless m/^S9/;}' <build/$*.srec >$@
 
+image/hyper.srec: roms/hyper-headerless.bin build/.dummy image/.dummy
+	objcopy --change-addresses=4096 --set-start=0 -I binary $< -O srec $@
+
 image/bb4cpc.srec: bb4cpc/BB4CPC.BAS build/.dummy image/.dummy
 	objcopy --change-addresses=240 --set-start=160 -I binary $< -O srec $@
 
@@ -281,6 +284,9 @@ image/bb4cpc.srec: bb4cpc/BB4CPC.BAS build/.dummy image/.dummy
 #	objcopy --change-addresses=368 --set-start=32 -I binary $< -O srec $@
 
 image/installer_bubble_bobble.srec: build/installer_bubble_bobble.bin image/.dummy
+	objcopy --change-addresses=2048 -I binary $< -O srec $@
+
+image/verify_bubble_bobble.srec: build/verify_bubble_bobble.bin image/.dummy
 	objcopy --change-addresses=2048 -I binary $< -O srec $@
 
 image/linear.srec: build/linear.bin image/.dummy
@@ -302,7 +308,9 @@ build/spidos.bin: rom/spidos.asm rom/spidos_iy_regs.inc
 	stty 19200 cs8 -parenb onlcr </dev/ttyUSB0
 #	bin/splat <$< >/dev/ttyUSB0
 	echo | perl -ne '{s/\n/\n\n\n\n\n/g;print;}' >/dev/ttyUSB0
-	perl -ne '{s/\n/\n\n\n\n\n\n\n\n\n\n\n\n\n/g;print;}' <$< >/dev/ttyUSB0
+#	perl -ne '{s/\n/\n\n\n\n\n\n\n\n\n\n\n\n\n/g;print;}' <$< >/dev/ttyUSB0
+	perl -ne '{s/\n/\n\n\n/g;print;}' <$< |bin/splat >/dev/ttyUSB0
+	echo | perl -ne '{s/\n/\n\n\n\n\n/g;print;}' >/dev/ttyUSB0
 
 serial:
 #	stty 19200 cs8 -parenb -icrnl onlcr </dev/ttyUSB0

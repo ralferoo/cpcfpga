@@ -1,7 +1,12 @@
 
         org #4000
 
-vsyncpos equ 12
+vsyncpos equ 17
+
+	ld a,#ff
+	ld (#c000),a
+	ld (#c028),a
+	ld (#c050),a
 
         di
         ld hl,&c3fb			; ei : jp intvec
@@ -11,7 +16,7 @@ vsyncpos equ 12
 
         ld bc,&bc00 + 6
         out (c),c
-        ld bc,&bd00 + 0		; nothing displayed
+        ld bc,&bd00 + 10		; nothing displayed
         out (c),c
         
         ld bc,&bc00 + 9
@@ -43,7 +48,7 @@ testloop:
          halt
 
 	ld bc,130			; 3
-
+peak
 pause:	dec bc				; 2
 	ld a,b				; 1
 	or c				; 1
