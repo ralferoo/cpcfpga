@@ -4,10 +4,17 @@
 vsyncpos equ 3
 blankgaps equ 1
 
-	ld a,#ff
-	ld (#c000),a
-	ld (#c028),a
-	ld (#c050),a
+render_base_high  equ #50
+render_width      equ 2*40
+render_height     equ 50
+screen_base       equ #c000
+screen_width      equ 2*40
+render_func       equ render_base_high*256
+
+        call create_render
+        
+        call render_func          
+
 
         di
         ld hl,&c3fb			; ei : jp intvec
@@ -200,4 +207,56 @@ int5:
     ret
             
 
+create_render:
+        ld hl,render_base_high*256
+        ld c,render_width
+        ld de,screen_base
+create_render_column:
+        ld b,render_height
+        push de   
+        ld a,#3e                     ; 3E = ld a,x
+create_render_row:
+        ld (hl),a
+        inc hl
+        xor a
+        ld (hl),a
+        inc hl                       ; ld a,0 / xor 0
+        ld (hl),#32                  ; 32 = LD (xxxx),a
+        inc hl
+        ld (hl),e
+        inc hl
+        ld (hl),d
+        inc hl
+        
+        ld a,screen_width
+        add a,e
+        ld e,a
+        ld a,d
+        adc a,0
+        ld d,a                       ; DE += screen_width
+        
+        ld a,#ee                     ; EE = xor #xx
+        djnz create_render_row
+
+        ld (hl),#c3                  ; C3 = jp #xxxx
+        inc hl
+        ld b,0
+        ld (hl),b
+        inc hl
+        ld a,h
+        inc a
+        ld (hl),a                    ; JP to next block
+        
+        ld h,a
+        ld l,b                       ; advance ip to next block
+
+        pop de
+        inc de
+        dec c
+        ld a,c
+        or a
+        jr nz,create_render_column 
+        ret
+              
+                            
                                      
