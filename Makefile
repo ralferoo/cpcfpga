@@ -258,6 +258,9 @@ image/rom_c000.srec: rom/rom_c000.asm build/.dummy image/.dummy
 image/%.srec: build/%.bin image/.dummy
 	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
 
+image/%.srec: build/%-0800.bin image/.dummy
+	objcopy --change-addresses=2048 -I binary build/$*-0800.bin -O srec $@
+
 #image/%.srec: codegen/%.asm build/.dummy image/.dummy
 #	pasmo $< build/$*.bin build/$*.sym
 #	objcopy --change-addresses=16384 -I binary build/$*.bin -O srec $@
@@ -274,7 +277,7 @@ image/%.srec: codegen/%.scr build/.dummy image/.dummy
 	objcopy --change-addresses=16384 -I binary $< -O srec build/$*.srec
 	perl -ne '{print unless m/^S9/;}' <build/$*.srec >$@
 
-image/hyper.srec: roms/hyper-headerless.bin build/.dummy image/.dummy
+image/hyperorig.srec: roms/hyper-headerless.bin build/.dummy image/.dummy
 	objcopy --change-addresses=4096 --set-start=0 -I binary $< -O srec $@
 
 image/bb4cpc.srec: bb4cpc/BB4CPC.BAS build/.dummy image/.dummy
@@ -302,6 +305,17 @@ build/installer_spidos.bin: build/spidos.bin
 
 build/spidos.bin: rom/spidos.asm rom/spidos_iy_regs.inc
 
+build/hyper-0800.bin: build/hyper-1000.bin build/hyper-4000.bin build/hyper-7000.bin 
+
+build/hyper-1000.bin: roms/hyper-headerless.bin
+	dd if=roms/hyper-headerless.bin of=build/hyper-1000.bin bs=1 count=50
+
+build/hyper-4000.bin: roms/hyper-headerless.bin
+	dd if=roms/hyper-headerless.bin of=build/hyper-4000.bin bs=1 skip=12288 count=11104
+
+build/hyper-7000.bin: roms/hyper-headerless.bin
+	dd if=roms/hyper-headerless.bin of=build/hyper-7000.bin bs=1 skip=24576
+	
 %.run: image/%.srec
 #	stty 19200 cs8 -parenb -icrnl onlcr </dev/ttyUSB0
 #	stty 19200 cs8 -parenb </dev/ttyUSB0
