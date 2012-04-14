@@ -332,6 +332,9 @@ serial:
 	stty 19200 cs8 -parenb -icrnl </dev/ttyUSB0
 	cat /dev/ttyUSB0
 
+emu:
+	wine ../wincpc/WinCPC.exe &
+
 ###########################################################################
 #
 # xilinx rules

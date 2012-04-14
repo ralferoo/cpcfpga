@@ -11,6 +11,26 @@ screen_base       equ #c000
 screen_width      equ 2*40
 render_func       equ render_base_high*256
 
+
+; 5 bytes / 6 cycles per pixel: ld a,#xx/xor #xx, ld (#yyyy),a
+;
+; 6*52*64 cycles per frame, so maximum is 52*64 = 3328 max
+; realistically 64*48 would be a good maximum (32x24)
+;
+; currently demo is 4*52+10 = 218 lines, want 192 lines
+; old linear demo had 6 pixel lines, 29 high, 60 across 
+;
+; 80 across is #50, 96 across is #60, so #a000 upwards for pixel write code
+; have sliding horizontal window - render 0..59 or 36..95 or between
+;
+; 50*96 = 4800 bytes = #12c0, so about 2.5 pixel-line screens (2048 bytes/16kb)
+; alternatively, we have #1780 bytes = 6016 = 62.66 lines of 96 bytes
+; maximum for 5 bytes/pixel = 50 high
+; maybe 46x4,16x2 -> 216 high
+;
+; or #f80 = 3968 = 41*1 lines (0080-07ff,4000-47ff) -> 164 pixel lines
+; and 21*3 lines (8000-97ff) or 21*4 (8000-9fff) for scroller
+
         call create_render
 
         ld a,#ff
@@ -210,7 +230,7 @@ int5:
 
         ld bc,&bc00 + 6
         out (c),c
-        ld bc,&bd00 + 10		; partial display
+        ld bc,&bd00 + 2; 32 ;10		; partial display
         out (c),c
         
     exx
