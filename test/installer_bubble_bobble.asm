@@ -333,18 +333,18 @@ writebytes:
 	xor a
 	out (c),a				; send address
 
-	ld iyl,0				; low byte of address (counter)
+	ld yl,0				; low byte of address (counter)
 writebytesloop:
 	ld a,(hl)
 	inc hl
 	out (c),a				; write byte of data
 	
 	dec ix
-	ld a,ixh
-	or ixl					; decrement count
+	ld a,xh
+	or xl					; decrement count
 	jr z,finished_bytes
 
-	inc iyl
+	inc yl
 	jr nz,writebytesloop			; continue with all bytes in this page
 finished_bytes:
 	dec b
@@ -352,8 +352,8 @@ finished_bytes:
 
 	call wait_while_wip
 
-	ld a,ixh
-	or ixl					; any more bytes to process?
+	ld a,xh
+	or xl					; any more bytes to process?
 	ret z
 
 	inc de
