@@ -1,17 +1,24 @@
 
-        org #4000
+        org #0800
 
 vsyncpos equ 3
 blankgaps equ 1
 
 char_width        equ 48
-render_base_high  equ #50
+render_base_high  equ #a0
 render_width      equ 2*40
 render_height     equ 50
-screen_base       equ #c000
+screen_base       equ #0080
 screen_width      equ 2*char_width
 render_func       equ render_base_high*256
 
+
+screen1_hi        equ #00
+screen1_lo        equ #40
+screen2_hi        equ #30
+screen2_lo        equ #00
+screen3_hi        equ #20
+screen3_lo        equ #00
 
 ; 5 bytes / 6 cycles per pixel: ld a,#xx/xor #xx, ld (#yyyy),a
 ;
@@ -61,6 +68,9 @@ render_func       equ render_base_high*256
 ;         bottom of frame rendering
 ;         pops and clears and/or prepare scrolltext stuff
 ;         vsync = non sync'ed code
+
+          di
+          ld sp,#a000
 
         call create_render
 
@@ -189,13 +199,13 @@ int_vsync:
 
         ld bc,#bc00 + 12
         out (c),c
-        ld bc,#bd00 + 0
+        ld bc,#bd00 + screen1_hi
         out (c),c
         
         ld bc,#bc00 + 13
         out (c),c
-        ld bc,#bd00 + #80
-        out (c),c               ; display from #0080 for int 1
+        ld bc,#bd00 + screen1_lo
+        out (c),c               ; display for part 1
 
         ld bc,&bc00 + 7
         out (c),c
@@ -233,6 +243,16 @@ int_mid1:
         ld bc,#7f41
         out (c),c
 
+        ld bc,#bc00 + 12
+        out (c),c
+        ld bc,#bd00 + screen2_hi
+        out (c),c
+        
+        ld bc,#bc00 + 13
+        out (c),c
+        ld bc,#bd00 + screen2_lo
+        out (c),c               ; display for part 2
+
         ld bc,int_part2
         ld (#3a),bc
         
@@ -258,6 +278,16 @@ int_mid2:
 
         ld bc,#7f43
         out (c),c
+
+        ld bc,#bc00 + 12
+        out (c),c
+        ld bc,#bd00 + screen3_hi
+        out (c),c
+        
+        ld bc,#bc00 + 13
+        out (c),c
+        ld bc,#bd00 + screen3_lo
+        out (c),c               ; display for part 3
 
         ld bc,int_part3
         ld (#3a),bc
@@ -302,6 +332,10 @@ create_render_row:
         ld (hl),a
         inc hl
         xor a
+
+        ld a,h
+        sub b
+
         ld (hl),a
         inc hl                       ; ld a,0 / xor 0
         ld (hl),#32                  ; 32 = LD (xxxx),a
@@ -317,7 +351,13 @@ create_render_row:
         ld a,d
         adc a,0
         ld d,a                       ; DE += screen_width
-        
+        and #8
+        jr z,no_overflow
+        ld a,#38
+        add d
+        ld d,a                       ; only use first #800 bytes in every #4000
+
+no_overflow:        
         ld a,#ee                     ; EE = xor #xx
         djnz create_render_row
 
