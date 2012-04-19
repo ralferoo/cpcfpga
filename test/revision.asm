@@ -4,11 +4,12 @@
 vsyncpos equ 3
 blankgaps equ 1
 
+char_width        equ 48
 render_base_high  equ #50
 render_width      equ 2*40
 render_height     equ 50
 screen_base       equ #c000
-screen_width      equ 2*40
+screen_width      equ 2*char_width
 render_func       equ render_base_high*256
 
 
@@ -79,7 +80,7 @@ render_func       equ render_base_high*256
         di
         ld hl,&c3fb			; ei : jp intvec
         ld (&38),hl
-        ld hl,intvec
+        ld hl,int_null
         ld (#3a),hl
 
         ld bc,&bc00 + 6
@@ -113,84 +114,77 @@ render_func       equ render_base_high*256
          halt
          halt
 
-        ld hl,int0
+        ld hl,int_initial
         ld (#3a),hl
         
+        ld bc,#7f10
+        xor a
 newmainloop:
+        ld de,#4445
+        out (c),a
+
+        out (c),e
+        out (c),d
+        inc e
+        
+        out (c),e
+        out (c),d
+        inc e
+        
+        out (c),e
+        out (c),d
+        inc e
+        
+        out (c),e
+        out (c),d
+        inc e
+        
+        out (c),e
+        out (c),d
+        inc e
+        
+        out (c),e
+        out (c),d
+        inc e
+        
+        out (c),e
+        out (c),d
+        inc e
+        
+        out (c),e
+        out (c),d
+        inc e
+        
+        out (c),c
+            
         halt
         jr newmainloop        
-            
 
-	ld d,#48
-
-testloop:
-         ei
-         halt
-
-	ld bc,130			; 3
-
-pause:	dec bc				; 2
-	ld a,b				; 1
-	or c				; 1
-	jr nz, pause			; 3 = 7 per loop
-
-
-	ld bc,#7f10
-	out (c),c
-	out (c),d			; 11
-	inc d
-	res 5,d				; 3
-
-        ld bc,&bc00 + 7
-        out (c),c
-
-        ld e,b
-
-	ld a,#4a
-	cp d
-	jr nz,dovsync
-	ld d,#44
-
-        ld e, 52-vsyncpos     ; vsync 2 line before the end of the frame 
-
-dovsync:
-        inc b
-        out (c),e
-         
-         jr testloop
-                         
-intvec:
+int_null:
        ret
-                                
-                                
-int0:
-     push bc
-     ld bc,#7f54
-     out (c),c
-     ld c,#54
-     out (c),c
-     
-     ld bc,int1
-     ld (#3a),bc
-
-
-;     exx
-;     ld hl,int1
-;     ld (#3a),hl
-     
-     ld bc,#7f10
-     out (c),c
-     ld c,#54
-     out (c),c
-     
-        ld bc,&bc00 + 7
+       
+int_initial:
+        push bc
+        ld bc,&bc00 + 4
         out (c),c
-        inc b
-        out (c),b                     ; disable vsync
+        ld bc,&bd00 + 52+52-1
+        out (c),c		; screen is 52 lines high
 
-        ld bc,&bc00 + 6
+        ld bc,int_vsync
+        ld (#3a),bc
+
+        ld bc,#7f10            ; select border colour reg as default
         out (c),c
-        ld bc,&bd00 + 0		; display nothing
+
+        pop bc
+        ei
+        ret
+
+
+int_vsync:
+        push bc
+
+        ld bc,#7f54             ; border black
         out (c),c
 
         ld bc,#bc00 + 12
@@ -202,92 +196,98 @@ int0:
         out (c),c
         ld bc,#bd00 + #80
         out (c),c               ; display from #0080 for int 1
-        
 
+        ld bc,&bc00 + 7
+        out (c),c
+        ld bc,&bd00 + #ff      ; no vysnc 
+        out (c),c
+
+        ld bc,int_part1
+        ld (#3a),bc
         
-;    exx
-    ret
-    
-int1:
-     exx
-     
-     ld bc,#7f10
-     out (c),c
-     ld c,#48
-     out (c),c
+        pop bc
+        ei
+        ret
+        
+int_part1:
+        push bc                  
+
+        ld bc,#7f48
+        out (c),c
 
         ld bc,&bc00 + 6
         out (c),c
-        ld bc,&bd00 + 52 - blankgaps		; display full amount
+        ld bc,&bd00 + 52+52 - blankgaps		; display full amount
         out (c),c
 
-     ld hl,int2
-     ld (#3a),hl
-
-    exx
-    ret
-    
-int2:
-     exx
-     ld hl,int3
-     ld (#3a),hl
-     
-     ld bc,#7f10
-     out (c),c
-     ld c,#41
-     out (c),c
-
-    exx
-    ret
-    
-int3:
-     exx
-     ld hl,int4
-     ld (#3a),hl
-     
-     ld bc,#7f10
-     out (c),c
-     ld c,#42
-     out (c),c
-
-    exx
-    ret
-    
-int4:
-     exx
-     ld hl,int5
-     ld (#3a),hl
-     
-     ld bc,#7f10
-     out (c),c
-     ld c,#43
-     out (c),c
-
-    exx
-    ret
-    
-int5:
-     exx
-     ld hl,int0
-     ld (#3a),hl
-     
-     ld bc,#7f10
-     out (c),c
-     ld c,#4d
-     out (c),c
+        ld bc,int_mid1
+        ld (#3a),bc
         
-        ld bc,&bc00 + 7
+        pop bc
+        ei
+        ret
+
+int_mid1:
+        push bc                  
+
+        ld bc,#7f41
         out (c),c
-        ld bc,&bd00 + 52-vsyncpos     ; vsync 2 line before the end of the frame 
+
+        ld bc,int_part2
+        ld (#3a),bc
+        
+        pop bc
+        ei
+        ret
+        
+int_part2:
+        push bc                  
+
+        ld bc,#7f42
+        out (c),c
+
+        ld bc,int_mid2
+        ld (#3a),bc
+        
+        pop bc
+        ei
+        ret
+
+int_mid2:
+        push bc                  
+
+        ld bc,#7f43
+        out (c),c
+
+        ld bc,int_part3
+        ld (#3a),bc
+        
+        pop bc
+        ei
+        ret
+        
+int_part3:
+        push bc                  
+
+        ld bc,#7f4d
         out (c),c
 
         ld bc,&bc00 + 6
         out (c),c
         ld bc,&bd00 + 13; 2; 32 ;10		; partial display
         out (c),c
+
+        ld bc,&bc00 + 7
+        out (c),c
+        ld bc,&bd00 + 52-vsyncpos     ; vsync 2 line before the end of the frame 
+        out (c),c
+
+        ld bc,int_vsync
+        ld (#3a),bc
         
-    exx
-    ret
+        pop bc
+        ei
+        ret
             
 
 create_render:
