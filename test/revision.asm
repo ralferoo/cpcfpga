@@ -20,6 +20,8 @@ render_func       equ render_base_high*256
 ; currently demo is 4*52+10 = 218 lines, want 192 lines
 ; old linear demo had 6 pixel lines, 29 high, 60 across 
 ;
+; each line is 4 pixels high, so 256 cycles = 42 pixels (enough for 168 vertical)
+;
 ; 80 across is #50, 96 across is #60, so #a000 upwards for pixel write code
 ; have sliding horizontal window - render 0..59 or 36..95 or between
 ;
@@ -30,6 +32,34 @@ render_func       equ render_base_high*256
 ;
 ; or #f80 = 3968 = 41*1 lines (0080-07ff,4000-47ff) -> 164 pixel lines
 ; and 21*3 lines (8000-97ff) or 21*4 (8000-9fff) for scroller
+;
+; 1st visible interrupt, 4*52+13 is roughly centred = 221 lines
+; subtract 32 = 189 (47*4)
+; or 26 normal lines, shifted up one (reset, r6=26, r7=31) is 208 pixels
+; subtract 32 = 176 = 44*4
+;
+; clears:
+; lh (hl),a ; inc h = 3 cycles per pixel
+; 9*52*64 = 28800 cycles compared to 19968 per frame = 1.44 frames (468 lines)
+; comapred to push / pop / ld (hl),a = 4+3+2 = 9 per pixel
+;
+; or:
+; xor (hl) ; ld (hl),e ; inc h ; ld (#xxxx),a = 2+2+1+4 = 9 cycles per pixel
+;
+; if we do: xor (hl) ; inc h ; ld (#xxxx),a = 2+1+4 = 7 per pixel but can clear
+; we push (4 cycles per pixel again)
+;
+; timings:
+;
+; frame 1:
+;         quite a bit of stuff, with line doubling code
+;         near bottom, start rendering top of next frame
+;         vsync = non sync'ed code
+; frame 2:
+;         middle of frame rendering
+;         bottom of frame rendering
+;         pops and clears and/or prepare scrolltext stuff
+;         vsync = non sync'ed code
 
         call create_render
 
@@ -134,9 +164,19 @@ intvec:
                                 
                                 
 int0:
-     exx
-     ld hl,int1
-     ld (#3a),hl
+     push bc
+     ld bc,#7f54
+     out (c),c
+     ld c,#54
+     out (c),c
+     
+     ld bc,int1
+     ld (#3a),bc
+
+
+;     exx
+;     ld hl,int1
+;     ld (#3a),hl
      
      ld bc,#7f10
      out (c),c
@@ -152,14 +192,24 @@ int0:
         out (c),c
         ld bc,&bd00 + 0		; display nothing
         out (c),c
+
+        ld bc,#bc00 + 12
+        out (c),c
+        ld bc,#bd00 + 0
+        out (c),c
         
-    exx
+        ld bc,#bc00 + 13
+        out (c),c
+        ld bc,#bd00 + #80
+        out (c),c               ; display from #0080 for int 1
+        
+
+        
+;    exx
     ret
     
 int1:
      exx
-     ld hl,int2
-     ld (#3a),hl
      
      ld bc,#7f10
      out (c),c
@@ -170,6 +220,9 @@ int1:
         out (c),c
         ld bc,&bd00 + 52 - blankgaps		; display full amount
         out (c),c
+
+     ld hl,int2
+     ld (#3a),hl
 
     exx
     ret
@@ -230,7 +283,7 @@ int5:
 
         ld bc,&bc00 + 6
         out (c),c
-        ld bc,&bd00 + 2; 32 ;10		; partial display
+        ld bc,&bd00 + 13; 2; 32 ;10		; partial display
         out (c),c
         
     exx
