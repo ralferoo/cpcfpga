@@ -1,17 +1,19 @@
 
-        org #0800
+                  org #0800
 
-vsyncpos equ 3
-blankgaps equ 1
+vsyncpos          equ 3
+blankgaps         equ 1
 
-char_width        equ 48
+char_width        equ 46
 render_base_high  equ #a0
+render_left_offset equ 3 
 render_width      equ 2*40
 render_height     equ 50
 screen_base       equ #0080
 screen_width      equ 2*char_width
 render_func       equ render_base_high*256
 
+hpos              equ 49     ; 49 maximum for crtc 2, 50 best for other crtc
 
 screen1_hi        equ #00
 screen1_lo        equ #40
@@ -69,53 +71,59 @@ screen3_lo        equ #00
 ;         pops and clears and/or prepare scrolltext stuff
 ;         vsync = non sync'ed code
 
+; normal hpos=46 for 40 character screen
+; max hpos=49, so 3 characters to the left, still have 1 visible
+; visible width is 46, 3 either side makes normal 40
+; |-3-|-------------------- data --------------------|-3-|
+
+
           di
           ld sp,#a000
 
         call create_render
 
         ld a,#ff
-        ld (#5001),a
-        ld (#5006),a
-        ld (#5156),a
-        ld (#515b),a
-        ld (#5201),a
-        ld (#525b),a
-        ld (#5301),a
-        ld (#530b),a
+        ld (render_func+#001),a
+        ld (render_func+#006),a
+        ld (render_func+#156),a
+        ld (render_func+#15b),a
+        ld (render_func+#201),a
+        ld (render_func+#25b),a
+        ld (render_func+#301),a
+        ld (render_func+#30b),a
         
         call render_func          
 
 
         di
-        ld hl,&c3fb			; ei : jp intvec
-        ld (&38),hl
+        ld hl,#c3fb			; ei : jp intvec
+        ld (#38),hl
         ld hl,int_null
         ld (#3a),hl
 
-        ld bc,&bc00 + 6
+        ld bc,#bc00 + 6
         out (c),c
-        ld bc,&bd00 + 0		; nothing displayed
+        ld bc,#bd00 + 0		; nothing displayed
         out (c),c
         
-        ld bc,&bc00 + 9
+        ld bc,#bc00 + 9
         out (c),c
-        ld bc,&bd00 + 0
+        ld bc,#bd00 + 0
         out (c),c		; screen lines = raster lines
         
-        ld bc,&bc00 + 2
+        ld bc,#bc00 + 2
         out (c),c
-        ld bc,&bd00 + 46
+        ld bc,#bd00 + hpos
         out (c),c		; horizontal position
         
-        ld bc,&bc00 + 7
+        ld bc,#bc00 + 7
         out (c),c
-        ld bc,&bd00 + 52-vsyncpos     ; vsync 2 line before the end of the frame 
+        ld bc,#bd00 + 52-vsyncpos     ; vsync 2 line before the end of the frame 
         out (c),c
 
-        ld bc,&bc00 + 4
+        ld bc,#bc00 + 4
         out (c),c
-        ld bc,&bd00 + 51
+        ld bc,#bd00 + 51
         out (c),c		; screen is 52 lines high
         
 
@@ -175,9 +183,9 @@ int_null:
        
 int_initial:
         push bc
-        ld bc,&bc00 + 4
+        ld bc,#bc00 + 4
         out (c),c
-        ld bc,&bd00 + 52+52-1
+        ld bc,#bd00 + 52+52-1
         out (c),c		; screen is 52 lines high
 
         ld bc,int_vsync
@@ -207,9 +215,9 @@ int_vsync:
         ld bc,#bd00 + screen1_lo
         out (c),c               ; display for part 1
 
-        ld bc,&bc00 + 7
+        ld bc,#bc00 + 7
         out (c),c
-        ld bc,&bd00 + #ff      ; no vysnc 
+        ld bc,#bd00 + #ff      ; no vysnc 
         out (c),c
 
         ld bc,int_part1
@@ -225,20 +233,32 @@ int_part1:
         ld bc,#7f48
         out (c),c
 
-        ld bc,&bc00 + 6
+        push de
+        push hl
+        push af
+        ld (part1_spsave),sp
+
+        ld bc,#bc00 + 6
         out (c),c
-        ld bc,&bd00 + 52+52 - blankgaps		; display full amount
+        ld bc,#bd00 + 52+52 - blankgaps		; display full amount
         out (c),c
 
         ld bc,int_mid1
         ld (#3a),bc
+
+        ld bc,#bc00 + 1
+        out (c),c
+        ld bc,#bd00 + char_width                  ; char 2
+        out (c),b		; repeat lines    ; char 6
+
+                                                  ; +66 to here
+        ei                                        ; +67 to here  
         
-        pop bc
-        ei
-        ret
+part1_vector equ $+1
+        jp empty_part                             ; +70 to here     
 
 int_mid1:
-        push bc                  
+        out (c),c               ; back to normal line
 
         ld bc,#7f41
         out (c),c
@@ -255,27 +275,21 @@ int_mid1:
 
         ld bc,int_part2
         ld (#3a),bc
-        
-        pop bc
+                
         ei
-        ret
+        halt
         
 int_part2:
-        push bc                  
-
         ld bc,#7f42
         out (c),c
 
         ld bc,int_mid2
         ld (#3a),bc
         
-        pop bc
         ei
-        ret
+        halt
 
 int_mid2:
-        push bc                  
-
         ld bc,#7f43
         out (c),c
 
@@ -292,38 +306,42 @@ int_mid2:
         ld bc,int_part3
         ld (#3a),bc
         
-        pop bc
         ei
-        ret
+        halt
         
 int_part3:
-        push bc                  
-
         ld bc,#7f4d
         out (c),c
 
-        ld bc,&bc00 + 6
+        ld bc,#bc00 + 6
         out (c),c
-        ld bc,&bd00 + 13; 2; 32 ;10		; partial display
+        ld bc,#bd00 + 13; 2; 32 ;10		; partial display
         out (c),c
 
-        ld bc,&bc00 + 7
+        ld bc,#bc00 + 7
         out (c),c
-        ld bc,&bd00 + 52-vsyncpos     ; vsync 2 line before the end of the frame 
+        ld bc,#bd00 + 52-vsyncpos     ; vsync 2 line before the end of the frame 
         out (c),c
 
         ld bc,int_vsync
         ld (#3a),bc
         
+        ld sp,(part1_spsave)
+        pop af
+        pop hl
+        pop de
+        
         pop bc
         ei
         ret
-            
+
+empty_part:
+        halt
 
 create_render:
         ld hl,render_base_high*256
         ld c,render_width
-        ld de,screen_base
+        ld de,screen_base+render_left_offset
 create_render_column:
         ld b,render_height
         push de   
@@ -333,8 +351,8 @@ create_render_row:
         inc hl
         xor a
 
-        ld a,h
-        sub b
+;        ld a,h
+;        sub b
 
         ld (hl),a
         inc hl                       ; ld a,0 / xor 0
@@ -386,6 +404,10 @@ create_render_end:
         ld (hl),#c9                  ; C9 = ret
         pop de
         ret
+
               
                             
+part1_spsave:
+        defs 2                 
+
                                      
