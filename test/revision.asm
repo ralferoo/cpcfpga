@@ -77,6 +77,9 @@ screen3_lo        equ #00
 ; |-3-|-------------------- data --------------------|-3-|
 
 
+        read "revision_continue.inc"
+
+
           di
           ld sp,#a000
 
@@ -342,7 +345,25 @@ create_render:
         ld hl,render_base_high*256
         ld c,render_width
         ld de,screen_base+render_left_offset
+        ld ix,continue_points
 create_render_column:
+
+        ld (ix+cont_code_lo),l                  ; store continue points         
+        ld (ix+cont_code_hi),h
+        
+        ld (ix+cont_apos_lo),dummy_byte and 255
+        ld (ix+cont_apos_hi),dummy_byte shr 8
+
+        ld (ix+cont_height),0
+        
+        ld a,xl
+        add a,cont_SIZE
+        ld xl,a
+        ld a,xh
+        adc a,0
+        ld xh,a                      ; next in structure
+
+
         ld b,render_height
         push de   
         ld a,#3e                     ; 3E = ld a,x
@@ -410,4 +431,9 @@ create_render_end:
 part1_spsave:
         defs 2                 
 
-                                     
+dummy_byte:
+        defs 1   
+
+continue_points:
+        defs cont_SIZE*render_width
+                                                      
