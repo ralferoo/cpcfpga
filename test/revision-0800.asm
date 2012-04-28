@@ -194,8 +194,6 @@ int_initial:
 
         ld bc,int_vsync
         ld (#3a),bc
-
-        ld bc,#7f10            ; select border colour reg as default
         out (c),c
 
         pop bc
@@ -206,7 +204,7 @@ int_initial:
 int_vsync:
         push bc
 
-        ld bc,#7f54             ; border black
+        ld bc,#7f54 +1            ; border black
         out (c),c
 
         ld bc,#bc00 + 12
