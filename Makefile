@@ -247,9 +247,11 @@ build/%.bin: build/%.compat build/.dummy
 
 build/%.compat: test/%.asm
 	@echo Making $@
-	@perl -pe '{s/read\s\"([^"]*)\.asm\"/include "$$1.compat"/;s/([xy][lh])/i$$1/g;s/(add\s+)(i)?([xy][lh])/$$1a,i$$3/g;}' <$< >$@
+	@perl -pe '{s/read\s\"([^"]*)\.inc\"/include "build\/$$1.inc"/;s/read\s\"([^"]*)\.asm\"/include "$$1.compat"/;s/([xy][lh])/i$$1/g;s/(add\s+)(i)?([xy][lh])/$$1a,i$$3/g;}' <$< >$@
 
 build/linear.bin: build/sinquad.compat build/bresenham.compat
+
+build/revision-0800.bin: build/revision_continue.inc
 
 image/rom_c000.srec: rom/rom_c000.asm build/.dummy image/.dummy
 	pasmo $< build/rom_c000.bin build/rom_c000.sym
@@ -300,6 +302,9 @@ build/installer_boot_into_basic.bin: build/boot_into_basic.bin
 build/installer_myrom.bin: build/mytestrom.bin
 build/installer_spidos.bin: build/spidos.bin
 
+build/%.inc: test/%.inc
+	cp $< $@
+
 %.inc: %.struct
 	codegen/structinc.pl <$< >$@
 
@@ -334,6 +339,25 @@ serial:
 
 emu:
 	wine ../wincpc/WinCPC.exe &
+
+%.exe: %-0800.pak build/unpacker0800.bin
+	cat build/unpacker0800.bin $< >$@
+
+%.pak: %.bin
+	MegaLZ $< $@
+
+%.cdt: %.exe Makefile
+	2cdt -n -p 300 -b 1560 -X 20000 -L 20000 -r "`date '+%Y%m%d %H%M%S'`" $< $@
+
+%.au: %.cdt
+	playtzx -au -freq 44100 $< $@
+
+%.wav: %.au
+	sox $< $@
+
+%.play: build/%.wav
+	aplay $<
+
 
 ###########################################################################
 #

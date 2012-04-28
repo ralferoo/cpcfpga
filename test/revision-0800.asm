@@ -130,10 +130,11 @@ screen3_lo        equ #00
         out (c),c		; screen is 52 lines high
         
 
-         ei
-         halt
-         halt
-         halt
+	ld b,15
+ploop:
+        ei
+        halt
+        djnz ploop
 
         ld hl,int_initial
         ld (#3a),hl
@@ -393,7 +394,7 @@ create_render_row:
         and #8
         jr z,no_overflow
         ld a,#38
-        add d
+        add a,d
         ld d,a                       ; only use first #800 bytes in every #4000
 
 no_overflow:        
