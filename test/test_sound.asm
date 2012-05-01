@@ -11,15 +11,31 @@ regloop:
         inc c
         djnz regloop
         
-        ret
+;        ret
+
+         ld c,7
+         ld a,#37
+         call write_to_psg
+
+       ld a,#f         
+toggle:
+       ld c,8
+       call write_to_psg
+;       xor #f
+       halt
+;       halt
+;       halt
+       jr toggle
+       
+         ret
 
 noise:
       defb #0c,#00
       defb #cc,#02
       defb #0d,#00
-      defb #02
-      defb #3f
-      defb #0f,#00,#00
+      defb #12
+      defb #20
+      defb #00,#00,#00
 ;      defb #0c,#10,#0c
       defb #5a,#00
       defb #08

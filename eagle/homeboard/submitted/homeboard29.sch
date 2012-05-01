@@ -25391,12 +25391,6 @@ W = angled&lt;p&gt;
 <label x="99.06" y="-58.42" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="X_CAS" class="0">
-<segment>
-<wire x1="177.8" y1="114.3" x2="162.56" y2="114.3" width="0.1524" layer="91"/>
-<label x="162.56" y="114.3" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="N$3" class="0">
 <segment>
 <pinref part="U1" gate="B0" pin="IO_L27N_0"/>

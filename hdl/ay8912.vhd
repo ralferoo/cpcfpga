@@ -207,8 +207,8 @@ begin
 
 		else
 			noise_bit		<= n_lfsr(14);
-			n_lfsr			:= (n_lfsr(14) xor n_lfsr(13)) & n_lfsr(12 downto 5) & (n_lfsr(14) xor n_lfsr(4)) &
-								n_lfsr(3 downto 2) & (n_lfsr(14) xor n_lfsr(1)) & n_lfsr(0) & n_lfsr(14);
+			n_lfsr			:= (n_lfsr(14) xnor n_lfsr(13)) & n_lfsr(12 downto 5) & (n_lfsr(14) xnor n_lfsr(4)) &
+								n_lfsr(3 downto 2) & (n_lfsr(14) xnor n_lfsr(1)) & n_lfsr(0) & n_lfsr(14);
 		end if;
 	end process;
 
@@ -294,6 +294,7 @@ begin
 		variable	n_left_sum, n_right_sum				: std_logic_vector(7 downto 0);
 		variable	t_left_v, t_right_v				: std_logic_vector(7 downto 0);		-- thing to add to sum this time
 		variable	t_left_a, t_right_a				: std_logic_vector(4 downto 0);		-- amplitude to use for envelope
+		variable	t_bit_a,  t_bit_b,  t_bit_c			: std_logic;
 		variable	t_left,   t_right				: std_logic;
 
 		variable	t_root2_bit					: std_logic;
@@ -316,26 +317,42 @@ begin
 
 			t_root2_bit			:= r_root2_sum(6);
 
+			-- 
+
+			-- http://www.cpcwiki.eu/index.php/PSG says:
+			-- If both Tone and Noise are disabled on a channel, then a constant HIGH level is output (useful for digitized speech).
+		        -- If both Tone and Noise are enabled on the same channel, then the signals are ANDed (the signals aren't ADDed)
+			-- (ie. HIGH is output only if both are HIGH). 
+			t_bit_a					:= (en_noise_a or noise_bit) and (en_tone_a or tone_out_a); 
+			t_bit_b					:= (en_noise_b or noise_bit) and (en_tone_b or tone_out_b); 
+			t_bit_c					:= (en_noise_c or noise_bit) and (en_tone_c or tone_out_c); 
+
 			if r_selector(1)='0' then
 				--		normal		mono
 				--	L	L1,L3		L1,R3
 				--	R	R1,R3		L1,R3
 
 				if (r_selector(0) and is_mono)='0' then
-					t_left		:= (en_noise_a or noise_bit) xor (en_tone_a or tone_out_a);	t_left_a:= amp_a;
+					t_left		:= t_bit_a;
+					t_left_a	:= amp_a;
 				else
-					t_left		:= (en_noise_c or noise_bit) xor (en_tone_c or tone_out_c);	t_left_a:= amp_c;		-- play C in left only on 01 & mono
+					t_left		:= t_bit_c;
+					t_left_a	:= amp_c;		-- play C in left only on 01 & mono
 				end if;
 
 				if ((not r_selector(0)) and is_mono)='0' then
-					t_right		:= (en_noise_c or noise_bit) xor (en_tone_c or tone_out_c);	t_right_a:= amp_c;
+					t_right		:= t_bit_c;
+					t_right_a	:= amp_c;
 				else
-					t_right		:= (en_noise_a or noise_bit) xor (en_tone_a or tone_out_c);	t_right_a:= amp_a;		-- play A in right only on 00 & mono
+					t_right		:= t_bit_a;
+					t_right_a	:= amp_a;		-- play A in right only on 00 & mono
 				end if;
 
 			elsif r_selector(0)='0' then
-					t_left		:= (en_noise_b or noise_bit) xor (en_tone_b or tone_out_b);	t_left_a:= amp_b;
-					t_right		:= (en_noise_b or noise_bit) xor (en_tone_b or tone_out_b);	t_right_a:= amp_b;
+					t_left		:= t_bit_b;
+					t_left_a	:= amp_b;
+					t_right		:= t_bit_b;
+					t_right_a	:= amp_b;
 			else
 					t_left		:= tape_noise;							t_left_a:= "01100";
 					t_right		:= tape_noise;							t_right_a:= "01100";
