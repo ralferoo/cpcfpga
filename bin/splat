@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+
+$|=0;
+
+use strict;
+use warnings;
+
+use Time::HiRes qw(usleep nanosleep);
+
+print "\r\n\r\n";
+usleep(1000000);
+
+while(<>) {
+	print;
+	usleep(30000);
+}
+
+usleep(1000000);
+print "\r\n\r\n";
+
