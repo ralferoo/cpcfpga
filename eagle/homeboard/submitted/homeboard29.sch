@@ -22612,10 +22612,10 @@ W = angled&lt;p&gt;
 <part name="Q6" library="bc548" deviceset="BC848*" device="SMD"/>
 <part name="Q7" library="bc548" deviceset="BC848*" device="SMD"/>
 <part name="Q8" library="bc548" deviceset="BC848*" device="SMD"/>
-<part name="R23" library="resistor" deviceset="R-EU_" device="M0805"/>
-<part name="R34" library="resistor" deviceset="R-EU_" device="M0805"/>
-<part name="C3" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C4" library="resistor" deviceset="C-EU" device="C0603"/>
+<part name="R23" library="resistor" deviceset="R-EU_" device="M0805" value="75"/>
+<part name="R34" library="resistor" deviceset="R-EU_" device="M0805" value="75"/>
+<part name="C3" library="resistor" deviceset="C-EU" device="C0603" value="100nF"/>
+<part name="C4" library="resistor" deviceset="C-EU" device="C0603" value="100nF"/>
 <part name="U$2" library="cpcfpga" deviceset="TXO_7C" device=""/>
 <part name="REG2.5" library="cpcfpga" deviceset="NX1117" device="" value="2.5V"/>
 <part name="REG1.2" library="cpcfpga" deviceset="NX1117" device="" value="1.2V"/>
@@ -22637,10 +22637,10 @@ W = angled&lt;p&gt;
 <part name="SUPPLY4" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY5" library="supply2" deviceset="GND" device=""/>
 <part name="IC2" library="microchip" deviceset="25*" device="SN" technology="LC080"/>
-<part name="R48" library="resistor" deviceset="R-EU_" device="M0805"/>
-<part name="C1" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C5" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="R49" library="resistor" deviceset="R-EU_" device="M0805"/>
+<part name="R48" library="resistor" deviceset="R-EU_" device="M0805" value="2200"/>
+<part name="C1" library="resistor" deviceset="C-EU" device="C0603" value="100nF"/>
+<part name="C5" library="resistor" deviceset="C-EU" device="C0603" value="100nF"/>
+<part name="R49" library="resistor" deviceset="R-EU_" device="M0805" value="2200"/>
 <part name="SUPPLY6" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY7" library="supply2" deviceset="GND" device=""/>
 <part name="R50" library="resistor" deviceset="R-EU_" device="M0805" value="2k2"/>
