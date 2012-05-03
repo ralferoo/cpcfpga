@@ -4291,8 +4291,8 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="OC_FARNELL" value="unknown" x="42" y="50.5" size="1.778" layer="27" display="off"/>
 </element>
 <element name="Q1" library="special" package="QS" value="" x="72.75" y="54.25"/>
-<element name="C37" library="rcl" package="C0805" value="" x="71.5" y="50.5" rot="R180"/>
-<element name="C38" library="rcl" package="C0805" value="" x="76.5" y="50.5"/>
+<element name="C37" library="rcl" package="C0805" value="20pF" x="71.5" y="50.5" rot="R180"/>
+<element name="C38" library="rcl" package="C0805" value="20pF" x="76.5" y="50.5"/>
 <element name="PWR_HDR" library="jumper" package="JP1" value="" x="29" y="9.5" rot="R180"/>
 <element name="X8" library="cpcfpga" package="20-0137" value="STEREOJACK" x="6.75" y="63.25" rot="R270"/>
 <element name="X1" library="cpcfpga" package="SCART-CLIP" value="SCART-CLIP" x="60.25" y="4">
@@ -4332,8 +4332,8 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="MF" value="" x="90.5" y="30" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="OC_FARNELL" value="unknown" x="90.5" y="30" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="R11" library="resistor" package="M0805" value="" x="81" y="52.5" rot="R90"/>
-<element name="LED1" library="adafruit" package="CHIPLED_0805" value="" x="84" y="53.5" rot="R270"/>
+<element name="R11" library="resistor" package="M0805" value="75" x="81" y="52.5" rot="R90"/>
+<element name="LED1" library="adafruit" package="CHIPLED_0805" value="20mA" x="84" y="53.5" rot="R270"/>
 </elements>
 <signals>
 <signal name="GND">

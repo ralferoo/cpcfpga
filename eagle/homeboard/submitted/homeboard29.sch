@@ -22688,8 +22688,8 @@ W = angled&lt;p&gt;
 <part name="SV3" library="con-lstb" deviceset="MA10-1" device=""/>
 <part name="SUPPLY19" library="supply2" deviceset="GND" device=""/>
 <part name="Q1" library="special" deviceset="XTAL/S" device=""/>
-<part name="C37" library="rcl" deviceset="C-EU" device="C0805"/>
-<part name="C38" library="rcl" deviceset="C-EU" device="C0805"/>
+<part name="C37" library="rcl" deviceset="C-EU" device="C0805" value="20pF"/>
+<part name="C38" library="rcl" deviceset="C-EU" device="C0805" value="20pF"/>
 <part name="SUPPLY20" library="supply2" deviceset="GND" device=""/>
 <part name="PWR_HDR" library="jumper" deviceset="JP1Q" device=""/>
 <part name="SUPPLY21" library="supply2" deviceset="GND" device=""/>
@@ -22719,9 +22719,9 @@ W = angled&lt;p&gt;
 <attribute name="OC_FARNELL" value="unknown"/>
 <attribute name="OC_NEWARK" value="unknown"/>
 </part>
-<part name="R11" library="resistor" deviceset="R-EU_" device="M0805"/>
+<part name="R11" library="resistor" deviceset="R-EU_" device="M0805" value="75"/>
 <part name="SUPPLY17" library="supply2" deviceset="GND" device=""/>
-<part name="LED1" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
+<part name="LED1" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="20mA"/>
 </parts>
 <sheets>
 <sheet>
