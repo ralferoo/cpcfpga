@@ -520,6 +520,7 @@ controller/dist/$(LUFA).zip:
 
 controller/.unpack: controller/dist/$(LUFA).zip
 	(cd controller ; unzip dist/$(LUFA).zip )
+	ln -s $(LUFA) controller/lufa
 	touch $@
 
 control: controller/.unpack
