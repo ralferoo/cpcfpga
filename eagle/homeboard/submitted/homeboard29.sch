@@ -1150,14 +1150,14 @@ KS-S stereo microphone/headphone jack&lt;p&gt;
 <wire x1="-22.479" y1="-0.381" x2="-22.479" y2="-10.668" width="0.0508" layer="21"/>
 <wire x1="29.21" y1="-4.064" x2="29.21" y2="1.016" width="0.1524" layer="21"/>
 <wire x1="-29.21" y1="-4.064" x2="-29.21" y2="1.016" width="0.1524" layer="21"/>
-<wire x1="24.892" y1="-3.302" x2="24.892" y2="0.254" width="0.0024" layer="112"/>
-<wire x1="24.892" y1="-3.302" x2="27.94" y2="-3.302" width="0" layer="112" curve="180"/>
-<wire x1="24.892" y1="0.254" x2="27.94" y2="0.254" width="0" layer="112" curve="-180"/>
-<wire x1="27.94" y1="0.254" x2="27.94" y2="-3.302" width="0.0024" layer="112"/>
-<wire x1="-27.94" y1="-3.302" x2="-27.94" y2="0.254" width="0.0024" layer="112"/>
-<wire x1="-27.94" y1="-3.302" x2="-24.892" y2="-3.302" width="0" layer="112" curve="180"/>
-<wire x1="-27.94" y1="0.254" x2="-24.892" y2="0.254" width="0" layer="112" curve="-180"/>
-<wire x1="-24.892" y1="0.254" x2="-24.892" y2="-3.302" width="0.0024" layer="112"/>
+<wire x1="24.892" y1="-3.302" x2="24.892" y2="0.254" width="0.0024" layer="20"/>
+<wire x1="24.892" y1="-3.302" x2="27.94" y2="-3.302" width="0" layer="20" curve="180"/>
+<wire x1="24.892" y1="0.254" x2="27.94" y2="0.254" width="0" layer="20" curve="-180"/>
+<wire x1="27.94" y1="0.254" x2="27.94" y2="-3.302" width="0.0024" layer="20"/>
+<wire x1="-27.94" y1="-3.302" x2="-27.94" y2="0.254" width="0.0024" layer="20"/>
+<wire x1="-27.94" y1="-3.302" x2="-24.892" y2="-3.302" width="0" layer="20" curve="180"/>
+<wire x1="-27.94" y1="0.254" x2="-24.892" y2="0.254" width="0" layer="20" curve="-180"/>
+<wire x1="-24.892" y1="0.254" x2="-24.892" y2="-3.302" width="0.0024" layer="20"/>
 <pad name="1" x="19.05" y="5.08" drill="1.3208" shape="long" rot="R90"/>
 <pad name="2" x="17.145" y="0" drill="1.3208" shape="long" rot="R90"/>
 <pad name="3" x="15.24" y="5.08" drill="1.3208" shape="long" rot="R90"/>
@@ -22612,10 +22612,10 @@ W = angled&lt;p&gt;
 <part name="Q6" library="bc548" deviceset="BC848*" device="SMD"/>
 <part name="Q7" library="bc548" deviceset="BC848*" device="SMD"/>
 <part name="Q8" library="bc548" deviceset="BC848*" device="SMD"/>
-<part name="R23" library="resistor" deviceset="R-EU_" device="M0805" value="75"/>
-<part name="R34" library="resistor" deviceset="R-EU_" device="M0805" value="75"/>
-<part name="C3" library="resistor" deviceset="C-EU" device="C0603" value="100nF"/>
-<part name="C4" library="resistor" deviceset="C-EU" device="C0603" value="100nF"/>
+<part name="R23" library="resistor" deviceset="R-EU_" device="M0805"/>
+<part name="R34" library="resistor" deviceset="R-EU_" device="M0805"/>
+<part name="C3" library="resistor" deviceset="C-EU" device="C0603"/>
+<part name="C4" library="resistor" deviceset="C-EU" device="C0603"/>
 <part name="U$2" library="cpcfpga" deviceset="TXO_7C" device=""/>
 <part name="REG2.5" library="cpcfpga" deviceset="NX1117" device="" value="2.5V"/>
 <part name="REG1.2" library="cpcfpga" deviceset="NX1117" device="" value="1.2V"/>
@@ -22637,10 +22637,10 @@ W = angled&lt;p&gt;
 <part name="SUPPLY4" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY5" library="supply2" deviceset="GND" device=""/>
 <part name="IC2" library="microchip" deviceset="25*" device="SN" technology="LC080"/>
-<part name="R48" library="resistor" deviceset="R-EU_" device="M0805" value="2200"/>
-<part name="C1" library="resistor" deviceset="C-EU" device="C0603" value="100nF"/>
-<part name="C5" library="resistor" deviceset="C-EU" device="C0603" value="100nF"/>
-<part name="R49" library="resistor" deviceset="R-EU_" device="M0805" value="2200"/>
+<part name="R48" library="resistor" deviceset="R-EU_" device="M0805"/>
+<part name="C1" library="resistor" deviceset="C-EU" device="C0603"/>
+<part name="C5" library="resistor" deviceset="C-EU" device="C0603"/>
+<part name="R49" library="resistor" deviceset="R-EU_" device="M0805"/>
 <part name="SUPPLY6" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY7" library="supply2" deviceset="GND" device=""/>
 <part name="R50" library="resistor" deviceset="R-EU_" device="M0805" value="2k2"/>
@@ -22688,8 +22688,8 @@ W = angled&lt;p&gt;
 <part name="SV3" library="con-lstb" deviceset="MA10-1" device=""/>
 <part name="SUPPLY19" library="supply2" deviceset="GND" device=""/>
 <part name="Q1" library="special" deviceset="XTAL/S" device=""/>
-<part name="C37" library="rcl" deviceset="C-EU" device="C0805" value="20pF"/>
-<part name="C38" library="rcl" deviceset="C-EU" device="C0805" value="20pF"/>
+<part name="C37" library="rcl" deviceset="C-EU" device="C0805"/>
+<part name="C38" library="rcl" deviceset="C-EU" device="C0805"/>
 <part name="SUPPLY20" library="supply2" deviceset="GND" device=""/>
 <part name="PWR_HDR" library="jumper" deviceset="JP1Q" device=""/>
 <part name="SUPPLY21" library="supply2" deviceset="GND" device=""/>
@@ -22719,9 +22719,9 @@ W = angled&lt;p&gt;
 <attribute name="OC_FARNELL" value="unknown"/>
 <attribute name="OC_NEWARK" value="unknown"/>
 </part>
-<part name="R11" library="resistor" deviceset="R-EU_" device="M0805" value="75"/>
+<part name="R11" library="resistor" deviceset="R-EU_" device="M0805"/>
 <part name="SUPPLY17" library="supply2" deviceset="GND" device=""/>
-<part name="LED1" library="adafruit" deviceset="LED" device="CHIPLED_0805" value="20mA"/>
+<part name="LED1" library="adafruit" deviceset="LED" device="CHIPLED_0805"/>
 </parts>
 <sheets>
 <sheet>
@@ -25389,6 +25389,12 @@ W = angled&lt;p&gt;
 <wire x1="147.32" y1="-40.64" x2="147.32" y2="-58.42" width="0.1524" layer="91"/>
 <wire x1="147.32" y1="-58.42" x2="99.06" y2="-58.42" width="0.1524" layer="91"/>
 <label x="99.06" y="-58.42" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="X_CAS" class="0">
+<segment>
+<wire x1="177.8" y1="114.3" x2="162.56" y2="114.3" width="0.1524" layer="91"/>
+<label x="162.56" y="114.3" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$3" class="0">
