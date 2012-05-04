@@ -506,3 +506,20 @@ build/$(XILINX_TOP_NAME).ut: build/.dummy
 	@echo -g Security:None >>$@
 	@echo -g DonePipe:No >>$@
 	@echo -g DriveDone:No >>$@
+
+
+##############################################################################
+#
+# LUFA related stuff
+
+LUFA	= LUFA-120219
+
+controller/dist/$(LUFA).zip:
+	-@mkdir -p controller/dist
+	wget -O $@ http://lufa-lib.googlecode.com/files/$(LUFA).zip
+
+controller/.unpack: controller/dist/$(LUFA).zip
+	(cd controller ; unzip dist/$(LUFA).zip )
+	touch $@
+
+control: controller/.unpack

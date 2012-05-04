@@ -1,3 +1,6 @@
+controller/.unpack
+controller/LUFA*
+controller/dist
 roms/Super*.rom
 junk/
 *.epf
