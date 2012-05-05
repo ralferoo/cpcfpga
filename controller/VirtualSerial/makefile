@@ -106,7 +106,7 @@ F_USB = 16000000
 
 
 # Output format. (can be srec, ihex, binary)
-FORMAT = binary
+FORMAT = ihex
 
 
 # Target file name (without extension).
@@ -470,7 +470,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 all: begin gccversion sizebefore build sizeafter end
 
 # Change the build target to build a HEX file or a library.
-build: elf hex eep lss sym
+build: elf hex eep lss sym $(TARGET).bin
 #build: lib
 
 
@@ -603,6 +603,11 @@ extcoff: $(TARGET).elf
 	@echo $(MSG_FLASH) $@
 	$(OBJCOPY) -O $(FORMAT) -R .eeprom -R .fuse -R .lock $< $@
 
+%.bin: %.elf
+	@echo
+	@echo $(MSG_FLASH) $@
+	$(OBJCOPY) -O binary -R .eeprom -R .fuse -R .lock $< $@
+
 %.eep: %.elf
 	@echo
 	@echo $(MSG_EEPROM) $@
@@ -684,6 +689,7 @@ clean_list :
 	@echo
 	@echo $(MSG_CLEANING)
 	$(REMOVE) $(TARGET).hex
+	$(REMOVE) $(TARGET).bin
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).cof
 	$(REMOVE) $(TARGET).elf

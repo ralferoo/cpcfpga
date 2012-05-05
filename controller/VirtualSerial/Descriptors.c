@@ -65,13 +65,13 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 
 	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
 
-	.VendorID               = 0x03EB,
-	.ProductID              = 0x2044,
+	.VendorID               = 0x16C0,
+	.ProductID              = 0x27DC,
 	.ReleaseNumber          = VERSION_BCD(00.01),
 
 	.ManufacturerStrIndex   = 0x01,
 	.ProductStrIndex        = 0x02,
-	.SerialNumStrIndex      = USE_INTERNAL_SERIAL,
+	.SerialNumStrIndex      = 0x03,
 
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
@@ -88,7 +88,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
 
 			.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
-			.TotalInterfaces        = 2,
+			.TotalInterfaces        = 3,
 
 			.ConfigurationNumber    = 1,
 			.ConfigurationStrIndex  = NO_DESCRIPTOR,
@@ -205,7 +205,7 @@ const USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(11), .Type = DTYPE_String},
 
-	.UnicodeString          = L"Dean Camera"
+	.UnicodeString          = L"cpcfpga.com"
 };
 
 /** Product descriptor string. This is a Unicode string containing the product's details in human readable form,
@@ -214,9 +214,16 @@ const USB_Descriptor_String_t PROGMEM ManufacturerString =
  */
 const USB_Descriptor_String_t PROGMEM ProductString =
 {
-	.Header                 = {.Size = USB_STRING_LEN(13), .Type = DTYPE_String},
+	.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
 
-	.UnicodeString          = L"LUFA CDC Demo"
+	.UnicodeString          = L"CPC2012 revision 1"
+};
+
+const USB_Descriptor_String_t PROGMEM SerialString =
+{
+	.Header                 = {.Size = USB_STRING_LEN(16), .Type = DTYPE_String},
+
+	.UnicodeString          = L"cpcfpga.com:0:00"
 };
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
@@ -259,6 +266,10 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 				case 0x02:
 					Address = &ProductString;
 					Size    = pgm_read_byte(&ProductString.Header.Size);
+					break;
+				case 0x03:
+					Address = &SerialString;
+					Size    = pgm_read_byte(&SerialString.Header.Size);
 					break;
 			}
 

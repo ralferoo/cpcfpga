@@ -524,3 +524,11 @@ controller/.unpack: controller/dist/$(LUFA).zip
 	touch $@
 
 control: controller/.unpack
+
+build/boot_init.bin: controller/DFU/BootloaderDFU.hex controller/VirtualSerial/VirtualSerial.bin
+
+controller/DFU/BootloaderDFU.hex: controller/DFU/*.c controller/DFU/*.h
+	(cd controller/DFU ; make)
+
+controller/VirtualSerial/VirtualSerial.bin: controller/VirtualSerial/*.c controller/VirtualSerial/*.h
+	(cd controller/VirtualSerial ; make)

@@ -566,12 +566,10 @@ writing_msg:
 	defb 13,10,"Writing...",13,10,0
 
 payload:
-;	incbin "controller/DualVirtualSerial/DualVirtualSerial.hex"
-	incbin "controller/VirtualSerial/VirtualSerial.hex"
+	incbin "controller/VirtualSerial/VirtualSerial.bin"
 payload_len equ ($-payload)
 
 bootloader:
-	defb 0
 	incbin "controller/DFU/BootloaderDFU.hex"
 
 bootloader2:
