@@ -1,3 +1,4 @@
+p249, flash is 256 pages of 64 words
 
 
 23 = casin = yellow = pdo = pb3 = miso = 16

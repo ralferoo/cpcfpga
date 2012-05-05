@@ -104,7 +104,7 @@ F_USB = $(F_CPU)
 
 
 # Output format. (can be srec, ihex, binary)
-FORMAT = ihex
+FORMAT = binary
 
 
 # Target file name (without extension).

@@ -11,6 +11,11 @@
 	ld (#38),hl
 	ei
 
+	ld hl,bootloader
+	ld de,bootloader2
+	ld bc,bootloader2-bootloader
+	ldir
+
 	ld a,#4
 	ld bc,#fade
 	out (c),a
@@ -114,83 +119,174 @@ sigloop:
 	xor a
 	call send_byte
 
+	call do_erase
 
-;	ld hl,load_ext_byte_msg
-;	call print
-
-	ld hl,read_memory_msg
+	ld hl,load_ext_byte_msg
 	call print
-	ld hl,0
-read_mem_loop:
+
 	ld a,#4d
 	call send_byte
 	xor a
 	call send_byte
-	ld a,h
+	xor a
 	call send_byte
 	xor a
 	call send_byte
+	
+	ld hl,writing_msg
+	call print
+
+	ld hl,bootloader
+	ld de,#3000
+	call write_bootloader
+
+	ld hl,read_memory_msg
+	call print
+	ld hl,#3000
+read_mem_loop:
+	ld a,#4d
+	call send_byte_silent
+	xor a
+	call send_byte_silent
+	xor a
+	call send_byte_silent
+	xor a
+	call send_byte_silent
 
 	ld a,#20
-	call send_byte
-	ld a,0
-	call send_byte
+	call send_byte_silent
+	ld a,h
+	call send_byte_silent
 	ld a,l
-	call send_byte
+	call send_byte_silent
 	xor a
-	call send_byte
+	call send_byte_silent
+	call outhex
 
-	ld a,'|'
-	call chout
+;	ld a,'|'
+;	call chout
 	ld a,' '
 	call chout
 
 	ld a,#28
-	call send_byte
-	ld a,0
-	call send_byte
+	call send_byte_silent
+	ld a,h
+	call send_byte_silent
 	ld a,l
-	call send_byte
+	call send_byte_silent
 	xor a
-	call send_byte
+	call send_byte_silent
+	call outhex
+
+	ld a,' '
+	call chout
+
+	inc hl
+
+	ld a,l
+	and #f
+	jr nz, read_mem_loop
 
 	ld a,13
 	call chout
 	ld a,10
 	call chout
 
-	inc l
-	ld a,l
-	cp 64
+	ld a,h
+	and #3f
 	jr nz, read_mem_loop
 
-	ld l,0
-	inc h
-	ld a,h
-	or a
-	jr nz,read_mem_loop
-
-	call do_poll
+;	call do_poll
 
 	ld hl,done_msg
 	call print
 
+	call restart
+
 	jp 0
 hang:	jp hang
 
-do_poll:
-	ld hl,poll_msg
+
+do_erase:
+	ld hl,chip_erase_msg
 	call print
+	ld a,#ac
+	call send_byte
+	ld a,#80
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+	jp do_poll
+
+;	ld hl,bootloader
+;	ld de,#3800
+
+write_bootloader:
+	ld a,#40			; low byte
+	call send_byte_silent
+	ld a,d
+	call send_byte_silent
+	ld a,e
+	call send_byte_silent
+	ld a,(hl)
+	inc hl
+	call send_byte_silent
+
+	ld a,#48			; high byte
+	call send_byte_silent
+	ld a,d
+	call send_byte_silent
+	ld a,e
+	call send_byte_silent
+	ld a,(hl)
+	inc hl
+	call send_byte_silent
+
+	ld a,e
+	inc a
+	and #3f
+	jr nz, nowritepage
+
+	ld a,#4c			; flush page
+	call send_byte
+	ld a,d
+	call send_byte
+	ld a,e
+	call send_byte
+	xor a
+	call send_byte
+
+	call do_poll
+
+nowritepage:
+	inc de
+	ld a,d
+	and #3f
+	jr nz,write_bootloader
+	ret 				; finished writing
+
+do_poll:
+	push hl
+;	ld hl,poll_msg
+;	call print
+
+poll_loop:
+	ld a,'.'
+	call chout
+
 	ld a,#f0
-	call send_byte
+	call send_byte_silent
 	xor a
-	call send_byte
+	call send_byte_silent
 	xor a
-	call send_byte
+	call send_byte_silent
 	xor a
-	call send_byte
+	call send_byte_silent
 	rrca
-	jr c, do_poll
+	jr c, poll_loop
+	pop hl
 	ret
 
 doreset:
@@ -216,6 +312,15 @@ reset_wait_1:
 	pop bc
 	ret
 
+restart:
+	push bc
+	ld bc,#fade
+	ld a,#0				; left LED, no reset
+	out (c),a
+	pop bc
+	ret
+
+	ld bc,0
 
 send_byte:
 	push de
@@ -224,6 +329,35 @@ send_byte:
 	ld d,a
 	call outhex
 
+	call send_byte_internal
+	
+	ld a,'>'
+	call chout
+
+	ld a,d
+	call outhex
+
+	ld a,32
+	call chout
+
+	ld a,d
+	pop bc
+	pop de
+	ret
+
+send_byte_silent:
+	push de
+	push bc
+
+	ld d,a
+	call send_byte_internal
+	ld a,d
+
+	pop bc
+	pop de
+	ret
+
+send_byte_internal:
 	ld b,8
 
 bit_loop:
@@ -244,19 +378,7 @@ bit_loop:
 
 	pop bc
 	djnz bit_loop
-	
-	ld a,'>'
-	call chout
 
-	ld a,d
-	call outhex
-
-	ld a,32
-	call chout
-
-	ld a,d
-	pop bc
-	pop de
 	ret
 	
 print:
@@ -341,3 +463,15 @@ read_memory_msg:
 
 load_ext_byte_msg:
 	defb 13,10,"Loading extended byte:",13,10,0
+
+chip_erase_msg:
+	defb 13,10,"Erasing chip...",13,10,0
+
+writing_msg:
+	defb 13,10,"Writing...",13,10,0
+
+bootloader:
+	incbin "controller/LUFA-120219/Bootloaders/DFU/BootloaderDFU.hex"
+
+bootloader2:
+
