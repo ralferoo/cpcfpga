@@ -110,7 +110,7 @@ FORMAT = binary
 
 
 # Target file name (without extension).
-TARGET = DualVirtualSerial
+TARGET = VirtualSerial
 
 
 # Object files directory

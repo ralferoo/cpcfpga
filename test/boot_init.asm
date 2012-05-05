@@ -86,6 +86,26 @@ sigloop:
 	xor a
 	call send_byte
 
+	ld a,#ac
+	call send_byte
+	ld a,#a0
+	call send_byte
+	ld a,#5e
+	call send_byte
+	ld a,#5e
+	call send_byte
+
+	ld hl,fuse_bits_msg
+	call print
+	ld a,#50
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+
 	ld hl,fuse_high_bits_msg
 	call print
 	ld a,#58
@@ -136,13 +156,18 @@ sigloop:
 	ld hl,writing_msg
 	call print
 
-	ld hl,bootloader
-	ld de,#3000
-	call write_bootloader
+	ld hl,payload
+	ld de,#0
+	ld bc,payload_len
+	call write_payload
+
+;	ld hl,bootloader
+;	ld de,#3000
+;	call write_bootloader
 
 	ld hl,read_memory_msg
 	call print
-	ld hl,#3000
+	ld hl,#0000
 read_mem_loop:
 	ld a,#4d
 	call send_byte_silent
@@ -220,8 +245,58 @@ do_erase:
 	call send_byte
 	jp do_poll
 
-;	ld hl,bootloader
-;	ld de,#3800
+
+
+
+write_payload:
+	ld a,#40			; low byte
+	call send_byte_silent
+	ld a,d
+	call send_byte_silent
+	ld a,e
+	call send_byte_silent
+	ld a,(hl)
+	inc hl
+	call send_byte_silent
+
+	ld a,#48			; high byte
+	call send_byte_silent
+	ld a,d
+	call send_byte_silent
+	ld a,e
+	call send_byte_silent
+	ld a,(hl)
+	inc hl
+	call send_byte_silent
+
+	ld a,e
+	inc a
+	and #3f
+	jr nz, nowritepagepayload
+
+	ld a,#4c			; flush page
+	call send_byte
+	ld a,d
+	call send_byte
+	ld a,e
+	call send_byte
+	xor a
+	call send_byte
+
+	call do_poll
+
+	ld a,b
+	rla
+	ret c 				; finished writing
+
+nowritepagepayload:
+	inc de
+	dec bc
+	dec bc
+	jr write_payload
+
+
+
 
 write_bootloader:
 	ld a,#40			; low byte
@@ -470,8 +545,14 @@ chip_erase_msg:
 writing_msg:
 	defb 13,10,"Writing...",13,10,0
 
+payload:
+;	incbin "controller/DualVirtualSerial/DualVirtualSerial.hex"
+	incbin "controller/VirtualSerial/VirtualSerial.hex"
+payload_len equ ($-payload)
+
 bootloader:
-	incbin "controller/LUFA-120219/Bootloaders/DFU/BootloaderDFU.hex"
+	defb 0
+;	incbin "controller/LUFA-120219/Bootloaders/DFU/BootloaderDFU.hex"
 
 bootloader2:
 

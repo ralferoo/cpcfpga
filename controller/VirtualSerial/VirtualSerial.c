@@ -1,5 +1,3 @@
-#include <avr/sleep.h>
-
 /*
              LUFA Library
      Copyright (C) Dean Camera, 2012.
@@ -32,61 +30,40 @@
 
 /** \file
  *
- *  Main source file for the DualVirtualSerial demo. This file contains the main tasks of
+ *  Main source file for the VirtualSerial demo. This file contains the main tasks of
  *  the demo and is responsible for the initial application hardware configuration.
  */
 
-#include "DualVirtualSerial.h"
+#include "VirtualSerial.h"
 
 /** LUFA CDC Class driver interface configuration and state information. This structure is
  *  passed to all CDC Class driver functions, so that multiple instances of the same class
- *  within a device can be differentiated from one another. This is for the first CDC interface,
- *  which sends strings to the host for each joystick movement.
+ *  within a device can be differentiated from one another.
  */
-USB_ClassInfo_CDC_Device_t VirtualSerial1_CDC_Interface =
+USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
 	{
 		.Config =
 			{
-				.ControlInterfaceNumber           = 0,
+				.ControlInterfaceNumber         = 0,
 
-				.DataINEndpointNumber             = CDC1_TX_EPNUM,
-				.DataINEndpointSize               = CDC_TXRX_EPSIZE,
-				.DataINEndpointDoubleBank         = false,
+				.DataINEndpointNumber           = CDC_TX_EPNUM,
+				.DataINEndpointSize             = CDC_TXRX_EPSIZE,
+				.DataINEndpointDoubleBank       = false,
 
-				.DataOUTEndpointNumber            = CDC1_RX_EPNUM,
-				.DataOUTEndpointSize              = CDC_TXRX_EPSIZE,
-				.DataOUTEndpointDoubleBank        = false,
+				.DataOUTEndpointNumber          = CDC_RX_EPNUM,
+				.DataOUTEndpointSize            = CDC_TXRX_EPSIZE,
+				.DataOUTEndpointDoubleBank      = false,
 
-				.NotificationEndpointNumber       = CDC1_NOTIFICATION_EPNUM,
-				.NotificationEndpointSize         = CDC_NOTIFICATION_EPSIZE,
-				.NotificationEndpointDoubleBank   = false,
+				.NotificationEndpointNumber     = CDC_NOTIFICATION_EPNUM,
+				.NotificationEndpointSize       = CDC_NOTIFICATION_EPSIZE,
+				.NotificationEndpointDoubleBank = false,
 			},
 	};
 
-/** LUFA CDC Class driver interface configuration and state information. This structure is
- *  passed to all CDC Class driver functions, so that multiple instances of the same class
- *  within a device can be differentiated from one another. This is for the second CDC interface,
- *  which echos back all received data from the host.
+/** Standard file stream for the CDC interface when set up, so that the virtual CDC COM port can be
+ *  used like any regular character stream in the C APIs
  */
-USB_ClassInfo_CDC_Device_t VirtualSerial2_CDC_Interface =
-	{
-		.Config =
-			{
-				.ControlInterfaceNumber           = 2,
-
-				.DataINEndpointNumber             = CDC2_TX_EPNUM,
-				.DataINEndpointSize               = CDC_TXRX_EPSIZE,
-				.DataINEndpointDoubleBank         = false,
-
-				.DataOUTEndpointNumber            = CDC2_RX_EPNUM,
-				.DataOUTEndpointSize              = CDC_TXRX_EPSIZE,
-				.DataOUTEndpointDoubleBank        = false,
-
-				.NotificationEndpointNumber       = CDC2_NOTIFICATION_EPNUM,
-				.NotificationEndpointSize         = CDC_NOTIFICATION_EPSIZE,
-				.NotificationEndpointDoubleBank   = false,
-			},
-	};
+static FILE USBSerialStream;
 
 
 /** Main program entry point. This routine contains the overall program flow, including initial
@@ -94,17 +71,10 @@ USB_ClassInfo_CDC_Device_t VirtualSerial2_CDC_Interface =
  */
 int main(void)
 {
-#if 0
-	LEDs_Init();
-	for (;;) {
-		_delay_ms(1000);
-		LEDs_SetAllLEDs(LEDS_LED1);
-
-		_delay_ms(1000);
-		LEDs_SetAllLEDs(0);
-	}
-#else
 	SetupHardware();
+
+	/* Create a regular character stream for the interface so that it can be used with the stdio.h functions */
+	CDC_Device_CreateStream(&VirtualSerial_CDC_Interface, &USBSerialStream);
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
 	sei();
@@ -113,19 +83,12 @@ int main(void)
 	{
 		CheckJoystickMovement();
 
-		/* Discard all received data on the first CDC interface */
-		CDC_Device_ReceiveByte(&VirtualSerial1_CDC_Interface);
+		/* Must throw away unused bytes from the host, or it will lock up while waiting for the device */
+		CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 
-		/* Echo all received data on the second CDC interface */
-		int16_t ReceivedByte = CDC_Device_ReceiveByte(&VirtualSerial2_CDC_Interface);
-		if (!(ReceivedByte < 0))
-		  CDC_Device_SendByte(&VirtualSerial2_CDC_Interface, (uint8_t)ReceivedByte);
-
-		CDC_Device_USBTask(&VirtualSerial1_CDC_Interface);
-		CDC_Device_USBTask(&VirtualSerial2_CDC_Interface);
+		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
 		USB_USBTask();
 	}
-#endif
 }
 
 /** Configures the board hardware and chip peripherals for the demo's functionality. */
@@ -144,20 +107,13 @@ void SetupHardware(void)
 	USB_Init();
 }
 
-/** Checks for changes in the position of the board joystick, sending strings to the host upon each change
- *  through the first of the CDC interfaces.
- */
+/** Checks for changes in the position of the board joystick, sending strings to the host upon each change. */
 void CheckJoystickMovement(void)
 {
 	uint8_t     JoyStatus_LCL = Joystick_GetStatus();
 	char*       ReportString  = NULL;
-	static bool ActionSent = false;
+	static bool ActionSent    = false;
 
-	static int i = 0;
-	static char buffer[32];
-	sprintf("[%d]\r\n", i++);
-	ReportString = buffer;
-/*	
 	if (JoyStatus_LCL & JOY_UP)
 	  ReportString = "Joystick Up\r\n";
 	else if (JoyStatus_LCL & JOY_DOWN)
@@ -170,13 +126,16 @@ void CheckJoystickMovement(void)
 	  ReportString = "Joystick Pressed\r\n";
 	else
 	  ActionSent = false;
-*/
 
 	if ((ReportString != NULL) && (ActionSent == false))
 	{
 		ActionSent = true;
 
-		CDC_Device_SendString(&VirtualSerial1_CDC_Interface, ReportString);
+		/* Write the string to the virtual COM port via the created character stream */
+		fputs(ReportString, &USBSerialStream);
+
+		/* Alternatively, without the stream: */
+		// CDC_Device_SendString(&VirtualSerial_CDC_Interface, ReportString);
 	}
 }
 
@@ -197,8 +156,7 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 {
 	bool ConfigSuccess = true;
 
-	ConfigSuccess &= CDC_Device_ConfigureEndpoints(&VirtualSerial1_CDC_Interface);
-	ConfigSuccess &= CDC_Device_ConfigureEndpoints(&VirtualSerial2_CDC_Interface);
+	ConfigSuccess &= CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface);
 
 	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
 }
@@ -206,7 +164,6 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 /** Event handler for the library USB Control Request reception event. */
 void EVENT_USB_Device_ControlRequest(void)
 {
-	CDC_Device_ProcessControlRequest(&VirtualSerial1_CDC_Interface);
-	CDC_Device_ProcessControlRequest(&VirtualSerial2_CDC_Interface);
+	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
 
