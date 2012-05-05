@@ -1,0 +1,10 @@
+
+
+23 = casin = yellow = pdo = pb3 = miso = 16
+42 = casout = green = pdi = pb2 = mosi = 20
+43 = casmot = blue = sck = pb1 = sclk = 18
+
+vcc_b2 = 3.3v = orange	= 4
+gnd = black	= 6
+
+41 = leds(3) = reset - gnd 	= 2 & 5 shorted
