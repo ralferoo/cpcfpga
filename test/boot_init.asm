@@ -44,9 +44,9 @@ retry_sync:
 sigloop:
 	ld a,#30
 	call send_byte
-	ld a,b
-	call send_byte
 	xor a
+	call send_byte
+	ld a,b
 	call send_byte
 	xor a
 	call send_byte
@@ -114,6 +114,71 @@ sigloop:
 	xor a
 	call send_byte
 
+
+;	ld hl,load_ext_byte_msg
+;	call print
+
+	ld hl,read_memory_msg
+	call print
+	ld hl,0
+read_mem_loop:
+	ld a,#4d
+	call send_byte
+	xor a
+	call send_byte
+	ld a,h
+	call send_byte
+	xor a
+	call send_byte
+
+	ld a,#20
+	call send_byte
+	ld a,0
+	call send_byte
+	ld a,l
+	call send_byte
+	xor a
+	call send_byte
+
+	ld a,'|'
+	call chout
+	ld a,' '
+	call chout
+
+	ld a,#28
+	call send_byte
+	ld a,0
+	call send_byte
+	ld a,l
+	call send_byte
+	xor a
+	call send_byte
+
+	ld a,13
+	call chout
+	ld a,10
+	call chout
+
+	inc l
+	ld a,l
+	cp 64
+	jr nz, read_mem_loop
+
+	ld l,0
+	inc h
+	ld a,h
+	or a
+	jr nz,read_mem_loop
+
+	call do_poll
+
+	ld hl,done_msg
+	call print
+
+	jp 0
+hang:	jp hang
+
+do_poll:
 	ld hl,poll_msg
 	call print
 	ld a,#f0
@@ -124,12 +189,9 @@ sigloop:
 	call send_byte
 	xor a
 	call send_byte
-
-	ld hl,done_msg
-	call print
-
-	jp 0
-hang:	jp hang
+	rrca
+	jr c, do_poll
+	ret
 
 doreset:
 	push hl
@@ -273,3 +335,9 @@ poll_msg:
 
 done_msg:
 	defb 13,10,"Done!",13,10,0
+
+read_memory_msg:
+	defb 13,10,"Reading program memory:",13,10,0
+
+load_ext_byte_msg:
+	defb 13,10,"Loading extended byte:",13,10,0
