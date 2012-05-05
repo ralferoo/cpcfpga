@@ -38,12 +38,95 @@ retry_sync:
 	ld hl,found_msg
 	call print
 
-	ld a,65
-	call chout
+	ld hl,signature_byte_msg
+	call print
+	ld b,0
+sigloop:
+	ld a,#30
+	call send_byte
+	ld a,b
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
 	ld a,13
 	call chout
 	ld a,10
 	call chout
+	inc b
+	ld a,4
+	cp b
+	jr nz,sigloop
+
+	ld hl,lock_bits_msg
+	call print
+	ld a,#58
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+
+	ld hl,fuse_bits_msg
+	call print
+	ld a,#50
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+
+	ld hl,fuse_high_bits_msg
+	call print
+	ld a,#58
+	call send_byte
+	ld a,#8
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+
+	ld hl,fuse_ext_bits_msg
+	call print
+	ld a,#50
+	call send_byte
+	ld a,#8
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+
+	ld hl,cali_byte_msg
+	call print
+	ld a,#38
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+
+	ld hl,poll_msg
+	call print
+	ld a,#f0
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+	xor a
+	call send_byte
+
+	ld hl,done_msg
+	call print
 
 	jp 0
 hang:	jp hang
@@ -106,9 +189,7 @@ bit_loop:
 	ld a,d
 	call outhex
 
-	ld a,13
-	call chout
-	ld a,10
+	ld a,32
 	call chout
 
 	ld a,d
@@ -160,7 +241,35 @@ reset_msg:
 	defb "Doing reset...",13,10,0
 
 intro_msg:
-	defb "Testing serial program mode:",13,10,0
+	defb 13,10,"Testing serial program mode:",13,10,0
 
 found_msg:
-	defb "Received programming enable ack...", 13,10,0
+	defb 13,10,"Received programming enable ack...", 13,10,0
+
+lock_bits_msg:
+	defb 13,10,"Lock bits:",13,10,0
+
+
+fuse_bits_msg:
+	defb 13,10,"Fuse bits:",13,10,0
+
+
+fuse_ext_bits_msg:
+	defb 13,10,"Extended fuse bits:",13,10,0
+
+
+fuse_high_bits_msg:
+	defb 13,10,"Fuse High bits:",13,10,0
+
+
+cali_byte_msg:
+	defb 13,10,"Calibration byte:",13,10,0
+
+signature_byte_msg:
+	defb 13,10,"Signature bytes:",13,10,0
+
+poll_msg:
+	defb 13,10,"Polling:",13,10,0
+
+done_msg:
+	defb 13,10,"Done!",13,10,0
