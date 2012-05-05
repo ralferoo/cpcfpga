@@ -159,6 +159,9 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 	ConfigSuccess &= CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface);
 
 	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
+
+//	if (ConfigSuccess)
+//		fputs("Hello and welcome!", &USBSerialStream);
 }
 
 /** Event handler for the library USB Control Request reception event. */

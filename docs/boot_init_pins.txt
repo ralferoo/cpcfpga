@@ -9,3 +9,5 @@ vcc_b2 = 3.3v = orange	= 4
 gnd = black	= 6
 
 41 = leds(3) = reset - gnd 	= 2 & 5 shorted
+
+gnd/button = brown - 1
