@@ -117,6 +117,26 @@ sigloop:
 	xor a
 	call send_byte
 
+;	ld a,#ac
+;	call send_byte
+;	ld a,#a8
+;	call send_byte
+;	ld a,#d9
+;	call send_byte
+;	ld a,#d9
+;	call send_byte
+;
+;	ld hl,fuse_high_bits_msg
+;	call print
+;	ld a,#58
+;	call send_byte
+;	ld a,#8
+;	call send_byte
+;	xor a
+;	call send_byte
+;	xor a
+;	call send_byte
+
 	ld hl,fuse_ext_bits_msg
 	call print
 	ld a,#50
@@ -161,9 +181,9 @@ sigloop:
 	ld bc,payload_len
 	call write_payload
 
-;	ld hl,bootloader
-;	ld de,#3000
-;	call write_bootloader
+	ld hl,bootloader
+	ld de,#3800
+	call write_bootloader
 
 	ld hl,read_memory_msg
 	call print
@@ -552,7 +572,7 @@ payload_len equ ($-payload)
 
 bootloader:
 	defb 0
-;	incbin "controller/LUFA-120219/Bootloaders/DFU/BootloaderDFU.hex"
+	incbin "controller/DFU/BootloaderDFU.hex"
 
 bootloader2:
 
