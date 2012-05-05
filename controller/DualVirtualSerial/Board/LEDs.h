@@ -69,7 +69,7 @@
 	/* Public Interface - May be used in end-application: */
 		/* Macros: */
 			/** LED mask for the first LED on the board. */
-			#define LEDS_LED1        0
+			#define LEDS_LED1        0x40
 
 			/** LED mask for the second LED on the board. */
 			#define LEDS_LED2        0
@@ -90,41 +90,40 @@
 		#if !defined(__DOXYGEN__)
 			static inline void LEDs_Init(void)
 			{
-//				DDRA  |=  LEDS_ALL_LEDS;
-//				PORTA &= ~LEDS_ALL_LEDS;
+				DDRC  |=  LEDS_ALL_LEDS;
+				PORTC &= ~LEDS_ALL_LEDS;
 			}
 			
 			static inline void LEDs_TurnOnLEDs(const uint8_t LEDMask)
 			{
-//				PORTA |= LEDMask;
+				PORTC |= LEDMask;
 			}
 
 			static inline void LEDs_TurnOffLEDs(const uint8_t LEDMask)
 			{
-//				PORTA &= ~LEDMask;
+				PORTC &= ~LEDMask;
 			}
 
 			static inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
 			{
-//				PORTA = ((PORTA & ~LEDS_ALL_LEDS) | LEDMask);
+				PORTC = ((PORTC & ~LEDS_ALL_LEDS) | LEDMask);
 			}
 			
 			static inline void LEDs_ChangeLEDs(const uint8_t LEDMask,
 			                                   const uint8_t ActiveMask)
 			{
-//				PORTA = ((PORTA & ~LEDMask) | ActiveMask);
+				PORTC = ((PORTC & ~LEDMask) | ActiveMask);
 			}
 			
 			static inline void LEDs_ToggleLEDs(const uint8_t LEDMask)
 			{
-//				PORTA = (PORTA ^ (LEDMask & LEDS_ALL_LEDS));
+				PORTC = (PORTC ^ (LEDMask & LEDS_ALL_LEDS));
 			}
 			
 			static inline uint8_t LEDs_GetLEDs(void) ATTR_WARN_UNUSED_RESULT;
 			static inline uint8_t LEDs_GetLEDs(void)
 			{
-				return 0;
-//				return (PORTA & LEDS_ALL_LEDS);
+				return (PORTC & LEDS_ALL_LEDS);
 			}
 		#endif
 
