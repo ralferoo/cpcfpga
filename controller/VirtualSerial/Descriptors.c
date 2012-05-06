@@ -88,7 +88,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
 
 			.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
-			.TotalInterfaces        = 3,
+			.TotalInterfaces        = 2,
 
 			.ConfigurationNumber    = 1,
 			.ConfigurationStrIndex  = NO_DESCRIPTOR,
@@ -214,17 +214,19 @@ const USB_Descriptor_String_t PROGMEM ManufacturerString =
  */
 const USB_Descriptor_String_t PROGMEM ProductString =
 {
-	.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
+	.Header                 = {.Size = USB_STRING_LEN(13), .Type = DTYPE_String},
 
-	.UnicodeString          = L"CPC2012 revision 1"
+	.UnicodeString          = L"CPC2012 rev 0"
 };
 
-const USB_Descriptor_String_t PROGMEM SerialString =
+// serial number, must start with identifier for voti.nl VID/PID
+const USB_Descriptor_String_t PROGMEM SerialNumberString =
 {
-	.Header                 = {.Size = USB_STRING_LEN(16), .Type = DTYPE_String},
+        Header:                 {Size: USB_STRING_LEN(28), Type: DTYPE_String},
 
-	.UnicodeString          = L"cpcfpga.com:0:00"
+        UnicodeString:          L"cpcfpga.com:cpc2012:00000000"
 };
+
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
  *  documentation) by the application code so that the address and size of a requested descriptor can be given
@@ -268,8 +270,8 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 					Size    = pgm_read_byte(&ProductString.Header.Size);
 					break;
 				case 0x03:
-					Address = &SerialString;
-					Size    = pgm_read_byte(&SerialString.Header.Size);
+					Address = &SerialNumberString;
+					Size    = pgm_read_byte(&SerialNumberString.Header.Size);
 					break;
 			}
 
