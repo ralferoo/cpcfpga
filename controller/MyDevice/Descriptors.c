@@ -65,13 +65,13 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 
 	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
 
-	.VendorID               = 0x03EB,
-	.ProductID              = 0x204E,
+	.VendorID               = 0x16C0,
+	.ProductID              = 0x27DC,
 	.ReleaseNumber          = VERSION_BCD(00.01),
 
 	.ManufacturerStrIndex   = 0x01,
 	.ProductStrIndex        = 0x02,
-	.SerialNumStrIndex      = USE_INTERNAL_SERIAL,
+	.SerialNumStrIndex      = 0x03,
 
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
@@ -125,7 +125,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.SubClass               = CDC_CSCP_ACMSubclass,
 			.Protocol               = CDC_CSCP_ATCommandProtocol,
 
-			.InterfaceStrIndex      = NO_DESCRIPTOR
+			.InterfaceStrIndex      = 0x04 //NO_DESCRIPTOR
 		},
 
 	.CDC1_Functional_Header =
@@ -226,7 +226,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.SubClass               = CDC_CSCP_ACMSubclass,
 			.Protocol               = CDC_CSCP_ATCommandProtocol,
 
-			.InterfaceStrIndex      = NO_DESCRIPTOR
+			.InterfaceStrIndex      = 0x05 //NO_DESCRIPTOR
 		},
 
 	.CDC2_Functional_Header =
@@ -320,7 +320,7 @@ const USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(11), .Type = DTYPE_String},
 
-	.UnicodeString          = L"Dean Camera"
+	.UnicodeString          = L"cpcfpga.com"
 };
 
 /** Product descriptor string. This is a Unicode string containing the product's details in human readable form,
@@ -329,9 +329,30 @@ const USB_Descriptor_String_t PROGMEM ManufacturerString =
  */
 const USB_Descriptor_String_t PROGMEM ProductString =
 {
-	.Header                 = {.Size = USB_STRING_LEN(13), .Type = DTYPE_String},
+        .Header                 = {.Size = USB_STRING_LEN(13), .Type = DTYPE_String},
 
-	.UnicodeString          = L"LUFA Dual CDC Demo"
+        .UnicodeString          = L"CPC2012 rev 0"
+};
+
+// serial number, must start with identifier for voti.nl VID/PID
+const USB_Descriptor_String_t PROGMEM SerialNumberString =
+{
+        Header:                 {Size: USB_STRING_LEN(28), Type: DTYPE_String},
+
+        UnicodeString:          L"cpcfpga.com:cpc2012:00000001"
+};
+
+const USB_Descriptor_String_t PROGMEM InterfaceDebugString =
+{
+        Header:                 {Size: USB_STRING_LEN(5), Type: DTYPE_String},
+
+        UnicodeString:          L"debug"
+};
+const USB_Descriptor_String_t PROGMEM InterfaceFlashString =
+{
+        Header:                 {Size: USB_STRING_LEN(5), Type: DTYPE_String},
+
+        UnicodeString:          L"flash"
 };
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
@@ -375,6 +396,18 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 					Address = &ProductString;
 					Size    = pgm_read_byte(&ProductString.Header.Size);
 					break;
+                                case 0x03:
+                                        Address = &SerialNumberString;
+                                        Size    = pgm_read_byte(&SerialNumberString.Header.Size);
+                                        break;
+                                case 0x04:
+                                        Address = &InterfaceDebugString;
+                                        Size    = pgm_read_byte(&InterfaceDebugString.Header.Size);
+                                        break;
+                                case 0x05:
+                                        Address = &InterfaceFlashString;
+                                        Size    = pgm_read_byte(&InterfaceFlashString.Header.Size);
+                                        break;
 			}
 
 			break;
