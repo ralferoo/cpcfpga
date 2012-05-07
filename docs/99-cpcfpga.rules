@@ -3,4 +3,4 @@
 # information determined from:
 # 	udevadm info -a -p `udevadm info -q path -n /dev/ttyACM0`
 
-ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="27dc", ATTRS{serial}=="cpcfpga.com:*", MODE="0666", OWNER="ralf", SYMLINK="cpcfpga"
+ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="27dc", ATTRS{serial}=="cpcfpga.com:cpc2012:*", MODE="0666", OWNER="ralf", SYMLINK="cpc2012"
