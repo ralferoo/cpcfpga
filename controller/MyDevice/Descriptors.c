@@ -107,7 +107,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 
 			.Class                  = CDC_CSCP_CDCClass,
 			.SubClass               = CDC_CSCP_ACMSubclass,
-			.Protocol               = CDC_CSCP_ATCommandProtocol,
+			.Protocol               = CDC_CSCP_NoSpecificProtocol, //CDC_CSCP_ATCommandProtocol,
 
 			.IADStrIndex            = NO_DESCRIPTOR
 		},
@@ -123,7 +123,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 
 			.Class                  = CDC_CSCP_CDCClass,
 			.SubClass               = CDC_CSCP_ACMSubclass,
-			.Protocol               = CDC_CSCP_ATCommandProtocol,
+			.Protocol               = CDC_CSCP_NoSpecificProtocol, //CDC_CSCP_ATCommandProtocol,
 
 			.InterfaceStrIndex      = 0x04 //NO_DESCRIPTOR
 		},
@@ -208,7 +208,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 
 			.Class                  = CDC_CSCP_CDCClass,
 			.SubClass               = CDC_CSCP_ACMSubclass,
-			.Protocol               = CDC_CSCP_ATCommandProtocol,
+			.Protocol               = CDC_CSCP_NoSpecificProtocol, //CDC_CSCP_ATCommandProtocol,
 
 			.IADStrIndex            = NO_DESCRIPTOR
 		},
@@ -224,7 +224,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 
 			.Class                  = CDC_CSCP_CDCClass,
 			.SubClass               = CDC_CSCP_ACMSubclass,
-			.Protocol               = CDC_CSCP_ATCommandProtocol,
+			.Protocol               = CDC_CSCP_NoSpecificProtocol, //CDC_CSCP_ATCommandProtocol,
 
 			.InterfaceStrIndex      = 0x05 //NO_DESCRIPTOR
 		},
