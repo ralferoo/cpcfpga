@@ -91,8 +91,8 @@ int main(void)
    TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
    OCR1A   = 15624; // Set CTC compare value to 1Hz at 1MHz AVR clock, with a prescaler of 64
 
-   TCCR1B |= ((1 << CS10) | (1 << CS11)); // Start timer at Fcpu/64 
-//   TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024 
+//   TCCR1B |= ((1 << CS10) | (1 << CS11)); // Start timer at Fcpu/64 
+   TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024 
 
 	sei();
 
