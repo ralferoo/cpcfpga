@@ -233,6 +233,7 @@ void CDC1_Task(void)
 	if (timer_changed) {
 		timer_changed=0;
 		sprintf(testdata, "timer=%d\r\n", timer);
+	  	ActionSent = false;
 		ReportString=testdata;
 //	  ReportString = "Joystick Up\r\n";
 	}
