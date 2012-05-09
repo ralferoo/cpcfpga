@@ -36,6 +36,11 @@
 
 #include "MyDevice.h"
 
+#include <avr/io.h>          // include I/O definitions (port names, pin names, etc)
+#include <avr/interrupt.h>   // include interrupt support 
+
+//#define TIMSK _SFR_IO8(0x3A)
+
 /** Contains the current baud rate and other settings of the first virtual serial port. While this demo does not use
  *  the physical USART and thus does not use these settings, they must still be retained and returned to the host
  *  upon request or the host will assume the device is non-functional.
@@ -63,6 +68,16 @@ static CDC_LineEncoding_t LineEncoding2 = { .BaudRateBPS = 0,
                                             .DataBits    = 8                            };
 
 
+int timer=0;
+bool timer_changed=0;
+
+ISR(TIMER1_COMPA_vect)
+{
+	timer++;
+	timer_changed=1;
+} 
+
+
 /** Main program entry point. This routine configures the hardware required by the application, then
  *  enters a loop to run the application tasks in sequence.
  */
@@ -71,6 +86,14 @@ int main(void)
 	SetupHardware();
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
+
+   TCCR1B |= (1 << WGM12); // Configure timer 1 for CTC mode
+   TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
+   OCR1A   = 15624; // Set CTC compare value to 1Hz at 1MHz AVR clock, with a prescaler of 64
+
+   TCCR1B |= ((1 << CS10) | (1 << CS11)); // Start timer at Fcpu/64 
+//   TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024 
+
 	sei();
 
 	for (;;)
@@ -191,6 +214,8 @@ void EVENT_USB_Device_ControlRequest(void)
 	}
 }
 
+char testdata[100];
+
 /** Function to manage CDC data transmission and reception to and from the host for the first CDC interface, which sends joystick
  *  movements to the host as ASCII strings.
  */
@@ -205,16 +230,24 @@ void CDC1_Task(void)
 	  return;
 
 	/* Determine if a joystick action has occurred */
-	if (JoyStatus_LCL & JOY_UP)
-	  ReportString = "Joystick Up\r\n";
-	else if (JoyStatus_LCL & JOY_DOWN)
+	if (timer_changed) {
+		timer_changed=0;
+		sprintf(testdata, "timer=%d\r\n", timer);
+		ReportString=testdata;
+//	  ReportString = "Joystick Up\r\n";
+	}
+	else if (JoyStatus_LCL & JOY_DOWN) {
 	  ReportString = "Joystick Down\r\n";
+	}
 	else if (JoyStatus_LCL & JOY_LEFT)
 	  ReportString = "Joystick Left\r\n";
 	else if (JoyStatus_LCL & JOY_RIGHT)
 	  ReportString = "Joystick Right\r\n";
-	else if (JoyStatus_LCL & JOY_PRESS)
+	else if (JoyStatus_LCL & JOY_PRESS) {
 	  ReportString = "Joystick Pressed\r\n";
+		sprintf(testdata, "joystick timer=%d\r\n", timer);
+		ReportString=testdata;
+	}
 	else
 	  ActionSent = false;
 
