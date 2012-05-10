@@ -51,15 +51,6 @@
 		/** Endpoint number of the first CDC interface's device-to-host notification IN endpoint. */
 		#define CDC1_NOTIFICATION_EPNUM        3
 
-		/** Endpoint number of the second CDC interface's device-to-host data IN endpoint. */
-//		#define CDC2_TX_EPNUM                  4
-
-		/** Endpoint number of the second CDC interface's host-to-device data OUT endpoint. */
-//		#define CDC2_RX_EPNUM                  5
-
-		/** Endpoint number of the second CDC interface's device-to-host notification IN endpoint. */
-//		#define CDC2_NOTIFICATION_EPNUM        6
-
 		/** Size in bytes of the CDC device-to-host notification IN endpoints. */
 		#define CDC_NOTIFICATION_EPSIZE        8
 
@@ -87,26 +78,13 @@
 			USB_Descriptor_Interface_t               CDC1_DCI_Interface;
 			USB_Descriptor_Endpoint_t                CDC1_DataOutEndpoint;
 			USB_Descriptor_Endpoint_t                CDC1_DataInEndpoint;
-/*
-			// Second CDC Control Interface
-			USB_Descriptor_Interface_Association_t   CDC2_IAD;
-			USB_Descriptor_Interface_t               CDC2_CCI_Interface;
-			USB_CDC_Descriptor_FunctionalHeader_t    CDC2_Functional_Header;
-			USB_CDC_Descriptor_FunctionalACM_t       CDC2_Functional_ACM;
-			USB_CDC_Descriptor_FunctionalUnion_t     CDC2_Functional_Union;
-			USB_Descriptor_Endpoint_t                CDC2_ManagementEndpoint;
-
-			// Second CDC Data Interface
-			USB_Descriptor_Interface_t               CDC2_DCI_Interface;
-			USB_Descriptor_Endpoint_t                CDC2_DataOutEndpoint;
-			USB_Descriptor_Endpoint_t                CDC2_DataInEndpoint;
-*/
 		} USB_Descriptor_Configuration_t;
 
 	/* Function Prototypes: */
 		uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 		                                    const uint8_t wIndex,
-		                                    const void** const DescriptorAddress)
+		                                    const void** const DescriptorAddress,
+				    		    uint8_t *  	MemoryAddressSpace )
 		                                    ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
 
 #endif

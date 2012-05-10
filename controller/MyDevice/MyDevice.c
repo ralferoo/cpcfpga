@@ -346,8 +346,8 @@ void CDC1_Task(void)
 				/* Write the String to the Endpoint */
 //				Endpoint_Write_Stream_LE(".", 1, NULL);
 				uint8_t  Buffer[ 100 ]; //Endpoint_BytesInEndpoint()];
-				sprintf(Buffer, "timer=%d\r\n", timer);
-				Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
+				sprintf((char*)Buffer, "timer=%d\r\n", timer);
+				Endpoint_Write_Stream_LE(&Buffer, strlen((char*)Buffer), NULL);
 
 				/* Finalize the stream transfer to send the last packet */
 				Endpoint_ClearIN();
