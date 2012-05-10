@@ -260,25 +260,32 @@ void CDC1_Task(void)
 		/* Select the Serial Tx Endpoint */
 		Endpoint_SelectEndpoint(CDC1_TX_EPNUM);
 
-		/* Write the String to the Endpoint */
-		Endpoint_Write_Stream_LE(ReportString, strlen(ReportString), NULL);
+	    	if (Endpoint_IsReadWriteAllowed()) {
 
-		/* Finalize the stream transfer to send the last packet */
-		Endpoint_ClearIN();
+			/* Write the String to the Endpoint */
+			Endpoint_Write_Stream_LE(ReportString, strlen(ReportString), NULL);
 
-		/* Wait until the endpoint is ready for another packet */
-		Endpoint_WaitUntilReady();
+			/* Finalize the stream transfer to send the last packet */
+			Endpoint_ClearIN();
 
-		/* Send an empty packet to ensure that the host does not buffer data sent to it */
-		Endpoint_ClearIN();
+			/* Wait until the endpoint is ready for another packet */
+			Endpoint_WaitUntilReady();
+
+			/* Send an empty packet to ensure that the host does not buffer data sent to it */
+			Endpoint_ClearIN();
+		}
 	}
 
 	/* Select the Serial Rx Endpoint */
 	Endpoint_SelectEndpoint(CDC1_RX_EPNUM);
 
 	/* Throw away any received data from the host */
-	if (Endpoint_IsOUTReceived())
+/*
+	if (Endpoint_IsOUTReceived()) {
+		timer += 10;
 	  Endpoint_ClearOUT();
+	}
+*/
 }
 
 /** Function to manage CDC data transmission and reception to and from the host for the second CDC interface, which echoes back
@@ -286,6 +293,8 @@ void CDC1_Task(void)
  */
 void CDC2_Task(void)
 {
+	static int timer_check = 0;
+
 	/* Device must be connected and configured for the task to run */
 	if (USB_DeviceState != DEVICE_STATE_Configured)
 	  return;
@@ -297,13 +306,13 @@ void CDC2_Task(void)
 	if (Endpoint_IsOUTReceived())
 	{
 		/* Create a temp buffer big enough to hold the incoming endpoint packet */
-		uint8_t  Buffer[Endpoint_BytesInEndpoint()];
+		uint8_t  Buffer[ 100 ]; //Endpoint_BytesInEndpoint()];
 
 		/* Remember how large the incoming packet is */
 		uint16_t DataLength = Endpoint_BytesInEndpoint();
 
-		/* Read in the incoming packet into the buffer */
-		Endpoint_Read_Stream_LE(&Buffer, DataLength, NULL);
+//		/* Read in the incoming packet into the buffer */
+//		Endpoint_Read_Stream_LE(&Buffer, DataLength, NULL);
 
 		/* Finalize the stream transfer to send the last packet */
 		Endpoint_ClearOUT();
@@ -312,16 +321,45 @@ void CDC2_Task(void)
 		Endpoint_SelectEndpoint(CDC2_TX_EPNUM);
 
 		/* Write the received data to the endpoint */
-		Endpoint_Write_Stream_LE(&Buffer, DataLength, NULL);
+//		Endpoint_Write_Stream_LE(&Buffer, DataLength, NULL);
+
+		sprintf(Buffer,"recv=%d\n", DataLength );
+		Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
 
 		/* Finalize the stream transfer to send the last packet */
 		Endpoint_ClearIN();
 
-		/* Wait until the endpoint is ready for the next packet */
-		Endpoint_WaitUntilReady();
+//		/* Wait until the endpoint is ready for the next packet */
+//		Endpoint_WaitUntilReady();
 
-		/* Send an empty packet to prevent host buffering */
-		Endpoint_ClearIN();
+//		/* Send an empty packet to prevent host buffering */
+//		Endpoint_ClearIN();
+	}
+	else
+	{
+		if (timer != timer_check) {
+			timer_check = timer;
+			Endpoint_SelectEndpoint(CDC2_TX_EPNUM);
+
+		    	if (Endpoint_IsReadWriteAllowed()) {
+
+				/* Write the String to the Endpoint */
+				Endpoint_Write_Stream_LE(".", 1, NULL);
+
+				/* Finalize the stream transfer to send the last packet */
+				Endpoint_ClearIN();
+
+				/* Wait until the endpoint is ready for another packet */
+				Endpoint_WaitUntilReady();
+
+				/* Send an empty packet to ensure that the host does not buffer data sent to it */
+				Endpoint_ClearIN();
+			}
+		}
 	}
 }
+
+
+// ah! the reason it doesn't work is that the u2 chips don't have enough endpoints for 2 serial ports. HURR.
+// https://groups.google.com/forum/#!topic/lufa-support/4xuaJWk6_sU
 
