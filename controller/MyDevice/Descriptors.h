@@ -52,13 +52,13 @@
 		#define CDC1_NOTIFICATION_EPNUM        3
 
 		/** Endpoint number of the second CDC interface's device-to-host data IN endpoint. */
-		#define CDC2_TX_EPNUM                  4
+//		#define CDC2_TX_EPNUM                  4
 
 		/** Endpoint number of the second CDC interface's host-to-device data OUT endpoint. */
-		#define CDC2_RX_EPNUM                  5
+//		#define CDC2_RX_EPNUM                  5
 
 		/** Endpoint number of the second CDC interface's device-to-host notification IN endpoint. */
-		#define CDC2_NOTIFICATION_EPNUM        6
+//		#define CDC2_NOTIFICATION_EPNUM        6
 
 		/** Size in bytes of the CDC device-to-host notification IN endpoints. */
 		#define CDC_NOTIFICATION_EPSIZE        8
@@ -87,7 +87,7 @@
 			USB_Descriptor_Interface_t               CDC1_DCI_Interface;
 			USB_Descriptor_Endpoint_t                CDC1_DataOutEndpoint;
 			USB_Descriptor_Endpoint_t                CDC1_DataInEndpoint;
-
+/*
 			// Second CDC Control Interface
 			USB_Descriptor_Interface_Association_t   CDC2_IAD;
 			USB_Descriptor_Interface_t               CDC2_CCI_Interface;
@@ -100,6 +100,7 @@
 			USB_Descriptor_Interface_t               CDC2_DCI_Interface;
 			USB_Descriptor_Endpoint_t                CDC2_DataOutEndpoint;
 			USB_Descriptor_Endpoint_t                CDC2_DataInEndpoint;
+*/
 		} USB_Descriptor_Configuration_t;
 
 	/* Function Prototypes: */

@@ -99,7 +99,7 @@ int main(void)
 	for (;;)
 	{
 		CDC1_Task();
-		CDC2_Task();
+//		CDC1_Task();
 		USB_USBTask();
 	}
 }
@@ -146,19 +146,19 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 	bool ConfigSuccess = true;
 
 	/* Setup first CDC Interface's Endpoints */
+//	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC1_TX_EPNUM, EP_TYPE_BULK, ENDPOINT_DIR_IN,
+//	                                            CDC_TXRX_EPSIZE, ENDPOINT_BANK_SINGLE);
+//	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC1_RX_EPNUM, EP_TYPE_BULK, ENDPOINT_DIR_OUT,
+//	                                            CDC_TXRX_EPSIZE, ENDPOINT_BANK_SINGLE);
+//	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC1_NOTIFICATION_EPNUM, EP_TYPE_INTERRUPT, ENDPOINT_DIR_IN,
+//	                                            CDC_NOTIFICATION_EPSIZE, ENDPOINT_BANK_SINGLE);
+
+	/* Setup second CDC Interface's Endpoints */
 	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC1_TX_EPNUM, EP_TYPE_BULK, ENDPOINT_DIR_IN,
 	                                            CDC_TXRX_EPSIZE, ENDPOINT_BANK_SINGLE);
 	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC1_RX_EPNUM, EP_TYPE_BULK, ENDPOINT_DIR_OUT,
 	                                            CDC_TXRX_EPSIZE, ENDPOINT_BANK_SINGLE);
 	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC1_NOTIFICATION_EPNUM, EP_TYPE_INTERRUPT, ENDPOINT_DIR_IN,
-	                                            CDC_NOTIFICATION_EPSIZE, ENDPOINT_BANK_SINGLE);
-
-	/* Setup second CDC Interface's Endpoints */
-	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC2_TX_EPNUM, EP_TYPE_BULK, ENDPOINT_DIR_IN,
-	                                            CDC_TXRX_EPSIZE, ENDPOINT_BANK_SINGLE);
-	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC2_RX_EPNUM, EP_TYPE_BULK, ENDPOINT_DIR_OUT,
-	                                            CDC_TXRX_EPSIZE, ENDPOINT_BANK_SINGLE);
-	ConfigSuccess &= Endpoint_ConfigureEndpoint(CDC2_NOTIFICATION_EPNUM, EP_TYPE_INTERRUPT, ENDPOINT_DIR_IN,
 	                                            CDC_NOTIFICATION_EPSIZE, ENDPOINT_BANK_SINGLE);
 
 	/* Reset line encoding baud rates so that the host knows to send new values */
@@ -219,7 +219,7 @@ char testdata[100];
 /** Function to manage CDC data transmission and reception to and from the host for the first CDC interface, which sends joystick
  *  movements to the host as ASCII strings.
  */
-void CDC1_Task(void)
+void xCDC1_Task(void)
 {
 	char*       ReportString    = NULL;
 	uint8_t     JoyStatus_LCL   = Joystick_GetStatus();
@@ -291,7 +291,7 @@ void CDC1_Task(void)
 /** Function to manage CDC data transmission and reception to and from the host for the second CDC interface, which echoes back
  *  all data sent to it from the host.
  */
-void CDC2_Task(void)
+void CDC1_Task(void)
 {
 	static int timer_check = 0;
 
@@ -300,7 +300,7 @@ void CDC2_Task(void)
 	  return;
 
 	/* Select the Serial Rx Endpoint */
-	Endpoint_SelectEndpoint(CDC2_RX_EPNUM);
+	Endpoint_SelectEndpoint(CDC1_RX_EPNUM);
 
 	/* Check to see if any data has been received */
 	if (Endpoint_IsOUTReceived())
@@ -311,20 +311,20 @@ void CDC2_Task(void)
 		/* Remember how large the incoming packet is */
 		uint16_t DataLength = Endpoint_BytesInEndpoint();
 
-//		/* Read in the incoming packet into the buffer */
-//		Endpoint_Read_Stream_LE(&Buffer, DataLength, NULL);
+		/* Read in the incoming packet into the buffer */
+		Endpoint_Read_Stream_LE(&Buffer, DataLength, NULL);
 
 		/* Finalize the stream transfer to send the last packet */
 		Endpoint_ClearOUT();
 
 		/* Select the Serial Tx Endpoint */
-		Endpoint_SelectEndpoint(CDC2_TX_EPNUM);
+		Endpoint_SelectEndpoint(CDC1_TX_EPNUM);
 
 		/* Write the received data to the endpoint */
-//		Endpoint_Write_Stream_LE(&Buffer, DataLength, NULL);
+		Endpoint_Write_Stream_LE(&Buffer, DataLength, NULL);
 
-		sprintf(Buffer,"recv=%d\n", DataLength );
-		Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
+//		sprintf(Buffer,"recv=%d\n", DataLength );
+//		Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
 
 		/* Finalize the stream transfer to send the last packet */
 		Endpoint_ClearIN();
@@ -339,12 +339,15 @@ void CDC2_Task(void)
 	{
 		if (timer != timer_check) {
 			timer_check = timer;
-			Endpoint_SelectEndpoint(CDC2_TX_EPNUM);
+			Endpoint_SelectEndpoint(CDC1_TX_EPNUM);
 
 		    	if (Endpoint_IsReadWriteAllowed()) {
 
 				/* Write the String to the Endpoint */
-				Endpoint_Write_Stream_LE(".", 1, NULL);
+//				Endpoint_Write_Stream_LE(".", 1, NULL);
+				uint8_t  Buffer[ 100 ]; //Endpoint_BytesInEndpoint()];
+				sprintf(Buffer, "timer=%d\r\n", timer);
+				Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
 
 				/* Finalize the stream transfer to send the last packet */
 				Endpoint_ClearIN();
