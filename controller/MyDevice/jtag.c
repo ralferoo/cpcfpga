@@ -78,3 +78,31 @@ void JTAG_SelectIR(void)
 	}
 }
 
+int JTAG_ChainLen(void)
+{
+	int i;
+
+	JTAG_Reset();
+	JTAG_SelectIR();
+	JTAG_SendClock(0);
+	JTAG_SendClock(0);			// move to shift-IR
+	for (i=0; i<1024; i++)
+		JTAG_SendClock(1);		// select BYPASS register on all devices
+	JTAG_SendClockTMS(1);			// move to exit1 IR
+	jtag_state = JTAG_STATE_EXIT1_IR;
+
+	JTAG_SelectDR();
+	JTAG_SendClock(0);
+	JTAG_SendClock(0);			// move to shift-DR
+
+	for (i=0; i<1024; i++)
+		JTAG_SendClock(0);		// shift through lots of zero bits
+
+	for (i=0; i<1024; i++)
+		if( JTAG_Clock(1)) break;	// shift through ones until we find out
+
+	JTAG_Reset();
+
+	return i;
+}
+

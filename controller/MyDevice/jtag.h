@@ -45,6 +45,15 @@ extern enum JTAG_STATE jtag_state;
 
 inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 {
+	// get the TDO value from the previous cycle
+	int previous;
+	if (read) {
+//		__asm__("nop");
+		previous = JTAG_PIN;
+	}
+	else
+		previous = 0;
+
 	// update the output data
 	if(tms)
 		JTAG_PORT |= JTAG_TMS;
@@ -60,15 +69,6 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 	JTAG_PORT |= JTAG_TCK;
 	JTAG_PORT &= ~JTAG_TCK;
 
-	// get the TDO value from the previous cycle
-	int previous;
-	if (read) {
-		__asm__("nop");
-		previous = JTAG_PIN;
-	}
-	else
-		previous = 0;
-
 	return (previous & JTAG_TDO) == JTAG_TDO;
 }
 inline int JTAG_Clock(int tdi) { return JTAG_ClockWithTMS(tdi,0,1); }
@@ -83,6 +83,7 @@ void JTAG_Init(void);
 void JTAG_Reset(void);
 void JTAG_SelectDR(void);
 void JTAG_SelectIR(void);
+int JTAG_ChainLen(void);
 
 ///////////////////////////////////////////////////////////////////////////////
 

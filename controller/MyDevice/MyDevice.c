@@ -67,8 +67,8 @@ static CDC_LineEncoding_t LineEncoding2 = { .BaudRateBPS = 0,
                                             .DataBits    = 8                            };
 
 
-int timer=0;
-bool timer_changed=0;
+volatile int timer=0;
+volatile bool timer_changed=0;
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -91,7 +91,8 @@ int main(void)
    TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
    OCR1A   = 15624; // Set CTC compare value to 1Hz at 1MHz AVR clock, with a prescaler of 64
 
-   TCCR1B |= ((1 << CS10) | (1 << CS11)); // Start timer at Fcpu/64 
+   TCCR1B |= (1 << CS11); // Start timer at Fcpu/8 
+//   TCCR1B |= ((1 << CS10) | (1 << CS11)); // Start timer at Fcpu/64 
 //   TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024 
 //   TCCR1B |= (1 << CS10); // Start timer at Fcpu/1024 
 
@@ -329,9 +330,12 @@ void CDC1_Task(void)
 
 		/* Write the received data to the endpoint */
 		Endpoint_Write_Stream_LE(&Buffer, DataLength, NULL);
-		sprintf(Buffer,"recv=%d\n", DataLength );
-		Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
+//		sprintf(Buffer,"recv=%d\n", DataLength );
+//		Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
 
+		timer_changed=0;
+		while (timer_changed==0);
+		
 		JTAG_Reset();
 		JTAG_SelectDR();
 		timer = 0;
@@ -352,20 +356,24 @@ void CDC1_Task(void)
 			Endpoint_SelectEndpoint(CDC1_TX_EPNUM);
 
 		    	if (Endpoint_IsReadWriteAllowed()) {
+				uint8_t  Buffer[ 100 ]; //Endpoint_BytesInEndpoint()];
 
-				if (timer > 200 )
+				if (timer > 100 )
 				{
+					int chain_len = JTAG_ChainLen();
+					sprintf((char*)Buffer, "\r\nReset, chain length=%d\r\n", chain_len );
+					Endpoint_Write_Stream_LE(&Buffer, strlen((char*)Buffer), NULL);
+					timer=0;
+
 					JTAG_Reset();
 					JTAG_SelectDR();
-					Endpoint_Write_Stream_LE("\r\nReset\r\n", 9, NULL);
-					timer=0;
+					JTAG_SendClock(0);
+					JTAG_SendClock(0);			// move to shift-DR
 				} else {
-					int pb = JTAG_PIN;
-					int tdo = JTAG_Clock( !(timer & 128) );
+					int tdo = JTAG_Clock(1); // !(timer & 128) );
 
 					/* Write the String to the Endpoint */
 //					Endpoint_Write_Stream_LE(".", 1, NULL);
-					uint8_t  Buffer[ 100 ]; //Endpoint_BytesInEndpoint()];
 					sprintf((char*)Buffer, "%d\r\n", tdo);
 					if (timer&63)
 						Buffer[1]=0;
