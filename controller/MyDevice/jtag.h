@@ -15,6 +15,7 @@
 #define JTAG_TCK (1<<JTAG_BIT_TCK)
 #define JTAG_TMS (1<<JTAG_BIT_TMS)
 
+#define JTAG_PIN  PINB
 #define JTAG_PORT PORTB
 #define JTAG_DDR  DDRB
 
@@ -44,13 +45,6 @@ extern enum JTAG_STATE jtag_state;
 
 inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 {
-	// get the TDO value from the previous cycle
-	int previous;
-	if (read)
-		previous = JTAG_PORT;
-	else
-		previous = 0;
-
 	// update the output data
 	if(tms)
 		JTAG_PORT |= JTAG_TMS;
@@ -65,6 +59,15 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 	// output data is set up, pulse the clock and back again
 	JTAG_PORT |= JTAG_TCK;
 	JTAG_PORT &= ~JTAG_TCK;
+
+	// get the TDO value from the previous cycle
+	int previous;
+	if (read) {
+		__asm__("nop");
+		previous = JTAG_PIN;
+	}
+	else
+		previous = 0;
 
 	return (previous & JTAG_TDO) == JTAG_TDO;
 }

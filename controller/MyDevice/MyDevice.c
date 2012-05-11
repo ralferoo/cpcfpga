@@ -91,8 +91,9 @@ int main(void)
    TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
    OCR1A   = 15624; // Set CTC compare value to 1Hz at 1MHz AVR clock, with a prescaler of 64
 
-//   TCCR1B |= ((1 << CS10) | (1 << CS11)); // Start timer at Fcpu/64 
-   TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024 
+   TCCR1B |= ((1 << CS10) | (1 << CS11)); // Start timer at Fcpu/64 
+//   TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024 
+//   TCCR1B |= (1 << CS10); // Start timer at Fcpu/1024 
 
 	sei();
 
@@ -333,6 +334,7 @@ void CDC1_Task(void)
 
 		JTAG_Reset();
 		JTAG_SelectDR();
+		timer = 0;
 
 		/* Finalize the stream transfer to send the last packet */
 		Endpoint_ClearIN();
@@ -351,14 +353,24 @@ void CDC1_Task(void)
 
 		    	if (Endpoint_IsReadWriteAllowed()) {
 
-				int pb = JTAG_PORT;
-				int tdo = JTAG_Clock(1);
+				if (timer > 200 )
+				{
+					JTAG_Reset();
+					JTAG_SelectDR();
+					Endpoint_Write_Stream_LE("\r\nReset\r\n", 9, NULL);
+					timer=0;
+				} else {
+					int pb = JTAG_PIN;
+					int tdo = JTAG_Clock( !(timer & 128) );
 
-				/* Write the String to the Endpoint */
-//				Endpoint_Write_Stream_LE(".", 1, NULL);
-				uint8_t  Buffer[ 100 ]; //Endpoint_BytesInEndpoint()];
-				sprintf((char*)Buffer, "timer=%d tdo=%d (0x%02x)\r\n", timer, tdo, pb);
-				Endpoint_Write_Stream_LE(&Buffer, strlen((char*)Buffer), NULL);
+					/* Write the String to the Endpoint */
+//					Endpoint_Write_Stream_LE(".", 1, NULL);
+					uint8_t  Buffer[ 100 ]; //Endpoint_BytesInEndpoint()];
+					sprintf((char*)Buffer, "%d\r\n", tdo);
+					if (timer&63)
+						Buffer[1]=0;
+					Endpoint_Write_Stream_LE(&Buffer, strlen((char*)Buffer), NULL);
+				}
 
 				/* Finalize the stream transfer to send the last packet */
 				Endpoint_ClearIN();
