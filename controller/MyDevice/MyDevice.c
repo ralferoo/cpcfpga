@@ -35,11 +35,10 @@
  */
 
 #include "MyDevice.h"
+#include "jtag.h"
 
 #include <avr/io.h>          // include I/O definitions (port names, pin names, etc)
 #include <avr/interrupt.h>   // include interrupt support 
-
-//#define TIMSK _SFR_IO8(0x3A)
 
 /** Contains the current baud rate and other settings of the first virtual serial port. While this demo does not use
  *  the physical USART and thus does not use these settings, they must still be retained and returned to the host
@@ -77,6 +76,7 @@ ISR(TIMER1_COMPA_vect)
 	timer_changed=1;
 } 
 
+///////////////////////////////////////////////////////////////////////////////
 
 /** Main program entry point. This routine configures the hardware required by the application, then
  *  enters a loop to run the application tasks in sequence.
@@ -95,6 +95,8 @@ int main(void)
    TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024 
 
 	sei();
+
+	JTAG_Reset();
 
 	for (;;)
 	{
@@ -118,6 +120,7 @@ void SetupHardware(void)
 	Joystick_Init();
 	LEDs_Init();
 	USB_Init();
+	JTAG_Init();
 }
 
 /** Event handler for the USB_Connect event. This indicates that the device is enumerating via the status LEDs and
