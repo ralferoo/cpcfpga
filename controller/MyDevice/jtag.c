@@ -67,39 +67,12 @@ void JTAG_SelectIR(void)
 {
 	switch( jtag_state ) {
 	default:
-		JTAG_Reset();
-	case JTAG_STATE_RESET:
-		JTAG_SendClock(0);
-	case JTAG_STATE_IDLE:
-		JTAG_SendClockTMS(0);
-		JTAG_SendClockTMS(0);
-	case JTAG_STATE_SELECT_IR:
-		break;
-		
+		JTAG_SelectDR();
 	case JTAG_STATE_SELECT_DR:
 		JTAG_SendClockTMS(0);
-		break;
-		
-	case JTAG_STATE_CAPTURE_DR:
-	case JTAG_STATE_CAPTURE_IR:
-	case JTAG_STATE_SHIFT_DR:
-	case JTAG_STATE_SHIFT_IR:
-		JTAG_SendClockTMS(0);
-
-	case JTAG_STATE_PAUSE_DR:
-	case JTAG_STATE_PAUSE_IR:
-		JTAG_SendClockTMS(0);
-	case JTAG_STATE_EXIT1_DR:
-	case JTAG_STATE_EXIT1_IR:
-	case JTAG_STATE_EXIT2_DR:
-	case JTAG_STATE_EXIT2_IR:
-		JTAG_SendClockTMS(0);
-	case JTAG_STATE_UPDATE_DR:
-	case JTAG_STATE_UPDATE_IR:
-		JTAG_SendClockTMS(0);
-		JTAG_SendClockTMS(0);
+		jtag_state = JTAG_STATE_SELECT_IR;
+	case JTAG_STATE_SELECT_IR:
 		break;
 	}
-	jtag_state = JTAG_STATE_SELECT_IR;
 }
 
