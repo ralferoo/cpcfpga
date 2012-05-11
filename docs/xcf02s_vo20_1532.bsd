@@ -1,0 +1,561 @@
+--$ XILINX$RCSfile: xcf02s_vo20_1532.bsd,v $
+--$ XILINX$Revision: 1.5 $
+-------------------------------------------------------------------------------
+-- Copyright (c) 2006 Xilinx, Inc.
+-- This design is confidential and proprietary of Xilinx, All Rights Reserved.
+-------------------------------------------------------------------------------
+--   ____  ____
+--  /   /\/   /
+-- /___/  \  /  Vendor:         Xilinx
+-- \   \   \/   Version:        v1.0 (PROM BSDL template version)
+--  \   \       Application:    Generate_Prom_Bsdl_Files.pl, 1.00
+--  /   /       Filename:       xcf02s_vo20_1532.bsd
+-- /___/   /\   Generated:      Wed Oct 11 19:34:18 2006
+-- \   \  /  \  State:          $State: PRELIMINARY $
+--  \___\/\___\                  
+--
+-- Device:      XCF02S
+-- Package(s):  VO20, VOG20
+-- Purpose:     IEEE 1149.1/1532 BSDL file
+-- Reference:   None
+-- Revisions:   
+--
+------------------------------------------------------------------------------
+-- Technical Support:
+--
+-- Find the latest version of this BSDL file, find technical support answers, 
+--  or find contact information at:  http://www.support.xilinx.com
+--
+------------------------------------------------------------------------------
+-- Special Instructions:
+--
+-- This BSDL file reflects the pre-configuration behavior. To reflect
+--  the post-configuration JTAG behavior (if any), edit this file as 
+--  described below:
+--      1. Rename file and entity if necessary to avoid name collisions.
+--      2. Modify USERCODE value in USERCODE_REGISTER declaration.
+-- For 1532 programming of special features, make the following modifications
+-- as necessary:
+--      If renamed BSDL file entity, then add BSDL file entity with ISC file.
+--      Custom USERCODE:
+--          Modify USERCODE hex value (default=FFFFFFFF) in 
+--          xflow_program_usercode and xflow_verify_usercode.
+--      Special features:
+--          Modify the DATA3 value (default=7) in
+--          xflow_program_data3 and xflow_verify_data3.
+------------------------------------------------------------------------------
+-- BSDL Silicon Validation Information
+--  None.
+------------------------------------------------------------------------------
+entity XCF02S_VO20 is
+
+generic (PHYSICAL_PIN_MAP : string := "VO20");
+
+port (
+    CE:         in      bit;
+    CEO:        out     bit;
+    CF:         out     bit;
+    CLK:        in      bit;
+    D0:         out     bit;
+    OE_RESET:   inout   bit;
+    TCK:        in      bit;
+    TDI:        in      bit;
+    TDO:        out     bit;
+    TMS:        in      bit;
+    GND:        linkage bit;
+    VCCINT:     linkage bit;
+    VCCJ:       linkage bit;
+    VCCO:       linkage bit;
+    DNC:        linkage bit_vector(1 to 6)
+); --end port list
+
+use STD_1149_1_2001.all;
+use STD_1532_2002.all;
+
+attribute COMPONENT_CONFORMANCE of XCF02S_VO20 : entity is 
+    "STD_1149_1_2001";
+
+attribute PIN_MAP of XCF02S_VO20 : entity is 
+    PHYSICAL_PIN_MAP;
+
+constant VO20: PIN_MAP_STRING:=
+    "CE:        10," &
+    "CEO:       13," &
+    "CF:        7," &
+    "CLK:       3," &
+    "D0:        1," &
+    "OE_RESET:  8," &
+    "TCK:       6," &
+    "TDI:       4," &
+    "TDO:       17," &
+    "TMS:       5," &
+    "GND:       11," &
+    "VCCINT:    18," &
+    "VCCJ:      20," &
+    "VCCO:      19," &
+    "DNC:       (2, 9, 12, 14, 15, 16)";
+
+attribute TAP_SCAN_IN    of TDI : signal is true;
+attribute TAP_SCAN_MODE  of TMS : signal is true;
+attribute TAP_SCAN_OUT   of TDO : signal is true;
+attribute TAP_SCAN_CLOCK of TCK : signal is (15.00e+06, BOTH);
+attribute INSTRUCTION_LENGTH of XCF02S_VO20 : entity is 
+    8;
+
+attribute INSTRUCTION_OPCODE of XCF02S_VO20 : entity is
+    -- IEEE 1149.1 standard instructions
+    "BYPASS             (11111111)," &
+    "SAMPLE             (00000001)," &
+    "PRELOAD            (00000001)," &
+    "EXTEST             (00000000)," &
+    "IDCODE             (11111110)," &
+    "USERCODE           (11111101)," &
+    "HIGHZ              (11111100)," &
+    "CLAMP              (11111010)," &
+    -- Xilinx special function instructions
+    "CONFIG             (11101110)," &
+    -- IEEE 1532 standard instructions
+    "ISC_NOOP           (10111111)," &
+    "ISC_ENABLE         (11101000)," &
+    "ISC_ENABLE_CLAMP   (11101001)," &
+    "ISC_DISABLE        (11110000)," &
+    "ISC_PROGRAM        (11101010)," &
+    "ISC_ERASE          (11101100)," &
+    "ISC_ADDRESS_SHIFT  (11101011)," &
+    "ISC_DATA_SHIFT     (11101101)," &
+    "ISC_READ           (11101111)," &
+    -- Xilinx proprietary ISP instructions
+    "FDATA3             (11110011)," &
+    "FVFY1              (11111000)," &
+    "FVFY3              (11100010)," &
+    "FVFY6              (11100110)," &
+    "FBLANK0            (11100101)," &
+    "FBLANK3            (11100001)," &
+    "FBLANK6            (11100100)," &
+    "SERASE             (00001010)," &
+    "ISC_READ_INFO      (11110001)," &
+    "ISCTESTSTATUS      (11100011)," &
+    "priv3              (11100111)," &
+    "priv4              (11110110)," &
+    "priv5              (11100000)," &
+    "priv6              (11110111)," &
+    "priv7              (11110010)," &
+    "ISCCLRSTATUS       (11110100)," &
+    "priv9              (11110101)";
+                        
+attribute INSTRUCTION_CAPTURE of XCF02S_VO20: entity is 
+    "XXXXX001";
+-- IR[7:6]= Erase/Program Result (10=success; 01=fail; 00/11=N/A)
+-- IR[5]  = Erase/Program Status (1=ready; 0=busy)
+-- IR[4]  = ISP mode (1=in-system programming mode; 0=normal download mode)
+-- IR[3]  = JTAG read-protection (1=secured; 0=unsecured)
+-- IR[2]  = 0 value
+-- IR[1:0]= 01 as defined by IEEE STD 1149.1
+
+attribute INSTRUCTION_PRIVATE of XCF02S_VO20: entity is
+    "priv3," &
+    "priv4," &
+    "priv5," &
+    "priv6," &
+    "priv7," &
+    "priv9";
+
+attribute IDCODE_REGISTER of XCF02S_VO20: entity is
+    "XXXX" &                -- version
+    "0101000001000101" &    -- part number
+    "00001001001" &         -- manufacturer's id
+    "1";                    -- required by IEEE STD 1149.1
+
+attribute USERCODE_REGISTER of XCF02S_VO20: entity is
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+
+
+attribute REGISTER_ACCESS of XCF02S_VO20 : entity is
+    -- IEEE 1149.1 standard data registers
+    "BOUNDARY           (EXTEST, SAMPLE, PRELOAD),"&
+    "DEVICE_ID          (IDCODE, USERCODE),"&
+    "BYPASS             (BYPASS, HIGHZ, CLAMP, CONFIG)," &
+    -- IEEE 1532 standard data registers
+    "ISC_DEFAULT[1]     (ISC_NOOP, ISC_DISABLE, ISC_PROGRAM),"&
+    "ISC_CONFIG[6]      (ISC_ENABLE, ISC_ENABLE_CLAMP),"&
+    "ISC_SECTOR[16]     (ISC_ERASE, SERASE),"&
+    "ISC_ADDRESS[16]    (ISC_ADDRESS_SHIFT),"&
+    "ISC_DATA[4096]     (ISC_DATA_SHIFT),"&
+    "ISC_RDATA[4096]    (ISC_READ),"&
+    -- Xilinx proprietary ISP data registers
+    "DATA1[2097152]     (FVFY1, FBLANK0),"&
+    "DATA3[3]           (FVFY3, FDATA3, FBLANK3),"&
+    "USERCODEV[32]      (FVFY6, FBLANK6),"&
+    "ISC_INFO[8]        (ISC_READ_INFO),"&
+    "XSC_STATUS[8]      (ISCTESTSTATUS, ISCCLRSTATUS)";
+
+attribute BOUNDARY_LENGTH of XCF02S_VO20 : entity is 
+    25;
+
+attribute BOUNDARY_REGISTER of XCF02S_VO20 : entity is
+-- cellnum (type,     port, function, safe[, ccell, disval, disrslt])
+    "    0 (BC_1,      CLK, input,       X                         )," &
+    "    1 (BC_1,        *, internal,    0                         )," &
+    "    2 (BC_1,        *, internal,    X                         )," &
+    "    3 (BC_1,        *, controlr,    0                         )," &
+    "    4 (BC_1,       D0, output3,     X,      3,      0,       Z)," &
+    "    5 (BC_1,        *, internal,    0                         )," &
+    "    6 (BC_1,        *, internal,    X                         )," &
+    "    7 (BC_1,        *, internal,    0                         )," &
+    "    8 (BC_1,        *, internal,    X                         )," &
+    "    9 (BC_1,        *, internal,    0                         )," &
+    "   10 (BC_1,        *, internal,    X                         )," &
+    "   11 (BC_1,        *, controlr,    0                         )," &
+    "   12 (BC_1,      CEO, output3,     X,     11,      0,       Z)," &
+    "   13 (BC_1,        *, internal,    0                         )," &
+    "   14 (BC_1,        *, internal,    X                         )," &
+    "   15 (BC_1,       CE, input,       X                         )," &
+    "   16 (BC_1,        *, internal,    0                         )," &
+    "   17 (BC_1,        *, internal,    X                         )," &
+    "   18 (BC_1,        *, controlr,    0                         )," &
+    "   19 (BC_1, OE_RESET, output3,     X,     18,      0,       Z)," &
+    "   20 (BC_1, OE_RESET, input,       X                         )," &
+    "   21 (BC_1,        *, controlr,    0                         )," &
+    "   22 (BC_1,       CF, output3,     X,     21,      0,       Z)," &
+    "   23 (BC_1,        *, internal,    0                         )," &
+    "   24 (BC_1,        *, internal,    X                         )";
+
+attribute ISC_CONFORMANCE of XCF02S_VO20 : entity is 
+    "STD_1532_2002" ;
+
+attribute ISC_PIN_BEHAVIOR of XCF02S_VO20 : entity is
+    "HIGHZ" ;
+
+attribute ISC_STATUS of XCF02S_VO20 : entity is
+    "NOT IMPLEMENTED" ;
+
+-- Xilinx proprietary status register
+-- Read status via ISCTESTSTATUS instruction. Enables XSC_STATUS register.
+-- Clear error via ISCCLRSTATUS instruction.  Enables XSC_STATUS register.
+-- XSC_STATUS -  capture values:
+--  XSC_STATUS[7:5] = 000 (Not Used)
+--  XSC_STATUS[4:3] = Erase/Program Result (10=success; 01=fail; 00/11=N/A)
+--  XSC_STATUS[2]   = Erase/Program Status (1=ready; 0=busy)
+--  XSC_STATUS[1:0] = 10 (Not Used)
+
+attribute ISC_BLANK_USERCODE of XCF02S_VO20 : entity is
+    "11111111111111111111111111111111";
+
+attribute ISC_FLOW of XCF02S_VO20 : entity is
+
+    -- Special Xilinx device ID validation flow
+
+    "xflow_verify_idcode    " &
+      "INITIALIZE           " &
+        "(IDCODE                        wait TCK 1      32:05045093*0FFFFFFF),"&
+
+
+    -- Standard flows
+
+    "flow_enable            " &
+      "INITIALIZE           " &
+        "(ISC_ENABLE        6:34        wait TCK 1)," &
+
+    "flow_disable           " &
+      "INITIALIZE           " &
+        "(ISC_DISABLE                   wait 110.0e-3)" &
+        "(BYPASS                        wait TCK 1)," &
+
+    "flow_erase             " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:0001     wait TCK 1)" &
+        "(ISC_ERASE                     wait 15)," &
+
+    "flow_blank_check       " &
+      "INITIALIZE           " &
+        "(USERCODE                      wait TCK 1      32:FFFFFFFF*FFFFFFFF)" &
+        "(ISC_ADDRESS_SHIFT 16:8000        wait TCK 1)" &
+        "(FVFY3                         wait 50.0e-6    3:7*7)" &
+        "(ISC_ADDRESS_SHIFT 16:$addr=0  wait TCK 1)" &
+        "(ISC_READ                      wait 50.0e-6    4096:" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff:CRC)" &
+      "REPEAT 511          " &
+        "(ISC_ADDRESS_SHIFT 16:$addr+32 wait TCK 1)" &
+        "(ISC_READ                      wait 50.0e-6    4096:" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" &
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff:CRC)," &
+
+    "flow_program(array)    " &
+      "INITIALIZE           " &
+        "(ISC_DATA_SHIFT    4096:?      wait TCK 1)" &
+        "(ISC_ADDRESS_SHIFT 16:$addr=0  wait TCK 1)" &
+        "(ISC_PROGRAM                   wait 14.0e-3)" &
+      "REPEAT 511          " &
+        "(ISC_DATA_SHIFT    4096:?      wait TCK 1)" &
+        "(ISC_ADDRESS_SHIFT 16:$addr+32 wait TCK 1)" &
+        "(ISC_PROGRAM                   wait 14.0e-3)," &
+
+    "flow_verify(array)     " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:$addr=0  wait TCK 1)" &
+        "(ISC_READ                      wait 50.0e-6    4096:?:CRC)" &
+      "REPEAT 511          " &
+        "(ISC_ADDRESS_SHIFT 16:$addr+32 wait TCK 1)" &
+        "(ISC_READ                      wait 50.0e-6    4096:?:CRC)," &
+
+
+    -- Standard program done
+
+    "flow_program_done      " &
+      "INITIALIZE           " &
+        "(BYPASS                        wait TCK 1)," &
+
+
+    -- Optimized Xilinx erase/program flows
+
+    "xflow_enable_optimized " &
+      "INITIALIZE           " &
+        "(ISC_ENABLE        6:37        wait TCK 1)," &
+
+    "xflow_erase_optimized  " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:0001     wait TCK 1)" &
+        "(ISC_ERASE                     wait 500.0e-3)" &
+        "loop min 1 max 30" &
+        "((ISCTESTSTATUS                wait 500.0e-3 5:2,1:1:OST,2:2))," &
+
+    "xflow_program_optimized(array) " &
+      "INITIALIZE           " &
+        "(ISC_DATA_SHIFT    4096:?      wait TCK 1)" &
+        "(ISC_ADDRESS_SHIFT 16:$addr=0  wait TCK 1)" &
+        "(ISC_PROGRAM                   wait 14.0e-3)" &
+        "loop min 1 max 28" &
+        "((ISCTESTSTATUS                wait 500.0e-6 5:2,1:1:OST,2:2))" &
+      "REPEAT 511          " &
+        "(ISC_DATA_SHIFT    4096:?      wait TCK 1)" &
+        "(ISC_ADDRESS_SHIFT 16:$addr+32 wait TCK 1)" &
+        "(ISC_PROGRAM                   wait 500.0e-6)" &
+        "loop min 1 max 28" &
+        "((ISCTESTSTATUS                wait 500.0e-6 5:2,1:1:OST,2:2))," &
+
+
+    -- Special Xilinx progam/verify flows
+
+    -- While ISE does not support USERCODE in ISC file, use the following flows.
+    -- Substitute the default FFFFFFFF with your value to program a usercode
+    "xflow_program_usercode " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:8000     wait TCK 1)" &
+        "(USERCODE          32:FFFFFFFF wait TCK 1)" &
+        "(ISC_PROGRAM                   wait 14.0e-3)," &
+
+    -- Substitute the default FFFFFFFF with your USERCODE value
+    "xflow_verify_usercode  " &
+      "INITIALIZE           " &
+        "(USERCODE                      wait TCK 1      32:FFFFFFFF)," &
+
+    -- While ISE does not support DATA3 in ISC file, use the following flows.
+    -- DATA3 bits enable special PROM features.
+    --  DATA3[2]    Read-protect:  1=no security; 0=read-protected
+    --  DATA3[1]    Reserved:  always set to 1
+    --  DATA3[0]    Reserved:  always set to 1
+    -- Default DATA3 value = 7)
+    "xflow_program_data3    " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:8000     wait TCK 1)" &
+        "(FDATA3            3:7         wait TCK 1)" &
+        "(ISC_PROGRAM                   wait 14.0e-3)," &
+
+    "xflow_verify_data3     " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:8000     wait TCK 1)" &
+        "(FVFY3                         wait 50.0e-6    3:7)," &
+
+
+    -- Special pre-verify/read check for read-protect
+
+    "xflow_verify_not_secured " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:8000     wait TCK 1)" &
+        "(FVFY3                         wait 50.0e-6    3:4*4)," &
+
+
+    -- Standard read flow
+
+    "flow_read(array)       " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:$addr=0  wait TCK 1)" &
+        "(ISC_READ                      wait 50.0e-6    4096:!:CRC)" &
+      "REPEAT 511          " &
+        "(ISC_ADDRESS_SHIFT 16:$addr+32 wait TCK 1)" &
+        "(ISC_READ                      wait 50.0e-6    4096:!:CRC)," &
+
+
+    -- Special Xilinx read flows
+
+    "xflow_read_idcode      " &
+      "INITIALIZE           " &
+        "(IDCODE                        wait TCK 1      32:!)," &
+
+    "xflow_read_usercode    " &
+      "INITIALIZE           " &
+        "(USERCODE                      wait TCK 1      32:!)," &
+
+    "xflow_read_data3       " &
+      "INITIALIZE           " &
+        "(ISC_ADDRESS_SHIFT 16:8000     wait TCK 1)" &
+        "(FVFY3                         wait 50.0e-6    3:!)," &
+
+
+    -- Special Xilinx feature flow
+
+    "xflow_config           " &
+      "INITIALIZE           " &
+        "(CONFIG                        wait TCK 1)" &
+        "(BYPASS                        wait TCK 1)," &
+
+
+    -- Standard 1532 error handler flow
+
+    "flow_error_exit        " &
+      "INITIALIZE           " &
+        "(ISC_DISABLE                   wait 110.0e-3)" &
+        "(BYPASS                        wait TCK 1)";
+
+attribute ISC_PROCEDURE of XCF02S_VO20 : entity is
+    -- Special Xilinx device ID validation
+    "xproc_verify_idcode        = (xflow_verify_idcode)," &
+    -- Standard ISC procedures
+    "proc_enable                = (flow_enable)," &
+    "proc_disable               = (flow_disable)," &
+    "proc_erase                 = (flow_erase)," &
+    "proc_blank_check           = (xflow_verify_not_secured," &
+    "                              flow_blank_check)," &
+    "proc_program(array)        = (flow_program(array))," &
+    "proc_verify(array)         = (flow_verify(array))," &
+    "proc_program_done          = (flow_program_done)," &
+    -- Special program/verify procedures
+    "xproc_program_usercode     = (xflow_program_usercode," &
+    "                              xflow_verify_usercode)," &
+    "xproc_program_data3        = (xflow_program_data3," &
+    "                              xflow_verify_data3)," &
+    -- Optimized Xilinx erase and program procedures
+    "xproc_enable_optimized     = (xflow_enable_optimized)," &
+    "xproc_erase_optimized      = (xflow_erase_optimized)," &
+    "xproc_program_optimized(array) = (xflow_program_optimized(array))," &
+    -- Xilinx special verify/read check
+    "xproc_verify_not_secured   = (xflow_verify_not_secured)," &
+    -- Read procedures
+    "proc_read(array)           = (flow_read(array))," &
+    -- Special Xilinx read procedures
+    "xproc_read_idcode          = (xflow_read_idcode)," &
+    "xproc_read_usercode        = (xflow_read_usercode)," &
+    "xproc_read_data3           = (xflow_read_data3)," &
+    -- Special Xilinx feature procedure
+    "xproc_config               = (xflow_config)," &
+    -- Standard error handler procedure
+    "proc_error_exit            = (flow_error_exit)";
+
+-- 1532 ISC actions
+-- "program" is typically the only necessary action.
+-- Additional actions are provided for special purposes.
+attribute ISC_ACTION of XCF02S_VO20 : entity is
+    -- Special Xilinx verify IDCODE action
+    "xverify_idcode         = (xproc_verify_idcode)," &
+    -- Standard ISC actions
+    "erase                  = (xproc_verify_idcode," &
+    "                          proc_enable," &
+    "                          proc_erase," &
+    "                          proc_blank_check proprietary optional," &
+    "                          proc_disable)," &
+    "blank_check            = (xproc_verify_idcode," &
+    "                          proc_enable," &
+    "                          proc_blank_check proprietary," &
+    "                          proc_disable)," &
+    "program                = (xproc_verify_idcode," &
+    "                          proc_enable," &
+    "                          proc_erase," &
+    "                          proc_program(array)," &
+    "                          proc_verify(array) proprietary," &
+    "                          xproc_program_usercode optional," &
+    "                          xproc_program_data3 optional," &
+    "                          proc_program_done," &
+    "                          proc_disable)," &
+    -- Optimized Xilinx erase and program actions
+    "xerase_optimized       = (xproc_verify_idcode," &
+    "                          xproc_enable_optimized," &
+    "                          xproc_erase_optimized," &
+    "                          proc_blank_check proprietary optional," &
+    "                          proc_disable)," &
+    "xprogram_optimized     = (xproc_verify_idcode," &
+    "                          xproc_enable_optimized," &
+    "                          xproc_erase_optimized," &
+    "                          xproc_program_optimized(array)," &
+    "                          proc_verify(array) proprietary," &
+    "                          xproc_program_usercode optional," &
+    "                          xproc_program_data3 optional," &
+    "                          proc_program_done," &
+    "                          proc_disable)," &
+    -- Standard verify action
+    "verify                 = (xproc_verify_idcode," &
+    "                          proc_enable," &
+    "                          xproc_verify_not_secured," &
+    "                          proc_verify(array) proprietary," &
+    "                          proc_disable)," &
+    -- Standard read action
+    "read                   = (xproc_verify_idcode," &
+    "                          proc_enable," &
+    "                          xproc_verify_not_secured," &
+    "                          proc_read(array) proprietary," &
+    "                          xproc_read_usercode," &
+    "                          xproc_read_data3," &
+    "                          proc_disable)," &
+    -- Special Xilinx read actions
+    "xread_idcode           = (xproc_read_idcode)," &
+    "xread_usercode         = (xproc_read_usercode)," &
+    -- Special Xilinx action
+    "xconfigure_fpga        = (xproc_config)";
+
+attribute DESIGN_WARNING of XCF02S_VO20 : entity is
+    "The FERASE, FPGM, ISC_ERASE, and ISC_PROGRAM instructions require " &
+        "a falling-edge of TCK AFTER the Run-Test/Idle TAP state is entered " &
+        "in order to start the operation corresponding to the instruction.  " &
+    "The FVFY1, FBLANK0, ISC_READ instructions activate a non-standard, " &
+        "output-only data register that does not pass TDI through to TDO.  Thus, " &
+        "data beyond the specififed length of the corresponding data register " &
+        "is undefined. " &
+        "When the FVFY1, FBLANK0, ISC_READ instructions are in use, " &
+        "all components between TDO of this device and the tester must select " &
+        "the BYPASS register to avoid acting on the undefined data values. " &
+    "Do not drive CF low when CF is connected to the PROGRAM/PROG_B pin of " &
+        "a Virtex, Virtex-E, Virtex-4, Spartan-II, Spartan-IIE FPGA and when " &
+        "the FPGA is in the same boundary-scan chain as this XCF02S. " &
+        "A Low applied to the PROGRAM/PROG_B pin of these FPGAs resets the TAP " &
+        "in these FPGAs.";
+
+end XCF02S_VO20;
+
