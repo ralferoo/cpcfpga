@@ -1,4 +1,6 @@
 #include "jtag.h"
+#include <string.h>
+#include <LUFA/Drivers/USB/USB.h>
 
 enum JTAG_STATE jtag_state = JTAG_STATE_UNKNOWN;
 
@@ -75,6 +77,47 @@ void JTAG_SelectIR(void)
 		jtag_state = JTAG_STATE_SELECT_IR;
 	case JTAG_STATE_SELECT_IR:
 		break;
+	}
+}
+
+void JTAG_ChainInfo(void)
+{
+	JTAG_Reset();
+	JTAG_SelectDR();
+	JTAG_SendClock(0);
+	JTAG_SendClock(0);			// move to shift-DR
+
+	uint8_t  buffer[ 100 ];
+
+	unsigned char continue_scan = 0xf;
+	while (continue_scan >0 ) {
+		continue_scan --;
+		int bit = JTAG_Clock(1);
+		if (!bit) {
+			sprintf( (char*) buffer, "-------- unknown device\r\n" );
+		} else {
+			unsigned char a = 0x80,b=0,c=0,d=0;
+			for( char i=1;i<8; i++)
+				a = (a>>1) | (JTAG_Clock(1)<<7);
+			for( char i=0;i<8; i++)
+				b = (b>>1) | (JTAG_Clock(1)<<7);
+			for( char i=0;i<8; i++)
+				c = (c>>1) | (JTAG_Clock(1)<<7);
+			for( char i=0;i<8; i++)
+				d = (d>>1) | (JTAG_Clock(1)<<7);
+
+			sprintf( (char*) buffer, "%02X%02X%02X%02X\r\n",d,c,b,a );
+
+			if (a==0xff && b==0xff && c==0xff && d==0xff)
+				continue_scan = 0;
+		}
+		Endpoint_Write_Stream_LE(&buffer, strlen((char*)buffer), NULL);
+
+		/* Finalize the stream transfer to send the last packet */
+		Endpoint_ClearIN();
+
+		/* Wait until the endpoint is ready for another packet */
+		Endpoint_WaitUntilReady();
 	}
 }
 

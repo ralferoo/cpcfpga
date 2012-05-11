@@ -363,12 +363,15 @@ void CDC1_Task(void)
 					int chain_len = JTAG_ChainLen();
 					sprintf((char*)Buffer, "\r\nReset, chain length=%d\r\n", chain_len );
 					Endpoint_Write_Stream_LE(&Buffer, strlen((char*)Buffer), NULL);
-					timer=0;
+
+					JTAG_ChainInfo();
 
 					JTAG_Reset();
 					JTAG_SelectDR();
 					JTAG_SendClock(0);
 					JTAG_SendClock(0);			// move to shift-DR
+
+					timer=0;
 				} else {
 					int tdo = JTAG_Clock(1); // !(timer & 128) );
 

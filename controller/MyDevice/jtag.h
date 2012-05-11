@@ -69,7 +69,7 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 	JTAG_PORT |= JTAG_TCK;
 	JTAG_PORT &= ~JTAG_TCK;
 
-	return (previous & JTAG_TDO) == JTAG_TDO;
+	return ((previous & JTAG_TDO) == JTAG_TDO)?1:0;
 }
 inline int JTAG_Clock(int tdi) { return JTAG_ClockWithTMS(tdi,0,1); }
 inline int JTAG_ClockTMS(int tdi) { return JTAG_ClockWithTMS(tdi,1,1); }
@@ -84,6 +84,7 @@ void JTAG_Reset(void);
 void JTAG_SelectDR(void);
 void JTAG_SelectIR(void);
 int JTAG_ChainLen(void);
+void JTAG_ChainInfo(void);
 
 ///////////////////////////////////////////////////////////////////////////////
 
