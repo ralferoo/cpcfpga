@@ -328,9 +328,11 @@ void CDC1_Task(void)
 
 		/* Write the received data to the endpoint */
 		Endpoint_Write_Stream_LE(&Buffer, DataLength, NULL);
+		sprintf(Buffer,"recv=%d\n", DataLength );
+		Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
 
-//		sprintf(Buffer,"recv=%d\n", DataLength );
-//		Endpoint_Write_Stream_LE(&Buffer, strlen(Buffer), NULL);
+		JTAG_Reset();
+		JTAG_SelectDR();
 
 		/* Finalize the stream transfer to send the last packet */
 		Endpoint_ClearIN();
@@ -349,10 +351,13 @@ void CDC1_Task(void)
 
 		    	if (Endpoint_IsReadWriteAllowed()) {
 
+				int pb = JTAG_PORT;
+				int tdo = JTAG_Clock(1);
+
 				/* Write the String to the Endpoint */
 //				Endpoint_Write_Stream_LE(".", 1, NULL);
 				uint8_t  Buffer[ 100 ]; //Endpoint_BytesInEndpoint()];
-				sprintf((char*)Buffer, "timer=%d\r\n", timer);
+				sprintf((char*)Buffer, "timer=%d tdo=%d (0x%02x)\r\n", timer, tdo, pb);
 				Endpoint_Write_Stream_LE(&Buffer, strlen((char*)Buffer), NULL);
 
 				/* Finalize the stream transfer to send the last packet */
