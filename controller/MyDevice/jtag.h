@@ -21,14 +21,35 @@
 enum JTAG_STATE {
 	JTAG_STATE_UNKNOWN = 0,
 	JTAG_STATE_RESET,
+	JTAG_STATE_IDLE,
+
+	JTAG_STATE_SELECT_DR,
+	JTAG_STATE_CAPTURE_DR,
+	JTAG_STATE_SHIFT_DR,
+	JTAG_STATE_EXIT1_DR,
+	JTAG_STATE_PAUSE_DR,
+	JTAG_STATE_EXIT2_DR,
+	JTAG_STATE_UPDATE_DR,
+
+	JTAG_STATE_SELECT_IR,
+	JTAG_STATE_CAPTURE_IR,
+	JTAG_STATE_SHIFT_IR,
+	JTAG_STATE_EXIT1_IR,
+	JTAG_STATE_PAUSE_IR,
+	JTAG_STATE_EXIT2_IR,
+	JTAG_STATE_UPDATE_IR,
 };
 
 extern enum JTAG_STATE jtag_state;
 
-inline int JTAG_ClockWithTMS(int tdi,int tms)
+inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 {
 	// get the TDO value from the previous cycle
-	int previous = JTAG_PORT;
+	int previous;
+	if (read)
+		previous = JTAG_PORT;
+	else
+		previous = 0;
 
 	// update the output data
 	if(tms)
@@ -47,13 +68,18 @@ inline int JTAG_ClockWithTMS(int tdi,int tms)
 
 	return (previous & JTAG_TDO) == JTAG_TDO;
 }
-inline int JTAG_Clock(int tdi) { return JTAG_ClockWithTMS(tdi,0); }
-inline int JTAG_ClockTMS(int tdi) { return JTAG_ClockWithTMS(tdi,1); }
+inline int JTAG_Clock(int tdi) { return JTAG_ClockWithTMS(tdi,0,1); }
+inline int JTAG_ClockTMS(int tdi) { return JTAG_ClockWithTMS(tdi,1,1); }
+
+inline void JTAG_SendClock(int tdi) { JTAG_ClockWithTMS(tdi,0,0); }
+inline void JTAG_SendClockTMS(int tdi) { JTAG_ClockWithTMS(tdi,1,0); }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void JTAG_Init(void);
 void JTAG_Reset(void);
+void JTAG_SelectDR(void);
+void JTAG_SelectIR(void);
 
 ///////////////////////////////////////////////////////////////////////////////
 
