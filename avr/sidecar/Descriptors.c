@@ -227,7 +227,7 @@ static USB_Descriptor_String_t SerialNumberString =
 
 void SerialNumberDescriptor_Init(void)
 {
-	USB_Device_GetSerialString((uint16_t*) (&SerialNumberString.UnicodeString[20]) );
+//	USB_Device_GetSerialString((uint16_t*) (&SerialNumberString.UnicodeString[20]) );
 }
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"

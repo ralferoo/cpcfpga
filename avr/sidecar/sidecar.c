@@ -181,7 +181,7 @@ void CDC_Task(void)
 	if (USB_DeviceState != DEVICE_STATE_Configured)
 	  return;
 
-	if ( LineEncoding.BaudRateBPS)
+//	if ( LineEncoding.BaudRateBPS)
 	{
 		Endpoint_SelectEndpoint(CDC_RX_EPNUM);
 		if (Endpoint_IsOUTReceived()) {
