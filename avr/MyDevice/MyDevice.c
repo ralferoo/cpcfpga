@@ -514,6 +514,11 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 			case '\n':
 				break;
 
+			case '-':
+				for( int i=0; i<79; i++)
+					Endpoint_Write_Stream_LE("-", 1, NULL);
+				WriteStringFlush("\r\n");
+			
 			case '#':
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
@@ -525,6 +530,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				*ppBuffer = pBuffer;
 				return DataLength;
 
+			case 'j':
 			case 'J': {
 					int chain_len = JTAG_ChainLen();
 					int ir_len = JTAG_IRLen();
@@ -578,8 +584,8 @@ void Server_Task(void)
 		/* Read in the incoming packet into the buffer */
 		Endpoint_Read_Stream_LE(&Buffer, DataLength, NULL);
 
-		/* Finalize the stream transfer to send the last packet */
-		Endpoint_ClearOUT();
+//		/* Finalize the stream transfer to send the last packet */
+//		Endpoint_ClearOUT();
 
 		/* Select the Serial Tx Endpoint */
 		Endpoint_SelectEndpoint(CDC1_TX_EPNUM);
@@ -588,6 +594,12 @@ void Server_Task(void)
 		while( DataLength ) {
 			DataLength = (*ServerRequest)( &pBuffer, DataLength );
 		}
+
+		/* Select the Serial Rx Endpoint */
+		Endpoint_SelectEndpoint(CDC1_RX_EPNUM);
+
+		/* Finalize the stream transfer to send the last packet */
+		Endpoint_ClearOUT();
 	}
 }
 
