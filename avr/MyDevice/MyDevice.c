@@ -420,6 +420,13 @@ void WriteStringFlush( char* str )
 	Endpoint_ClearIN();
 }
 
+void WriteStringNoFlush( char* str )
+{
+	Endpoint_Write_Stream_LE( (uint8_t*) str, strlen(str), NULL);
+	Endpoint_ClearIN();
+	Endpoint_WaitUntilReady();
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 uint16_t EOLRequest( uint8_t** ppBuffer, uint16_t DataLength )
@@ -458,6 +465,8 @@ uint16_t EchoToEOLRequest( uint8_t** ppBuffer, uint16_t DataLength )
 			return DataLength;
 		} else {
 			Endpoint_Write_Stream_LE( (uint8_t*) &c, 1, NULL);
+			Endpoint_ClearIN();
+			Endpoint_WaitUntilReady();
 //			Endpoint_Write_8( c );
 		}
 	}
@@ -482,8 +491,8 @@ uint16_t EchoRequest( uint8_t** ppBuffer, uint16_t DataLength )
 	Endpoint_ClearIN();
 
 	// send empty packet to signal to host that read is finished
-	Endpoint_WaitUntilReady();
-	Endpoint_ClearIN();
+//	Endpoint_WaitUntilReady();
+//	Endpoint_ClearIN();
 
 	*ppBuffer = pBuffer;
 	return DataLength - len;
@@ -520,7 +529,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 					int chain_len = JTAG_ChainLen();
 					int ir_len = JTAG_IRLen();
 					sprintf(output_buffer, "\r\n# JTAG scan:\r\n# chain length=%d, IR length=%d\r\n", chain_len, ir_len );
-					WriteStringFlush(output_buffer);
+					WriteStringNoFlush(output_buffer);
 					//Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
 //					sprintf(output_buffer, "# IR length=%d\r\n# scan follows:\r\n", ir_len );
 //					WriteStringFlush(output_buffer);
