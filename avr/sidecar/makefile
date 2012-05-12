@@ -139,6 +139,7 @@ include $(LUFA_PATH)/LUFA/makefile
 SRC = $(TARGET).c                                                 \
 	  Descriptors.c                                               \
 	  jtag.c						\
+	  server.c						\
 	  $(LUFA_SRC_USB)                                             \
 	  $(LUFA_SRC_USBCLASS)
 

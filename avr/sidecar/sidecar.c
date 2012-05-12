@@ -36,6 +36,7 @@
 
 #include "sidecar.h"
 #include "jtag.h"
+#include "server.h"
 
 /** Contains the current baud rate and other settings of the virtual serial port. While this demo does not use
  *  the physical USART and thus does not use these settings, they must still be retained and returned to the host
@@ -175,13 +176,64 @@ void EVENT_USB_Device_ControlRequest(void)
 /** Function to manage CDC data transmission and reception to and from the host. */
 void CDC_Task(void)
 {
-	char*       ReportString    = NULL;
-	uint8_t     JoyStatus_LCL   = Joystick_GetStatus();
-	static bool ActionSent      = false;
-
 	/* Device must be connected and configured for the task to run */
 	if (USB_DeviceState != DEVICE_STATE_Configured)
 	  return;
+
+	if ( LineEncoding.BaudRateBPS)
+	{
+		Endpoint_SelectEndpoint(CDC_RX_EPNUM);
+		if (Endpoint_IsOUTReceived()) {
+			/* Create a temp buffer big enough to hold the incoming endpoint packet */
+			uint8_t  Buffer[ Endpoint_BytesInEndpoint()];
+
+			/* Remember how large the incoming packet is */
+			uint16_t DataLength = Endpoint_BytesInEndpoint();
+
+			/* Read in the incoming packet into the buffer */
+			Endpoint_Read_Stream_LE(&Buffer, DataLength, NULL);
+
+			/* Finalize the stream transfer to send the last packet */
+			Endpoint_ClearOUT();
+
+			/* Select the Serial Tx Endpoint */
+			Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+
+			uint8_t* pBuffer = Buffer;
+			while( DataLength ) {
+				DataLength = (*ServerRequest)( &pBuffer, DataLength );
+			}
+
+			/* Remember if the packet to send completely fills the endpoint */
+			uint16_t Length = Endpoint_BytesInEndpoint();
+
+			if( Length != 0 )
+			{
+				bool IsFull = (Length  == CDC_TXRX_EPSIZE);
+
+				/* Finalize the stream transfer to send the last packet */
+				Endpoint_ClearIN();
+
+				/* If the last packet filled the endpoint, send an empty packet to release the buffer on
+				 * the receiver (otherwise all data will be cached until a non-full packet is received) */
+				if (IsFull)
+				{
+					/* Wait until the endpoint is ready for another packet */
+					Endpoint_WaitUntilReady();
+
+					/* Send an empty packet to ensure that the host does not buffer data sent to it */
+					Endpoint_ClearIN();
+				}
+			}
+		}
+	}
+}
+
+void xxx(void)
+{
+	char*       ReportString    = NULL;
+	uint8_t     JoyStatus_LCL   = Joystick_GetStatus();
+	static bool ActionSent      = false;
 
 	/* Determine if a joystick action has occurred */
 	if (JoyStatus_LCL & JOY_UP)
