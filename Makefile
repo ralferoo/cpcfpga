@@ -514,21 +514,21 @@ build/$(XILINX_TOP_NAME).ut: build/.dummy
 
 LUFA	= LUFA-120219
 
-controller/dist/$(LUFA).zip:
-	-@mkdir -p controller/dist
+avr/dist/$(LUFA).zip:
+	-@mkdir -p avr/dist
 	wget -O $@ http://lufa-lib.googlecode.com/files/$(LUFA).zip
 
-controller/.unpack: controller/dist/$(LUFA).zip
-	(cd controller ; unzip dist/$(LUFA).zip )
-	ln -s $(LUFA) controller/lufa
+avr/.unpack: avr/dist/$(LUFA).zip
+	(cd avr ; unzip dist/$(LUFA).zip )
+	ln -s $(LUFA) avr/lufa
 	touch $@
 
-control: controller/.unpack
+lufa: avr/.unpack
 
-build/boot_init.bin: controller/DFU/BootloaderDFU.hex controller/VirtualSerial/VirtualSerial.bin
+build/boot_init.bin: avr/DFU/BootloaderDFU.hex avr/VirtualSerial/VirtualSerial.bin
 
-controller/DFU/BootloaderDFU.hex: controller/DFU/*.c controller/DFU/*.h
-	(cd controller/DFU ; make)
+avr/DFU/BootloaderDFU.hex: avr/DFU/*.c avr/DFU/*.h
+	(cd avr/DFU ; make)
 
-controller/VirtualSerial/VirtualSerial.bin: controller/VirtualSerial/*.c controller/VirtualSerial/*.h
-	(cd controller/VirtualSerial ; make)
+avr/VirtualSerial/VirtualSerial.bin: avr/VirtualSerial/*.c avr/VirtualSerial/*.h
+	(cd avr/VirtualSerial ; make)
