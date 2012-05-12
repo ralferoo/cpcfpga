@@ -102,7 +102,8 @@ int main(void)
 
 	for (;;)
 	{
-		CDC1_Task();
+		Server_Task();
+//		CDC1_Task();
 //		CDC1_Task();
 		USB_USBTask();
 	}
@@ -399,4 +400,149 @@ void CDC1_Task(void)
 
 // ah! the reason it doesn't work is that the u2 chips don't have enough endpoints for 2 serial ports. HURR.
 // https://groups.google.com/forum/#!topic/lufa-support/4xuaJWk6_sU
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength );
+
+uint16_t (*ServerRequest)( uint8_t** ppBuffer, uint16_t DataLength )
+	= &DefaultRequest;
+
+/////////////////////////////////////////////////////////////////////////////
+
+void WriteStringFlush( char* str )
+{
+	Endpoint_Write_Stream_LE( (uint8_t*) str, strlen(str), NULL);
+	Endpoint_ClearIN();
+	Endpoint_WaitUntilReady();
+	Endpoint_ClearIN();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+uint16_t EOLRequest( uint8_t** ppBuffer, uint16_t DataLength )
+{
+	uint8_t* pBuffer = *ppBuffer;
+
+	while( DataLength-- ) {
+		uint8_t c = *pBuffer++;
+
+		if( c=='\r' || c=='\n' ) {
+			ServerRequest = DefaultRequest;
+
+			*ppBuffer = pBuffer;
+			return DataLength;
+		}
+	}
+
+	return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+uint16_t EchoRequest( uint8_t** ppBuffer, uint16_t DataLength )
+{
+	uint8_t* pBuffer = *ppBuffer;
+
+	uint8_t buffer[32];
+	int len;
+	for(len=0; len<DataLength && len<20; len++)
+		buffer[len]= *pBuffer++;
+	sprintf((char*)buffer+len, "[%d]\r\n", len);
+	
+	Endpoint_WaitUntilReady();
+	Endpoint_Write_Stream_LE(buffer, strlen((char*)buffer), NULL);
+	Endpoint_ClearIN();
+
+	// send empty packet to signal to host that read is finished
+	Endpoint_WaitUntilReady();
+	Endpoint_ClearIN();
+
+	*ppBuffer = pBuffer;
+	return DataLength - len;
+}
+
+uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
+{
+	uint8_t* pBuffer = *ppBuffer;
+
+	while( DataLength-- ) {
+		uint8_t c = *pBuffer++;
+
+		switch( c ) {
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n':
+				break;
+
+			case ':':
+				WriteStringFlush("SREC\r\n");
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
+			case 'J':
+				WriteStringFlush("JTAG\r\n");
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
+			default:
+				WriteStringFlush("Unknown command\r\n");
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+		}
+	}
+
+	return 0;
+}
+
+void Server_Task(void)
+{
+	static int timer_check = 0;
+
+	/* Device must be connected and configured for the task to run */
+	if (USB_DeviceState != DEVICE_STATE_Configured)
+	  return;
+
+	/* Select the Serial Rx Endpoint */
+	Endpoint_SelectEndpoint(CDC1_RX_EPNUM);
+
+	/* Check to see if any data has been received */
+	if (Endpoint_IsOUTReceived())
+	{
+		/* Create a temp buffer big enough to hold the incoming endpoint packet */
+		uint8_t  Buffer[ Endpoint_BytesInEndpoint()];
+
+		/* Remember how large the incoming packet is */
+		uint16_t DataLength = Endpoint_BytesInEndpoint();
+
+		/* Read in the incoming packet into the buffer */
+		Endpoint_Read_Stream_LE(&Buffer, DataLength, NULL);
+
+		/* Finalize the stream transfer to send the last packet */
+		Endpoint_ClearOUT();
+
+		/* Select the Serial Tx Endpoint */
+		Endpoint_SelectEndpoint(CDC1_TX_EPNUM);
+
+		uint8_t* pBuffer = Buffer;
+		while( DataLength ) {
+			DataLength = (*ServerRequest)( &pBuffer, DataLength );
+		}
+	}
+}
+
+
+// ah! the reason it doesn't work is that the u2 chips don't have enough endpoints for 2 serial ports. HURR.
+// https://groups.google.com/forum/#!topic/lufa-support/4xuaJWk6_sU
+
+
+
+
+
 

@@ -66,6 +66,7 @@
 	/* Function Prototypes: */
 		void CDC1_Task(void);
 		void CDC2_Task(void);
+		void Server_Task(void);
 		void SetupHardware(void);
 
 		void EVENT_USB_Device_Connect(void);
