@@ -373,7 +373,7 @@ void CDC1_Task(void)
 
 					timer=0;
 				} else {
-					int tdo = JTAG_Clock(1); // !(timer & 128) );
+					int tdo = JTAG_Clock((timer>5) && (timer&1)); // !(timer & 128) );
 
 					/* Write the String to the Endpoint */
 //					Endpoint_Write_Stream_LE(".", 1, NULL);
