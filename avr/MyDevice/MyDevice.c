@@ -440,6 +440,31 @@ uint16_t EOLRequest( uint8_t** ppBuffer, uint16_t DataLength )
 	return 0;
 }
 
+uint16_t EchoToEOLRequest( uint8_t** ppBuffer, uint16_t DataLength )
+{
+	uint8_t* pBuffer = *ppBuffer;
+
+	while( DataLength-- ) {
+		uint8_t c = *pBuffer++;
+
+		if( c=='\r' || c=='\n' ) {
+			ServerRequest = DefaultRequest;
+
+			WriteStringFlush("\r\n");
+//			Endpoint_Write_8( '\r' );
+//			Endpoint_Write_8( '\n' );
+
+			*ppBuffer = pBuffer;
+			return DataLength;
+		} else {
+			Endpoint_Write_Stream_LE( (uint8_t*) &c, 1, NULL);
+//			Endpoint_Write_8( c );
+		}
+	}
+
+	return 0;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 uint16_t EchoRequest( uint8_t** ppBuffer, uint16_t DataLength )
@@ -464,6 +489,8 @@ uint16_t EchoRequest( uint8_t** ppBuffer, uint16_t DataLength )
 	return DataLength - len;
 }
 
+char output_buffer[ 128 ];
+
 uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 {
 	uint8_t* pBuffer = *ppBuffer;
@@ -479,22 +506,30 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				break;
 
 			case ':':
-				WriteStringFlush("SREC\r\n");
+				WriteStringFlush("# SREC\r\n");
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
 
-			case 'J':
-				WriteStringFlush("JTAG\r\n");
+			case 'J': {
+					int chain_len = JTAG_ChainLen();
+					sprintf(output_buffer, "# JTAG chain length=%d, scan follows:\r\n", chain_len );
+					Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
+				}
+				JTAG_ChainInfo();
+				WriteStringFlush("\r\n");
+//				Endpoint_ClearIN();
+//				Endpoint_WaitUntilReady();
+//				Endpoint_ClearIN();
+
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
 
 			default:
-				WriteStringFlush("Unknown command\r\n");
-				ServerRequest = EOLRequest;
-				*ppBuffer = pBuffer;
-				return DataLength;
+				WriteStringFlush("# Unknown command: ");
+				ServerRequest = EchoToEOLRequest;
+				return DataLength + 1;
 		}
 	}
 

@@ -80,6 +80,8 @@ void JTAG_SelectIR(void)
 	}
 }
 
+extern char output_buffer[ 128 ];
+
 void JTAG_ChainInfo(void)
 {
 	JTAG_Reset();
@@ -87,14 +89,12 @@ void JTAG_ChainInfo(void)
 	JTAG_SendClock(0);
 	JTAG_SendClock(0);			// move to shift-DR
 
-	uint8_t  buffer[ 100 ];
-
 	unsigned char continue_scan = 0xf;
 	while (continue_scan >0 ) {
 		continue_scan --;
 		int bit = JTAG_Clock(1);
 		if (!bit) {
-			sprintf( (char*) buffer, "-------- unknown device\r\n" );
+			sprintf( (char*) output_buffer, "# ???? unknown\r\n" );
 		} else {
 			unsigned char a = 0x80,b=0,c=0,d=0;
 			for( char i=1;i<8; i++)
@@ -106,18 +106,24 @@ void JTAG_ChainInfo(void)
 			for( char i=0;i<8; i++)
 				d = (d>>1) | (JTAG_Clock(1)<<7);
 
-			sprintf( (char*) buffer, "%02X%02X%02X%02X\r\n",d,c,b,a );
+			char* manuf = "unknown";
+			char* part = "";
+			if( (b&0xf)==0 && a==0x93) {
+				manuf = "Xilinx ";
+				if ( (d&0xf)==5 && c==4 && b==0x50 )
+					part = "XCF02S";
+				else if ( d==1 && c==0x41 && b==0xc0 )
+					part = "XC3S400";
+			}
 
-			if (a==0xff && b==0xff && c==0xff && d==0xff)
+			if (a==0xff && b==0xff && c==0xff && d==0xff) {
+				manuf = "end of chain";
 				continue_scan = 0;
+			}
+
+			sprintf( output_buffer, "# %02X%02X%02X%02X %s%s\r\n",d,c,b,a, manuf, part );
 		}
-		Endpoint_Write_Stream_LE(&buffer, strlen((char*)buffer), NULL);
-
-		/* Finalize the stream transfer to send the last packet */
-		Endpoint_ClearIN();
-
-		/* Wait until the endpoint is ready for another packet */
-		Endpoint_WaitUntilReady();
+		Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
 	}
 }
 
