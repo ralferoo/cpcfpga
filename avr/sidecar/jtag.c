@@ -124,8 +124,6 @@ void JTAG_ChainInfo(void)
 			sprintf( output_buffer, "# %02X%02X%02X%02X %s%s\r\n",d,c,b,a, manuf, part );
 		}
 		Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
-//		Endpoint_ClearIN();
-//		Endpoint_WaitUntilReady();
 	}
 }
 
