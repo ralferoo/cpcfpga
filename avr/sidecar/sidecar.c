@@ -35,6 +35,7 @@
  */
 
 #include "sidecar.h"
+#include "jtag.h"
 
 /** Contains the current baud rate and other settings of the virtual serial port. While this demo does not use
  *  the physical USART and thus does not use these settings, they must still be retained and returned to the host
@@ -81,6 +82,7 @@ void SetupHardware(void)
 	Joystick_Init();
 	LEDs_Init();
 	USB_Init();
+	JTAG_Init();
 }
 
 /** Event handler for the USB_Connect event. This indicates that the device is enumerating via the status LEDs and
