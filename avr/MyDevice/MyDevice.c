@@ -505,6 +505,11 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 			case '\n':
 				break;
 
+			case '#':
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
 			case ':':
 				WriteStringFlush("# SREC\r\n");
 				ServerRequest = EOLRequest;
@@ -513,7 +518,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'J': {
 					int chain_len = JTAG_ChainLen();
-					sprintf(output_buffer, "# JTAG chain length=%d, scan follows:\r\n", chain_len );
+					sprintf(output_buffer, "\r\n# JTAG chain length=%d, scan follows:\r\n", chain_len );
 					Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
 				}
 				JTAG_ChainInfo();
