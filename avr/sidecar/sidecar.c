@@ -57,6 +57,7 @@ static CDC_LineEncoding_t LineEncoding = { .BaudRateBPS = 0,
  */
 int main(void)
 {
+	SerialNumberDescriptor_Init();
 	SetupHardware();
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);

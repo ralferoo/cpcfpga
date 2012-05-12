@@ -66,6 +66,7 @@
 	/* Function Prototypes: */
 		void SetupHardware(void);
 		void CDC_Task(void);
+		void SerialNumberDescriptor_Init(void);
 
 		void EVENT_USB_Device_Connect(void);
 		void EVENT_USB_Device_Disconnect(void);
