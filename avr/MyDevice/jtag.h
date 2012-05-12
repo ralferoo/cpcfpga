@@ -85,6 +85,7 @@ void JTAG_SelectDR(void);
 void JTAG_SelectIR(void);
 int JTAG_ChainLen(void);
 void JTAG_ChainInfo(void);
+int JTAG_IRLen(void);
 
 ///////////////////////////////////////////////////////////////////////////////
 

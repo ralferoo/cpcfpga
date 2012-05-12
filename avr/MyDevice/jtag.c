@@ -112,7 +112,7 @@ void JTAG_ChainInfo(void)
 				manuf = "Xilinx ";
 				if ( (d&0xf)==5 && c==4 && b==0x50 )
 					part = "XCF02S";
-				else if ( d==1 && c==0x41 && b==0xc0 )
+				else if ( (d&0xf)==1 && c==0x41 && b==0xc0 )
 					part = "XC3S400";
 			}
 
@@ -149,6 +149,24 @@ int JTAG_ChainLen(void)
 
 	for (i=0; i<1024; i++)
 		if( JTAG_Clock(1)) break;	// shift through ones until we find out
+
+	JTAG_Reset();
+
+	return i;
+}
+
+int JTAG_IRLen(void)
+{
+	int i;
+
+	JTAG_Reset();
+	JTAG_SelectIR();
+	JTAG_SendClock(0);
+	JTAG_SendClock(0);			// move to shift-IR
+	for (i=0; i<1024; i++)
+		JTAG_SendClock(1);		// select BYPASS register on all devices
+	for (i=0; i<1024; i++)
+		if( !JTAG_Clock(0)) break;	// shift through ones until we find out
 
 	JTAG_Reset();
 

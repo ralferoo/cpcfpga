@@ -518,8 +518,13 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'J': {
 					int chain_len = JTAG_ChainLen();
-					sprintf(output_buffer, "\r\n# JTAG chain length=%d, scan follows:\r\n", chain_len );
-					Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
+					int ir_len = JTAG_IRLen();
+					sprintf(output_buffer, "\r\n# JTAG scan:\r\n# chain length=%d, IR length=%d\r\n", chain_len, ir_len );
+					WriteStringFlush(output_buffer);
+					//Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
+//					sprintf(output_buffer, "# IR length=%d\r\n# scan follows:\r\n", ir_len );
+//					WriteStringFlush(output_buffer);
+					//Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
 				}
 				JTAG_ChainInfo();
 				WriteStringFlush("\r\n");
