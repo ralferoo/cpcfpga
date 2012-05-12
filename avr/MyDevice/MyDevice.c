@@ -410,8 +410,8 @@ void Server_Task(void)
 		/* Read in the incoming packet into the buffer */
 		Endpoint_Read_Stream_LE(&Buffer, DataLength, NULL);
 
-//		/* Finalize the stream transfer to send the last packet */
-//		Endpoint_ClearOUT();
+		/* Finalize the stream transfer to send the last packet */
+		Endpoint_ClearOUT();
 
 		/* Select the Serial Tx Endpoint */
 		Endpoint_SelectEndpoint(CDC1_TX_EPNUM);
@@ -421,11 +421,11 @@ void Server_Task(void)
 			DataLength = (*ServerRequest)( &pBuffer, DataLength );
 		}
 
-		/* Select the Serial Rx Endpoint */
-		Endpoint_SelectEndpoint(CDC1_RX_EPNUM);
+//		/* Select the Serial Rx Endpoint */
+//		Endpoint_SelectEndpoint(CDC1_RX_EPNUM);
 
-		/* Finalize the stream transfer to send the last packet */
-		Endpoint_ClearOUT();
+//		/* Finalize the stream transfer to send the last packet */
+//		Endpoint_ClearOUT();
 	}
 }
 
