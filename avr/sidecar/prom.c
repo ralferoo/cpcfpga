@@ -41,6 +41,12 @@ void SREC_AddrHigh( uint16_t hiaddr )
 	SREC_EndLine();
 }
 
+void SREC_EndOfFile()
+{
+	SREC_Start( 1, 0, 0 );
+	SREC_EndLine();
+}
+
 void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_len )
 {
 	// ISC_ADDRESS_SHIFT faddr instruction
@@ -72,6 +78,10 @@ void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_l
 		}
 		SREC_EndLine();
 	}
+
+	JTAG_SendClockTMS( 1 );			// move to exit 1_IR
+	JTAG_SendClockTMS( 1 );			// move to update_IR
+	jtag_state = JTAG_STATE_UPDATE_DR;
 }
 
 void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
@@ -128,10 +138,7 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		PROM_DumpBlock( faddr, hir_len, tir_len, hdr_len, tdr_len );
 		WriteString("\r\n");
 	}
-
-	JTAG_SendClockTMS( 1 );			// move to exit 1_IR
-	JTAG_SendClockTMS( 1 );			// move to update_IR
-	jtag_state = JTAG_STATE_UPDATE_DR;
+	SREC_EndOfFile();
 }
 
 /*
