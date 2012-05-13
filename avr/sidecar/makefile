@@ -736,3 +736,6 @@ build elf hex eep lss sym coff extcoff doxygen clean          \
 clean_list clean_doxygen program dfu flip flip-ee dfu-ee      \
 debug gdb-config checksource
 
+edit:
+	gvim -p *.[ch] makefile &
+
