@@ -128,6 +128,10 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		PROM_DumpBlock( faddr, hir_len, tir_len, hdr_len, tdr_len );
 		WriteString("\r\n");
 	}
+
+	JTAG_SendClockTMS( 1 );			// move to exit 1_IR
+	JTAG_SendClockTMS( 1 );			// move to update_IR
+	jtag_state = JTAG_STATE_UPDATE_DR;
 }
 
 /*
