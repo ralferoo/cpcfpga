@@ -87,6 +87,11 @@ int JTAG_ChainLen(void);
 void JTAG_ChainInfo(void);
 int JTAG_IRLen(void);
 
+uint32_t JTAG_SendDR( uint32_t reg_value, int reg_len, int hdr_len, int tdr_len );
+uint32_t JTAG_SendIR( uint32_t reg_value, int reg_len, int hir_len, int tir_len );
+void JTAG_ShiftIR(void);
+void JTAG_ShiftDR(void);
+
 ///////////////////////////////////////////////////////////////////////////////
 
 #endif // _RALF_JTAG_H

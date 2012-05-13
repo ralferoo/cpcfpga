@@ -1,8 +1,7 @@
 #include "sidecar.h"
 #include "server.h"
 #include "jtag.h"
-
-uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength );
+#include "prom.h"
 
 uint16_t (*ServerRequest)( uint8_t** ppBuffer, uint16_t DataLength )
 	= &DefaultRequest;
@@ -118,6 +117,14 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				JTAG_ChainInfo();
 				WriteString("\r\n");
 
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
+			case 'r':
+			case 'R':
+				WriteString("# PROM dump\r\n");
+				PROM_Dump( 0, 6, 0, 1 );
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;

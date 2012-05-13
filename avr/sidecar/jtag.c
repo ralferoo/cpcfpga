@@ -80,6 +80,36 @@ void JTAG_SelectIR(void)
 	}
 }
 
+void JTAG_ShiftIR(void)
+{
+	switch( jtag_state ) {
+	default:
+		JTAG_SelectIR();
+	case JTAG_STATE_SELECT_IR:
+		JTAG_SendClock(0);
+	case JTAG_STATE_CAPTURE_IR:
+		JTAG_SendClock(0);
+	case JTAG_STATE_SHIFT_IR:
+		break;
+	}
+	jtag_state = JTAG_STATE_SHIFT_IR;
+}
+
+void JTAG_ShiftDR(void)
+{
+	switch( jtag_state ) {
+	default:
+		JTAG_SelectDR();
+	case JTAG_STATE_SELECT_DR:
+		JTAG_SendClock(0);
+	case JTAG_STATE_CAPTURE_DR:
+		JTAG_SendClock(0);
+	case JTAG_STATE_SHIFT_DR:
+		break;
+	}
+	jtag_state = JTAG_STATE_SHIFT_DR;
+}
+
 extern char output_buffer[ 128 ];
 
 void JTAG_ChainInfo(void)
@@ -172,4 +202,83 @@ int JTAG_IRLen(void)
 
 	return i;
 }
+
+uint32_t reverse( uint32_t in_value, int reg_len)
+{
+	uint32_t in_value_rev = 0;
+	for (int i=0; i<reg_len; i++ ) {
+		in_value_rev <<= 1;
+		in_value_rev |= (in_value&1);
+		in_value >>= 1;
+	}
+
+	return in_value_rev;
+}
+
+uint32_t JTAG_SendIR( uint32_t reg_value, int reg_len, int hir_len, int tir_len )
+{
+	int i;
+	uint32_t in_value = 0;
+
+	JTAG_ShiftIR();
+	for (i=0; i<hir_len; i++)
+		JTAG_SendClock(1);		// send bypass register to everything in chain before
+
+	for (i=0; i<reg_len-1; i++ ) {
+		in_value |= JTAG_Clock( reg_value&1 );
+		in_value <<= 1;
+		reg_value >>= 1;		// send all but last bit of instruction
+	}
+
+	if( tir_len ) {
+		in_value |= JTAG_Clock( reg_value&1 );	// send last bit
+
+		for( i=0; i<tir_len-1; i++ )
+			JTAG_SendClock(1);	// send all but last bit of trailer
+
+		JTAG_SendClockTMS(1);		// send last bit of trailer with TMS to move out of shift_IR
+	} else {
+		in_value |= JTAG_ClockTMS( reg_value&1 );	// send last bit with TMS
+	}
+
+	//jtag_state = JTAG_STATE_EXIT1_DR;
+	JTAG_SendClockTMS( 1 );			// move to update_IR
+	jtag_state = JTAG_STATE_UPDATE_IR;
+
+	return reverse( in_value, reg_len );
+}
+
+uint32_t JTAG_SendDR( uint32_t reg_value, int reg_len, int hdr_len, int tdr_len )
+{
+	int i;
+	uint32_t in_value = 0;
+
+	JTAG_ShiftDR();
+	for (i=0; i<hdr_len; i++)
+		JTAG_SendClock(1);		// send bypass register to everything in chain before
+
+	for (i=0; i<reg_len-1; i++ ) {
+		in_value |= JTAG_Clock( reg_value&1 );
+		in_value <<= 1;
+		reg_value >>= 1;		// send all but last bit of instruction
+	}
+
+	if( tdr_len ) {
+		in_value |= JTAG_Clock( reg_value&1 );	// send last bit
+
+		for( i=0; i<tdr_len-1; i++ )
+			JTAG_SendClock(1);	// send all but last bit of trailer
+
+		JTAG_SendClockTMS(1);		// send last bit of trailer with TMS to move out of shift_DR
+	} else {
+		in_value |= JTAG_ClockTMS( reg_value&1 );	// send last bit with TMS
+	}
+
+	//jtag_state = JTAG_STATE_EXIT1_DR;
+	JTAG_SendClockTMS( 1 );			// move to update_DR
+	jtag_state = JTAG_STATE_UPDATE_DR;
+
+	return reverse( in_value, reg_len );
+}
+
 

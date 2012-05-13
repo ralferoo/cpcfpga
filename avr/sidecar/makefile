@@ -60,7 +60,8 @@
 
 
 # MCU name
-MCU = at90usb162
+#MCU = at90usb162
+MCU = atmega32u2
 DFUMCU = atmega32u2
 
 
@@ -139,6 +140,7 @@ include $(LUFA_PATH)/LUFA/makefile
 SRC = $(TARGET).c                                                 \
 	  Descriptors.c                                               \
 	  jtag.c						\
+	  prom.c					\
 	  server.c						\
 	  $(LUFA_SRC_USB)                                             \
 	  $(LUFA_SRC_USBCLASS)
