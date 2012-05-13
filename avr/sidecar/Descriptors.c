@@ -71,7 +71,7 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 
 	.ManufacturerStrIndex   = 0x01,
 	.ProductStrIndex        = 0x02,
-	.SerialNumStrIndex      = 0x03,
+	.SerialNumStrIndex      = USE_INTERNAL_SERIAL,
 
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
@@ -204,6 +204,7 @@ const USB_Descriptor_String_t PROGMEM LanguageString =
 const USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(11), .Type = DTYPE_String},
+
 	.UnicodeString          = L"cpcfpga.com"
 };
 
@@ -214,21 +215,9 @@ const USB_Descriptor_String_t PROGMEM ManufacturerString =
 const USB_Descriptor_String_t PROGMEM ProductString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(13), .Type = DTYPE_String},
-        .UnicodeString          = L"CPC2012 rev 0"
-};
 
-// serial number, must start with identifier for voti.nl VID/PID
-static USB_Descriptor_String_t SerialNumberString =
-{
-        Header:                 {Size: USB_STRING_LEN(50), Type: DTYPE_String},
-				//0	  8   12      20.345678.30.345678.40.345678.50
-        UnicodeString:          L"cpcfpga.com:cpc2012:                              "
+	.UnicodeString          = L"CPC2012 rev 0"
 };
-
-void SerialNumberDescriptor_Init(void)
-{
-//	USB_Device_GetSerialString((uint16_t*) (&SerialNumberString.UnicodeString[20]) );
-}
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
  *  documentation) by the application code so that the address and size of a requested descriptor can be given
@@ -274,11 +263,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 					Address = &ProductString;
 					Size    = pgm_read_byte(&ProductString.Header.Size);
 					break;
-                                case 0x03:
-					*MemoryAddressSpace = MEMSPACE_RAM;
-                                        Address = &SerialNumberString;
-                                        Size    = SerialNumberString.Header.Size;
-                                        break;
 			}
 
 			break;

@@ -57,7 +57,7 @@ static CDC_LineEncoding_t LineEncoding = { .BaudRateBPS = 0,
  */
 int main(void)
 {
-	SerialNumberDescriptor_Init();
+//	SerialNumberDescriptor_Init();
 	SetupHardware();
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
@@ -181,7 +181,7 @@ void CDC_Task(void)
 	if (USB_DeviceState != DEVICE_STATE_Configured)
 	  return;
 
-//	if ( LineEncoding.BaudRateBPS)
+	if ( LineEncoding.BaudRateBPS)
 	{
 		Endpoint_SelectEndpoint(CDC_RX_EPNUM);
 		if (Endpoint_IsOUTReceived()) {
