@@ -66,12 +66,14 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
 
 	.VendorID               = 0x16C0,
-	.ProductID              = 10205, // hex in document is wrong (0x27DC)
+	.ProductID              = 1505,
+//	.ProductID              = 10205, // hex in document is wrong (0x27DC)
 	.ReleaseNumber          = VERSION_BCD(00.01),
 
 	.ManufacturerStrIndex   = 0x01,
 	.ProductStrIndex        = 0x02,
 	.SerialNumStrIndex      = USE_INTERNAL_SERIAL,
+//	.SerialNumStrIndex      = 0x03,
 
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
@@ -219,6 +221,13 @@ const USB_Descriptor_String_t PROGMEM ProductString =
 	.UnicodeString          = L"CPC2012 rev 0"
 };
 
+/// serial number descriptor in RAM
+//
+//struct {
+//	USB_Descriptor_Header_t Header;
+//	uint16_t                UnicodeString[20 + INTERNAL_SERIAL_LENGTH_BITS / 4];
+//} SignatureDescriptor;
+
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
  *  documentation) by the application code so that the address and size of a requested descriptor can be given
  *  to the USB library. When the device receives a Get Descriptor request on the control endpoint, this function
@@ -237,6 +246,12 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 	const void* Address = NULL;
 	uint16_t    Size    = NO_DESCRIPTOR;
+
+//	SignatureDescriptor.Header.Type = DTYPE_String;
+//	SignatureDescriptor.Header.Size = USB_STRING_LEN(20 + INTERNAL_SERIAL_LENGTH_BITS / 4);
+//	memcpy_PF( SignatureDescriptor.UnicodeString, L"cpcfpga.com:cpc2012:", 40 );
+//	for( int i=0; i<20; i++ )
+//		SignatureDescriptor.UnicodeString[i]="cpcfpga.com:cpc2012:"[i];
 
 	switch (DescriptorType)
 	{
@@ -263,6 +278,16 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 					Address = &ProductString;
 					Size    = pgm_read_byte(&ProductString.Header.Size);
 					break;
+/*
+				case 0x03:
+					SignatureDescriptor.Header.Type = DTYPE_String;
+					SignatureDescriptor.Header.Size = Size = USB_STRING_LEN(20 + INTERNAL_SERIAL_LENGTH_BITS / 4);
+					for( int i=0; i<20; i++ )
+						SignatureDescriptor.UnicodeString[i]="cpcfpga.com:cpc2012:"[i];
+					*MemoryAddressSpace = MEMSPACE_RAM;
+					Address = &SignatureDescriptor;
+					break;
+*/
 			}
 
 			break;
