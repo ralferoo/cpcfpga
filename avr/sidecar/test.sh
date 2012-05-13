@@ -8,6 +8,6 @@ echo J
 echo -
 echo r
 echo -
-sleep 1
+sleep 5
 kill $PID
 

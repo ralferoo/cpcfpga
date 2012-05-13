@@ -7,9 +7,76 @@
 #include "jtag.h"
 #include "prom.h"
 
+inline void RunTestTCK( uint32_t i )
+{
+}
+
+static uint8_t SREC_xsum;
+
+void SREC_Start( uint8_t type, uint16_t faddr, uint8_t len )
+{
+	sprintf(output_buffer,":%02X%04X%02X", len, faddr, type);
+	WriteString(output_buffer);
+	SREC_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
+}
+
+void SREC_Byte( uint8_t byte )
+{
+	sprintf(output_buffer, "%02X", byte);
+	WriteString(output_buffer);
+	SREC_xsum -= byte;
+}
+
+void SREC_EndLine(void)
+{
+	sprintf(output_buffer, "%02X\r\n", SREC_xsum);
+	WriteString(output_buffer);
+}
+
+void SREC_AddrHigh( uint16_t hiaddr )
+{
+	SREC_Start( 4, 0, 2 );
+	SREC_Byte( hiaddr>>8 );
+	SREC_Byte( hiaddr & 0xff );
+	SREC_EndLine();
+}
+
+void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_len )
+{
+	// ISC_ADDRESS_SHIFT faddr instruction
+	JTAG_SendIR( 0xeb, 8, hir_len, tir_len );
+	JTAG_SendDR( faddr, 16, hdr_len, tdr_len );
+	RunTestTCK(2);
+
+	// ISC_READ fvfy0 instruction
+	JTAG_SendIR( 0xef, 8, hir_len, tir_len );
+	RunTestTCK(1);
+	RunTestTCK(50);
+
+	// read the data
+	JTAG_ShiftDR();
+	for (int i=0; i<hdr_len; i++)
+		JTAG_SendClock(0);		// ignore all data before the data we want
+
+	uint16_t addr = faddr << 4;
+	for (int i=0; i<8192; i+=32*8 ) {
+		SREC_Start( 0, addr, 32 );
+		for( int j=0; j<32; j++ ) {
+			uint8_t byte = 0;
+			for(int bit = 0; bit<8; bit++) {
+				byte <<= 1;
+				byte |= JTAG_Clock(0);
+			}
+			SREC_Byte( byte );
+			addr++;
+		}
+		SREC_EndLine();
+	}
+}
 
 void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 {
+	// idcode
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
 
@@ -25,8 +92,10 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 
 	if( !ok) return;
 
+	// ISC_DISABLE conld instruction
 	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
-	uint16_t protect = (uint16_t) JTAG_SendIR( 0xff, 8, hdr_len, tdr_len );
+	RunTestTCK(110000);
+	uint16_t protect = (uint16_t) JTAG_SendIR( 0xff, 8, hir_len, tir_len );
 
 	status = "readable";
 	if( (protect&7) != 1 ) {
@@ -39,7 +108,26 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	
 	if( !ok) return;
 
-	WriteString("# data\r\n");
+	// bypass instruction
+	JTAG_SendIR( 0xff, 8, hir_len, tir_len );
+	// ISC_ENABLE ispen instruction
+	JTAG_SendIR( 0xe8, 8, hir_len, tir_len );
+	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
+	// ISC_DISABLE conld instruction
+	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
+	RunTestTCK(110000);
+	// ISC_ENABLE ispen instruction
+	JTAG_SendIR( 0xe8, 8, hir_len, tir_len );
+	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
+
+	for( uint16_t faddr=0; faddr<0x4000; faddr+=0x40 ) {
+		sprintf( output_buffer, "# faddr=%04X\r\n", faddr );
+		WriteString(output_buffer);
+		if ( (faddr & 0xfff) == 0 )
+			SREC_AddrHigh( faddr >> 12 );
+		PROM_DumpBlock( faddr, hir_len, tir_len, hdr_len, tdr_len );
+		WriteString("\r\n");
+	}
 }
 
 /*

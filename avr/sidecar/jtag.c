@@ -255,7 +255,7 @@ uint32_t JTAG_SendDR( uint32_t reg_value, int reg_len, int hdr_len, int tdr_len 
 
 	JTAG_ShiftDR();
 	for (i=0; i<hdr_len; i++)
-		JTAG_SendClock(1);		// send bypass register to everything in chain before
+		JTAG_SendClock(1);		// ignore all data before the data we want
 
 	for (i=0; i<reg_len-1; i++ ) {
 		in_value |= JTAG_Clock( reg_value&1 );
@@ -267,7 +267,7 @@ uint32_t JTAG_SendDR( uint32_t reg_value, int reg_len, int hdr_len, int tdr_len 
 		in_value |= JTAG_Clock( reg_value&1 );	// send last bit
 
 		for( i=0; i<tdr_len-1; i++ )
-			JTAG_SendClock(1);	// send all but last bit of trailer
+			JTAG_SendClock(1);	// shift out all the data at the end
 
 		JTAG_SendClockTMS(1);		// send last bit of trailer with TMS to move out of shift_DR
 	} else {
