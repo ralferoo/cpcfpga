@@ -27,6 +27,41 @@ void JTAG_Reset(void)
 	jtag_state = JTAG_STATE_RESET;
 }
 
+void JTAG_Idle(void)
+{
+	switch( jtag_state ) {
+	default:
+		JTAG_Reset();
+	case JTAG_STATE_RESET:
+	case JTAG_STATE_UPDATE_DR:
+	case JTAG_STATE_UPDATE_IR:
+	case JTAG_STATE_IDLE:
+		JTAG_SendClock(0);
+		break;
+
+	case JTAG_STATE_SELECT_DR:
+	case JTAG_STATE_SELECT_IR:
+		JTAG_SendClock(0);
+	case JTAG_STATE_CAPTURE_DR:
+	case JTAG_STATE_CAPTURE_IR:
+	case JTAG_STATE_SHIFT_DR:
+	case JTAG_STATE_SHIFT_IR:
+	case JTAG_STATE_PAUSE_DR:
+	case JTAG_STATE_PAUSE_IR:
+		JTAG_SendClockTMS(0);
+
+	case JTAG_STATE_EXIT1_DR:
+	case JTAG_STATE_EXIT1_IR:
+	case JTAG_STATE_EXIT2_DR:
+	case JTAG_STATE_EXIT2_IR:
+		JTAG_SendClockTMS(0);
+		JTAG_SendClock(0);
+		break;
+	}
+
+	jtag_state = JTAG_STATE_IDLE;
+}
+
 void JTAG_SelectDR(void)
 {
 	switch( jtag_state ) {
@@ -279,6 +314,13 @@ uint32_t JTAG_SendDR( uint32_t reg_value, int reg_len, int hdr_len, int tdr_len 
 	jtag_state = JTAG_STATE_UPDATE_DR;
 
 	return reverse( in_value, reg_len );
+}
+
+void JTAG_RunTestTCK( uint32_t i )
+{
+	JTAG_Idle();
+	while( i-- )
+		JTAG_SendClock( 0 );			// keep sending clocks in the idle state
 }
 
 

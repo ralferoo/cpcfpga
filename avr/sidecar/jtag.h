@@ -81,6 +81,8 @@ inline void JTAG_SendClockTMS(int tdi) { JTAG_ClockWithTMS(tdi,1,0); }
 
 void JTAG_Init(void);
 void JTAG_Reset(void);
+void JTAG_Idle(void);
+void JTAG_RunTestTCK( uint32_t i );
 void JTAG_SelectDR(void);
 void JTAG_SelectIR(void);
 int JTAG_ChainLen(void);

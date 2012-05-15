@@ -7,10 +7,6 @@
 #include "jtag.h"
 #include "prom.h"
 
-inline void RunTestTCK( uint32_t i )
-{
-}
-
 static uint8_t SREC_xsum;
 
 void SREC_Start( uint8_t type, uint16_t faddr, uint8_t len )
@@ -52,12 +48,12 @@ void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_l
 	// ISC_ADDRESS_SHIFT faddr instruction
 	JTAG_SendIR( 0xeb, 8, hir_len, tir_len );
 	JTAG_SendDR( faddr, 16, hdr_len, tdr_len );
-	RunTestTCK(2);
+	JTAG_RunTestTCK(2);
 
 	// ISC_READ fvfy0 instruction
 	JTAG_SendIR( 0xef, 8, hir_len, tir_len );
-	RunTestTCK(1);
-	RunTestTCK(50);
+	JTAG_RunTestTCK(1);
+	JTAG_RunTestTCK(50);
 
 	// read the data
 	JTAG_ShiftDR();
@@ -104,7 +100,7 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 
 	// ISC_DISABLE conld instruction
 	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
-	RunTestTCK(110000);
+	JTAG_RunTestTCK(110000);
 	uint16_t protect = (uint16_t) JTAG_SendIR( 0xff, 8, hir_len, tir_len );
 
 	status = "readable";
@@ -125,18 +121,21 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
 	// ISC_DISABLE conld instruction
 	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
-	RunTestTCK(110000);
+	JTAG_RunTestTCK(110000);
 	// ISC_ENABLE ispen instruction
 	JTAG_SendIR( 0xe8, 8, hir_len, tir_len );
 	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
 
-	for( uint16_t faddr=0; faddr<0x4000; faddr+=0x40 ) {
+	uint16_t faddr_base = ~0U;
+	for( uint16_t faddr=0x3f80; faddr<0x4000; faddr+=0x40 ) {
+		WriteString("#\r\n");
 		sprintf( output_buffer, "# faddr=%04X\r\n", faddr );
 		WriteString(output_buffer);
-		if ( (faddr & 0xfff) == 0 )
+		if ( (faddr & 0xf000) != faddr_base ) {
+			faddr_base = faddr & 0xf000;
 			SREC_AddrHigh( faddr >> 12 );
+		}
 		PROM_DumpBlock( faddr, hir_len, tir_len, hdr_len, tdr_len );
-		WriteString("\r\n");
 	}
 	SREC_EndOfFile();
 }
