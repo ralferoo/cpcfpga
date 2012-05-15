@@ -121,6 +121,23 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				*ppBuffer = pBuffer;
 				return DataLength;
 
+			case 'e':
+			case 'E':
+				WriteString("# PROM erase start\r\n");
+				PROM_Erase( 0, 6, 0, 1 );
+				WriteString("# PROM erase finished\r\n");
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
+			case 'p':
+			case 'P':
+				WriteString("# PROM write\r\n");
+				PROM_Program( 0, 6, 0, 1 );
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
 			case 'r':
 			case 'R':
 				WriteString("# PROM dump\r\n");
