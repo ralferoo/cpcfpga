@@ -525,6 +525,12 @@ avr/.unpack: avr/dist/$(LUFA).zip
 
 lufa: avr/.unpack
 
+sidecar: avr/sidecar/sidecar.hex
+
+avr/sidecar/sidecar.hex: avr/.unpack avr/sidecar/*.c avr/sidecar/*.h avr/sidecar/makefile
+	(cd avr/sidecar ; make)
+	
+
 build/boot_init.bin: avr/DFU/BootloaderDFU.hex avr/VirtualSerial/VirtualSerial.bin
 
 avr/DFU/BootloaderDFU.hex: avr/DFU/*.c avr/DFU/*.h
