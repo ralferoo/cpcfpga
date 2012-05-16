@@ -1,182 +1,261 @@
-NET "video_r2[1]" LOC = P1;
+NET "video_r2[1]" LOC = P53;
 NET "video_r2[1]" IOSTANDARD = LVCMOS33;
 
-NET "video_r2[0]" LOC = P2;
+NET "video_r2[0]" LOC = P55;
 NET "video_r2[0]" IOSTANDARD = LVCMOS33;
 
-NET "video_g2[1]" LOC = P4;
+NET "video_g2[1]" LOC = P57;
 NET "video_g2[1]" IOSTANDARD = LVCMOS33;
 
-NET "video_g2[0]" LOC = P5;
+NET "video_g2[0]" LOC = P59;
 NET "video_g2[0]" IOSTANDARD = LVCMOS33;
 
-NET "video_b2[1]" LOC = P7;
+NET "video_b2[1]" LOC = P60;
 NET "video_b2[1]" IOSTANDARD = LVCMOS33;
 
-NET "video_b2[0]" LOC = P8;
+NET "video_b2[0]" LOC = P63;
 NET "video_b2[0]" IOSTANDARD = LVCMOS33;
 
-NET "video_sync_out" LOC = P10;
+NET "video_sync_out" LOC = P52;
 NET "video_sync_out" IOSTANDARD = LVCMOS33;
 
-NET "ps2_data" LOC = P11;
+NET "ps2_data" LOC = P44;
 NET "ps2_data" IOSTANDARD = LVCMOS33;
 
-NET "ps2_clock" LOC = P12;
+NET "ps2_clock" LOC = P46;
 NET "ps2_clock" IOSTANDARD = LVCMOS33;
 
-NET "tape_out" LOC = P13;
+#exp_a p47
+NET "tape_out" LOC = P47;
 NET "tape_out" IOSTANDARD = LVCMOS33;
 
-NET "tape_motor" LOC = P14;
+#exp_b p50
+NET "tape_motor" LOC = P50;
 NET "tape_motor" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[18]" LOC = P108;
+#tape_in p131
+
+#sd_do p40
+#sd_clk p41
+#sd_di p140
+#sd_cs p141
+
+#joy0fire1 p116
+#joy0fire2 p119
+#joy0left  p113
+#joy0right p112
+#joy0up	   p122
+#joy0down  p118
+
+#joy1fire1 p104
+#joy1fire2 p107
+#joy1left  p103
+#joy1right p102
+#joy1up	   p108
+#joy1down  p105
+
+#sv2p5 p76
+#sv2p3 p77
+#sv2p1 p74
+
+#hdr_mosi p83
+#hdr_miso p85
+#hdr_sel p86
+#hdr_spare p87
+#hdr_sclk p84
+
+#audio_r p69
+#audio_l p68
+#clk16 p56
+
+
+
+NET "sram_address[18]" LOC = P9;
 NET "sram_address[18]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[15]" LOC = P107;
-NET "sram_address[15]" IOSTANDARD = LVCMOS33;
-
-NET "sram_address[17]" LOC = P105;
+NET "sram_address[17]" LOC = P7;
 NET "sram_address[17]" IOSTANDARD = LVCMOS33;
 
-NET "sram_we" LOC = P104;
-NET "sram_we" IOSTANDARD = LVCMOS33;
-
-NET "sram_address[13]" LOC = P103;
-NET "sram_address[13]" IOSTANDARD = LVCMOS33;
-
-NET "sram_address[8]" LOC = P102;
-NET "sram_address[8]" IOSTANDARD = LVCMOS33;
-
-NET "sram_address[9]" LOC = P100;
-NET "sram_address[9]" IOSTANDARD = LVCMOS33;
-
-NET "sram_address[11]" LOC = P99;
-NET "sram_address[11]" IOSTANDARD = LVCMOS33;
-
-NET "sram_oe" LOC = P98;
-NET "sram_oe" IOSTANDARD = LVCMOS33;
-
-NET "sram_address[10]" LOC = P97;
-NET "sram_address[10]" IOSTANDARD = LVCMOS33;
-
-NET "sram_ce" LOC = P96;
-NET "sram_ce" IOSTANDARD = LVCMOS33;
-
-NET "sram_data[7]" LOC = P95;
-NET "sram_data[7]" IOSTANDARD = LVCMOS33;
-
-NET "sram_data[6]" LOC = P93;
-NET "sram_data[6]" IOSTANDARD = LVCMOS33;
-
-NET "sram_data[5]" LOC = P92;
-NET "sram_data[5]" IOSTANDARD = LVCMOS33;
-
-NET "sram_data[4]" LOC = P90;
-NET "sram_data[4]" IOSTANDARD = LVCMOS33;
-
-NET "sram_data[3]" LOC = P89;
-NET "sram_data[3]" IOSTANDARD = LVCMOS33;
-
-NET "sram_address[16]" LOC = P87;
+NET "sram_address[16]" LOC = P11;
 NET "sram_address[16]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[14]" LOC = P86;
+NET "sram_address[15]" LOC = P8;
+NET "sram_address[15]" IOSTANDARD = LVCMOS33;
+
+NET "sram_address[14]" LOC = P12;
 NET "sram_address[14]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[12]" LOC = P85;
+NET "sram_address[13]" LOC = P5;
+NET "sram_address[13]" IOSTANDARD = LVCMOS33;
+
+NET "sram_address[12]" LOC = P13;
 NET "sram_address[12]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[7]" LOC = P84;
+NET "sram_address[11]" LOC = P1;
+NET "sram_address[11]" IOSTANDARD = LVCMOS33;
+
+NET "sram_address[10]" LOC = P35;
+NET "sram_address[10]" IOSTANDARD = LVCMOS33;
+
+NET "sram_address[9]" LOC = P2;
+NET "sram_address[9]" IOSTANDARD = LVCMOS33;
+
+NET "sram_address[8]" LOC = P4;
+NET "sram_address[8]" IOSTANDARD = LVCMOS33;
+
+NET "sram_address[7]" LOC = P14;
 NET "sram_address[7]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[6]" LOC = P83;
+NET "sram_address[6]" LOC = P15;
 NET "sram_address[6]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[5]" LOC = P82;
+NET "sram_address[5]" LOC = P17;
 NET "sram_address[5]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[4]" LOC = P80;
+NET "sram_address[4]" LOC = P18;
 NET "sram_address[4]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[3]" LOC = P79;
+NET "sram_address[3]" LOC = P20;
 NET "sram_address[3]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[2]" LOC = P78;
+NET "sram_address[2]" LOC = P21;
 NET "sram_address[2]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[1]" LOC = P77;
+NET "sram_address[1]" LOC = P23;
 NET "sram_address[1]" IOSTANDARD = LVCMOS33;
 
-NET "sram_address[0]" LOC = P76;
+NET "sram_address[0]" LOC = P24;
 NET "sram_address[0]" IOSTANDARD = LVCMOS33;
 
-NET "sram_data[0]" LOC = P74;
-NET "sram_data[0]" IOSTANDARD = LVCMOS33;
+NET "sram_we" LOC = P6;
+NET "sram_we" IOSTANDARD = LVCMOS33;
 
-NET "sram_data[1]" LOC = P73;
-NET "sram_data[1]" IOSTANDARD = LVCMOS33;
+NET "sram_oe" LOC = P36;
+NET "sram_oe" IOSTANDARD = LVCMOS33;
 
-NET "sram_data[2]" LOC = P69;
+#ce is gnd
+#exp_c p51
+NET "sram_ce" LOC = P51;
+NET "sram_ce" IOSTANDARD = LVCMOS33;
+
+NET "sram_data[7]" LOC = P33;
+NET "sram_data[7]" IOSTANDARD = LVCMOS33;
+
+NET "sram_data[6]" LOC = P32;
+NET "sram_data[6]" IOSTANDARD = LVCMOS33;
+
+NET "sram_data[5]" LOC = P31;
+NET "sram_data[5]" IOSTANDARD = LVCMOS33;
+
+NET "sram_data[4]" LOC = P30;
+NET "sram_data[4]" IOSTANDARD = LVCMOS33;
+
+NET "sram_data[3]" LOC = P28;
+NET "sram_data[3]" IOSTANDARD = LVCMOS33;
+
+NET "sram_data[2]" LOC = P27;
 NET "sram_data[2]" IOSTANDARD = LVCMOS33;
 
-NET "spi_clk" LOC = P36;
+NET "sram_data[1]" LOC = P26;
+NET "sram_data[1]" IOSTANDARD = LVCMOS33;
+
+NET "sram_data[0]" LOC = P24;
+NET "sram_data[0]" IOSTANDARD = LVCMOS33;
+
+#fl_do p73
+#fl_wp p78
+#fl_di p79
+#fl_sclk p80
+#fl_hold p82
+#fl_sel p70
+
+NET "spi_clk" LOC = P80;
 NET "spi_clk" IOSTANDARD = LVCMOS33;
 
-NET "spi_di" LOC = P35;
+NET "spi_di" LOC = P79;
 NET "spi_di" IOSTANDARD = LVCMOS33;
 
-NET "spi_do" LOC = P33;
+NET "spi_do" LOC = P74;
 NET "spi_do" IOSTANDARD = LVCMOS33;
 
-NET "spi_flash_cs" LOC = P32;
+NET "spi_wp" LOC = P78;
+NET "spi_wp" IOSTANDARD = LVCMOS33;
+
+NET "spi_hold" LOC = P82;
+NET "spi_hold" IOSTANDARD = LVCMOS33;
+
+NET "spi_flash_cs" LOC = P70;
 NET "spi_flash_cs" IOSTANDARD = LVCMOS33;
 
-NET "dipsw[0]" LOC = P31;
+#gpio_1 gnd
+#gpio_2 3.3v
+#gpio_3 p137
+#gpio_4 p135
+#gpio_5 p132
+#gpio_6 p130
+#gpio_7 p129
+#gpio_8 p127
+#gpio_9 p128
+#gpio_10 p123
+
+NET "dipsw[0]" LOC = P137;
 NET "dipsw[0]" IOSTANDARD = LVCMOS33;
 
-NET "dipsw[1]" LOC = P30;
+NET "dipsw[1]" LOC = P135;
 NET "dipsw[1]" IOSTANDARD = LVCMOS33;
 
-NET "dipsw[2]" LOC = P28;
+NET "dipsw[2]" LOC = P132;
 NET "dipsw[2]" IOSTANDARD = LVCMOS33;
 
-NET "dipsw[3]" LOC = P27;
+NET "dipsw[3]" LOC = P130;
 NET "dipsw[3]" IOSTANDARD = LVCMOS33;
 
-NET "dipsw[4]" LOC = P26;
+NET "dipsw[4]" LOC = P129;
 NET "dipsw[4]" IOSTANDARD = LVCMOS33;
 
-NET "dipsw[5]" LOC = P25;
+NET "dipsw[5]" LOC = P127;
 NET "dipsw[5]" IOSTANDARD = LVCMOS33;
 
-NET "dipsw[6]" LOC = P24;
+NET "dipsw[6]" LOC = P128;
 NET "dipsw[6]" IOSTANDARD = LVCMOS33;
 
-NET "dipsw[7]" LOC = P23;
+NET "dipsw[7]" LOC = P123;
 NET "dipsw[7]" IOSTANDARD = LVCMOS33;
 
-NET "leds[0]" LOC = P21;
+#at_clk0 p124
+#extclk p100
+#pc5 p125
+#pc4 p99
+#pc2 p98
+
+#pd0 p97
+#pd1 p96
+#pd2 p95
+#pd3 p93
+#pd4 p92
+#pd5 p90
+#pd6 p89
+
+NET "leds[0]" LOC = P97;
 NET "leds[0]" IOSTANDARD = LVCMOS33;
 
-NET "leds[1]" LOC = P20;
+NET "leds[1]" LOC = P96;
 NET "leds[1]" IOSTANDARD = LVCMOS33;
 
-NET "leds[2]" LOC = P18;
+NET "leds[2]" LOC = P95;
 NET "leds[2]" IOSTANDARD = LVCMOS33;
 
-NET "leds[3]" LOC = P17;
+NET "leds[3]" LOC = P93;
 NET "leds[3]" IOSTANDARD = LVCMOS33;
 
-NET "pushsw[0]" LOC = P135;
+NET "pushsw[0]" LOC = P92;
 NET "pushsw[0]" IOSTANDARD = LVCMOS33;
 
-NET "pushsw[1]" LOC = P132;
+NET "pushsw[1]" LOC = P90;
 NET "pushsw[1]" IOSTANDARD = LVCMOS33;
 
-NET "pushsw[2]" LOC = P131;
+NET "pushsw[2]" LOC = P89;
 NET "pushsw[2]" IOSTANDARD = LVCMOS33;
 
-NET "pushsw[3]" LOC = P130;
+NET "pushsw[3]" LOC = P124;
 NET "pushsw[3]" IOSTANDARD = LVCMOS33;
