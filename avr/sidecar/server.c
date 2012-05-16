@@ -2,6 +2,7 @@
 #include "server.h"
 #include "jtag.h"
 #include "prom.h"
+#include "srec.h"
 
 uint16_t (*ServerRequest)( uint8_t** ppBuffer, uint16_t DataLength )
 	= &DefaultRequest;
@@ -102,10 +103,13 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				return DataLength;
 
 			case ':':
-				WriteString("# SREC\r\n");
-				ServerRequest = EOLRequest;
+				StartSRECRequest();
 				*ppBuffer = pBuffer;
 				return DataLength;
+//				WriteString("# SREC\r\n");
+//				ServerRequest = EOLRequest;
+//				*ppBuffer = pBuffer;
+//				return DataLength;
 
 			case 'j':
 			case 'J': {
@@ -132,9 +136,10 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'p':
 			case 'P':
-				WriteString("# PROM write\r\n");
-				PROM_Program( 0, 6, 0, 1 );
-				ServerRequest = EOLRequest;
+//				WriteString("# PROM write\r\n");
+//				PROM_Program( 0, 6, 0, 1 );
+//				ServerRequest = EOLRequest;
+				StartSREC( SREC_Null );
 				*ppBuffer = pBuffer;
 				return DataLength;
 

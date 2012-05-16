@@ -137,13 +137,14 @@ include $(LUFA_PATH)/LUFA/makefile
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c                                                 \
-	  Descriptors.c                                               \
-	  jtag.c						\
-	  prom.c					\
-	  server.c						\
+SRC = $(wildcard *.c) \
 	  $(LUFA_SRC_USB)                                             \
 	  $(LUFA_SRC_USBCLASS)
+#	$(TARGET).c                                                 \
+#	  Descriptors.c                                               \
+#	  jtag.c						\
+#	  prom.c					\
+#	  server.c						\
 
 
 # List C++ source files here. (C dependencies are automatically generated.)

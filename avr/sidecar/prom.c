@@ -6,42 +6,7 @@
 #include "server.h"
 #include "jtag.h"
 #include "prom.h"
-
-static uint8_t SREC_xsum;
-
-void SREC_Start( uint8_t type, uint16_t faddr, uint8_t len )
-{
-	sprintf(output_buffer,":%02X%04X%02X", len, faddr, type);
-	WriteString(output_buffer);
-	SREC_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
-}
-
-void SREC_Byte( uint8_t byte )
-{
-	sprintf(output_buffer, "%02X", byte);
-	WriteString(output_buffer);
-	SREC_xsum -= byte;
-}
-
-void SREC_EndLine(void)
-{
-	sprintf(output_buffer, "%02X\r\n", SREC_xsum);
-	WriteString(output_buffer);
-}
-
-void SREC_AddrHigh( uint16_t hiaddr )
-{
-	SREC_Start( 4, 0, 2 );
-	SREC_Byte( hiaddr>>8 );
-	SREC_Byte( hiaddr & 0xff );
-	SREC_EndLine();
-}
-
-void SREC_EndOfFile()
-{
-	SREC_Start( 1, 0, 0 );
-	SREC_EndLine();
-}
+#include "srec.h"
 
 void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 {

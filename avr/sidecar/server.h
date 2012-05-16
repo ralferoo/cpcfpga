@@ -9,3 +9,4 @@ extern char output_buffer[ 128 ];
 uint16_t EOLRequest( uint8_t** ppBuffer, uint16_t DataLength );
 uint16_t EchoToEOLRequest( uint8_t** ppBuffer, uint16_t DataLength );
 uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength );
+uint16_t SRECRequest( uint8_t** ppBuffer, uint16_t DataLength );
