@@ -1,0 +1,75 @@
+
+# PlanAhead Generated physical constraints 
+
+NET "data_in[0]" LOC = P137;
+NET "data_in[1]" LOC = P135;
+NET "data_in[2]" LOC = P132;
+NET "data_in[3]" LOC = P130;
+NET "data_in[4]" LOC = P129;
+NET "data_in[5]" LOC = P128;
+NET "data_in[6]" LOC = P127;
+NET "data_in[7]" LOC = P123;
+
+NET "data_in[8]" LOC = P122;
+NET "data_in[9]" LOC = P119;
+NET "data_in[10]" LOC = P118;
+NET "data_in[11]" LOC = P116;
+NET "data_in[12]" LOC = P113;
+NET "data_in[13]" LOC = P112;
+
+NET "data_in[14]" LOC = P108;
+NET "data_in[15]" LOC = P107;
+NET "data_out[0]" LOC = P105;
+NET "data_out[1]" LOC = P104;
+NET "data_out[2]" LOC = P103;
+NET "data_out[3]" LOC = P102;
+
+NET "data_out[4]" LOC = P99;
+NET "data_out[5]" LOC = P98;
+
+NET "data_out[6]" LOC = P97;
+NET "data_out[7]" LOC = P96;
+NET "data_out[8]" LOC = P95;
+NET "data_out[9]" LOC = P93;
+NET "data_out[10]" LOC = P92;
+NET "data_out[11]" LOC = P90;
+NET "data_out[12]" LOC = P89;
+
+NET "data_out[13]" LOC = P76;
+NET "data_out[14]" LOC = P77;
+NET "data_out[15]" LOC = P74;
+
+# PlanAhead Generated IO constraints 
+
+NET "data_in[0]" IOSTANDARD = LVCMOS33;
+NET "data_in[1]" IOSTANDARD = LVCMOS33;
+NET "data_in[2]" IOSTANDARD = LVCMOS33;
+NET "data_in[3]" IOSTANDARD = LVCMOS33;
+NET "data_in[4]" IOSTANDARD = LVCMOS33;
+NET "data_in[5]" IOSTANDARD = LVCMOS33;
+NET "data_in[6]" IOSTANDARD = LVCMOS33;
+NET "data_in[7]" IOSTANDARD = LVCMOS33;
+NET "data_in[8]" IOSTANDARD = LVCMOS33;
+NET "data_in[9]" IOSTANDARD = LVCMOS33;
+NET "data_in[10]" IOSTANDARD = LVCMOS33;
+NET "data_in[11]" IOSTANDARD = LVCMOS33;
+NET "data_in[12]" IOSTANDARD = LVCMOS33;
+NET "data_in[13]" IOSTANDARD = LVCMOS33;
+NET "data_in[14]" IOSTANDARD = LVCMOS33;
+NET "data_in[15]" IOSTANDARD = LVCMOS33;
+NET "data_out[0]" IOSTANDARD = LVCMOS33;
+NET "data_out[1]" IOSTANDARD = LVCMOS33;
+NET "data_out[2]" IOSTANDARD = LVCMOS33;
+NET "data_out[3]" IOSTANDARD = LVCMOS33;
+NET "data_out[4]" IOSTANDARD = LVCMOS33;
+NET "data_out[5]" IOSTANDARD = LVCMOS33;
+NET "data_out[6]" IOSTANDARD = LVCMOS33;
+NET "data_out[7]" IOSTANDARD = LVCMOS33;
+NET "data_out[8]" IOSTANDARD = LVCMOS33;
+NET "data_out[9]" IOSTANDARD = LVCMOS33;
+NET "data_out[10]" IOSTANDARD = LVCMOS33;
+NET "data_out[11]" IOSTANDARD = LVCMOS33;
+NET "data_out[12]" IOSTANDARD = LVCMOS33;
+NET "data_out[13]" IOSTANDARD = LVCMOS33;
+NET "data_out[14]" IOSTANDARD = LVCMOS33;
+NET "data_out[15]" IOSTANDARD = LVCMOS33;
