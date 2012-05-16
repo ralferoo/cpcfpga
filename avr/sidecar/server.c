@@ -103,10 +103,10 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				return DataLength;
 
 			case ':':
-				StartSRECRequest();
+				StartIHEXRequest();
 				*ppBuffer = pBuffer;
 				return DataLength;
-//				WriteString("# SREC\r\n");
+//				WriteString("# IHEX\r\n");
 //				ServerRequest = EOLRequest;
 //				*ppBuffer = pBuffer;
 //				return DataLength;
@@ -119,7 +119,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 					WriteString(output_buffer);
 				}
 				JTAG_ChainInfo();
-				WriteString("\r\n");
+				WriteString("#\r\n");
 
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
@@ -136,10 +136,10 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'p':
 			case 'P':
-//				WriteString("# PROM write\r\n");
-//				PROM_Program( 0, 6, 0, 1 );
-//				ServerRequest = EOLRequest;
-				StartSREC( SREC_Null );
+				WriteString("# PROM write\r\n");
+				PROM_Program( 0, 6, 0, 1 );
+				ServerRequest = EOLRequest;
+				StartIHEX( IHEX_Program );
 				*ppBuffer = pBuffer;
 				return DataLength;
 

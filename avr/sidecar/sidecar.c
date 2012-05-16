@@ -174,6 +174,8 @@ void EVENT_USB_Device_ControlRequest(void)
 	}
 }
 
+static uint8_t  Buffer[ 64 ];
+
 /** Function to manage CDC data transmission and reception to and from the host. */
 void CDC_Task(void)
 {
@@ -185,8 +187,8 @@ void CDC_Task(void)
 	{
 		Endpoint_SelectEndpoint(CDC_RX_EPNUM);
 		if (Endpoint_IsOUTReceived()) {
-			/* Create a temp buffer big enough to hold the incoming endpoint packet */
-			uint8_t  Buffer[ Endpoint_BytesInEndpoint()];
+//			/* Create a temp buffer big enough to hold the incoming endpoint packet */
+//			uint8_t  Buffer[ Endpoint_BytesInEndpoint()];
 
 			/* Remember how large the incoming packet is */
 			uint16_t DataLength = Endpoint_BytesInEndpoint();

@@ -4,66 +4,66 @@
 
 
 
-static uint8_t SREC_xsum;
+static uint8_t IHEX_xsum;
 
-void SREC_Start( uint8_t type, uint16_t faddr, uint8_t len )
+void IHEX_Start( uint8_t type, uint16_t faddr, uint8_t len )
 {
 	sprintf(output_buffer,":%02X%04X%02X", len, faddr, type);
 	WriteString(output_buffer);
-	SREC_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
+	IHEX_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
 }
 
-void SREC_Byte( uint8_t byte )
+void IHEX_Byte( uint8_t byte )
 {
 	sprintf(output_buffer, "%02X", byte);
 	WriteString(output_buffer);
-	SREC_xsum -= byte;
+	IHEX_xsum -= byte;
 }
 
-void SREC_EndLine(void)
+void IHEX_EndLine(void)
 {
-	sprintf(output_buffer, "%02X\r\n", SREC_xsum);
+	sprintf(output_buffer, "%02X\r\n", IHEX_xsum);
 	WriteString(output_buffer);
 }
 
-void SREC_AddrHigh( uint16_t hiaddr )
+void IHEX_AddrHigh( uint16_t hiaddr )
 {
-	SREC_Start( 4, 0, 2 );
-	SREC_Byte( hiaddr>>8 );
-	SREC_Byte( hiaddr & 0xff );
-	SREC_EndLine();
+	IHEX_Start( 4, 0, 2 );
+	IHEX_Byte( hiaddr>>8 );
+	IHEX_Byte( hiaddr & 0xff );
+	IHEX_EndLine();
 }
 
-void SREC_EndOfFile()
+void IHEX_EndOfFile()
 {
-	SREC_Start( 1, 0, 0 );
-	SREC_EndLine();
+	IHEX_Start( 1, 0, 0 );
+	IHEX_EndLine();
 }
 
 ///////////////////////////////////////////////
 
-enum SREC_State {
-	SREC_ReadingHi,
-	SREC_ReadingLo,
-	SREC_Trailer,
-	SREC_Error
+enum IHEX_State {
+	IHEX_ReadingHi,
+	IHEX_ReadingLo,
+	IHEX_Trailer,
+	IHEX_Error
 };
 
-static uint8_t srec_read, srec_xsum, srec_error;
-static enum SREC_State srec_state;
-static uint8_t srec_buffer[64];
-static void (*srec_fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) = &SREC_Early;
+static uint8_t ihex_read, ihex_xsum, ihex_error;
+static enum IHEX_State ihex_state;
+static uint8_t ihex_buffer[64];
+static void (*ihex_fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) = &IHEX_Early;
 
-void SREC_DoError(char* str)
+void IHEX_DoError(char* str)
 {
-	if (!srec_error) {
+	if (!ihex_error) {
 		WriteString(str);
-		(*srec_fn)(0xff,0,0,NULL);
+		(*ihex_fn)(0xff,0,0,NULL);
 	}
-	srec_error = 1;
+	ihex_error = 1;
 }
 
-uint16_t ContinueSRECRequest( uint8_t** ppBuffer, uint16_t DataLength )
+uint16_t ContinueIHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 {
 	uint8_t* pBuffer = *ppBuffer;
 
@@ -75,31 +75,31 @@ uint16_t ContinueSRECRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 		switch( c ) {
 		case '\r': case '\n':
-			if( srec_state == SREC_ReadingLo)
-				SREC_DoError("# SREC line has odd number of hex digit\r\n");
+			if( ihex_state == IHEX_ReadingLo)
+				IHEX_DoError("# IHEX line has odd number of hex digit\r\n");
 
-			if( srec_xsum )
-				SREC_DoError("# SREC invalid checksum\r\n");
+			if( ihex_xsum )
+				IHEX_DoError("# IHEX invalid checksum\r\n");
 
-			if( srec_read < 5 )
-				SREC_DoError("# SREC line too short\r\n");
+			if( ihex_read < 5 )
+				IHEX_DoError("# IHEX line too short\r\n");
 
-			if( (srec_read-5) != srec_buffer[0] ) {
-				sprintf(output_buffer,"# SREC line length %d doesn't match record (%d+5)\r\n", srec_read, srec_buffer[0]);
-				SREC_DoError(output_buffer);
+			if( (ihex_read-5) != ihex_buffer[0] ) {
+				sprintf(output_buffer,"# IHEX line length %d doesn't match record (%d+5)\r\n", ihex_read, ihex_buffer[0]);
+				IHEX_DoError(output_buffer);
 			}
 
-			if (!srec_error)
-				(*srec_fn)( srec_buffer[3], srec_buffer[0], (srec_buffer[1] << 8) | srec_buffer[2], &srec_buffer[4] );
+			if (!ihex_error)
+				(*ihex_fn)( ihex_buffer[3], ihex_buffer[0], (ihex_buffer[1] << 8) | ihex_buffer[2], &ihex_buffer[4] );
 			ServerRequest = DefaultRequest;
 
 			*ppBuffer = pBuffer;
 			return DataLength;
 
 		case ' ': case '\t':
-			if( srec_state == SREC_ReadingLo)
-				SREC_DoError("# SREC line has odd number of hex digit\r\n");
-			srec_state = SREC_Trailer;
+			if( ihex_state == IHEX_ReadingLo)
+				IHEX_DoError("# IHEX line has odd number of hex digit\r\n");
+			ihex_state = IHEX_Trailer;
 			break;
 
 		case '0': case '1': case '2': case '3': case '4':
@@ -117,60 +117,60 @@ uint16_t ContinueSRECRequest( uint8_t** ppBuffer, uint16_t DataLength )
 			break;
 
 		default:
-			SREC_DoError("# SREC contains unexpected character\r\n");
+			IHEX_DoError("# IHEX contains unexpected character\r\n");
 		}
 
 		if( gothex ) {
-			switch( srec_state ) {
-			case SREC_ReadingHi:
-				if (srec_read >= sizeof(srec_buffer) ) {
-					SREC_DoError("# SREC line is too long\r\n");
-					srec_state = SREC_Error;
+			switch( ihex_state ) {
+			case IHEX_ReadingHi:
+				if (ihex_read >= sizeof(ihex_buffer) ) {
+					IHEX_DoError("# IHEX line is too long\r\n");
+					ihex_state = IHEX_Error;
 					break;
 				}
-				srec_buffer[srec_read] = h << 4;
-				srec_state = SREC_ReadingLo;
+				ihex_buffer[ihex_read] = h << 4;
+				ihex_state = IHEX_ReadingLo;
 				break;
-			case SREC_ReadingLo:
-				srec_buffer[srec_read++] |= h;
-				srec_state = SREC_ReadingHi;
+			case IHEX_ReadingLo:
+				ihex_buffer[ihex_read++] |= h;
+				ihex_state = IHEX_ReadingHi;
 				break;
 			default:
-				SREC_DoError("# SREC contains unexpected character\r\n");
-				srec_state = SREC_Error;
+				IHEX_DoError("# IHEX contains unexpected character\r\n");
+				ihex_state = IHEX_Error;
 			}
 		}
 	}
 	return 0;
 }
 
-void StartSRECRequest( void )
+void StartIHEXRequest( void )
 {
-	srec_read=0;
-	srec_xsum=0;
-	srec_state=SREC_ReadingHi;
+	ihex_read=0;
+	ihex_xsum=0;
+	ihex_state=IHEX_ReadingHi;
 
-	ServerRequest = ContinueSRECRequest;
+	ServerRequest = ContinueIHEXRequest;
 }
 
-void StartSREC( void (*fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) )
+void StartIHEX( void (*fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) )
 {
-	srec_error = 0;
-	srec_fn = fn;
+	ihex_error = 0;
+	ihex_fn = fn;
 }
 
 
-void SREC_Early( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
+void IHEX_Early( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 {
 	if (data)
-		SREC_DoError("# SREC before command\r\n");
+		IHEX_DoError("# IHEX before command\r\n");
 }
 
 
-void SREC_Null( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
+void IHEX_Null( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 {
 	if (data) {
-		sprintf(output_buffer, "# SREC type %02X len %02x addr %04X\r\n", type, len, addr );
+		sprintf(output_buffer, "# IHEX type %02X len %02x addr %04X\r\n", type, len, addr );
 		WriteString(output_buffer);
 	}
 }
