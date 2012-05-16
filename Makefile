@@ -523,6 +523,9 @@ avr/.unpack: avr/dist/$(LUFA).zip
 	ln -s $(LUFA) avr/lufa
 	touch $@
 
+dfu:
+	(cd avr/sidecar ; make dfu )
+
 lufa: avr/.unpack
 
 sidecar: avr/sidecar/sidecar.hex

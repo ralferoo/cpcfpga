@@ -43,43 +43,6 @@ void SREC_EndOfFile()
 	SREC_EndLine();
 }
 
-void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_len )
-{
-	// ISC_ADDRESS_SHIFT faddr instruction
-	JTAG_SendIR( 0xeb, 8, hir_len, tir_len );
-	JTAG_SendDR( faddr, 16, hdr_len, tdr_len );
-	JTAG_RunTestTCK(2);
-
-	// ISC_READ fvfy0 instruction
-	JTAG_SendIR( 0xef, 8, hir_len, tir_len );
-	JTAG_RunTestTCK(1);
-	JTAG_RunTestTCK(50);
-
-	// read the data
-	JTAG_ShiftDR();
-	for (int i=0; i<hdr_len; i++)
-		JTAG_SendClock(0);		// ignore all data before the data we want
-
-	uint16_t addr = faddr << 4;
-	for (int i=0; i<8192; i+=32*8 ) {
-		SREC_Start( 0, addr, 32 );
-		for( int j=0; j<32; j++ ) {
-			uint8_t byte = 0;
-			for(int bit = 0; bit<8; bit++) {
-				byte <<= 1;
-				byte |= JTAG_Clock(0);
-			}
-			SREC_Byte( byte );
-			addr++;
-		}
-		SREC_EndLine();
-	}
-
-	JTAG_SendClockTMS( 1 );			// move to exit 1_IR
-	JTAG_SendClockTMS( 1 );			// move to update_IR
-	jtag_state = JTAG_STATE_UPDATE_DR;
-}
-
 void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 {
 	// idcode
@@ -114,9 +77,6 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	
 	if( !ok) return;
 
-	Endpoint_ClearIN();
-	Endpoint_WaitUntilReady();
-
 	// bypass instruction
 	JTAG_SendIR( 0xff, 8, hir_len, tir_len );
 	// ISC_ENABLE ispen instruction
@@ -130,7 +90,16 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 
 	// ISC_ERASE ferase instruction
 	JTAG_SendIR( 0xec, 8, hir_len, tir_len );
-	JTAG_RunTestTCK(15000000);
+
+	WriteString( "# Waiting for erase to complete" );
+	for( int i=0; i<20; i++ ) {
+		WriteString( "." );
+		Endpoint_ClearIN();
+		Endpoint_WaitUntilReady();
+		JTAG_RunTestTCK(15000000/20);
+	}
+
+	WriteString( "\r\n" );
 }
 
 void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
@@ -204,10 +173,10 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 			int bits = (faddr << 3) | (i>>4);
 			for(int j=0; j<16; j++) {
 //				if (bits_until_tms--)
-					JTAG_SendClock(bits&0x8000);
+					JTAG_SendClock(bits&1);
 //				else
 //					JTAG_SendClockTMS(bits&1);
-				bits <<= 1;
+				bits >>= 1;
 			}
 		}
 
@@ -228,6 +197,44 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		JTAG_Idle();
 		JTAG_RunTestTCK(14000);
 	}
+}
+
+void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_len )
+{
+	// ISC_ADDRESS_SHIFT faddr instruction
+	JTAG_SendIR( 0xeb, 8, hir_len, tir_len );
+	JTAG_SendDR( faddr, 16, hdr_len, tdr_len );
+	JTAG_RunTestTCK(2);
+
+	// ISC_READ fvfy0 instruction
+	JTAG_SendIR( 0xef, 8, hir_len, tir_len );
+	JTAG_RunTestTCK(1);
+	JTAG_RunTestTCK(50);
+
+	// read the data
+	JTAG_ShiftDR();
+	for (int i=0; i<hdr_len; i++)
+		JTAG_SendClock(0);		// ignore all data before the data we want
+
+	uint16_t addr = faddr << 4;
+	for (int i=0; i<8192; i+=32*8 ) {
+		SREC_Start( 0, addr, 32 );
+		for( int j=0; j<32; j++ ) {
+			uint8_t byte = 0;
+			for(int bit = 0; bit<8; bit++) {
+				byte >>= 1;
+				if (JTAG_Clock(0) )
+					byte |= 0x80;
+			}
+			SREC_Byte( byte );
+			addr++;
+		}
+		SREC_EndLine();
+	}
+
+	JTAG_SendClockTMS( 1 );			// move to exit 1_IR
+	JTAG_SendClockTMS( 1 );			// move to update_IR
+	jtag_state = JTAG_STATE_UPDATE_DR;
 }
 
 void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
