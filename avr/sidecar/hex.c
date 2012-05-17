@@ -6,24 +6,31 @@
 
 static uint8_t HEX_xsum;
 
-void HEX_Start( uint8_t type, uint16_t faddr, uint8_t len )
+inline void HEX_Byte( uint8_t byte )
 {
-	sprintf(output_buffer,":%02X%04X%02X", len, faddr, type);
-	WriteString(output_buffer);
-	HEX_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
-}
-
-void HEX_Byte( uint8_t byte )
-{
-	sprintf(output_buffer, "%02X", byte);
-	WriteString(output_buffer);
+	WriteIntHex2(byte);
+//	sprintf(output_buffer, "%02X", byte);
+//	WriteString(output_buffer);
 	HEX_xsum -= byte;
 }
 
-void HEX_EndLine(void)
+inline void HEX_EndLine(void)
 {
-	sprintf(output_buffer, "%02X\r\n", HEX_xsum);
-	WriteString(output_buffer);
+	WriteIntHex2(HEX_xsum);
+	WriteStringConst( PSTR("\r\n"));
+//	sprintf(output_buffer, "%02X\r\n", HEX_xsum);
+//	WriteString(output_buffer);
+}
+
+void HEX_Start( uint8_t type, uint16_t faddr, uint8_t len )
+{
+	WriteStringConst( PSTR(":"));
+	WriteIntHex2(len);
+	WriteIntHex4(faddr);
+	WriteIntHex2(type);
+//	sprintf(output_buffer,":%02X%04X%02X", len, faddr, type);
+//	WriteString(output_buffer);
+	HEX_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
 }
 
 void HEX_AddrHigh( uint16_t hiaddr )
@@ -54,6 +61,15 @@ static enum HEX_State hex_state;
 static uint8_t hex_buffer[64];
 static void (*hex_fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) = &HEX_Early;
 
+void HEX_DoErrorConst(char* PROGMEM str)
+{
+	if (!hex_error) {
+		WriteStringConst(str);
+		(*hex_fn)(0xff,0,0,NULL);
+	}
+	hex_error = 1;
+}
+
 void HEX_DoError(char* str)
 {
 	if (!hex_error) {
@@ -76,13 +92,13 @@ uint16_t ContinueHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 		switch( c ) {
 		case '\r': case '\n':
 			if( hex_state == HEX_ReadingLo)
-				HEX_DoError("# HEX line has odd number of hex digit\r\n");
+				HEX_DoErrorConst(PSTR("# HEX line has odd number of hex digit\r\n"));
 
 			if( hex_xsum )
-				HEX_DoError("# HEX invalid checksum\r\n");
+				HEX_DoErrorConst(PSTR("# HEX invalid checksum\r\n"));
 
 			if( hex_read < 5 )
-				HEX_DoError("# HEX line too short\r\n");
+				HEX_DoErrorConst(PSTR("# HEX line too short\r\n"));
 
 			if( (hex_read-5) != hex_buffer[0] ) {
 				sprintf(output_buffer,"# HEX line length %d doesn't match record (%d+5)\r\n", hex_read, hex_buffer[0]);
@@ -98,7 +114,7 @@ uint16_t ContinueHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 		case ' ': case '\t':
 			if( hex_state == HEX_ReadingLo)
-				HEX_DoError("# HEX line has odd number of hex digit\r\n");
+				HEX_DoErrorConst(PSTR("# HEX line has odd number of hex digit\r\n"));
 			hex_state = HEX_Trailer;
 			break;
 
@@ -117,14 +133,14 @@ uint16_t ContinueHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 			break;
 
 		default:
-			HEX_DoError("# HEX contains unexpected character\r\n");
+			HEX_DoErrorConst(PSTR("# HEX contains unexpected character\r\n"));
 		}
 
 		if( gothex ) {
 			switch( hex_state ) {
 			case HEX_ReadingHi:
 				if (hex_read >= sizeof(hex_buffer) ) {
-					HEX_DoError("# HEX line is too long\r\n");
+					HEX_DoErrorConst(PSTR("# HEX line is too long\r\n"));
 					hex_state = HEX_Error;
 					break;
 				}
@@ -136,7 +152,7 @@ uint16_t ContinueHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				hex_state = HEX_ReadingHi;
 				break;
 			default:
-				HEX_DoError("# HEX contains unexpected character\r\n");
+				HEX_DoErrorConst(PSTR("# HEX contains unexpected character\r\n"));
 				hex_state = HEX_Error;
 			}
 		}
@@ -163,7 +179,7 @@ void StartHEX( void (*fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *da
 void HEX_Early( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 {
 	if (data)
-		HEX_DoError("# HEX before command\r\n");
+		HEX_DoErrorConst(PSTR("# HEX before command\r\n"));
 }
 
 

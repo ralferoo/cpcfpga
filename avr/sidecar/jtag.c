@@ -1,4 +1,5 @@
 #include "jtag.h"
+#include "server.h"
 #include <string.h>
 #include <LUFA/Drivers/USB/USB.h>
 
@@ -159,7 +160,7 @@ void JTAG_ChainInfo(void)
 		continue_scan --;
 		int bit = JTAG_Clock(1);
 		if (!bit) {
-			sprintf( (char*) output_buffer, "# ???? unknown\r\n" );
+			WriteStringConst( PSTR("# ???? unknown\r\n" ));
 		} else {
 			unsigned char a = 0x80,b=0,c=0,d=0;
 			for( char i=1;i<8; i++)
@@ -171,24 +172,27 @@ void JTAG_ChainInfo(void)
 			for( char i=0;i<8; i++)
 				d = (d>>1) | (JTAG_Clock(1)<<7);
 
-			char* manuf = "unknown";
-			char* part = "";
+			WriteStringConst( PSTR("# " ));
+			WriteIntHex2(d);
+			WriteIntHex2(c);
+			WriteIntHex2(b);
+			WriteIntHex2(a);
+
 			if( (b&0xf)==0 && a==0x93) {
-				manuf = "Xilinx ";
+				WriteStringConst( PSTR(" Xilinx" ));
 				if ( (d&0xf)==5 && c==4 && b==0x50 )
-					part = "XCF02S";
+					WriteStringConst( PSTR(" XCF02S\r\n" ));
 				else if ( (d&0xf)==1 && c==0x41 && b==0xc0 )
-					part = "XC3S400";
-			}
-
-			if (a==0xff && b==0xff && c==0xff && d==0xff) {
-				manuf = "end of chain";
+					WriteStringConst( PSTR(" XC3S400\r\n" ));
+				else
+					WriteStringConst( PSTR("\r\n" ));
+			} else if (a==0xff && b==0xff && c==0xff && d==0xff) {
+				WriteStringConst( PSTR(" end of chain\r\n" ));
 				continue_scan = 0;
+			} else {
+				WriteStringConst( PSTR(" Unknown\r\n" ));
 			}
-
-			sprintf( output_buffer, "# %02X%02X%02X%02X %s%s\r\n",d,c,b,a, manuf, part );
 		}
-		Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
 	}
 }
 

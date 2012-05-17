@@ -1,3 +1,5 @@
+void HEX_DoError(char* str);
+
 void HEX_Start( uint8_t type, uint16_t faddr, uint8_t len );
 void HEX_Byte( uint8_t byte );
 void HEX_EndLine(void);

@@ -11,9 +11,39 @@ char output_buffer[ 128 ];
 
 /////////////////////////////////////////////////////////////////////////////
 
-void WriteString( char* str )
+void WriteString( const char* str )
 {
 	Endpoint_Write_Stream_LE( (uint8_t*) str, strlen(str), NULL);
+}
+
+void WriteStringConst( const char* PROGMEM str )
+{
+	char c;
+	while( (c=pgm_read_byte( str++ )) )
+		Endpoint_Write_Stream_LE( (uint8_t*) &c, 1, NULL);
+//		Endpoint_Write_8( c );
+//	Endpoint_Write_PStream_LE( (uint8_t*) str, strlen_P(str), NULL);
+}
+
+void WriteInt( uint16_t i )
+{
+	char buffer[8];
+	sprintf(buffer,"%d", i);
+	Endpoint_Write_Stream_LE( (uint8_t*) buffer, strlen(buffer), NULL);
+}
+
+void WriteIntHex2( uint8_t i )
+{
+	char buffer[3];
+	sprintf(buffer,"%02X", i);
+	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 2, NULL);
+}
+
+void WriteIntHex4( uint16_t i )
+{
+	char buffer[5];
+	sprintf(buffer,"%04X", i);
+	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 4, NULL);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -92,9 +122,15 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 			case '\n':
 				break;
 
+			case 't': case 'T':
+				WriteStringConst( PSTR("# test string\n") );
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
 			case '-':
 				for( int i=0; i<79; i++)
-					Endpoint_Write_Stream_LE("-", 1, NULL);
+					Endpoint_Write_PStream_LE(PSTR("-"), 1, NULL);
 				WriteString("\r\n");
 			
 			case '#':
@@ -113,13 +149,18 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'j':
 			case 'J': {
+					WriteStringConst( PSTR("# JTAG scan:\r\n# chain length="));
 					int chain_len = JTAG_ChainLen();
+					WriteInt( chain_len );
+					WriteStringConst( PSTR(", IR length="));
 					int ir_len = JTAG_IRLen();
-					sprintf(output_buffer, "\r\n# JTAG scan:\r\n# chain length=%d, IR length=%d:\r\n", chain_len, ir_len );
-					WriteString(output_buffer);
+					WriteInt( ir_len );
+					WriteStringConst( PSTR("\r\n"));
+//					sprintf(output_buffer, "\r\n# JTAG scan:\r\n# chain length=%d, IR length=%d:\r\n", chain_len, ir_len );
+//					WriteString(output_buffer);
 				}
 				JTAG_ChainInfo();
-				WriteString("\r\n");
+				WriteStringConst(PSTR("\r\n"));
 
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
@@ -127,9 +168,9 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'e':
 			case 'E':
-				WriteString("# PROM erase start\r\n");
+				WriteStringConst( PSTR("# PROM erase start\r\n"));
 				PROM_Erase( 0, 6, 0, 1 );
-				WriteString("# PROM erase finished\r\n");
+				WriteStringConst( PSTR("# PROM erase finished\r\n"));
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
@@ -145,14 +186,14 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'r':
 			case 'R':
-				WriteString("# PROM dump\r\n");
+				WriteStringConst( PSTR("# PROM dump\r\n"));
 				PROM_Dump( 0, 6, 0, 1 );
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
 
 			default:
-				WriteString("# Unknown command: ");
+				WriteStringConst( PSTR("# Unknown command: "));
 				ServerRequest = EchoToEOLRequest;
 				return DataLength + 1;
 		}

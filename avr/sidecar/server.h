@@ -1,5 +1,11 @@
 
-void WriteString( char* str );
+#include <avr/pgmspace.h>
+
+void WriteString( const char* str );
+void WriteStringConst( const char* PROGMEM str );
+void WriteInt( uint16_t i );
+void WriteIntHex2( uint8_t i );
+void WriteIntHex4( uint16_t i );
 
 extern uint16_t (*ServerRequest)( uint8_t** ppBuffer, uint16_t DataLength );
 
