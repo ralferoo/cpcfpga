@@ -1,5 +1,4 @@
 #include "jtag.h"
-#include "server.h"
 #include <string.h>
 #include <LUFA/Drivers/USB/USB.h>
 
@@ -150,14 +149,8 @@ extern char output_buffer[ 128 ];
 
 void JTAG_ChainInfo(void)
 {
-	sprintf(output_buffer, "#JTAG_CHAIN\r\n");
-	WriteString(output_buffer);
 	JTAG_Reset();
-	sprintf(output_buffer, "#reset\r\n");
-	WriteString(output_buffer);
 	JTAG_SelectDR();
-	sprintf(output_buffer, "#dr\r\n");
-	WriteString(output_buffer);
 	JTAG_SendClock(0);
 	JTAG_SendClock(0);			// move to shift-DR
 
@@ -195,7 +188,7 @@ void JTAG_ChainInfo(void)
 
 			sprintf( output_buffer, "# %02X%02X%02X%02X %s%s\r\n",d,c,b,a, manuf, part );
 		}
-		WriteString(output_buffer);
+		Endpoint_Write_Stream_LE(output_buffer, strlen(output_buffer), NULL);
 	}
 }
 

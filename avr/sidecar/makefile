@@ -106,7 +106,7 @@ F_CPU = 16000000
 F_USB = 16000000
 
 
-# Output format. (can be srec, ihex, binary)
+# Output format. (can be hex, ihex, binary)
 FORMAT = ihex
 
 

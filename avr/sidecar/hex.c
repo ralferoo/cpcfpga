@@ -1,69 +1,69 @@
 #include "sidecar.h"
-#include "srec.h"
+#include "hex.h"
 #include "server.h"
 
 
 
-static uint8_t IHEX_xsum;
+static uint8_t HEX_xsum;
 
-void IHEX_Start( uint8_t type, uint16_t faddr, uint8_t len )
+void HEX_Start( uint8_t type, uint16_t faddr, uint8_t len )
 {
 	sprintf(output_buffer,":%02X%04X%02X", len, faddr, type);
 	WriteString(output_buffer);
-	IHEX_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
+	HEX_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
 }
 
-void IHEX_Byte( uint8_t byte )
+void HEX_Byte( uint8_t byte )
 {
 	sprintf(output_buffer, "%02X", byte);
 	WriteString(output_buffer);
-	IHEX_xsum -= byte;
+	HEX_xsum -= byte;
 }
 
-void IHEX_EndLine(void)
+void HEX_EndLine(void)
 {
-	sprintf(output_buffer, "%02X\r\n", IHEX_xsum);
+	sprintf(output_buffer, "%02X\r\n", HEX_xsum);
 	WriteString(output_buffer);
 }
 
-void IHEX_AddrHigh( uint16_t hiaddr )
+void HEX_AddrHigh( uint16_t hiaddr )
 {
-	IHEX_Start( 4, 0, 2 );
-	IHEX_Byte( hiaddr>>8 );
-	IHEX_Byte( hiaddr & 0xff );
-	IHEX_EndLine();
+	HEX_Start( 4, 0, 2 );
+	HEX_Byte( hiaddr>>8 );
+	HEX_Byte( hiaddr & 0xff );
+	HEX_EndLine();
 }
 
-void IHEX_EndOfFile()
+void HEX_EndOfFile()
 {
-	IHEX_Start( 1, 0, 0 );
-	IHEX_EndLine();
+	HEX_Start( 1, 0, 0 );
+	HEX_EndLine();
 }
 
 ///////////////////////////////////////////////
 
-enum IHEX_State {
-	IHEX_ReadingHi,
-	IHEX_ReadingLo,
-	IHEX_Trailer,
-	IHEX_Error
+enum HEX_State {
+	HEX_ReadingHi,
+	HEX_ReadingLo,
+	HEX_Trailer,
+	HEX_Error
 };
 
-static uint8_t ihex_read, ihex_xsum, ihex_error;
-static enum IHEX_State ihex_state;
-static uint8_t ihex_buffer[64];
-static void (*ihex_fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) = &IHEX_Early;
+static uint8_t hex_read, hex_xsum, hex_error;
+static enum HEX_State hex_state;
+static uint8_t hex_buffer[64];
+static void (*hex_fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) = &HEX_Early;
 
-void IHEX_DoError(char* str)
+void HEX_DoError(char* str)
 {
-	if (!ihex_error) {
+	if (!hex_error) {
 		WriteString(str);
-		(*ihex_fn)(0xff,0,0,NULL);
+		(*hex_fn)(0xff,0,0,NULL);
 	}
-	ihex_error = 1;
+	hex_error = 1;
 }
 
-uint16_t ContinueIHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
+uint16_t ContinueHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 {
 	uint8_t* pBuffer = *ppBuffer;
 
@@ -75,31 +75,31 @@ uint16_t ContinueIHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 		switch( c ) {
 		case '\r': case '\n':
-			if( ihex_state == IHEX_ReadingLo)
-				IHEX_DoError("# IHEX line has odd number of hex digit\r\n");
+			if( hex_state == HEX_ReadingLo)
+				HEX_DoError("# HEX line has odd number of hex digit\r\n");
 
-			if( ihex_xsum )
-				IHEX_DoError("# IHEX invalid checksum\r\n");
+			if( hex_xsum )
+				HEX_DoError("# HEX invalid checksum\r\n");
 
-			if( ihex_read < 5 )
-				IHEX_DoError("# IHEX line too short\r\n");
+			if( hex_read < 5 )
+				HEX_DoError("# HEX line too short\r\n");
 
-			if( (ihex_read-5) != ihex_buffer[0] ) {
-				sprintf(output_buffer,"# IHEX line length %d doesn't match record (%d+5)\r\n", ihex_read, ihex_buffer[0]);
-				IHEX_DoError(output_buffer);
+			if( (hex_read-5) != hex_buffer[0] ) {
+				sprintf(output_buffer,"# HEX line length %d doesn't match record (%d+5)\r\n", hex_read, hex_buffer[0]);
+				HEX_DoError(output_buffer);
 			}
 
-			if (!ihex_error)
-				(*ihex_fn)( ihex_buffer[3], ihex_buffer[0], (ihex_buffer[1] << 8) | ihex_buffer[2], &ihex_buffer[4] );
+			if (!hex_error)
+				(*hex_fn)( hex_buffer[3], hex_buffer[0], (hex_buffer[1] << 8) | hex_buffer[2], &hex_buffer[4] );
 			ServerRequest = DefaultRequest;
 
 			*ppBuffer = pBuffer;
 			return DataLength;
 
 		case ' ': case '\t':
-			if( ihex_state == IHEX_ReadingLo)
-				IHEX_DoError("# IHEX line has odd number of hex digit\r\n");
-			ihex_state = IHEX_Trailer;
+			if( hex_state == HEX_ReadingLo)
+				HEX_DoError("# HEX line has odd number of hex digit\r\n");
+			hex_state = HEX_Trailer;
 			break;
 
 		case '0': case '1': case '2': case '3': case '4':
@@ -117,60 +117,60 @@ uint16_t ContinueIHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 			break;
 
 		default:
-			IHEX_DoError("# IHEX contains unexpected character\r\n");
+			HEX_DoError("# HEX contains unexpected character\r\n");
 		}
 
 		if( gothex ) {
-			switch( ihex_state ) {
-			case IHEX_ReadingHi:
-				if (ihex_read >= sizeof(ihex_buffer) ) {
-					IHEX_DoError("# IHEX line is too long\r\n");
-					ihex_state = IHEX_Error;
+			switch( hex_state ) {
+			case HEX_ReadingHi:
+				if (hex_read >= sizeof(hex_buffer) ) {
+					HEX_DoError("# HEX line is too long\r\n");
+					hex_state = HEX_Error;
 					break;
 				}
-				ihex_buffer[ihex_read] = h << 4;
-				ihex_state = IHEX_ReadingLo;
+				hex_buffer[hex_read] = h << 4;
+				hex_state = HEX_ReadingLo;
 				break;
-			case IHEX_ReadingLo:
-				ihex_buffer[ihex_read++] |= h;
-				ihex_state = IHEX_ReadingHi;
+			case HEX_ReadingLo:
+				hex_buffer[hex_read++] |= h;
+				hex_state = HEX_ReadingHi;
 				break;
 			default:
-				IHEX_DoError("# IHEX contains unexpected character\r\n");
-				ihex_state = IHEX_Error;
+				HEX_DoError("# HEX contains unexpected character\r\n");
+				hex_state = HEX_Error;
 			}
 		}
 	}
 	return 0;
 }
 
-void StartIHEXRequest( void )
+void StartHEXRequest( void )
 {
-	ihex_read=0;
-	ihex_xsum=0;
-	ihex_state=IHEX_ReadingHi;
+	hex_read=0;
+	hex_xsum=0;
+	hex_state=HEX_ReadingHi;
 
-	ServerRequest = ContinueIHEXRequest;
+	ServerRequest = ContinueHEXRequest;
 }
 
-void StartIHEX( void (*fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) )
+void StartHEX( void (*fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) )
 {
-	ihex_error = 0;
-	ihex_fn = fn;
+	hex_error = 0;
+	hex_fn = fn;
 }
 
 
-void IHEX_Early( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
+void HEX_Early( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 {
 	if (data)
-		IHEX_DoError("# IHEX before command\r\n");
+		HEX_DoError("# HEX before command\r\n");
 }
 
 
-void IHEX_Null( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
+void HEX_Null( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 {
 	if (data) {
-		sprintf(output_buffer, "# IHEX type %02X len %02x addr %04X\r\n", type, len, addr );
+		sprintf(output_buffer, "# HEX type %02X len %02x addr %04X\r\n", type, len, addr );
 		WriteString(output_buffer);
 	}
 }

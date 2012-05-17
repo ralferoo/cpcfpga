@@ -2,7 +2,7 @@
 #include "server.h"
 #include "jtag.h"
 #include "prom.h"
-#include "srec.h"
+#include "hex.h"
 
 uint16_t (*ServerRequest)( uint8_t** ppBuffer, uint16_t DataLength )
 	= &DefaultRequest;
@@ -103,10 +103,10 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				return DataLength;
 
 			case ':':
-				StartIHEXRequest();
+				StartHEXRequest();
 				*ppBuffer = pBuffer;
 				return DataLength;
-//				WriteString("# IHEX\r\n");
+//				WriteString("# HEX\r\n");
 //				ServerRequest = EOLRequest;
 //				*ppBuffer = pBuffer;
 //				return DataLength;
@@ -119,7 +119,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 					WriteString(output_buffer);
 				}
 				JTAG_ChainInfo();
-				WriteString("#\r\n");
+				WriteString("\r\n");
 
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
@@ -136,10 +136,10 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'p':
 			case 'P':
-				WriteString("# PROM write\r\n");
-				PROM_Program( 0, 6, 0, 1 );
-				ServerRequest = EOLRequest;
-				StartIHEX( IHEX_Program );
+//				WriteString("# PROM write\r\n");
+//				PROM_Program( 0, 6, 0, 1 );
+//				ServerRequest = EOLRequest;
+				StartHEX( HEX_Null );
 				*ppBuffer = pBuffer;
 				return DataLength;
 

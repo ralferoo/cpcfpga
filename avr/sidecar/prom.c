@@ -6,7 +6,7 @@
 #include "server.h"
 #include "jtag.h"
 #include "prom.h"
-#include "srec.h"
+#include "hex.h"
 
 void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 {
@@ -67,10 +67,6 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	WriteString( "\r\n" );
 }
 
-static bool prom_in_block;
-static uint16_t prom_addr_hi, prom_addr_lo;
-static int prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len;
-
 void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 {
 	// idcode
@@ -127,105 +123,46 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_SendIR( 0xe8, 8, hir_len, tir_len );
 	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
 
-	prom_in_block=0;
-	prom_addr_hi=0;
-
-	prom_hir_len = hir_len;
-	prom_tir_len = tir_len;
-	prom_hdr_len = hdr_len;
-	prom_tdr_len = tdr_len;
-}
-
-//static bool prom_in_block;
-//static uint16_t prom_addr_hi, prom_addr_lo;
-
-void IHEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
-{
-	if (data) {
-		// valid data block
-		switch( type ) {
-			case 1: // end of file
-				if (prom_in_block)
-					IHEX_DoError("# End of IHEX data whilst mid sector\r\n");
-				break;
-
-			case 4: // address high
-				if (prom_in_block)
-					IHEX_DoError("# IHEX high address word changed mid sector\r\n");
-				prom_addr_hi = addr;
-				break;
-				
-			default:
-				sprintf(output_buffer, "# Invalid IHEX type %02X\r\n", type);
-				IHEX_DoError(output_buffer);
-				break;
-
-			case 0: // data
-				if (!prom_in_block) {
-					if( addr&511 ) {
-						IHEX_DoError("# IHEX starts mid sector\r\n");
-						break;
-					}
-					prom_addr_lo=addr;
-next_sector:
-					// ISC_DATA_SHIFT fdata0 instruction
-					JTAG_SendIR( 0xed, 8, prom_hir_len, prom_tir_len );
-					JTAG_ShiftDR();
-					for (int i=0; i<prom_hdr_len; i++)
-						JTAG_SendClock(0);		// ignore all data before the data we want
-					prom_in_block = 1;
-				}
-				while( len-- ) {
-					uint8_t b = *data++;
-					for(int i=0; i<7; i++) {
-						JTAG_SendClock(b&1);
-						b >>= 1;
-					}					// send 7 bytes
-					if( (++prom_addr_lo & 511) == 0 ) {
-						if (prom_tdr_len) {
-							JTAG_SendClock(b&1);
-							for(int i=1; i<prom_tdr_len; i++)
-								JTAG_SendClock(0);
-							JTAG_SendClockTMS(0);		// send TMS bit at end of padding
-						} else
-							JTAG_SendClockTMS(b&1);		// no padding, add TMS bit on last bit
-						// we have now moved to exit 1_IR
-
-						JTAG_SendClockTMS( 1 );			// move to update_IR
-						jtag_state = JTAG_STATE_UPDATE_DR;
-						JTAG_RunTestTCK(2);
-
-						uint16_t prom_faddr = (prom_addr_hi<<12) | (addr>>4);
-						sprintf( output_buffer, "# programming sector with faddr=%04X\r\n", prom_faddr );
-						WriteString(output_buffer);
-						Endpoint_ClearIN();
-						Endpoint_WaitUntilReady();
-
-						// ISC_ADDRESS_SHIFT faddr instruction
-						JTAG_SendIR( 0xeb, 8, prom_hir_len, prom_tir_len );
-						JTAG_SendDR( prom_faddr, 16, prom_hdr_len, prom_tdr_len );
-						JTAG_RunTestTCK(2);
-						
-						// ISC_PROGRAM fpgm instruction
-						JTAG_SendIR( 0xea, 8, prom_hir_len, prom_tir_len );
-						JTAG_Idle();
-						JTAG_RunTestTCK(14000);
-
-						prom_in_block = 0;
-						if (len)
-							goto next_sector;
-					}
-				}
-
-				break;
-		}
-	}
-	if (data) {
-		sprintf(output_buffer, "# IHEX type %02X len %02x addr %04X\r\n", type, len, addr );
+	for( uint16_t faddr=0x3f20; faddr<0x3fe0; faddr+=0x20 ) {
+//	uint16_t faddr=0x3f40; {
+		sprintf( output_buffer, "# faddr=%04X\r\n", faddr );
 		WriteString(output_buffer);
+
+		// ISC_DATA_SHIFT fdata0 instruction
+		JTAG_SendIR( 0xed, 8, hir_len, tir_len );
+		JTAG_ShiftDR();
+		for (int i=0; i<hdr_len; i++)
+			JTAG_SendClock(0);		// ignore all data before the data we want
+
+		for(int i=0; i<4096; i+=16) {
+			int bits = (faddr << 3) | (i>>4);
+			for(int j=0; j<16; j++) {
+//				if (bits_until_tms--)
+					JTAG_SendClock(bits&1);
+//				else
+//					JTAG_SendClockTMS(bits&1);
+				bits >>= 1;
+			}
+		}
+
+		for(int i=1;i<tdr_len;i++)
+			JTAG_SendClock(0);
+		JTAG_SendClockTMS( 1 );			// move to exit 1_IR
+		JTAG_SendClockTMS( 1 );			// move to update_IR
+		jtag_state = JTAG_STATE_UPDATE_DR;
+		JTAG_RunTestTCK(2);
+
+		// ISC_ADDRESS_SHIFT faddr instruction
+		JTAG_SendIR( 0xeb, 8, hir_len, tir_len );
+		JTAG_SendDR( faddr, 16, hdr_len, tdr_len );
+		JTAG_RunTestTCK(2);
+
+		// ISC_PROGRAM fpgm instruction
+		JTAG_SendIR( 0xea, 8, hir_len, tir_len );
+		JTAG_Idle();
+		JTAG_RunTestTCK(14000);
 	}
 }
-
 
 void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_len )
 {
@@ -246,7 +183,7 @@ void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_l
 
 	uint16_t addr = faddr << 4;
 	for (int i=0; i<8192; i+=32*8 ) {
-		IHEX_Start( 0, addr, 32 );
+		HEX_Start( 0, addr, 32 );
 		for( int j=0; j<32; j++ ) {
 			uint8_t byte = 0;
 			for(int bit = 0; bit<8; bit++) {
@@ -254,10 +191,10 @@ void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_l
 				if (JTAG_Clock(0) )
 					byte |= 0x80;
 			}
-			IHEX_Byte( byte );
+			HEX_Byte( byte );
 			addr++;
 		}
-		IHEX_EndLine();
+		HEX_EndLine();
 	}
 
 	JTAG_SendClockTMS( 1 );			// move to exit 1_IR
@@ -318,11 +255,11 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		WriteString(output_buffer);
 		if ( (faddr & 0xf000) != faddr_base ) {
 			faddr_base = faddr & 0xf000;
-			IHEX_AddrHigh( faddr >> 12 );
+			HEX_AddrHigh( faddr >> 12 );
 		}
 		PROM_DumpBlock( faddr, hir_len, tir_len, hdr_len, tdr_len );
 	}
-	IHEX_EndOfFile();
+	HEX_EndOfFile();
 }
 
 /*
