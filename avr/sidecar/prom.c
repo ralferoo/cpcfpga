@@ -139,17 +139,16 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 {
 	if (data) {
-#if 0
 		// valid data block
 		switch( type ) {
 			case 1: // end of file
 				if (prom_in_block)
-					HEX_DoError("# End of HEX data whilst mid sector\r\n");
+					HEX_DoErrorConst(PSTR("# End of HEX data whilst mid sector\r\n"));
 				break;
 
 			case 4: // address high
 				if (prom_in_block)
-					HEX_DoError("# HEX high address word changed mid sector\r\n");
+					HEX_DoErrorConst(PSTR("# HEX high address word changed mid sector\r\n"));
 				prom_addr_hi = addr;
 				break;
 				
@@ -161,7 +160,7 @@ void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 			case 0: // data
 				if (!prom_in_block) {
 					if( addr&511 ) {
-						HEX_DoError("# HEX starts mid sector\r\n");
+						HEX_DoErrorConst(PSTR("# HEX starts mid sector\r\n"));
 						break;
 					}
 					prom_addr_lo=addr;
@@ -193,7 +192,7 @@ next_sector:
 						jtag_state = JTAG_STATE_UPDATE_DR;
 						JTAG_RunTestTCK(2);
 
-						uint16_t prom_faddr = (prom_addr_hi<<12) | (addr>>4);
+						uint16_t prom_faddr = (prom_addr_hi<<12) | ((prom_addr_lo&~511)>>4);
 						sprintf( output_buffer, "# programming sector with faddr=%04X\r\n", prom_faddr );
 						WriteString(output_buffer);
 						Endpoint_ClearIN();
@@ -217,12 +216,13 @@ next_sector:
 
 				break;
 		}
-#endif
 	}
+/*
 	if (data) {
 		sprintf(output_buffer, "# HEX type %02X len %02x addr %04X\r\n", type, len, addr );
 		WriteString(output_buffer);
 	}
+*/
 }
 
 #if 0

@@ -61,7 +61,7 @@ static enum HEX_State hex_state;
 static uint8_t hex_buffer[64];
 static void (*hex_fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) = &HEX_Early;
 
-void HEX_DoErrorConst(char* PROGMEM str)
+void HEX_DoErrorConst(const char* PROGMEM str)
 {
 	if (!hex_error) {
 		WriteStringConst(str);
@@ -70,7 +70,7 @@ void HEX_DoErrorConst(char* PROGMEM str)
 	hex_error = 1;
 }
 
-void HEX_DoError(char* str)
+void HEX_DoError(const char* str)
 {
 	if (!hex_error) {
 		WriteString(str);

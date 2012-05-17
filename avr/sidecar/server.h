@@ -6,6 +6,7 @@ void WriteStringConst( const char* PROGMEM str );
 void WriteInt( uint16_t i );
 void WriteIntHex2( uint8_t i );
 void WriteIntHex4( uint16_t i );
+void WriteCRLF( void );
 
 extern uint16_t (*ServerRequest)( uint8_t** ppBuffer, uint16_t DataLength );
 

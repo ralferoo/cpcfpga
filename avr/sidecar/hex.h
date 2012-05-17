@@ -1,4 +1,5 @@
-void HEX_DoError(char* str);
+void HEX_DoError(const char* str);
+void HEX_DoErrorConst( const char* PROGMEM str );
 
 void HEX_Start( uint8_t type, uint16_t faddr, uint8_t len );
 void HEX_Byte( uint8_t byte );

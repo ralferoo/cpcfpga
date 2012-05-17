@@ -46,6 +46,11 @@ void WriteIntHex4( uint16_t i )
 	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 4, NULL);
 }
 
+void WriteCRLF( void )
+{
+	Endpoint_Write_Stream_LE( PSTR("\r\n"), 2, NULL);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 uint16_t EOLRequest( uint8_t** ppBuffer, uint16_t DataLength )
@@ -177,10 +182,10 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'p':
 			case 'P':
-//				WriteString("# PROM write\r\n");
-//				PROM_Program( 0, 6, 0, 1 );
-//				ServerRequest = EOLRequest;
-				StartHEX( HEX_Null );
+				WriteString("# PROM write\r\n");
+				PROM_Program( 0, 6, 0, 1 );
+				ServerRequest = EOLRequest;
+				StartHEX( HEX_Program );
 				*ppBuffer = pBuffer;
 				return DataLength;
 
