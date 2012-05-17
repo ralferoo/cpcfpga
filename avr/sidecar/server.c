@@ -48,7 +48,7 @@ void WriteIntHex4( uint16_t i )
 
 void WriteCRLF( void )
 {
-	Endpoint_Write_Stream_LE( PSTR("\r\n"), 2, NULL);
+	Endpoint_Write_PStream_LE( PSTR("\r\n"), 2, NULL);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -196,6 +196,19 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
+
+			case 'w':
+			case 'W':
+				for(;;) {
+					for(int i=0; i<16; i++) {
+						WriteIntHex2( PORTD );
+						WriteStringConst(PSTR(" "));
+						Endpoint_ClearIN();
+						Endpoint_WaitUntilReady();
+						JTAG_RunTestTCK(10000);
+					}
+					WriteCRLF();
+				}
 
 			default:
 				WriteStringConst( PSTR("# Unknown command: "));
