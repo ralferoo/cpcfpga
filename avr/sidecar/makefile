@@ -742,3 +742,10 @@ debug gdb-config checksource
 edit:
 	gvim -p *.[ch] makefile &
 
+
+%.bin: %.txt
+	dd if=$< of=$@ bs=512 conv=sync
+
+%.mcs: %.bin
+	objcopy -I binary $< -O ihex $@
+

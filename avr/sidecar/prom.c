@@ -136,14 +136,23 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	prom_tdr_len = tdr_len;
 }
 
+uint8_t zerobyte = 0;
+
 void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 {
 	if (data) {
 		// valid data block
 		switch( type ) {
 			case 1: // end of file
-				if (prom_in_block)
-					HEX_DoErrorConst(PSTR("# End of HEX data whilst mid sector\r\n"));
+				if (prom_in_block) {
+					uint16_t padding = 512 - (prom_addr_lo&511);
+					WriteStringConst(PSTR("# padding with "));
+					WriteInt(padding);
+					WriteStringConst(PSTR(" bytes\r\n"));
+					while( padding-- )
+						HEX_Program(0,1,prom_addr_lo,&zerobyte);
+				}
+				WriteStringConst(PSTR("# end of HEX data\r\n"));
 				break;
 
 			case 4: // address high
@@ -184,7 +193,9 @@ next_sector:
 						JTAG_SendClock(b&1);
 						b >>= 1;
 					}					// send 7 bytes
-					if( (++prom_addr_lo & 511) == 0 ) {
+					if( (++prom_addr_lo & 511) ) {
+						JTAG_SendClock(b&1);
+					} else {
 						if (prom_tdr_len) {
 							JTAG_SendClock(b&1);
 							for(int i=1; i<prom_tdr_len; i++)
