@@ -68,7 +68,7 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 }
 
 static bool prom_in_block;
-static uint16_t prom_addr_hi, prom_addr_lo;
+static uint16_t prom_addr_hi, prom_addr_lo, prom_addr_lo_start;
 static int prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len;
 
 void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
@@ -149,7 +149,9 @@ void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 			case 4: // address high
 				if (prom_in_block)
 					HEX_DoErrorConst(PSTR("# HEX high address word changed mid sector\r\n"));
-				prom_addr_hi = addr;
+				prom_addr_hi = (data[0]<<8) | data[1];
+				sprintf(output_buffer, "# high word %04X\r\n", prom_addr_hi );
+				WriteString(output_buffer);
 				break;
 				
 			default:
@@ -164,6 +166,7 @@ void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 						break;
 					}
 					prom_addr_lo=addr;
+					prom_addr_lo_start=addr;
 next_sector:
 					// ISC_DATA_SHIFT fdata0 instruction
 					JTAG_SendIR( 0xed, 8, prom_hir_len, prom_tir_len );
@@ -171,6 +174,9 @@ next_sector:
 					for (int i=0; i<prom_hdr_len; i++)
 						JTAG_SendClock(0);		// ignore all data before the data we want
 					prom_in_block = 1;
+				} else if (addr != prom_addr_lo) {
+					HEX_DoErrorConst(PSTR("# HEX changes sector mid sector\r\n"));
+					break;
 				}
 				while( len-- ) {
 					uint8_t b = *data++;
@@ -192,8 +198,8 @@ next_sector:
 						jtag_state = JTAG_STATE_UPDATE_DR;
 						JTAG_RunTestTCK(2);
 
-						uint16_t prom_faddr = (prom_addr_hi<<12) | ((prom_addr_lo&~511)>>4);
-						sprintf( output_buffer, "# programming sector with faddr=%04X\r\n", prom_faddr );
+						uint16_t prom_faddr = (prom_addr_hi<<12) | (prom_addr_lo_start>>4);
+						sprintf( output_buffer, "# programming sector with faddr=%04X (h=%04x,l=%04x)\r\n", prom_faddr, prom_addr_hi, prom_addr_lo );
 						WriteString(output_buffer);
 						Endpoint_ClearIN();
 						Endpoint_WaitUntilReady();
@@ -409,7 +415,7 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
 
 	uint16_t faddr_base = ~0U;
-	for( uint16_t faddr=0x3f00; faddr<0x4000; faddr+=0x40 ) {
+	for( uint16_t faddr=0x0000; faddr<0x4000; faddr+=0x40 ) {
 		WriteString("#\r\n");
 		sprintf( output_buffer, "# faddr=%04X\r\n", faddr );
 		WriteString(output_buffer);
