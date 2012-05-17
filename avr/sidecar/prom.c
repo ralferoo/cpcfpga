@@ -67,7 +67,76 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	WriteString( "\r\n" );
 }
 
+static bool prom_in_block;
+static uint16_t prom_addr_hi, prom_addr_lo;
+static int prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len;
+
 void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
+{
+	// idcode
+	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
+	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
+
+	char* status = "wrong chip";
+	bool ok = 0;
+	if( idcode == 0xf5045093 ) {
+		status = "XCF02S";
+		ok = 1;
+	}
+
+	sprintf( output_buffer, "# idcode=%04X%04X - %s\r\n", (uint16_t) (idcode>>16), (uint16_t) idcode, status );
+	WriteString(output_buffer);
+
+	if( !ok) return;
+
+	// ISC_DISABLE conld instruction
+	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
+	JTAG_RunTestTCK(110000);
+	uint16_t protect = (uint16_t) JTAG_SendIR( 0xff, 8, hir_len, tir_len );
+
+	status = "writable";
+	if( (protect&7) != 1 ) {
+		status = "unwritable";
+		ok = 0;
+	}
+
+	sprintf( output_buffer, "# protect=%02X - %s\r\n", protect, status );
+	WriteString(output_buffer);
+	
+	if( !ok) return;
+
+	// bypass instruction
+	JTAG_SendIR( 0xff, 8, hir_len, tir_len );
+	// ISC_ENABLE ispen instruction
+	JTAG_SendIR( 0xe8, 8, hir_len, tir_len );
+	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
+
+//	// ISC_ADDRESS_SHIFT faddr instruction
+//	JTAG_SendIR( 0xeb, 8, hir_len, tir_len );
+//	JTAG_SendDR( faddr, 16, hdr_len, tdr_len );
+//	JTAG_RunTestTCK(2);
+//
+//	// ISC_ERASE ferase instruction
+//	JTAG_SendIR( 0xec, 8, hir_len, tir_len );
+//	JTAG_RunTestTCK(15000000);
+
+	// ISC_DISABLE conld instruction
+	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
+	JTAG_RunTestTCK(110000);
+	// ISC_ENABLE ispen instruction
+	JTAG_SendIR( 0xe8, 8, hir_len, tir_len );
+	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
+
+	prom_in_block=0;
+	prom_addr_hi=0;
+
+	prom_hir_len = hir_len;
+	prom_tir_len = tir_len;
+	prom_hdr_len = hdr_len;
+	prom_tdr_len = tdr_len;
+}
+
+void xPROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 {
 	// idcode
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
