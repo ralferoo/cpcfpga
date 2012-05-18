@@ -740,7 +740,7 @@ clean_list clean_doxygen program dfu flip flip-ee dfu-ee      \
 debug gdb-config checksource
 
 edit:
-	gvim -p *.[ch] makefile &
+	gvim -p [a-z]*.[ch] &
 
 
 %.bin: %.txt

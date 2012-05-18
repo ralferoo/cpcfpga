@@ -28,21 +28,21 @@ void WriteStringConst( const char* PROGMEM str )
 void WriteInt( uint16_t i )
 {
 	char buffer[8];
-	sprintf(buffer,"%d", i);
+	sprintf_P(buffer,PSTR("%d"), i);
 	Endpoint_Write_Stream_LE( (uint8_t*) buffer, strlen(buffer), NULL);
 }
 
 void WriteIntHex2( uint8_t i )
 {
 	char buffer[3];
-	sprintf(buffer,"%02X", i);
+	sprintf_P(buffer,PSTR("%02X"), i);
 	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 2, NULL);
 }
 
 void WriteIntHex4( uint16_t i )
 {
 	char buffer[5];
-	sprintf(buffer,"%04X", i);
+	sprintf_P(buffer,PSTR("%04X"), i);
 	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 4, NULL);
 }
 
@@ -103,7 +103,7 @@ uint16_t EchoRequest( uint8_t** ppBuffer, uint16_t DataLength )
 	int len;
 	for(len=0; len<DataLength && len<20; len++)
 		buffer[len]= *pBuffer++;
-	sprintf((char*)buffer+len, "[%d]\r\n", len);
+	sprintf_P((char*)buffer+len, PSTR("[%d]\r\n"), len);
 	
 	Endpoint_Write_Stream_LE(buffer, strlen((char*)buffer), NULL);
 
@@ -161,8 +161,6 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 					int ir_len = JTAG_IRLen();
 					WriteInt( ir_len );
 					WriteStringConst( PSTR("\r\n"));
-//					sprintf(output_buffer, "\r\n# JTAG scan:\r\n# chain length=%d, IR length=%d:\r\n", chain_len, ir_len );
-//					WriteString(output_buffer);
 				}
 				JTAG_ChainInfo();
 				WriteStringConst(PSTR("\r\n"));

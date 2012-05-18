@@ -21,7 +21,7 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		ok = 1;
 	}
 
-	sprintf( output_buffer, "# idcode=%04X%04X - %s\r\n", (uint16_t) (idcode>>16), (uint16_t) idcode, status );
+	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %s\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
 	WriteString(output_buffer);
 
 	if( !ok) return;
@@ -37,7 +37,7 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		ok = 0;
 	}
 
-	sprintf( output_buffer, "# protect=%02X - %s\r\n", protect, status );
+	sprintf_P( output_buffer, PSTR("# protect=%02X - %s\r\n"), protect, status );
 	WriteString(output_buffer);
 	
 	if( !ok) return;
@@ -84,7 +84,7 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		ok = 1;
 	}
 
-	sprintf( output_buffer, "# idcode=%04X%04X - %s\r\n", (uint16_t) (idcode>>16), (uint16_t) idcode, status );
+	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %s\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
 	WriteString(output_buffer);
 
 	if( !ok) return;
@@ -100,7 +100,7 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		ok = 0;
 	}
 
-	sprintf( output_buffer, "# protect=%02X - %s\r\n", protect, status );
+	sprintf_P( output_buffer, PSTR("# protect=%02X - %s\r\n"), protect, status );
 	WriteString(output_buffer);
 	
 	if( !ok) return;
@@ -159,12 +159,12 @@ void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 				if (prom_in_block)
 					HEX_DoErrorConst(PSTR("# HEX high address word changed mid sector\r\n"));
 				prom_addr_hi = (data[0]<<8) | data[1];
-				sprintf(output_buffer, "# high word %04X\r\n", prom_addr_hi );
+				sprintf_P(output_buffer, PSTR("# high word %04X\r\n"), prom_addr_hi );
 				WriteString(output_buffer);
 				break;
 				
 			default:
-				sprintf(output_buffer, "# Invalid HEX type %02X\r\n", type);
+				sprintf_P(output_buffer, PSTR("# Invalid HEX type %02X\r\n"), type);
 				HEX_DoError(output_buffer);
 				break;
 
@@ -210,7 +210,7 @@ next_sector:
 						JTAG_RunTestTCK(2);
 
 						uint16_t prom_faddr = (prom_addr_hi<<12) | (prom_addr_lo_start>>4);
-						sprintf( output_buffer, "# programming sector with faddr=%04X (h=%04x,l=%04x)\r\n", prom_faddr, prom_addr_hi, prom_addr_lo );
+						sprintf_P( output_buffer, PSTR("# programming sector with faddr=%04X (h=%04x,l=%04x)\r\n"), prom_faddr, prom_addr_hi, prom_addr_lo );
 						WriteString(output_buffer);
 						Endpoint_ClearIN();
 						Endpoint_WaitUntilReady();
@@ -234,12 +234,6 @@ next_sector:
 				break;
 		}
 	}
-/*
-	if (data) {
-		sprintf(output_buffer, "# HEX type %02X len %02x addr %04X\r\n", type, len, addr );
-		WriteString(output_buffer);
-	}
-*/
 }
 
 #if 0
@@ -392,7 +386,7 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		ok = 1;
 	}
 
-	sprintf( output_buffer, "# idcode=%04X%04X - %s\r\n", (uint16_t) (idcode>>16), (uint16_t) idcode, status );
+	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %s\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
 	WriteString(output_buffer);
 
 	if( !ok) return;
@@ -408,7 +402,7 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		ok = 0;
 	}
 
-	sprintf( output_buffer, "# protect=%02X - %s\r\n", protect, status );
+	sprintf_P( output_buffer, PSTR("# protect=%02X - %s\r\n"), protect, status );
 	WriteString(output_buffer);
 	
 	if( !ok) return;
@@ -428,7 +422,7 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	uint16_t faddr_base = ~0U;
 	for( uint16_t faddr=0x0000; faddr<0x4000; faddr+=0x40 ) {
 		WriteString("#\r\n");
-		sprintf( output_buffer, "# faddr=%04X\r\n", faddr );
+		sprintf_P( output_buffer, PSTR("# faddr=%04X\r\n"), faddr );
 		WriteString(output_buffer);
 		if ( (faddr & 0xf000) != faddr_base ) {
 			faddr_base = faddr & 0xf000;
