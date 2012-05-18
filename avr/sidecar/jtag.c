@@ -1,7 +1,7 @@
+#include <LUFA/Drivers/USB/USB.h>
 #include "jtag.h"
 #include "server.h"
 #include <string.h>
-#include <LUFA/Drivers/USB/USB.h>
 
 enum JTAG_STATE jtag_state = JTAG_STATE_UNKNOWN;
 

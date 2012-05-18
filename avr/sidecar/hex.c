@@ -16,6 +16,7 @@ inline void HEX_EndLine(void)
 {
 	WriteIntHex2(HEX_xsum);
 	WriteStringConst( PSTR("\r\n"));
+	FlushBuffer();
 }
 
 void HEX_Start( uint8_t type, uint16_t faddr, uint8_t len )

@@ -21,35 +21,51 @@ void WriteStringConst( const char* PROGMEM str )
 	char c;
 	while( (c=pgm_read_byte( str++ )) )
 		Endpoint_Write_Stream_LE( (uint8_t*) &c, 1, NULL);
-//		Endpoint_Write_8( c );
-//	Endpoint_Write_PStream_LE( (uint8_t*) str, strlen_P(str), NULL);
 }
 
 void WriteInt( uint16_t i )
 {
-	char buffer[8];
-	sprintf_P(buffer,PSTR("%d"), i);
-	Endpoint_Write_Stream_LE( (uint8_t*) buffer, strlen(buffer), NULL);
+	sprintf_P(output_buffer,PSTR("%d"), i);
+	Endpoint_Write_Stream_LE( (uint8_t*) output_buffer, strlen(output_buffer), NULL);
 }
 
 void WriteIntHex2( uint8_t i )
 {
-	char buffer[3];
-	sprintf_P(buffer,PSTR("%02X"), i);
-	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 2, NULL);
+	sprintf_P(output_buffer,PSTR("%02X"), i);
+	Endpoint_Write_Stream_LE( (uint8_t*) output_buffer, 2, NULL);
 }
 
 void WriteIntHex4( uint16_t i )
 {
-	char buffer[5];
-	sprintf_P(buffer,PSTR("%04X"), i);
-	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 4, NULL);
+	sprintf_P(output_buffer,PSTR("%04X"), i);
+	Endpoint_Write_Stream_LE( (uint8_t*) output_buffer, 4, NULL);
 }
 
 void WriteCRLF( void )
 {
 	Endpoint_Write_PStream_LE( PSTR("\r\n"), 2, NULL);
 }
+
+/*
+void FlushBuffer( void )
+{
+	USB_USBTask();
+	if (USB_DeviceState != DEVICE_STATE_Unattached) {
+		uint8_t PrevEndpoint = Endpoint_GetCurrentEndpoint();
+		
+		Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+		
+		if (Endpoint_IsSETUPReceived()) {
+			Endpoint_SelectEndpoint(PrevEndpoint);
+			Endpoint_ClearIN();
+			Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+			USB_Device_ProcessControlRequest();
+		}
+		
+		Endpoint_SelectEndpoint(PrevEndpoint);
+	}
+}
+*/
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -206,6 +222,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 						JTAG_RunTestTCK(10000);
 					}
 					WriteCRLF();
+					USB_USBTask();
 				}
 
 			default:

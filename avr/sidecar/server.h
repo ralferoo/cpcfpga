@@ -7,6 +7,7 @@ void WriteInt( uint16_t i );
 void WriteIntHex2( uint8_t i );
 void WriteIntHex4( uint16_t i );
 void WriteCRLF( void );
+inline void FlushBuffer( void ) { USB_USBTask(); }
 
 extern uint16_t (*ServerRequest)( uint8_t** ppBuffer, uint16_t DataLength );
 
