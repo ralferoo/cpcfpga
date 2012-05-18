@@ -9,8 +9,6 @@ static uint8_t HEX_xsum;
 inline void HEX_Byte( uint8_t byte )
 {
 	WriteIntHex2(byte);
-//	sprintf(output_buffer, "%02X", byte);
-//	WriteString(output_buffer);
 	HEX_xsum -= byte;
 }
 
@@ -18,8 +16,7 @@ inline void HEX_EndLine(void)
 {
 	WriteIntHex2(HEX_xsum);
 	WriteStringConst( PSTR("\r\n"));
-//	sprintf(output_buffer, "%02X\r\n", HEX_xsum);
-//	WriteString(output_buffer);
+	FlushBuffer();
 }
 
 void HEX_Start( uint8_t type, uint16_t faddr, uint8_t len )
@@ -28,8 +25,6 @@ void HEX_Start( uint8_t type, uint16_t faddr, uint8_t len )
 	WriteIntHex2(len);
 	WriteIntHex4(faddr);
 	WriteIntHex2(type);
-//	sprintf(output_buffer,":%02X%04X%02X", len, faddr, type);
-//	WriteString(output_buffer);
 	HEX_xsum = 0 - len - (faddr>>8) - (faddr&0xff) - type;
 }
 
@@ -101,7 +96,7 @@ uint16_t ContinueHEXRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				HEX_DoErrorConst(PSTR("# HEX line too short\r\n"));
 
 			if( (hex_read-5) != hex_buffer[0] ) {
-				sprintf(output_buffer,"# HEX line length %d doesn't match record (%d+5)\r\n", hex_read, hex_buffer[0]);
+				sprintf_P(output_buffer,PSTR("# HEX line length %d doesn't match record (%d+5)\r\n"), hex_read, hex_buffer[0]);
 				HEX_DoError(output_buffer);
 			}
 
@@ -186,7 +181,7 @@ void HEX_Early( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 void HEX_Null( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 {
 	if (data) {
-		sprintf(output_buffer, "# HEX type %02X len %02x addr %04X\r\n", type, len, addr );
+		sprintf_P(output_buffer, PSTR("# HEX type %02X len %02x addr %04X\r\n"), type, len, addr );
 		WriteString(output_buffer);
 	}
 }

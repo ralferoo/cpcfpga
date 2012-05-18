@@ -21,35 +21,51 @@ void WriteStringConst( const char* PROGMEM str )
 	char c;
 	while( (c=pgm_read_byte( str++ )) )
 		Endpoint_Write_Stream_LE( (uint8_t*) &c, 1, NULL);
-//		Endpoint_Write_8( c );
-//	Endpoint_Write_PStream_LE( (uint8_t*) str, strlen_P(str), NULL);
 }
 
 void WriteInt( uint16_t i )
 {
-	char buffer[8];
-	sprintf(buffer,"%d", i);
-	Endpoint_Write_Stream_LE( (uint8_t*) buffer, strlen(buffer), NULL);
+	sprintf_P(output_buffer,PSTR("%d"), i);
+	Endpoint_Write_Stream_LE( (uint8_t*) output_buffer, strlen(output_buffer), NULL);
 }
 
 void WriteIntHex2( uint8_t i )
 {
-	char buffer[3];
-	sprintf(buffer,"%02X", i);
-	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 2, NULL);
+	sprintf_P(output_buffer,PSTR("%02X"), i);
+	Endpoint_Write_Stream_LE( (uint8_t*) output_buffer, 2, NULL);
 }
 
 void WriteIntHex4( uint16_t i )
 {
-	char buffer[5];
-	sprintf(buffer,"%04X", i);
-	Endpoint_Write_Stream_LE( (uint8_t*) buffer, 4, NULL);
+	sprintf_P(output_buffer,PSTR("%04X"), i);
+	Endpoint_Write_Stream_LE( (uint8_t*) output_buffer, 4, NULL);
 }
 
 void WriteCRLF( void )
 {
 	Endpoint_Write_PStream_LE( PSTR("\r\n"), 2, NULL);
 }
+
+/*
+void FlushBuffer( void )
+{
+	USB_USBTask();
+	if (USB_DeviceState != DEVICE_STATE_Unattached) {
+		uint8_t PrevEndpoint = Endpoint_GetCurrentEndpoint();
+		
+		Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+		
+		if (Endpoint_IsSETUPReceived()) {
+			Endpoint_SelectEndpoint(PrevEndpoint);
+			Endpoint_ClearIN();
+			Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+			USB_Device_ProcessControlRequest();
+		}
+		
+		Endpoint_SelectEndpoint(PrevEndpoint);
+	}
+}
+*/
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -103,7 +119,7 @@ uint16_t EchoRequest( uint8_t** ppBuffer, uint16_t DataLength )
 	int len;
 	for(len=0; len<DataLength && len<20; len++)
 		buffer[len]= *pBuffer++;
-	sprintf((char*)buffer+len, "[%d]\r\n", len);
+	sprintf_P((char*)buffer+len, PSTR("[%d]\r\n"), len);
 	
 	Endpoint_Write_Stream_LE(buffer, strlen((char*)buffer), NULL);
 
@@ -161,8 +177,6 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 					int ir_len = JTAG_IRLen();
 					WriteInt( ir_len );
 					WriteStringConst( PSTR("\r\n"));
-//					sprintf(output_buffer, "\r\n# JTAG scan:\r\n# chain length=%d, IR length=%d:\r\n", chain_len, ir_len );
-//					WriteString(output_buffer);
 				}
 				JTAG_ChainInfo();
 				WriteStringConst(PSTR("\r\n"));
@@ -182,7 +196,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'p':
 			case 'P':
-				WriteString("# PROM write\r\n");
+				WriteStringConst(PSTR("# PROM write\r\n"));
 				PROM_Program( 0, 6, 0, 1 );
 				ServerRequest = EOLRequest;
 				StartHEX( HEX_Program );
@@ -193,6 +207,14 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 			case 'R':
 				WriteStringConst( PSTR("# PROM dump\r\n"));
 				PROM_Dump( 0, 6, 0, 1 );
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
+			case 'l':
+			case 'L':
+				WriteStringConst( PSTR("# PROM reload\r\n"));
+				PROM_Reload( 0, 6, 0, 1 );
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
@@ -208,8 +230,18 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 						JTAG_RunTestTCK(10000);
 					}
 					WriteCRLF();
+					USB_USBTask();
 				}
 
+			case 'b':
+			case 'B':
+				WriteStringConst( PSTR("# Jumping to bootloader...\r\n"));
+				Endpoint_ClearIN();
+				Endpoint_WaitUntilReady();
+				Endpoint_ClearIN();
+				USB_USBTask();
+				Jump_To_Bootloader();
+				
 			default:
 				WriteStringConst( PSTR("# Unknown command: "));
 				ServerRequest = EchoToEOLRequest;

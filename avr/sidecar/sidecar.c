@@ -85,6 +85,9 @@ void SetupHardware(void)
 	LEDs_Init();
 	USB_Init();
 	JTAG_Init();
+
+	DDRD = 0;
+	PORTD = ~0;
 }
 
 /** Event handler for the USB_Connect event. This indicates that the device is enumerating via the status LEDs and
