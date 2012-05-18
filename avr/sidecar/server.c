@@ -180,7 +180,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 
 			case 'p':
 			case 'P':
-				WriteString("# PROM write\r\n");
+				WriteStringConst(PSTR("# PROM write\r\n"));
 				PROM_Program( 0, 6, 0, 1 );
 				ServerRequest = EOLRequest;
 				StartHEX( HEX_Program );

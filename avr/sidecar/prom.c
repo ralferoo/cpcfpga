@@ -14,14 +14,14 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
 
-	char* status = "wrong chip";
+	char* PROGMEM status = PSTR("wrong chip");
 	bool ok = 0;
 	if( idcode == 0xf5045093 ) {
-		status = "XCF02S";
+		status = PSTR("XCF02S");
 		ok = 1;
 	}
 
-	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %s\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
+	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %S\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
 	WriteString(output_buffer);
 
 	if( !ok) return;
@@ -31,13 +31,13 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_RunTestTCK(110000);
 	uint16_t protect = (uint16_t) JTAG_SendIR( 0xff, 8, hir_len, tir_len );
 
-	status = "writable";
+	status = PSTR("writable");
 	if( (protect&7) != 1 ) {
-		status = "unwritable";
+		status = PSTR("unwritable");
 		ok = 0;
 	}
 
-	sprintf_P( output_buffer, PSTR("# protect=%02X - %s\r\n"), protect, status );
+	sprintf_P( output_buffer, PSTR("# protect=%02X - %S\r\n"), protect, status );
 	WriteString(output_buffer);
 	
 	if( !ok) return;
@@ -77,14 +77,14 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
 
-	char* status = "wrong chip";
+	char* PROGMEM status = PSTR("wrong chip");
 	bool ok = 0;
 	if( idcode == 0xf5045093 ) {
-		status = "XCF02S";
+		status = PSTR("XCF02S");
 		ok = 1;
 	}
 
-	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %s\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
+	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %S\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
 	WriteString(output_buffer);
 
 	if( !ok) return;
@@ -94,13 +94,13 @@ void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_RunTestTCK(110000);
 	uint16_t protect = (uint16_t) JTAG_SendIR( 0xff, 8, hir_len, tir_len );
 
-	status = "writable";
+	status = PSTR("writable");
 	if( (protect&7) != 1 ) {
-		status = "unwritable";
+		status = PSTR("unwritable");
 		ok = 0;
 	}
 
-	sprintf_P( output_buffer, PSTR("# protect=%02X - %s\r\n"), protect, status );
+	sprintf_P( output_buffer, PSTR("# protect=%02X - %S\r\n"), protect, status );
 	WriteString(output_buffer);
 	
 	if( !ok) return;
@@ -379,14 +379,14 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
 
-	char* status = "wrong chip";
+	char* PROGMEM status = PSTR("wrong chip");
 	bool ok = 0;
 	if( idcode == 0xf5045093 ) {
-		status = "XCF02S";
+		status = PSTR("XCF02S");
 		ok = 1;
 	}
 
-	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %s\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
+	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %S\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
 	WriteString(output_buffer);
 
 	if( !ok) return;
@@ -396,13 +396,13 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	JTAG_RunTestTCK(110000);
 	uint16_t protect = (uint16_t) JTAG_SendIR( 0xff, 8, hir_len, tir_len );
 
-	status = "readable";
+	status = PSTR("readable");
 	if( (protect&7) != 1 ) {
-		status = "unreadable";
+		status = PSTR("unreadable");
 		ok = 0;
 	}
 
-	sprintf_P( output_buffer, PSTR("# protect=%02X - %s\r\n"), protect, status );
+	sprintf_P( output_buffer, PSTR("# protect=%02X - %S\r\n"), protect, status );
 	WriteString(output_buffer);
 	
 	if( !ok) return;
@@ -421,7 +421,7 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 
 	uint16_t faddr_base = ~0U;
 	for( uint16_t faddr=0x0000; faddr<0x4000; faddr+=0x40 ) {
-		WriteString("#\r\n");
+		WriteStringConst(PSTR("#\r\n"));
 		sprintf_P( output_buffer, PSTR("# faddr=%04X\r\n"), faddr );
 		WriteString(output_buffer);
 		if ( (faddr & 0xf000) != faddr_base ) {
