@@ -211,6 +211,14 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				*ppBuffer = pBuffer;
 				return DataLength;
 
+			case 'l':
+			case 'L':
+				WriteStringConst( PSTR("# PROM reload\r\n"));
+				PROM_Reload( 0, 6, 0, 1 );
+				ServerRequest = EOLRequest;
+				*ppBuffer = pBuffer;
+				return DataLength;
+
 			case 'w':
 			case 'W':
 				for(;;) {
@@ -225,6 +233,15 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 					USB_USBTask();
 				}
 
+			case 'b':
+			case 'B':
+				WriteStringConst( PSTR("# Jumping to bootloader...\r\n"));
+				Endpoint_ClearIN();
+				Endpoint_WaitUntilReady();
+				Endpoint_ClearIN();
+				USB_USBTask();
+				Jump_To_Bootloader();
+				
 			default:
 				WriteStringConst( PSTR("# Unknown command: "));
 				ServerRequest = EchoToEOLRequest;

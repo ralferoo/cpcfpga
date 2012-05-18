@@ -1,6 +1,8 @@
 
 #include <avr/pgmspace.h>
 
+void Jump_To_Bootloader(void);
+
 void WriteString( const char* str );
 void WriteStringConst( const char* PROGMEM str );
 void WriteInt( uint16_t i );

@@ -153,6 +153,10 @@ void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 						HEX_Program(0,1,prom_addr_lo,&zerobyte);
 				}
 				WriteStringConst(PSTR("# end of HEX data\r\n"));
+
+				// ISC_DISABLE conld instruction
+				JTAG_SendIR( 0xf0, 8, prom_hir_len, prom_tir_len );
+				JTAG_RunTestTCK(110000);
 				break;
 
 			case 4: // address high
@@ -431,6 +435,38 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 		PROM_DumpBlock( faddr, hir_len, tir_len, hdr_len, tdr_len );
 	}
 	HEX_EndOfFile();
+}
+
+void PROM_Reload( int hir_len, int tir_len, int hdr_len, int tdr_len )
+{
+	// idcode
+	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
+	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
+
+	char* PROGMEM status = PSTR("wrong chip");
+	bool ok = 0;
+	if( idcode == 0xf5045093 ) {
+		status = PSTR("XCF02S");
+		ok = 1;
+	}
+
+	sprintf_P( output_buffer, PSTR("# idcode=%04X%04X - %S\r\n"), (uint16_t) (idcode>>16), (uint16_t) idcode, status );
+	WriteString(output_buffer);
+
+	if( !ok) return;
+
+	// ISC_DISABLE conld instruction
+	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
+	JTAG_RunTestTCK(110000);
+
+	// CONFIG instruction - restart FPGA
+	JTAG_SendIR( 0xee, 8, hir_len, tir_len );
+	JTAG_RunTestTCK(10);
+	JTAG_Reset();
+	JTAG_RunTestTCK(10);
+
+	// bypass instruction
+	JTAG_SendIR( 0xff, 8, hir_len, tir_len );
 }
 
 /*
