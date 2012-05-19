@@ -159,7 +159,7 @@ sigloop:
 	xor a
 	call send_byte
 
-	call do_erase
+;	call do_erase
 
 	call verify_erase
 
@@ -175,32 +175,17 @@ sigloop:
 	xor a
 	call send_byte
 	
-	ld hl,writing_msg
-	call print
+;	ld hl,writing_msg
+;	call print
 
-	ld hl,payload
-	ld de,#0
-	ld bc,payload_len
-	call write_payload
-
-	ld hl,bootloader
-	ld de,#3800
-	call write_bootloader
-
-	ld hl,payload
-	ld de,#0
-	ld bc,payload_len
-	call verify_data
-
-	ld hl,bootloader
-	ld de,#7000
-	ld bc,#1000
-	call verify_data
+;	ld hl,payload
+;	ld de,#0
+;	ld bc,payload_len
+;	call write_payload
 
 ;	ld hl,bootloader
-;	ld de,#7000
-;	ld bc,#1000
-;	call verify_data
+;	ld de,#3800
+;	call write_bootloader
 
 	jp 0
 
@@ -311,25 +296,16 @@ verify_loop2:
 	cp (hl)
 	jr z, verify_ok
 
-	push af
 	ld a,d
 	call outhex
 	ld a,e
-	call outhex
-	ld a,' '
-	call chout
-	pop af
-	call outhex
-	ld a,' '
-	call chout
-	ld a,(hl)
 	call outhex
 	ld a,13
 	call chout
 	ld a,10
 	call chout
 
-;	djnz verify_loop2			; try the byte a few times
+	djnz verify_loop2			; try the byte a few times
 
 verify_ok:
 	pop bc
@@ -481,17 +457,6 @@ write_bootloader:
 	xor a
 	call send_byte
 
-;	push af
-;	push hl
-;	ld hl,4096
-;pause_loop:
-;	dec hl
-;	ld a,h
-;	or l
-;	jr nz,pause_loop
-;	pop hl
-;	pop af
-
 	call do_poll
 
 nowritepage:
@@ -598,9 +563,7 @@ bit_loop:
 	push bc
 
 	ld b,#f5
-;	nop
 	in a,(c)
-;	nop
 	rla				; read data bit in
 
 	rl d				; data bit out, save bit in
@@ -608,13 +571,9 @@ bit_loop:
 	and #20				; put bit into tape data
 	ld b,#f6
 	or #10
-;	nop
 	out (c),a			; output bit
-;	nop
 	and #20
-;	nop
 	out (c),a			; toggle clock high
-;	nop
 
 	pop bc
 	djnz bit_loop
@@ -714,12 +673,12 @@ verify_erase_msg:
 	defb 13,10,"Verifying erased...",13,10,0
 
 payload:
-	incbin "avr/sidecar/sidecar.bin"
+;	incbin "controller/VirtualSerial/VirtualSerial.bin"
 	defb 0
 payload_len equ ($-payload)
 
 bootloader:
-	incbin "avr/DFU/BootloaderDFU.hex"
+;	incbin "avr/DFU/BootloaderDFU.hex"
 	defb 0
 
 bootloader2:

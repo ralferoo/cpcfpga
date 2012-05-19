@@ -11,3 +11,11 @@ gnd = black	= 6
 41 = leds(3) = reset - gnd 	= 2 & 5 shorted
 
 gnd/button = brown - 1
+
+
+so, along PCB edge:
+
+white (reset), orange (vcc), black (gnd), purple (led), x, x, x, yellow (miso), blue (sclk), green (mosi)
+on actel board: black=gnd, orange=vcc, purple = led42, white = p41, green = p42, blue = p43, yellow = p23
+
+brown (hwb) can be connected to switch20

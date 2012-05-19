@@ -535,10 +535,10 @@ avr/sidecar/sidecar.hex: avr/.unpack avr/sidecar/*.c avr/sidecar/*.h avr/sidecar
 	(cd avr/sidecar ; make)
 	
 
-build/boot_init.bin: avr/DFU/BootloaderDFU.hex avr/VirtualSerial/VirtualSerial.bin
+build/boot_init.bin: avr/DFU/BootloaderDFU.hex avr/sidecar/sidecar.bin
 
 avr/DFU/BootloaderDFU.hex: avr/DFU/*.c avr/DFU/*.h
 	(cd avr/DFU ; make)
 
-avr/VirtualSerial/VirtualSerial.bin: avr/VirtualSerial/*.c avr/VirtualSerial/*.h
-	(cd avr/VirtualSerial ; make)
+avr/sidecar/sidecar.bin: avr/sidecar/*.c avr/sidecar/*.h
+	(cd avr/sidecar ; make)
