@@ -161,19 +161,19 @@ sigloop:
 
 ;	call do_erase
 
-	call verify_erase
+;	call verify_erase
 
-	ld hl,load_ext_byte_msg
-	call print
+;	ld hl,load_ext_byte_msg
+;	call print
 
-	ld a,#4d
-	call send_byte
-	xor a
-	call send_byte
-	xor a
-	call send_byte
-	xor a
-	call send_byte
+;	ld a,#4d
+;	call send_byte
+;	xor a
+;	call send_byte
+;	xor a
+;	call send_byte
+;	xor a
+;	call send_byte
 	
 ;	ld hl,writing_msg
 ;	call print
@@ -187,7 +187,7 @@ sigloop:
 ;	ld de,#3800
 ;	call write_bootloader
 
-	jp 0
+;	jp 0
 
 	ld hl,read_memory_msg
 	call print

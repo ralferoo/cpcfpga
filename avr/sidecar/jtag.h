@@ -48,8 +48,7 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 	// get the TDO value from the previous cycle
 	int previous;
 	if (read) {
-//		__asm__("nop");
-		previous = JTAG_PIN;
+		previous = (JTAG_PIN & JTAG_TDO)?1:0;
 	}
 	else
 		previous = 0;
