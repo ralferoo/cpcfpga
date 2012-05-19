@@ -8,8 +8,27 @@
 #include "prom.h"
 #include "hex.h"
 
-void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
+extern int prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len;
+
+static bool have_scanned_prom = 0;
+
+bool PROM_Present( void )
 {
+	if( !have_scanned_prom) {
+		JTAG_ChainInfo();
+		have_scanned_prom = 1;
+	}
+	if( prom_hir_len < 0 ) {
+		WriteStringConst( PSTR("# No PROM found\r\n") );
+		return 0;
+	}
+	return 1;
+}
+
+void PROM_Erase( void )
+{
+	int hir_len = prom_hir_len, hdr_len = prom_hdr_len, tir_len = prom_tir_len, tdr_len = prom_tdr_len;
+
 	// idcode
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
@@ -69,10 +88,11 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 
 static bool prom_in_block;
 static uint16_t prom_addr_hi, prom_addr_lo, prom_addr_lo_start;
-extern int prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len;
 
-void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
+void PROM_Program( void )
 {
+	int hir_len = prom_hir_len, hdr_len = prom_hdr_len, tir_len = prom_tir_len, tdr_len = prom_tdr_len;
+
 	// idcode
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
@@ -294,8 +314,10 @@ void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_l
 	jtag_state = JTAG_STATE_UPDATE_DR;
 }
 
-void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
+void PROM_Dump( void )
 {
+	int hir_len = prom_hir_len, hdr_len = prom_hdr_len, tir_len = prom_tir_len, tdr_len = prom_tdr_len;
+
 	// idcode
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
@@ -354,8 +376,10 @@ void PROM_Dump( int hir_len, int tir_len, int hdr_len, int tdr_len )
 	HEX_EndOfFile();
 }
 
-void PROM_Reload( int hir_len, int tir_len, int hdr_len, int tdr_len )
+void PROM_Reload( void )
 {
+	int hir_len = prom_hir_len, hdr_len = prom_hdr_len, tir_len = prom_tir_len, tdr_len = prom_tdr_len;
+
 	// idcode
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );

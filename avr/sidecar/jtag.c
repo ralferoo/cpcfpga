@@ -233,6 +233,8 @@ void JTAG_ChainInfo(void)
 	}
 	if( tdr )
 		WriteStringConst( PSTR("# Didn't reach end of chain with tdr=0!\r\n"));
+
+	WriteStringConst( PSTR("\r\n"));
 }
 
 int JTAG_ChainLen(void)

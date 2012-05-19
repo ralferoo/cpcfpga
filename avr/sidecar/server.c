@@ -163,50 +163,52 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				StartHEXRequest();
 				*ppBuffer = pBuffer;
 				return DataLength;
-//				WriteString("# HEX\r\n");
-//				ServerRequest = EOLRequest;
-//				*ppBuffer = pBuffer;
-//				return DataLength;
 
 			case 'j':
 			case 'J':
 				JTAG_ChainInfo();
-				WriteStringConst(PSTR("\r\n"));
-
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
 
 			case 'e':
 			case 'E':
-				WriteStringConst( PSTR("# PROM erase start\r\n"));
-				PROM_Erase( 0, 6, 0, 1 );
-				WriteStringConst( PSTR("# PROM erase finished\r\n"));
+				if( PROM_Present()) {
+					WriteStringConst( PSTR("# PROM erase start\r\n"));
+					PROM_Erase();
+					WriteStringConst( PSTR("# PROM erase finished\r\n"));
+				}
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
 
 			case 'p':
 			case 'P':
-				WriteStringConst(PSTR("# PROM write\r\n"));
-				PROM_Program( 0, 6, 0, 1 );
+				if( PROM_Present()) {
+					WriteStringConst(PSTR("# PROM write\r\n"));
+					PROM_Program();
+					StartHEX( HEX_Program );
+				}
 				ServerRequest = EOLRequest;
-				StartHEX( HEX_Program );
 				*ppBuffer = pBuffer;
 				return DataLength;
 
 			case 'r':
 			case 'R':
-				WriteStringConst( PSTR("# PROM dump\r\n"));
-				PROM_Dump( 0, 6, 0, 1 );
+				if( PROM_Present()) {
+					WriteStringConst( PSTR("# PROM dump\r\n"));
+					PROM_Dump();
+				}
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
 
 			case 'l':
 			case 'L':
-				WriteStringConst( PSTR("# PROM reload\r\n"));
-				PROM_Reload( 0, 6, 0, 1 );
+				if( PROM_Present()) {
+					WriteStringConst( PSTR("# PROM reload\r\n"));
+					PROM_Reload();
+				}
 				ServerRequest = EOLRequest;
 				*ppBuffer = pBuffer;
 				return DataLength;
