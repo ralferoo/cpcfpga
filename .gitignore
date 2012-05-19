@@ -54,3 +54,7 @@ work/
 test/*.out
 bb4cpc/*
 demo
+hyper*.dsk
+datasheets/memory/S25FL064K.pdf
+datasheets/xilinx/xcf.zip
+datasheets/Boundary-Scan_Tutorial_2007.pdf

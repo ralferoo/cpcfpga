@@ -9,3 +9,6 @@ lufa
 *.sym
 *.bin
 *.hex
+.unpack
+LUFA-*
+
