@@ -146,13 +146,13 @@ void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 			case 1: // end of file
 				if (prom_in_block) {
 					uint16_t padding = 512 - (prom_addr_lo&511);
-					WriteStringConst(PSTR("# padding with "));
+					WriteStringConst(PSTR("\r\n# padding with "));
 					WriteInt(padding);
-					WriteStringConst(PSTR(" bytes\r\n"));
+					WriteStringConst(PSTR(" bytes"));
 					while( padding-- )
 						HEX_Program(0,1,prom_addr_lo,&zerobyte);
 				}
-				WriteStringConst(PSTR("# end of HEX data\r\n"));
+				WriteStringConst(PSTR("\r\n# end of HEX data"));
 
 				// ISC_ADDRESS_SHIFT faddr instruction
 				JTAG_SendIR( 0xeb, 8, prom_hir_len, prom_tir_len );
@@ -168,14 +168,14 @@ void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 				// ISC_DISABLE conld instruction
 				JTAG_SendIR( 0xf0, 8, prom_hir_len, prom_tir_len );
 				JTAG_RunTestTCK(110000);
-				WriteStringConst(PSTR("# finished writing prom data\r\n\r\n"));
+				WriteStringConst(PSTR("\r\n# finished writing prom data\r\n\r\n"));
 				break;
 
 			case 4: // address high
 				if (prom_in_block)
 					HEX_DoErrorConst(PSTR("# HEX high address word changed mid sector\r\n"));
 				prom_addr_hi = (data[0]<<8) | data[1];
-				sprintf_P(output_buffer, PSTR("# high word %04X\r\n"), prom_addr_hi );
+				sprintf_P(output_buffer, PSTR("\r\n# high word %04X"), prom_addr_hi );
 				WriteString(output_buffer);
 				break;
 				
@@ -226,8 +226,12 @@ next_sector:
 						JTAG_RunTestTCK(2);
 
 						uint16_t prom_faddr = (prom_addr_hi<<12) | (prom_addr_lo_start>>4);
-						sprintf_P( output_buffer, PSTR("# programming sector with faddr=%04X (h=%04x,l=%04x)\r\n"), prom_faddr, prom_addr_hi, prom_addr_lo );
-						WriteString(output_buffer);
+						if( prom_addr_lo & 1024)
+							WriteStringConst(PSTR("."));
+//						sprintf_P( output_buffer, PSTR("# programming sector with faddr=%04X (h=%04x,l=%04x)\r\n"), prom_faddr, prom_addr_hi, prom_addr_lo );
+//						WriteString(output_buffer);
+//						if( ((prom_addr_lo+1) & 0x3fff) == 0 )
+//							WriteStringConst(PSTR("\r\n"));
 						Endpoint_ClearIN();
 						Endpoint_WaitUntilReady();
 
