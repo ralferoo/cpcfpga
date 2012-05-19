@@ -1,7 +1,8 @@
 TOP_NAME = cpc
 
 ACTEL_TOP_NAME		= evalboard
-XILINX_TOP_NAME		= homeboard
+#XILINX_TOP_NAME		= homeboard
+XILINX_TOP_NAME		= testfpga
 
 ###########################################################################
 #
@@ -17,7 +18,7 @@ XILINX_VHD_FILES = $(sort hdl/$(XILINX_TOP_NAME).vhd $(VHD_FILES))
 
 PDC_FILES =constraint/$(ACTEL_TOP_NAME)_pins.pdc
 SDC_FILES =$(wildcard constraint/$(ACTEL_TOP_NAME)_sdc.sdc)
-#UCF_FILE  = constraint/$(XILINX_TOP_NAME).ucf
+UCF_FILE  = constraint/$(XILINX_TOP_NAME).ucf
 
 ###########################################################################
 #
