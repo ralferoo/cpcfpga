@@ -154,9 +154,21 @@ void HEX_Program( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
 				}
 				WriteStringConst(PSTR("# end of HEX data\r\n"));
 
+				// ISC_ADDRESS_SHIFT faddr instruction
+				JTAG_SendIR( 0xeb, 8, prom_hir_len, prom_tir_len );
+				JTAG_SendDR( 1, 16, prom_hdr_len, prom_tdr_len );
+				JTAG_Idle();
+				JTAG_RunTestTCK(1);
+						
+				// ISC_SERASE instruction
+				JTAG_SendIR( 0x0a, 8, prom_hir_len, prom_tir_len );
+				JTAG_Idle();
+				JTAG_RunTestTCK(37000);
+						
 				// ISC_DISABLE conld instruction
 				JTAG_SendIR( 0xf0, 8, prom_hir_len, prom_tir_len );
 				JTAG_RunTestTCK(110000);
+				WriteStringConst(PSTR("# finished writing prom data\r\n\r\n"));
 				break;
 
 			case 4: // address high
@@ -239,105 +251,6 @@ next_sector:
 		}
 	}
 }
-
-#if 0
-void xPROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
-{
-	// idcode
-	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
-	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
-
-	char* status = "wrong chip";
-	bool ok = 0;
-	if( idcode == 0xf5045093 ) {
-		status = "XCF02S";
-		ok = 1;
-	}
-
-	sprintf( output_buffer, "# idcode=%04X%04X - %s\r\n", (uint16_t) (idcode>>16), (uint16_t) idcode, status );
-	WriteString(output_buffer);
-
-	if( !ok) return;
-
-	// ISC_DISABLE conld instruction
-	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
-	JTAG_RunTestTCK(110000);
-	uint16_t protect = (uint16_t) JTAG_SendIR( 0xff, 8, hir_len, tir_len );
-
-	status = "writable";
-	if( (protect&7) != 1 ) {
-		status = "unwritable";
-		ok = 0;
-	}
-
-	sprintf( output_buffer, "# protect=%02X - %s\r\n", protect, status );
-	WriteString(output_buffer);
-	
-	if( !ok) return;
-
-	// bypass instruction
-	JTAG_SendIR( 0xff, 8, hir_len, tir_len );
-	// ISC_ENABLE ispen instruction
-	JTAG_SendIR( 0xe8, 8, hir_len, tir_len );
-	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
-
-//	// ISC_ADDRESS_SHIFT faddr instruction
-//	JTAG_SendIR( 0xeb, 8, hir_len, tir_len );
-//	JTAG_SendDR( faddr, 16, hdr_len, tdr_len );
-//	JTAG_RunTestTCK(2);
-//
-//	// ISC_ERASE ferase instruction
-//	JTAG_SendIR( 0xec, 8, hir_len, tir_len );
-//	JTAG_RunTestTCK(15000000);
-
-	// ISC_DISABLE conld instruction
-	JTAG_SendIR( 0xf0, 8, hir_len, tir_len );
-	JTAG_RunTestTCK(110000);
-	// ISC_ENABLE ispen instruction
-	JTAG_SendIR( 0xe8, 8, hir_len, tir_len );
-	JTAG_SendDR( 0x34, 6, hdr_len, tdr_len );
-
-	for( uint16_t faddr=0x3f20; faddr<0x3fe0; faddr+=0x20 ) {
-//	uint16_t faddr=0x3f40; {
-		sprintf( output_buffer, "# faddr=%04X\r\n", faddr );
-		WriteString(output_buffer);
-
-		// ISC_DATA_SHIFT fdata0 instruction
-		JTAG_SendIR( 0xed, 8, hir_len, tir_len );
-		JTAG_ShiftDR();
-		for (int i=0; i<hdr_len; i++)
-			JTAG_SendClock(0);		// ignore all data before the data we want
-
-		for(int i=0; i<4096; i+=16) {
-			int bits = (faddr << 3) | (i>>4);
-			for(int j=0; j<16; j++) {
-//				if (bits_until_tms--)
-					JTAG_SendClock(bits&1);
-//				else
-//					JTAG_SendClockTMS(bits&1);
-				bits >>= 1;
-			}
-		}
-
-		for(int i=1;i<tdr_len;i++)
-			JTAG_SendClock(0);
-		JTAG_SendClockTMS( 1 );			// move to exit 1_IR
-		JTAG_SendClockTMS( 1 );			// move to update_IR
-		jtag_state = JTAG_STATE_UPDATE_DR;
-		JTAG_RunTestTCK(2);
-
-		// ISC_ADDRESS_SHIFT faddr instruction
-		JTAG_SendIR( 0xeb, 8, hir_len, tir_len );
-		JTAG_SendDR( faddr, 16, hdr_len, tdr_len );
-		JTAG_RunTestTCK(2);
-
-		// ISC_PROGRAM fpgm instruction
-		JTAG_SendIR( 0xea, 8, hir_len, tir_len );
-		JTAG_Idle();
-		JTAG_RunTestTCK(14000);
-	}
-}
-#endif
 
 void PROM_DumpBlock( int faddr, int hir_len, int tir_len, int hdr_len, int tdr_len )
 {
