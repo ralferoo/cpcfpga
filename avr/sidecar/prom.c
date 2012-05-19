@@ -69,7 +69,7 @@ void PROM_Erase( int hir_len, int tir_len, int hdr_len, int tdr_len )
 
 static bool prom_in_block;
 static uint16_t prom_addr_hi, prom_addr_lo, prom_addr_lo_start;
-static int prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len;
+extern int prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len;
 
 void PROM_Program( int hir_len, int tir_len, int hdr_len, int tdr_len )
 {

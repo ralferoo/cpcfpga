@@ -169,15 +169,7 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 //				return DataLength;
 
 			case 'j':
-			case 'J': {
-					WriteStringConst( PSTR("# JTAG scan:\r\n# chain length="));
-					int chain_len = JTAG_ChainLen();
-					WriteInt( chain_len );
-					WriteStringConst( PSTR(", IR length="));
-					int ir_len = JTAG_IRLen();
-					WriteInt( ir_len );
-					WriteStringConst( PSTR("\r\n"));
-				}
+			case 'J':
 				JTAG_ChainInfo();
 				WriteStringConst(PSTR("\r\n"));
 

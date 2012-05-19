@@ -148,8 +148,17 @@ void JTAG_ShiftDR(void)
 
 extern char output_buffer[ 128 ];
 
+int prom_hir_len = -1, prom_tir_len, prom_hdr_len, prom_tdr_len;
+int fpga_hir_len = -1, fpga_tir_len, fpga_hdr_len, fpga_tdr_len;
+
 void JTAG_ChainInfo(void)
 {
+	int hir = 0, hdr = 0;
+	int tir = JTAG_IRLen();
+	int tdr = JTAG_ChainLen();
+	sprintf_P(output_buffer,PSTR("# JTAG chain scan, %d devices, IR len=%d\r\n"), tdr, tir );
+	WriteString( output_buffer );
+
 	JTAG_Reset();
 	JTAG_SelectDR();
 	JTAG_SendClock(0);
@@ -159,6 +168,7 @@ void JTAG_ChainInfo(void)
 	while (continue_scan >0 ) {
 		continue_scan --;
 		int bit = JTAG_Clock(1);
+		tdr--;
 		if (!bit) {
 			WriteStringConst( PSTR("# ???? unknown\r\n" ));
 		} else {
@@ -172,6 +182,8 @@ void JTAG_ChainInfo(void)
 			for( char i=0;i<8; i++)
 				d = (d>>1) | (JTAG_Clock(1)<<7);
 
+			int ir = -1;
+
 			WriteStringConst( PSTR("# " ));
 			WriteIntHex2(d);
 			WriteIntHex2(c);
@@ -180,20 +192,47 @@ void JTAG_ChainInfo(void)
 
 			if( (b&0xf)==0 && a==0x93) {
 				WriteStringConst( PSTR(" Xilinx" ));
-				if ( (d&0xf)==5 && c==4 && b==0x50 )
-					WriteStringConst( PSTR(" XCF02S\r\n" ));
-				else if ( (d&0xf)==1 && c==0x41 && b==0xc0 )
-					WriteStringConst( PSTR(" XC3S400\r\n" ));
-				else
+				if ( (d&0xf)==5 && c==4 && b==0x50 ) {
+					ir = 8;
+					prom_hir_len = hir;
+					prom_tir_len = tir - ir;
+					prom_hdr_len = hdr;
+					prom_tdr_len = tdr;
+					sprintf_P(output_buffer, PSTR(" XCF02S, hir=%d, tir=%d, hdr=%d, tdr=%d\r\n"), 
+						prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len );
+					WriteString( output_buffer );
+				} else if ( (d&0xf)==1 && c==0x41 && b==0xc0 ) {
+					ir = 6;
+					prom_hir_len = hir;
+					prom_tir_len = tir - ir;
+					prom_hdr_len = hdr;
+					prom_tdr_len = tdr;
+					sprintf_P(output_buffer, PSTR(" XC3S400, hir=%d, tir=%d, hdr=%d, tdr=%d\r\n"), 
+						prom_hir_len, prom_tir_len, prom_hdr_len, prom_tdr_len );
+					WriteString( output_buffer );
+				} else {
 					WriteStringConst( PSTR("\r\n" ));
+				}
 			} else if (a==0xff && b==0xff && c==0xff && d==0xff) {
 				WriteStringConst( PSTR(" end of chain\r\n" ));
 				continue_scan = 0;
+				tdr++;
 			} else {
 				WriteStringConst( PSTR(" Unknown\r\n" ));
 			}
+
+			if (ir >= 0 && hir >= 0) {
+				hir += ir;
+				tir -= ir;
+				if( tir < 0 )
+					WriteStringConst( PSTR( "# TIR error!\r\n" ));
+			} else {
+				hir = tir = -1;
+			}
 		}
 	}
+	if( tdr )
+		WriteStringConst( PSTR("# Didn't reach end of chain with tdr=0!\r\n"));
 }
 
 int JTAG_ChainLen(void)
