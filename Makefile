@@ -537,8 +537,8 @@ avr/sidecar/sidecar.hex: avr/.unpack avr/sidecar/*.c avr/sidecar/*.h avr/sidecar
 
 build/boot_init.bin: avr/DFU/BootloaderDFU.hex avr/sidecar/sidecar.bin
 
-avr/DFU/BootloaderDFU.hex: avr/DFU/*.c avr/DFU/*.h
+avr/DFU/BootloaderDFU.hex: avr/DFU/*.c avr/DFU/*.h avr/DFU/makefile
 	(cd avr/DFU ; make)
 
-avr/sidecar/sidecar.bin: avr/sidecar/*.c avr/sidecar/*.h
+avr/sidecar/sidecar.bin: avr/sidecar/*.c avr/sidecar/*.h avr/sidecar/makefile
 	(cd avr/sidecar ; make)
