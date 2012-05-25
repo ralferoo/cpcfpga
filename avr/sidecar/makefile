@@ -87,7 +87,7 @@ BOARD = USER
 #     does not *change* the processor frequency - it should merely be updated to
 #     reflect the processor speed set externally so that the code can use accurate
 #     software delays.
-F_CPU = 16000000
+F_CPU = 8000000
 #F_CPU = 2000000
 
 
@@ -103,7 +103,7 @@ F_CPU = 16000000
 #     If no clock division is performed on the input clock inside the AVR (via the
 #     CPU clock adjust registers or the clock division fuses), this will be equal to F_CPU.
 #F_USB = $(F_CPU)
-F_USB = 16000000
+F_USB = 8000000
 
 
 # Output format. (can be hex, ihex, binary)

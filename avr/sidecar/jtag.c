@@ -159,6 +159,12 @@ void JTAG_ChainInfo(void)
 	sprintf_P(output_buffer,PSTR("# JTAG chain scan, %d devices, IR len=%d\r\n"), tdr, tir );
 	WriteString( output_buffer );
 
+
+	if( tdr == 0 || tir == 0 || tdr>1020 || tir>1020) {
+		WriteStringConst( PSTR("Implausible chain length, not going to procede with scan...\r\n") );
+		return;
+	}
+
 	JTAG_Reset();
 	JTAG_SelectDR();
 	JTAG_SendClock(0);
@@ -262,6 +268,13 @@ int JTAG_ChainLen(void)
 
 	JTAG_Reset();
 
+	if (i==0) {
+		WriteStringConst( PSTR("TDO probably stuck at 0 - DRlen is zero\r\n" ));
+	} else if (i==1024) {
+		WriteStringConst( PSTR("TDO probably stuck at 1 - DRlen is very high\r\n" ));
+	}
+		
+
 	return i;
 }
 
@@ -279,6 +292,13 @@ int JTAG_IRLen(void)
 		if( !JTAG_Clock(0)) break;	// shift through ones until we find out
 
 	JTAG_Reset();
+
+	if (i==0) {
+		WriteStringConst( PSTR("TDO probably stuck at 1 - IRlen is zero\r\n" ));
+	} else if (i==1024) {
+		WriteStringConst( PSTR("TDO probably stuck at 0 - IRlen is very high\r\n" ));
+	}
+		
 
 	return i;
 }

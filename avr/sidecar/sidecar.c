@@ -52,6 +52,19 @@ static CDC_LineEncoding_t LineEncoding = { .BaudRateBPS = 0,
                                            .DataBits    = 8                            };
 
 
+int timer=0;
+bool timer_changed=0;
+
+ISR(TIMER1_COMPA_vect)
+{
+	timer++;
+	timer_changed=1;
+
+	LEDs_ToggleLEDs( LEDS_LED1 );
+} 
+
+
+
 /** Main program entry point. This routine contains the overall program flow, including initial
  *  setup of all components and the main program loop.
  */
@@ -59,6 +72,19 @@ int main(void)
 {
 //	SerialNumberDescriptor_Init();
 	SetupHardware();
+
+
+/*
+   TCCR1B |= (1 << WGM12); // Configure timer 1 for CTC mode
+   TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
+//   OCR1A   = 15624; // Set CTC compare value to 1Hz at 1MHz AVR clock, with a prescaler of 64
+   OCR1A   = 15624 >> 1; // Set CTC compare value to 1Hz at 8MHz AVR clock, with a prescaler of 1024
+
+//   TCCR1B |= ((1 << CS10) | (1 << CS11)); // Start timer at Fcpu/64 
+   TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024 
+*/
+
+
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
 	sei();
