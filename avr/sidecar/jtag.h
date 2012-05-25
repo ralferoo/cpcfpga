@@ -43,6 +43,8 @@ enum JTAG_STATE {
 
 extern enum JTAG_STATE jtag_state;
 
+extern void Sleep(void);
+
 inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 {
 	// get the TDO value from the previous cycle
@@ -52,6 +54,8 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 	}
 	else
 		previous = 0;
+
+//	Sleep();
 
 	// update the output data
 	if(tms)
@@ -63,6 +67,10 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 		JTAG_PORT |= JTAG_TDI;
 	else
 		JTAG_PORT &= ~JTAG_TDI;
+
+	char str[30];
+	sprintf_P(str, tms?PSTR("[%d:%d TMS]\r\n"):PSTR("[%d:%d]"), tdi?1:0, previous );
+	WriteString(str);
 
 	// output data is set up, pulse the clock and back again
 	JTAG_PORT |= JTAG_TCK;
