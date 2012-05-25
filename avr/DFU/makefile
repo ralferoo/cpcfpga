@@ -48,7 +48,7 @@
 
 
 # MCU name
-MCU = at90usb162
+MCU = atmega32u2
 
 
 # Target architecture (see library "Board Types" documentation).
