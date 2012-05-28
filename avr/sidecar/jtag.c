@@ -11,7 +11,7 @@ void JTAG_Init(void)
 {
 //	JTAG_DDR =0;
 	JTAG_DDR  |= JTAG_TDI | JTAG_TCK | JTAG_TMS;
-	JTAG_DDR  &= ~JTAG_TDO;
+	JTAG_DDR  &= ~(JTAG_TDO | JTAG_MISO);
 
 	JTAG_PORT |=  (JTAG_TMS);
 	JTAG_PORT &= ~(JTAG_TCK | JTAG_TDI);

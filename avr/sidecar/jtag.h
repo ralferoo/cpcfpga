@@ -10,10 +10,14 @@
 #define JTAG_BIT_TCK 5
 #define JTAG_BIT_TMS 4
 
+#define JTAG_BIT_MISO 3
+
 #define JTAG_TDI (1<<JTAG_BIT_TDI)
 #define JTAG_TDO (1<<JTAG_BIT_TDO)
 #define JTAG_TCK (1<<JTAG_BIT_TCK)
 #define JTAG_TMS (1<<JTAG_BIT_TMS)
+
+#define JTAG_MISO (1<<JTAG_BIT_MISO)
 
 #define JTAG_PIN  PINB
 #define JTAG_PORT PORTB
@@ -49,11 +53,14 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 {
 	// get the TDO value from the previous cycle
 	int previous;
+	int miso;
 	if (read) {
 		previous = (JTAG_PIN & JTAG_TDO)?1:0;
+	} else {
+		previous = (JTAG_PIN & JTAG_TDO)?1:0;
+		//previous = 0;
 	}
-	else
-		previous = 0;
+	miso = (JTAG_PIN & JTAG_MISO)?1:0;
 
 //	Sleep();
 
@@ -69,7 +76,7 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 		JTAG_PORT &= ~JTAG_TDI;
 
 	char str[30];
-	sprintf_P(str, tms?PSTR("[%d:%d TMS]\r\n"):PSTR("[%d:%d]"), tdi?1:0, previous );
+	sprintf_P(str, tms?PSTR("[%d:%d TMS %d]\r\n"):PSTR("[%d:%d-%d]"), tdi?1:0, previous, miso );
 	WriteString(str);
 
 	// output data is set up, pulse the clock and back again
