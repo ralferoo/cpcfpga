@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# 4 is HWB, pull high
+echo 4 > /sys/class/gpio/export 
+echo out > /sys/class/gpio/gpio4/direction 
+echo 1 > /sys/class/gpio/gpio4/value 
+
+sleep 1
+
+# 17 is RESET, pull low
+echo 17 > /sys/class/gpio/export 
+echo out > /sys/class/gpio/gpio17/direction 
+echo 0 > /sys/class/gpio/gpio17/value 
+
+# deassert RESET
+echo 1 > /sys/class/gpio/gpio17/value 
