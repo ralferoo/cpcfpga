@@ -14,3 +14,5 @@ echo 0 > /sys/class/gpio/gpio17/value
 
 # deassert RESET
 echo 1 > /sys/class/gpio/gpio17/value 
+
+lsusb |grep 16c0

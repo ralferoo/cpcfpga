@@ -17,3 +17,5 @@ sleep 1
 
 # deassert HWB
 echo 1 > /sys/class/gpio/gpio4/value 
+
+lsusb |grep 03eb
