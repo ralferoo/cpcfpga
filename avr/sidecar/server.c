@@ -150,8 +150,8 @@ uint16_t DefaultRequest( uint8_t** ppBuffer, uint16_t DataLength )
 				return DataLength;
 
 			case '-':
-				for( int i=0; i<79; i++)
-					Endpoint_Write_PStream_LE(PSTR("-"), 1, NULL);
+				for( int i=0; i<7; i++)
+					Endpoint_Write_PStream_LE(PSTR("---------"), 1, NULL);
 				WriteString("\r\n");
 			
 			case '#':

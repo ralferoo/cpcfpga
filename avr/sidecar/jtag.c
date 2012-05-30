@@ -260,6 +260,23 @@ int JTAG_ChainLen(void)
 	JTAG_SendClock(0);
 	JTAG_SendClock(0);			// move to shift-DR
 
+	for (i=0; i<50; i++) {
+		JTAG_SendClock(1);
+		JTAG_SendClock(0);		// shift through pattern
+	}
+
+//	for (i=0; i<50; i++) {
+//		JTAG_SendClock(1);
+//		JTAG_SendClock(1);
+//		JTAG_SendClock(0);		// shift through pattern
+//	}
+
+	for (i=0; i<50; i++) {
+		JTAG_SendClock(1);
+		JTAG_SendClock(0);
+		JTAG_SendClock(0);		// shift through pattern
+	}
+
 	for (i=0; i<1024; i++)
 		JTAG_SendClock(0);		// shift through lots of zero bits
 

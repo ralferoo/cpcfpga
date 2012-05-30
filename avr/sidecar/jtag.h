@@ -78,6 +78,9 @@ inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
 	char str[30];
 	sprintf_P(str, tms?PSTR("[%d:%d TMS %d]\r\n"):PSTR("[%d:%d-%d]"), tdi?1:0, previous, miso );
 	WriteString(str);
+//	Endpoint_ClearIN();
+//	Endpoint_WaitUntilReady();
+//	USB_USBTask();
 
 	// output data is set up, pulse the clock and back again
 	JTAG_PORT |= JTAG_TCK;
