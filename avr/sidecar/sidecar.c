@@ -55,6 +55,7 @@ static CDC_LineEncoding_t LineEncoding = { .BaudRateBPS = 0,
 int timer=0;
 volatile bool timer_changed=0;
 
+/*
 ISR(TIMER1_COMPA_vect)
 {
 	timer++;
@@ -62,15 +63,18 @@ ISR(TIMER1_COMPA_vect)
 
 //	LEDs_ToggleLEDs( LEDS_LED1 );
 } 
+*/
 
 
 void Sleep(void)
 {
+/*
 	timer_changed = 0;
 	while (!timer_changed) {
-		CDC_Task();
+//		CDC_Task();
 		USB_USBTask();
 	}
+*/
 }
 
 
@@ -84,7 +88,7 @@ int main(void)
 
 
    TCCR1B |= (1 << WGM12); // Configure timer 1 for CTC mode
-   TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
+//   TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
 //   OCR1A   = 15624; // Set CTC compare value to 1Hz at 1MHz AVR clock, with a prescaler of 64
    OCR1A   = 15624 >> 1; // Set CTC compare value to 1Hz at 8MHz AVR clock, with a prescaler of 1024
 
