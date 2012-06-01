@@ -179,15 +179,19 @@ inline void fnPulseClock(void)
 	usleep(30);
 }
 
-int fnOutput(int tdi, int tms)
+int fnOutputSilent(int tdi, int tms)
 {
 	fnOutPin(GPIO_TDI,tdi);
 	fnOutPin(GPIO_TMS,tms);
 	int tdo = fnInPin(GPIO_TDO);
 	fnPulseClock();
+	return tdo;
+}
 
+int fnOutput(int tdi, int tms)
+{
+	int tdo = fnOutputSilent(tdi,tms);
 	printf("TDI: %d TMS: %d - TDO: %d\n", tdi, tms, tdo);
-
 	return tdo;
 }
 
@@ -240,6 +244,46 @@ void fnScanDR(void)
 	}
 }
 
+void fnScanChain(void)
+{
+	fnReset();
+	fnOutputSilent(0,0);	// idle
+	fnOutputSilent(0,1);	// select DR
+	fnOutputSilent(0,0);	// capture DR
+	fnOutputSilent(0,0);	// shift DR
+
+	printf("\nScanChain:\n\n");
+
+	int i,j,bit;
+	for( i=0; i<100; i++ )
+	{
+		bit = fnOutputSilent(1,0);
+		if (bit == 0) {
+			printf("%8d unrecognised device with no IDCODE\n",0);
+		} else {
+			unsigned long id = 1<<31;
+			for(j=0;j<31;j++) {
+				id >>= 1;
+				id  |= fnOutputSilent(1,0)<<31;
+			}
+			char* manuf="";
+			char* part="unrecognised device";
+			if ((id&0xfff)==0x093) {
+				manuf="Xilinx ";
+				if ( (id&0xffff000) == 0x5045000 )
+					part="XCF02S";
+				else if ( (id&0xffff000) == 0x141c000 )
+					part="XC3S400";
+			} else if (id == 0xffffffff) {
+				printf("%08X end of chain\n", id );
+				return;
+			}
+			printf("%08X %s%s\n", id, manuf, part);
+		}
+	}
+
+}
+
 int main(int argc, char **argv)
 {
 	// Set up gpi pointer for direct register access
@@ -252,8 +296,9 @@ int main(int argc, char **argv)
 	fnPinDirectionInput (GPIO_TDO);
 
 	// tests
-	fnScanDR();
-	fnScanIR();
+//	fnScanDR();
+//	fnScanIR();
+	fnScanChain();
 }
 
 
