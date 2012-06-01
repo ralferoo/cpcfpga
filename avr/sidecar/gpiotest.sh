@@ -45,6 +45,9 @@ fnOutput()
 
 fnReset()
 {
+	echo fnReset
+	echo
+
 	fnOutPin $GPIO_TMS 1
 	fnPulseClock
 	fnPulseClock
@@ -67,11 +70,13 @@ fnScanIR()
 	fnOutput 0 1	# move to select IR
 	fnOutput 0 0	# move to capture IR
 	fnOutput 0 0	# move to shift IR
+	echo
 
-	echo BYPASS scan
+	echo fnScanIR scan
+	echo
 
 	i=0
-	while test $i != 20
+	while test $i != 5
 	do
 		fnOutput 1 0
 		fnOutput 1 0
@@ -84,8 +89,10 @@ fnScanIR()
 		echo
 		i=`expr $i + 1`
 	done
+	echo
 
-	echo BYPASS scan done
+	echo fnScanIR done
+	echo
 }
 
 fnScanDR()
@@ -95,11 +102,13 @@ fnScanDR()
 	fnOutput 0 1	# move to select DR
 	fnOutput 0 0	# move to capture DR
 	fnOutput 0 0	# move to shift DR
+	echo
 
-	echo BYPASS scan
+	echo fnScanDR scan
+	echo
 
 	i=0
-	while test $i != 20
+	while test $i != 12
 	do
 		fnOutput 1 0
 		fnOutput 1 0
@@ -112,10 +121,13 @@ fnScanDR()
 		echo
 		i=`expr $i + 1`
 	done
+	echo
 
-	echo BYPASS scan done
+	echo fnScanDR done
+	echo
 
 }
 
 fnScanDR
+fnScanIR
 fnReset
