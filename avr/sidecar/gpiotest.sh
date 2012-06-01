@@ -74,20 +74,18 @@ fnScanIR()
 	while test $i != 20
 	do
 		fnOutput 1 0
-		fnOutput 0 0
 		fnOutput 1 0
-		fnOutput 0 0
 		fnOutput 1 0
-		fnOutput 0 0
 		fnOutput 1 0
-		fnOutput 0 0
+		fnOutput 1 0
+		fnOutput 1 0
+		fnOutput 1 0
+		fnOutput 1 0
 		echo
 		i=`expr $i + 1`
 	done
 
 	echo BYPASS scan done
-
-	fnReset
 }
 
 fnScanDR()
@@ -104,20 +102,20 @@ fnScanDR()
 	while test $i != 20
 	do
 		fnOutput 1 0
-		fnOutput 0 0
 		fnOutput 1 0
-		fnOutput 0 0
 		fnOutput 1 0
-		fnOutput 0 0
 		fnOutput 1 0
-		fnOutput 0 0
+		fnOutput 1 0
+		fnOutput 1 0
+		fnOutput 1 0
+		fnOutput 1 0
 		echo
 		i=`expr $i + 1`
 	done
 
 	echo BYPASS scan done
 
-	fnReset
 }
 
 fnScanDR
+fnReset
