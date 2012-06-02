@@ -10,6 +10,8 @@
 #define GPIO_TDI 4
 #define GPIO_TDO 22
 
+int g_noisy = 1;
+
 struct Device {
 	struct Device *next;
 
@@ -20,6 +22,42 @@ struct Device {
 };
 
 struct Device *g_firstDevice = 0;
+
+enum JTAG_STATE {
+        JTAG_STATE_UNKNOWN = 0,
+        JTAG_STATE_RESET,
+        JTAG_STATE_IDLE,
+
+        JTAG_STATE_SELECT_DR,
+        JTAG_STATE_SELECT_IR,
+
+        JTAG_STATE_CAPTURE,
+        JTAG_STATE_SHIFT,
+        JTAG_STATE_EXIT1,
+        JTAG_STATE_PAUSE,
+        JTAG_STATE_EXIT2,
+        JTAG_STATE_UPDATE,
+
+        JTAG_STATE_MAX
+};
+
+enum JTAG_STATE jtag_state = JTAG_STATE_UNKNOWN;
+
+char *jtag_state_names[JTAG_STATE_MAX] = {
+        "UNKNOWN",
+        "RESET",
+        "IDLE",
+
+        "SELECT_DR",
+        "SELECT_IR",
+
+        "CAPTURE",
+        "SHIFT",
+        "EXIT1",
+        "PAUSE",
+        "EXIT2",
+        "UPDATE",
+};
 
 #include <unistd.h>
 
@@ -196,13 +234,66 @@ int fnOutputSilent(int tdi, int tms)
 	fnOutPin(GPIO_TMS,tms);
 	int tdo = fnInPin(GPIO_TDO);
 	fnPulseClock();
+
+	switch(jtag_state) {
+	case JTAG_STATE_RESET:
+		jtag_state = tms ? JTAG_STATE_RESET : JTAG_STATE_IDLE;
+		break;
+
+	case JTAG_STATE_IDLE:
+		jtag_state = tms ? JTAG_STATE_SELECT_DR : JTAG_STATE_IDLE;
+		break;
+
+	case JTAG_STATE_SELECT_DR:
+		jtag_state = tms ? JTAG_STATE_SELECT_IR : JTAG_STATE_CAPTURE;
+		break;
+
+	case JTAG_STATE_SELECT_IR:
+		jtag_state = tms ? JTAG_STATE_RESET : JTAG_STATE_CAPTURE;
+		break;
+
+	case JTAG_STATE_CAPTURE:
+	case JTAG_STATE_SHIFT:
+		jtag_state = tms ? JTAG_STATE_EXIT1 : JTAG_STATE_SHIFT;
+		break;
+
+	case JTAG_STATE_EXIT1:
+		jtag_state = tms ? JTAG_STATE_UPDATE : JTAG_STATE_PAUSE;
+		break;
+
+	case JTAG_STATE_PAUSE:
+		jtag_state = tms ? JTAG_STATE_EXIT2 : JTAG_STATE_PAUSE;
+		break;
+
+	case JTAG_STATE_EXIT2:
+		jtag_state = tms ? JTAG_STATE_UPDATE : JTAG_STATE_SHIFT;
+		break;
+
+	case JTAG_STATE_UPDATE:
+		jtag_state = tms ? JTAG_STATE_SELECT_DR : JTAG_STATE_IDLE;
+		break;
+
+	default:
+		jtag_state = JTAG_STATE_UNKNOWN;
+	}
+
 	return tdo;
 }
 
 int fnOutput(int tdi, int tms)
 {
+	char* pstate;
+	if (g_noisy)
+		pstate = jtag_state<JTAG_STATE_MAX ? jtag_state_names[jtag_state]:"???";
+
 	int tdo = fnOutputSilent(tdi,tms);
-	printf("TDI: %d TMS: %d - TDO: %d\n", tdi, tms, tdo);
+
+	if (g_noisy) {
+		char* nstate = jtag_state<JTAG_STATE_MAX ? jtag_state_names[jtag_state]:"???";
+
+		printf("TDI: %d TMS: %d - TDO: %d (%s->%s)\n", tdi, tms, tdo, pstate, nstate);
+	}
+
 	return tdo;
 }
 
@@ -212,12 +303,16 @@ void fnResetSilent(void)
 	int i;
 	for(i=0;i<6;i++)
 		fnPulseClock();
+
+	jtag_state = JTAG_STATE_RESET;
 }
 
 void fnReset(void)
 {
-	printf("RESET\n");
 	fnResetSilent();
+
+	if (g_noisy)
+		printf("RESET\n");
 }
 
 void fnScanIR(void)
@@ -432,6 +527,9 @@ int main(int argc, char **argv)
 //	fnScanDR();
 //	fnScanIR();
 	fnScanDevices();
+
+	fnScanDR();
+	fnScanIR();
 
 	exit(0);
 }
