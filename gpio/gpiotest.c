@@ -68,11 +68,6 @@ inline char* get_jtag_state_name(void)
 
 #include <unistd.h>
 
-//inline void fnSleep(void)
-//{
-//	usleep(1000);		// 1000 usec = 1 ms -> 1MHz
-//}
-
 // Access from ARM Running Linux
 
 #define BCM2708_PERI_BASE        0x20000000
@@ -485,7 +480,7 @@ void fnScanDR(void)
 	}
 }
 
-void fnFreeDevices(void)
+void devFreeDevices(void)
 {
 	while (g_firstDevice) {
 		struct Device *device = g_firstDevice;
@@ -494,7 +489,7 @@ void fnFreeDevices(void)
 	}
 }
 
-struct Device* fnFindDevice(unsigned long id)
+struct Device* devFindDevice(unsigned long id)
 {
 	struct Device *device = g_firstDevice;
 	while (device) {
@@ -506,9 +501,9 @@ struct Device* fnFindDevice(unsigned long id)
 	return 0;
 }
 
-void fnScanDevices(void)
+void devScanDevices(void)
 {
-	fnFreeDevices();
+	devFreeDevices();
 
 	fnResetSilent();
 	fnShiftIR();
@@ -656,10 +651,10 @@ int main(int argc, char **argv)
 	// tests
 //	fnScanDR();
 //	fnScanIR();
-	fnScanDevices();
+	devScanDevices();
 
 	// test prom
-	struct Device *prom = fnFindDevice(0xf5045093);
+	struct Device *prom = devFindDevice(0xf5045093);
 	if( !prom ) {
 		printf("No PROM found...\n");
 		exit(1);
