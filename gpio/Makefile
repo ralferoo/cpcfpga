@@ -9,7 +9,8 @@ clean:
 edit:
 	gvim -p *.[ch]&
 
-run: prom_dump
+run: scan prom_dump
+	./scan
 	./prom_dump
 
 scan: scan.o $(LIBOBJS)

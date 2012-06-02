@@ -592,8 +592,6 @@ void devScanDevices(void)
 		return;
 	}
 
-	printf("Total IR length is %d\n", irlen);
-
 	// as we've left all IRs in bypass mode, we might as well scan 
 	// DR length when everything in bypass...
 
@@ -603,9 +601,11 @@ void devScanDevices(void)
 		if (jtagOutputSilent(1,0))	// push ones through until 1 pops out
 			break;
 
+#ifdef OUTPUT_LENGTHS
+	printf("Total IR length is %d\n", irlen);
 	printf("Bypass DR length is %d (number of devices)\n", drlen);
-	
 	printf("\n");
+#endif
 
 #ifdef SCAN_POSSIBLE_IR_START_POINTS
 	jtagResetSilent();
