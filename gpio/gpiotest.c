@@ -277,6 +277,9 @@ void fnScanPossibleIRLens(void)
 
 	printf("Total IR length is %d\n", irlen);
 
+	// as we've left all IRs in bypass mode, we might as well scan 
+	// DR length when everything in bypass...
+
 	fnOutputSilent(0,1);	// exit1 IR
 	fnOutputSilent(0,1);	// update IR
 	fnOutputSilent(0,1);	// select DR
