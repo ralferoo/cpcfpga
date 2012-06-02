@@ -10,6 +10,17 @@
 #define GPIO_TDI 4
 #define GPIO_TDO 22
 
+struct Device {
+	struct Device *next;
+
+	unsigned long id;
+	int hir, tir, hdr, tdr, len;
+
+	char *name;
+};
+
+struct Device *g_firstDevice = 0;
+
 #include <unistd.h>
 
 //inline void fnSleep(void)
@@ -248,8 +259,19 @@ void fnScanDR(void)
 	}
 }
 
-void fnScanPossibleIRLens(void)
+void fnFreeDevices(void)
 {
+	while (g_firstDevice) {
+		struct Device *device = g_firstDevice;
+		g_firstDevice = device->next;
+		free(device);
+	}
+}
+
+void fnScanDevices(void)
+{
+	fnFreeDevices();
+
 	fnResetSilent();
 	fnOutputSilent(0,0);	// idle
 	fnOutputSilent(0,1);	// select DR
@@ -312,46 +334,79 @@ void fnScanPossibleIRLens(void)
 			j=0;
 		}
 	}
-}
 
-void fnScanChain(void)
-{
+	int hir=0, tir=irlen, hdr=0, tdr=drlen;
+
 	fnResetSilent();
 	fnOutputSilent(0,0);	// idle
 	fnOutputSilent(0,1);	// select DR
 	fnOutputSilent(0,0);	// capture DR
 	fnOutputSilent(0,0);	// shift DR
 
-	printf("\nScanChain:\n\n");
+//	printf("\nScanChain:\n\n");
+	printf("\n");
 
-	int i,j,bit;
 	for( i=0; i<100; i++ )
 	{
+		int ir=-1;
+		int bit, len;
+		char* part;
+
 		bit = fnOutputSilent(1,0);
 		if (bit == 0) {
-			printf("%8d unrecognised device with no IDCODE\n",0);
+			part = "unrecognised device with no IDCODE";
 		} else {
 			unsigned long id = 1<<31;
 			for(j=0;j<31;j++) {
 				id >>= 1;
 				id  |= fnOutputSilent(1,0)<<31;
 			}
-			char* manuf="";
-			char* part="unrecognised device";
+			part="unrecognised device";
 			if ((id&0xfff)==0x093) {
-				manuf="Xilinx ";
-				if ( (id&0xffff000) == 0x5045000 )
-					part="XCF02S";
-				else if ( (id&0xffff000) == 0x141c000 )
-					part="XC3S400";
+				part="Xilinx unrecognised device";
+				if ( (id&0xffff000) == 0x5045000 ) {
+					part="Xilinx XCF02S";
+					len = 8;
+				} else if ( (id&0xffff000) == 0x141c000 ) {
+					part="Xilinx XC3S400";
+					len = 6;
+				}
 			} else if (id == 0xffffffff) {
-				printf("%08X end of chain\n", id );
-				return;
+				//printf("%08X end of chain\n", id );
+				break;
 			}
-			printf("%08X %s%s\n", id, manuf, part);
+
+			struct Device *device = malloc(sizeof(struct Device));
+			device->next = g_firstDevice;
+			device->name = part;
+			device->id = id;
+			device->hir = hir;
+			device->hdr = hdr;
+			device->tir = tir - len;
+			device->tdr = tdr - 1;
+			device->len = len;
+			g_firstDevice = device;
+		}
+
+		if (len > 0) {
+			hir += len;
+			tir -= len;
+			hdr++;
+			tdr--;
+		} else {
+			hir = tir = hdr = tdr = -1;
+			break;
 		}
 	}
 
+	struct Device *device = g_firstDevice;
+	while (device) {
+		printf("%08X %s len=%d hir=%d tir=%d hdr=%d tdr=%d\n",
+			device->id, device->name, device->len,
+			device->hir, device->tir,
+			device->hdr, device->tdr);
+		device = device->next;
+	}
 }
 
 int main(int argc, char **argv)
@@ -368,8 +423,7 @@ int main(int argc, char **argv)
 	// tests
 //	fnScanDR();
 //	fnScanIR();
-	fnScanPossibleIRLens();
-	fnScanChain();
+	fnScanDevices();
 
 	fnResetSilent();
 }
