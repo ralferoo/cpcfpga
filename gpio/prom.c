@@ -58,9 +58,9 @@ void promDumpBlock( int faddr, struct Device *device)
                 for(j=0; j<HEX_BLOCK_SIZE; j++ ) {
                         uint8_t byte = 0;
                         for(bit = 0; bit<8; bit++) {
-                                byte <<= 1;
+                                byte >>= 1;
                 		if (jtagOutputSilent(0,0) )
-                                        byte |= 1;
+                                        byte |= 0x80;
                         }
                         hexByte( byte );
                         addr++;
@@ -239,19 +239,19 @@ next_sector:
                                 while( len-- ) {
                                         uint8_t b = *data++;
                                         for(i=0; i<7; i++) {
-                                                jtagOutputSilent(b&0x80,0);
-                                                b <<= 1;
+                                                jtagOutputSilent(b&1,0);
+                                                b >>= 1;
                                         }                                       // send 7 bytes
                                         if( (++prom_addr_lo & 511) ) {
-                                                jtagOutputSilent(b&0x80,0);
+                                                jtagOutputSilent(b&1,0);
                                         } else {
                                                 if (promProgramCurrent->tdr) {
-                                                	jtagOutputSilent(b&0x80,0);
+                                                	jtagOutputSilent(b&1,0);
                                                         for(i=1; i<promProgramCurrent->tdr; i++)
                                                 		jtagOutputSilent(0,0);
                                                		jtagOutputSilent(0,1);           // send TMS bit at end of padding
                                                 } else
-                                               		jtagOutputSilent(b&0x80,1);         // no padding, add TMS bit on last bit
+                                               		jtagOutputSilent(b&1,1);         // no padding, add TMS bit on last bit
 
                                                 jtagRunTestTCK(2);
 
