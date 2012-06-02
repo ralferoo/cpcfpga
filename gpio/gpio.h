@@ -1,6 +1,11 @@
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #define PROM_XCF02S 0xf5045093
+
+#define HEX_BLOCK_SIZE  16
 
 struct Device {
 	struct Device *next;
