@@ -182,8 +182,12 @@ inline int pinInput(int i)
 	return ( GPIO_LEV & (1<<i) ) ? 1 : 0;
 }
 
+unsigned long long tot_nanos = 0;
+
 inline void nsleep(long nanos)
 {
+	tot_nanos += nanos;
+#if 0
 	usleep(nanos);
 
 	struct timespec tv;
@@ -191,21 +195,30 @@ inline void nsleep(long nanos)
 	tv.tv_nsec = nanos;
 
 	while (EINTR==nanosleep(&tv, &tv));
-
-//	while (nanos--) {
-//		asm("nop");		// 750MHz -> more than 1 nano per nop
-//	}
+#else
+	nanos /= 5; // 6 seems to be the absolute lowest...
+	while (nanos--) {
+		asm("nop");		// 750MHz -> more than 1 nano per nop
+	}
+#endif
 }
 
 inline void jtagPulseClock(void)
 {
 //	usleep(100);		// 100 nsec = .1 us -> 10MHz
 
-	usleep(20);
+	// these timings are pretty weird. if more nops are put here then
+	// the jtag also stops working, almost like a lot of extra nops get
+	// optimised out, but less don't...
+
+	asm("nop;nop;nop");		// 3/750 ms = 4ns
+	//nsleep(20);
 	pinOutput(GPIO_TCK,1);
-	usleep(50);
+	asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+	//nsleep(50);
 	pinOutput(GPIO_TCK,0);
-	usleep(30);
+	asm("nop;nop;nop");		// 3/750 ms = 4ns
+	//nsleep(30);
 }
 
 int jtagOutputSilent(int tdi, int tms)
@@ -702,6 +715,7 @@ int main(int argc, char **argv)
 	}
 	promValidate(prom);
 
+//	printf("Should have been %lld nanos, %lld usec, %lld ms\n", tot_nanos, tot_nanos/1000, tot_nanos/1000000);
 	exit(0);
 }
 
