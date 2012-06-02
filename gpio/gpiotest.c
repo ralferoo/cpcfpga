@@ -344,7 +344,6 @@ void fnScanDevices(void)
 	fnOutputSilent(0,0);	// shift DR
 
 //	printf("\nScanChain:\n\n");
-	printf("\n");
 
 	for( i=0; i<100; i++ )
 	{
@@ -399,9 +398,16 @@ void fnScanDevices(void)
 		}
 	}
 
+	if (tdr != 0 || tir != 0 ) {
+		printf("Unexpected end of chain, tir=%d tdr=%d\n", tir, tdr);
+	}
+
+	printf("\nDevices:\n");
+	printf(" %-7s %-50s  %3s %3s %3s %3s %3s\n", "IDCODE", "Device name", "len", "hir", "tir", "hdr", "tdr");
+
 	struct Device *device = g_firstDevice;
 	while (device) {
-		printf("%08X %s len=%d hir=%d tir=%d hdr=%d tdr=%d\n",
+		printf("%08X %-50s %3d %3d %3d %3d %3d\n",
 			device->id, device->name, device->len,
 			device->hir, device->tir,
 			device->hdr, device->tdr);
