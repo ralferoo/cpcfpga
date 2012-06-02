@@ -329,21 +329,21 @@ void fnIdle(void)
 	case JTAG_STATE_RESET:
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
-		fnOutput(0,0);
+		fnOutputSilent(0,0);
 		break;
 
         case JTAG_STATE_SELECT_DR:
         case JTAG_STATE_SELECT_IR:
-		fnOutput(0,0);
+		fnOutputSilent(0,0);
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		fnOutput(0,1);
+		fnOutputSilent(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		fnOutput(0,1);
-		fnOutput(0,0);
+		fnOutputSilent(0,1);
+		fnOutputSilent(0,0);
                 break;
 	}
 		
@@ -360,29 +360,31 @@ void fnSelectDR(void)
 		fnReset();
 
 	case JTAG_STATE_RESET:
+		fnOutputSilent(0,0);
+
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
-		fnOutput(0,1);
+		fnOutputSilent(0,1);
 		break;
 
         case JTAG_STATE_SELECT_DR:
 		break;
 
         case JTAG_STATE_SELECT_IR:
-		fnOutput(0,1);
-		fnOutput(0,0);
-		fnOutput(0,1);
+		fnOutputSilent(0,1);
+		fnOutputSilent(0,0);
+		fnOutputSilent(0,1);
 		break;
 
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		fnOutput(0,1);
+		fnOutputSilent(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		fnOutput(0,1);
-		fnOutput(0,1);
+		fnOutputSilent(0,1);
+		fnOutputSilent(0,1);
                 break;
 	}
 		
@@ -397,7 +399,7 @@ void fnSelectIR(void)
 	switch (jtag_state) {
 	default:
 		fnSelectDR();
-		fnOutput(0,1);
+		fnOutputSilent(0,1);
         case JTAG_STATE_SELECT_IR:
 		break;
 	}
@@ -408,14 +410,34 @@ void fnSelectIR(void)
 	}
 }
 
+void fnShiftDR(void)
+{
+	fnSelectDR();
+	fnOutputSilent(0,0);		// capture
+	fnOutputSilent(0,0);		// shift
+		
+	if (jtag_state != JTAG_STATE_SHIFT) {
+		printf("Invalid state transitioning to SHIFT: %s\n", get_jtag_state_name() );
+		exit(1);
+	}
+}
+
+void fnShiftIR(void)
+{
+	fnSelectIR();
+	fnOutputSilent(0,0);		// capture
+	fnOutputSilent(0,0);		// shift
+		
+	if (jtag_state != JTAG_STATE_SHIFT) {
+		printf("Invalid state transitioning to SHIFT: %s\n", get_jtag_state_name() );
+		exit(1);
+	}
+}
+
 void fnScanIR(void)
 {
 	fnReset();
-	fnOutput(0,0);	// idle
-	fnOutput(0,1);	// select DR
-	fnOutput(0,1);	// select IR
-	fnOutput(0,0);	// capture IR
-	fnOutput(0,0);	// shift IR
+	fnShiftIR();
 
 	printf("\nScanIR:\n\n");
 
@@ -431,10 +453,7 @@ void fnScanIR(void)
 void fnScanDR(void)
 {
 	fnReset();
-	fnOutput(0,0);	// idle
-	fnOutput(0,1);	// select DR
-	fnOutput(0,0);	// capture DR
-	fnOutput(0,0);	// shift DR
+	fnShiftDR();
 
 	printf("\nScanDR:\n\n");
 
@@ -461,11 +480,7 @@ void fnScanDevices(void)
 	fnFreeDevices();
 
 	fnResetSilent();
-	fnOutputSilent(0,0);	// idle
-	fnOutputSilent(0,1);	// select DR
-	fnOutputSilent(0,1);	// select IR
-	fnOutputSilent(0,0);	// capture IR
-	fnOutputSilent(0,0);	// shift IR
+	fnShiftIR();
 
 	int irlen, drlen;
 	int i,j;
@@ -490,11 +505,7 @@ void fnScanDevices(void)
 	// as we've left all IRs in bypass mode, we might as well scan 
 	// DR length when everything in bypass...
 
-	fnOutputSilent(0,1);	// exit1 IR
-	fnOutputSilent(0,1);	// update IR
-	fnOutputSilent(0,1);	// select DR
-	fnOutputSilent(0,0);	// capture DR
-	fnOutputSilent(0,0);	// shift DR
+	fnShiftDR();
 
 	for (drlen=0;drlen<1024;drlen++) 
 		if (fnOutputSilent(1,0))	// push ones through until 1 pops out
@@ -505,11 +516,7 @@ void fnScanDevices(void)
 	printf("\n");
 
 	fnResetSilent();
-	fnOutputSilent(0,0);	// idle
-	fnOutputSilent(0,1);	// select DR
-	fnOutputSilent(0,1);	// select IR
-	fnOutputSilent(0,0);	// capture IR
-	fnOutputSilent(0,0);	// shift IR
+	fnShiftIR();
 
 	j=0;
 	for (i=0; i<irlen; i++) {
@@ -526,10 +533,7 @@ void fnScanDevices(void)
 	int hir=0, tir=irlen, hdr=0, tdr=drlen;
 
 	fnResetSilent();
-	fnOutputSilent(0,0);	// idle
-	fnOutputSilent(0,1);	// select DR
-	fnOutputSilent(0,0);	// capture DR
-	fnOutputSilent(0,0);	// shift DR
+	fnShiftDR();
 
 //	printf("\nScanChain:\n\n");
 
