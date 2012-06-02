@@ -398,6 +398,8 @@ void fnScanDevices(void)
 		}
 	}
 
+	fnResetSilent();
+
 	if (tdr != 0 || tir != 0 ) {
 		printf("Unexpected end of chain, tir=%d tdr=%d\n", tir, tdr);
 	}
@@ -431,7 +433,7 @@ int main(int argc, char **argv)
 //	fnScanIR();
 	fnScanDevices();
 
-	fnResetSilent();
+	exit(0);
 }
 
 
