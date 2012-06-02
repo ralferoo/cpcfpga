@@ -5,29 +5,19 @@
 //  Dom and Gert
 //
 
-#include <stdint.h>
 #include <time.h>
 #include <errno.h>
+
+#include "gpio.h"
 
 #define GPIO_TMS 21
 #define GPIO_TCK 17
 #define GPIO_TDI 4
 #define GPIO_TDO 22
 
-#define PROM_XCF02S 0xf5045093
-
 #define HEX_BLOCK_SIZE  16
 
 int g_noisy = 1;
-
-struct Device {
-	struct Device *next;
-
-	unsigned long id;
-	int hir, tir, hdr, tdr, len;
-
-	char *name;
-};
 
 struct Device *g_firstDevice = 0;
 
@@ -717,13 +707,13 @@ void devScanDevices(void)
 
 static uint8_t hexXsum;
 
-inline void hexByte( uint8_t byte )
+void hexByte( uint8_t byte )
 {
         printf("%02X", byte);
         hexXsum -= byte;
 }
 
-inline void hexEndLine(void)
+void hexEndLine(void)
 {
         printf("%02X\n", hexXsum);
 }
@@ -845,7 +835,7 @@ void promDump(struct Device* prom)
 
 ///////////////////////////////////////////////////////////////////////////
 
-int main(int argc, char **argv)
+void jtagInit(void)
 {
 	// Set up gpi pointer for direct register access
 	pinSetupIO();
@@ -857,23 +847,6 @@ int main(int argc, char **argv)
 	pinSetDirectionInput (GPIO_TDO);
 	pinOutput(GPIO_TMS,1);
 	pinOutput(GPIO_TCK,0);
-
-	// tests
-//	jtagScanDR();
-//	jtagScanIR();
-	devScanDevices();
-
-	// test prom
-	struct Device *prom = devFindDevice(PROM_XCF02S);
-	if( !prom ) {
-		printf("No PROM found...\n");
-		exit(1);
-	}
-	promValidate(prom);
-	promDump(prom);
-
-//	printf("Should have been %lld nanos, %lld usec, %lld ms\n", tot_nanos, tot_nanos/1000, tot_nanos/1000000);
-	exit(0);
 }
 
-
+///////////////////////////////////////////////////////////////////////////

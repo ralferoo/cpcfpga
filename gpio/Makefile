@@ -1,5 +1,15 @@
-all: gpiotest
+TARGETS=scan prom_dump
 
-run: gpiotest
-	./gpiotest
+all: prom_dump scan
 
+clean:
+	rm -f *.o $(TARGETS)
+
+run: prom_dump
+	./prom_dump
+
+scan: scan.o gpio.o
+	gcc -o $@ $^
+
+prom_dump: prom_dump.o gpio.o
+	gcc -o $@ $^
