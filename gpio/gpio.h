@@ -52,6 +52,9 @@ void hexEndOfFile();
 void promValidate(struct Device* prom);
 void promDumpBlock( int faddr, struct Device *device);
 void promDump(struct Device* prom);
+void promErase(struct Device* prom);
+void promProgramStart(struct Device *prom);
+int promProgramData(uint8_t type, uint8_t len, uint16_t addr, uint8_t *data);
 
 ///////////////////////////////////////////////////////////////////////////
 
