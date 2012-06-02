@@ -16,6 +16,8 @@
 
 #define PROM_XCF02S 0xf5045093
 
+#define HEX_BLOCK_SIZE  16
+
 int g_noisy = 1;
 
 struct Device {
@@ -767,7 +769,7 @@ void promValidate(struct Device* prom)
 		printf("IR status register not as expected: %02x\n", protect);
 		exit(1);
 	}
-	printf("IR status register: %02x\n", protect);
+	//printf("IR status register: %02x\n", protect);
 }
 
 void promDumpBlock( int faddr, struct Device *device)
@@ -790,9 +792,9 @@ void promDumpBlock( int faddr, struct Device *device)
                 jtagOutputSilent(0,0);              // ignore all data before the data we want
 
         uint16_t addr = faddr << 4;
-        for (i=0; i<8192; i+=32*8 ) {
-                hexStart( 0, addr, 32 );
-                for(j=0; j<32; j++ ) {
+        for (i=0; i<8192; i+=HEX_BLOCK_SIZE*8 ) {
+                hexStart( 0, addr, HEX_BLOCK_SIZE );
+                for(j=0; j<HEX_BLOCK_SIZE; j++ ) {
                         uint8_t byte = 0;
                         for(bit = 0; bit<8; bit++) {
                                 byte >>= 1;
@@ -839,13 +841,6 @@ void promDump(struct Device* prom)
 	// ISC_DISABLE conld
 	jtagSendIR(0xf0, prom);
 	jtagRunTestTCK(110000);
-
-	int protect = (int) jtagSendIR(0xff, prom);
-	if ( (protect&7) != 1 ) {
-		printf("IR status register not as expected: %02x\n", protect);
-		exit(1);
-	}
-	printf("IR status register: %02x\n", protect);
 }
 
 ///////////////////////////////////////////////////////////////////////////
