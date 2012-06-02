@@ -248,23 +248,6 @@ void fnScanDR(void)
 	}
 }
 
-void xxxfnScanPossibleIRLens(void)
-{
-	fnResetSilent();
-	fnOutputSilent(0,0);	// idle
-	fnOutputSilent(0,1);	// select DR
-	fnOutputSilent(0,1);	// select IR
-	fnOutputSilent(0,0);	// capture IR
-	fnOutputSilent(0,0);	// shift IR
-
-	fnResetSilent();
-	fnOutputSilent(0,0);	// idle
-	fnOutputSilent(0,1);	// select DR
-	fnOutputSilent(0,0);	// capture DR
-	fnOutputSilent(0,0);	// shift DR
-
-}
-
 void fnScanPossibleIRLens(void)
 {
 	fnResetSilent();
