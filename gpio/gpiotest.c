@@ -6,11 +6,15 @@
 //
 
 #include <stdint.h>
+#include <time.h>
+#include <errno.h>
 
 #define GPIO_TMS 21
 #define GPIO_TCK 17
 #define GPIO_TDI 4
 #define GPIO_TDO 22
+
+#define PROM_XCF02S 0xf5045093
 
 int g_noisy = 1;
 
@@ -178,9 +182,24 @@ inline int pinInput(int i)
 	return ( GPIO_LEV & (1<<i) ) ? 1 : 0;
 }
 
+inline void nsleep(long nanos)
+{
+	usleep(nanos);
+
+	struct timespec tv;
+	tv.tv_sec = 0;
+	tv.tv_nsec = nanos;
+
+	while (EINTR==nanosleep(&tv, &tv));
+
+//	while (nanos--) {
+//		asm("nop");		// 750MHz -> more than 1 nano per nop
+//	}
+}
+
 inline void jtagPulseClock(void)
 {
-//	usleep(100);		// 100 usec = .1 ms -> 10MHz
+//	usleep(100);		// 100 nsec = .1 us -> 10MHz
 
 	usleep(20);
 	pinOutput(GPIO_TCK,1);
@@ -428,10 +447,10 @@ uint32_t jtagShiftData( uint32_t value, int len, int header, int trailer)
 	return value;
 }
 
-uint32_t jtagSendIR( uint32_t value, int len, struct Device *device)
+uint32_t jtagSendIR( uint32_t value, struct Device *device)
 {
 	jtagShiftIR();
-	return jtagShiftData(value,len,device->hir,device->tir);
+	return jtagShiftData(value,device->len,device->hir,device->tir);
 }
 
 uint32_t jtagSendDR( uint32_t value, int len, struct Device *device)
@@ -584,7 +603,7 @@ void devScanDevices(void)
 				if ( (id&0xffff000) == 0x5045000 ) {
 					part="Xilinx XCF02S";
 					len = 8;
-				} else if ( (id&0xffff000) == 0x141c000 ) {
+				} else if ( (id&0xfffff000) == 0x0141c000 ) {
 					part="Xilinx XC3S400";
 					len = 6;
 				}
@@ -635,6 +654,28 @@ void devScanDevices(void)
 	}
 }
 
+void promValidate(struct Device* prom)
+{
+	// idcode
+	jtagSendIR(0xfe, prom);
+	uint32_t idcode = jtagSendDR(0, 32, prom);
+	if (idcode!=PROM_XCF02S) {
+		printf("IDCODE from PROM isn't for XCF02S: %08x\n", idcode);
+		exit(1);
+	}
+
+	// ISC_DISABLE conld
+	jtagSendIR(0xf0, prom);
+	jtagRunTestTCK(110000);
+
+	int protect = (int) jtagSendIR(0xff, prom);
+	if ( (protect&7) != 1 ) {
+		printf("IR status register not as expected: %02x\n", protect);
+		exit(1);
+	}
+	printf("IR status register: %02x\n", protect);
+}
+
 int main(int argc, char **argv)
 {
 	// Set up gpi pointer for direct register access
@@ -654,11 +695,12 @@ int main(int argc, char **argv)
 	devScanDevices();
 
 	// test prom
-	struct Device *prom = devFindDevice(0xf5045093);
+	struct Device *prom = devFindDevice(PROM_XCF02S);
 	if( !prom ) {
 		printf("No PROM found...\n");
 		exit(1);
 	}
+	promValidate(prom);
 
 	exit(0);
 }
