@@ -37,6 +37,7 @@ void jtagScanDR(void);
 void devFreeDevices(void);
 struct Device* devFindDevice(unsigned long id);
 void devScanDevices(void);
+void devDump(void);
 
 ///////////////////////////////////////////////////////////////////////////
 

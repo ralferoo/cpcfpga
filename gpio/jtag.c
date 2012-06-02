@@ -607,6 +607,7 @@ void devScanDevices(void)
 	
 	printf("\n");
 
+#ifdef SCAN_POSSIBLE_IR_START_POINTS
 	jtagResetSilent();
 	jtagShiftIR();
 
@@ -621,6 +622,7 @@ void devScanDevices(void)
 			j=0;
 		}
 	}
+#endif
 
 	int hir=0, tir=irlen, hdr=0, tdr=drlen;
 
@@ -687,8 +689,13 @@ void devScanDevices(void)
 	if (tdr != 0 || tir != 0 ) {
 		printf("Unexpected end of chain, tir=%d tdr=%d\n", tir, tdr);
 	}
+}
 
-	printf("\nDevices:\n");
+///////////////////////////////////////////////////////////////////////////
+
+void devDump(void)
+{
+	printf("Devices:\n");
 	printf(" %-7s %-50s  %3s %3s %3s %3s %3s\n", "IDCODE", "Device name", "len", "hir", "tir", "hdr", "tdr");
 
 	struct Device *device = g_firstDevice;

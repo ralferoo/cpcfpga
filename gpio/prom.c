@@ -78,7 +78,8 @@ void promDump(struct Device* prom)
 
         uint16_t faddr, faddr_base = (uint16_t) ~0U;
         for( faddr=0x0000; faddr<0x4000; faddr+=0x40 ) {
-		printf("\n");
+		if (faddr)
+			printf("\n");
                 printf( "# faddr=%04X\n", faddr );
                 if ( (faddr & 0xf000) != faddr_base ) {
                         faddr_base = faddr & 0xf000;
