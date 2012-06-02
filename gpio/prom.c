@@ -22,6 +22,17 @@ void promValidate(struct Device* prom)
 	//printf("IR status register: %02x\n", protect);
 }
 
+void promReload(struct Device* prom)
+{
+	promValidate(prom);
+
+	jtagSendIR(0xee, prom);
+	jtagRunTestTCK(100);
+
+	jtagSendIR(0xf0, prom);
+	jtagRunTestTCK(110000);
+}
+
 void promDumpBlock( int faddr, struct Device *device)
 {
 	int i, j, bit;

@@ -1,4 +1,4 @@
-TARGETS=scan prom_dump prom_erase prom_program
+TARGETS=scan prom_dump prom_erase prom_program prom_reload
 LIBOBJS=jtag.o hex.o jtag.o prom.o
 
 all: $(TARGETS)
@@ -25,4 +25,7 @@ prom_erase: prom_erase.o $(LIBOBJS)
 	gcc -o $@ $^
 
 prom_program: prom_program.o $(LIBOBJS)
+	gcc -o $@ $^
+
+prom_reload: prom_reload.o $(LIBOBJS)
 	gcc -o $@ $^

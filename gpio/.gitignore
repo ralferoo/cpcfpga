@@ -3,3 +3,4 @@ scan
 prom_dump
 prom_erase
 prom_program
+prom_reload
