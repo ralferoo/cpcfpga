@@ -301,7 +301,7 @@ void fnResetSilent(void)
 {
 	fnOutPin(GPIO_TMS,1);
 	int i;
-	for(i=0;i<6;i++)
+	for(i=0;i<5;i++)
 		fnPulseClock();
 
 	jtag_state = JTAG_STATE_RESET;
@@ -522,6 +522,8 @@ int main(int argc, char **argv)
 	fnPinDirectionOutput(GPIO_TCK);
 	fnPinDirectionOutput(GPIO_TDI);
 	fnPinDirectionInput (GPIO_TDO);
+	fnOutPin(GPIO_TMS,1);
+	fnOutPin(GPIO_TCK,0);
 
 	// tests
 //	fnScanDR();
