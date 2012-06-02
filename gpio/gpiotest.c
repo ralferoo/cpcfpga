@@ -59,6 +59,11 @@ char *jtag_state_names[JTAG_STATE_MAX] = {
         "UPDATE",
 };
 
+inline char* get_jtag_state_name(void)
+{
+	return jtag_state<JTAG_STATE_MAX ? jtag_state_names[jtag_state] : "???";
+}
+
 #include <unistd.h>
 
 //inline void fnSleep(void)
@@ -284,12 +289,12 @@ int fnOutput(int tdi, int tms)
 {
 	char* pstate;
 	if (g_noisy)
-		pstate = jtag_state<JTAG_STATE_MAX ? jtag_state_names[jtag_state]:"???";
+		pstate = get_jtag_state_name();
 
 	int tdo = fnOutputSilent(tdi,tms);
 
 	if (g_noisy) {
-		char* nstate = jtag_state<JTAG_STATE_MAX ? jtag_state_names[jtag_state]:"???";
+		char* nstate = get_jtag_state_name();
 
 		printf("TDI: %d TMS: %d - TDO: %d (%s->%s)\n", tdi, tms, tdo, pstate, nstate);
 	}
@@ -313,6 +318,94 @@ void fnReset(void)
 
 	if (g_noisy)
 		printf("RESET\n");
+}
+
+void fnIdle(void)
+{
+	switch (jtag_state) {
+	default:
+		fnReset();
+
+	case JTAG_STATE_RESET:
+        case JTAG_STATE_UPDATE:
+        case JTAG_STATE_IDLE:
+		fnOutput(0,0);
+		break;
+
+        case JTAG_STATE_SELECT_DR:
+        case JTAG_STATE_SELECT_IR:
+		fnOutput(0,0);
+        case JTAG_STATE_CAPTURE:
+        case JTAG_STATE_SHIFT:
+        case JTAG_STATE_PAUSE:
+		fnOutput(0,1);
+
+        case JTAG_STATE_EXIT1:
+        case JTAG_STATE_EXIT2:
+		fnOutput(0,1);
+		fnOutput(0,0);
+                break;
+	}
+		
+	if (jtag_state != JTAG_STATE_IDLE) {
+		printf("Invalid state transitioning to IDLE: %s\n", get_jtag_state_name() );
+		exit(1);
+	}
+}
+
+void fnSelectDR(void)
+{
+	switch (jtag_state) {
+	default:
+		fnReset();
+
+	case JTAG_STATE_RESET:
+        case JTAG_STATE_UPDATE:
+        case JTAG_STATE_IDLE:
+		fnOutput(0,1);
+		break;
+
+        case JTAG_STATE_SELECT_DR:
+		break;
+
+        case JTAG_STATE_SELECT_IR:
+		fnOutput(0,1);
+		fnOutput(0,0);
+		fnOutput(0,1);
+		break;
+
+        case JTAG_STATE_CAPTURE:
+        case JTAG_STATE_SHIFT:
+        case JTAG_STATE_PAUSE:
+		fnOutput(0,1);
+
+        case JTAG_STATE_EXIT1:
+        case JTAG_STATE_EXIT2:
+		fnOutput(0,1);
+		fnOutput(0,1);
+                break;
+	}
+		
+	if (jtag_state != JTAG_STATE_SELECT_DR) {
+		printf("Invalid state transitioning to SELECT_DR: %s\n", get_jtag_state_name() );
+		exit(1);
+	}
+}
+
+void fnSelectIR(void)
+{
+	switch (jtag_state) {
+	default:
+		fnSelectDR();
+		fnOutput(0,1);
+        case JTAG_STATE_SELECT_IR:
+		break;
+	}
+		
+	if (jtag_state != JTAG_STATE_SELECT_IR) {
+		printf("Invalid state transitioning to SELECT_IR: %s\n", get_jtag_state_name() );
+		exit(1);
+	}
 }
 
 void fnScanIR(void)
