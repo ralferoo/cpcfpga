@@ -5,6 +5,8 @@
 //  Dom and Gert
 //
 
+#include <stdint.h>
+
 #define GPIO_TMS 21
 #define GPIO_TCK 17
 #define GPIO_TDI 4
@@ -434,6 +436,64 @@ void fnShiftIR(void)
 	}
 }
 
+uint32_t fnShiftData( uint32_t value, int len, int header, int trailer)
+{
+	if (jtag_state != JTAG_STATE_SHIFT) {
+		printf("Invalid state should be in SHIFT: %s\n", get_jtag_state_name() );
+		exit(1);
+	}
+
+	uint32_t or_value = 1 << (len-1);
+	int i;
+
+	for (i=0; i<header;i++)
+		fnOutputSilent(1,0);		// bypass to all in header
+
+	for (i=0; i<len-1; i++) {
+		value |= (fnOutputSilent(value&1,0) << (len-1) );
+		value >>= 1;
+	}					// send all but last bit
+	
+	if (trailer) {
+		value |= (fnOutputSilent(value&1,0) << (len-1) );	// last
+
+		for (i=1; i<trailer; i++)
+			fnOutputSilent(1,0);	// send all but last of trailer
+
+		fnOutputSilent(1,1);		// last bit of trailer
+	} else {
+		value |= (fnOutputSilent(value&1,1) << (len-1) );	// last
+	}
+
+	fnOutputSilent(1,1);			// move from exit to update
+	if (jtag_state != JTAG_STATE_UPDATE) {
+		printf("Invalid state transitioning to UPDATE: %s\n", get_jtag_state_name() );
+		exit(1);
+	}
+
+	return value;
+}
+
+uint32_t fnSendIR( uint32_t value, int len, struct Device *device)
+{
+	fnShiftIR();
+	return fnShiftData(value,len,device->hir,device->tir);
+}
+
+uint32_t fnSendDR( uint32_t value, int len, struct Device *device)
+{
+	fnShiftDR();
+	return fnShiftData(value,len,device->hdr,device->tdr);
+}
+
+void fnRunTestTCK( unsigned int i )
+{
+	fnIdle();
+	while( i-- ) {
+		fnOutputSilent(0,0);
+	}
+}
+
 void fnScanIR(void)
 {
 	fnReset();
@@ -473,6 +533,18 @@ void fnFreeDevices(void)
 		g_firstDevice = device->next;
 		free(device);
 	}
+}
+
+struct Device* fnFindDevice(unsigned long id)
+{
+	struct Device *device = g_firstDevice;
+	while (device) {
+		if (device->id == id)
+			return device;
+		device = device->next;
+	}
+
+	return 0;
 }
 
 void fnScanDevices(void)
@@ -627,8 +699,12 @@ int main(int argc, char **argv)
 //	fnScanIR();
 	fnScanDevices();
 
-	fnScanDR();
-	fnScanIR();
+	// test prom
+	struct Device *prom = fnFindDevice(0xf5045093);
+	if( !prom ) {
+		printf("No PROM found...\n");
+		exit(1);
+	}
 
 	exit(0);
 }
