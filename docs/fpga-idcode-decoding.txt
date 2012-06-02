@@ -1,0 +1,51 @@
+0xAA995566	1010 1001 0101 0110	backwards is 66aa9955 
+  f141c093	1111 0001 0100 0001 1100 0000 1001 0011	backwards is 	c903828f
+
+p248 ug332.pdf
+
+There are three components to the 28-bit vendor/array identifier value.
+• The least-significant 12 bits, 0x093, represent the Xilinx vendor code (0x49),
+   appended to the least-significant bit which is always ‘1’, resulting in the value 0x093.
+      These 12 bits are consistent for all Spartan-3 generation FPGAs.
+• The most-significant 8 bits represent the FPGA family code.
+♦ 0x38: Spartan-3A DSP family
+♦ 0x1C: Spartan-3E family
+♦ 0x26: Spartan-3AN family
+♦ 0x22: Spartan-3A family
+♦ 0x14: Spartan-3 family
+The middle 8 bits represent an array-specific code.
+
+//Loading device with 'idcode' instruction.
+SIR 6 TDI (09) ;
+SDR 32 TDI (00000000) TDO (f141c093) ;
+//Loading device with 'bypass' instruction.
+SIR 6 TDI (3f) ;
+// Loading device with a `jprogram` instruction. 
+SIR 6 TDI (0b) ;
+// Loading device with a `cfg_in` instruction. 
+SIR 6 TDI (05) ;
+RUNTEST 14000 TCK;
+// Loading device with a `cfg_in` instruction. 
+SIR 6 TDI (05) ;
+SDR 64 TDI (0000000000000000) SMASK (ffffffffffffffff) ;
+SIR 6 TDI (05) ;
+SDR 1699296 TDI (00000004000000040000000400000004b00000008001000ceafa00008000000c000000008005000ca00000008001000c00000004000000040000000400000004000000040000000400000004000000040000000
+...
+0000000000000000000000000000000000000000000000f3000a0002000c800000008001000c000000008004000c900000008001000c000000008003000c
+c9038280
+. . . .  . . . .  . . . . . . . . 
+         8003800c a7fc8042 8004800c
+. . . .  . . . .  . . . .  . . . . 
+22000000 8006800c e0000000 8001000c 66aa9955
+ffffffff
+00000000 00000000 10000000 8001000c 66aa9955
+) SMASK (
+
+00000000  30 30 30 30 30 30 30 30  30 30 30 30 30 30 30 30  |0000000000000000|
+00000010  31 30 30 30 30 30 30 30  38 30 30 31 30 30 30 63  |100000008001000c|
+00000020  36 36 61 61 39 39 35 35                           |66aa9955|
+
+
+:10 000000  FF FF FF FF 55 99 AA 66 0C 00 01 80 00 00 00 E0  89
+:10 001000  0C 80 06 80 00 00 00 22 0C 80 04 80 02 00 FC A7  F7
+

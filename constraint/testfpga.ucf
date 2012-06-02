@@ -1,3 +1,7 @@
+
+NET "clk16" LOC = P56;
+NET "clk16" IOSTANDARD = LVCMOS33;
+
 #hdr_mosi p83
 #hdr_miso p85
 #hdr_sel p86
@@ -16,8 +20,8 @@ NET "hdr_sel" IOSTANDARD = LVCMOS33;
 NET "hdr_sclk" LOC = P84;
 NET "hdr_sclk" IOSTANDARD = LVCMOS33;
 
-#NET "hdr_spare" LOC = P87;
-#NET "hdr_spare" IOSTANDARD = LVCMOS33;
+NET "hdr_spare" LOC = P87;
+NET "hdr_spare" IOSTANDARD = LVCMOS33;
 
 #gpio_1 gnd
 #gpio_2 3.3v

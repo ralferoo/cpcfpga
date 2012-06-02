@@ -375,7 +375,7 @@ MAP_FLAGS        ?= $(INTSTYLE) -cm area -ir off -pr off -c 100
 PAR_FLAGS        ?= $(INTSTYLE) -w -ol high -t 1
 TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
-PROMGEN_FLAGS    ?= -u 0                  # flags that control the MCS/EXO file generation
+PROMGEN_FLAGS    ?= -w -u 0               # flags that control the MCS/EXO file generation
 
 xilinx: build/$(XILINX_TOP_NAME).mcs
 
