@@ -112,53 +112,12 @@ volatile unsigned *gpio;
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 #define GPIO_LEV *(gpio+13) // gets levels of bits
 
-void setup_io();
-
-int xxxmain(int argc, char **argv)
-{ int g,rep;
-
-  // Set up gpi pointer for direct register access
-  setup_io();
-
-  // Switch GPIO 7..11 to output mode
-
- /************************************************************************\
-  * You are about to change the GPIO settings of your computer.          *
-  * Mess this up and it will stop working!                               *
-  * It might be a good idea to 'sync' before running this program        *
-  * so at least you still have your code changes written to the SD-card! *
- \************************************************************************/
-
-  // Set GPIO pins 7-11 to output
-  for (g=7; g<=11; g++)
-  {
-    INP_GPIO(g); // must use INP_GPIO before we can use OUT_GPIO
-    OUT_GPIO(g);
-  }
-
-  for (rep=0; rep<10; rep++)
-  {
-     for (g=7; g<=11; g++)
-     {
-       GPIO_SET = 1<<g;
-       sleep(1);
-     }
-     for (g=7; g<=11; g++)
-     {
-       GPIO_CLR = 1<<g;
-       sleep(1);
-     }
-  }
-
-  return 0;
-
-} // main
-
+void pinSetupIO();
 
 //
 // Set up a memory regions to access GPIO
 //
-void setup_io()
+void pinSetupIO()
 {
 
    /* open /dev/mem */
@@ -198,20 +157,20 @@ void setup_io()
    gpio = (volatile unsigned *)gpio_map;
 
 
-} // setup_io
+} // pinSetupIO
 
-inline void fnPinDirectionInput(int i)
+inline void pinSetDirectionInput(int i)
 {
     INP_GPIO(i);
 }
 
-inline void fnPinDirectionOutput(int i)
+inline void pinSetDirectionOutput(int i)
 {
     INP_GPIO(i); // must use INP_GPIO before we can use OUT_GPIO
     OUT_GPIO(i);
 }
 
-inline void fnOutPin(int i, int v)
+inline void pinOutput(int i, int v)
 {
 	if(v)
 		GPIO_SET = 1<<i;
@@ -219,7 +178,7 @@ inline void fnOutPin(int i, int v)
 		GPIO_CLR = 1<<i;
 }
 
-inline int fnInPin(int i)
+inline int pinInput(int i)
 {
 	return ( GPIO_LEV & (1<<i) ) ? 1 : 0;
 }
@@ -229,17 +188,17 @@ inline void fnPulseClock(void)
 //	usleep(100);		// 100 usec = .1 ms -> 10MHz
 
 	usleep(20);
-	fnOutPin(GPIO_TCK,1);
+	pinOutput(GPIO_TCK,1);
 	usleep(50);
-	fnOutPin(GPIO_TCK,0);
+	pinOutput(GPIO_TCK,0);
 	usleep(30);
 }
 
 int fnOutputSilent(int tdi, int tms)
 {
-	fnOutPin(GPIO_TDI,tdi);
-	fnOutPin(GPIO_TMS,tms);
-	int tdo = fnInPin(GPIO_TDO);
+	pinOutput(GPIO_TDI,tdi);
+	pinOutput(GPIO_TMS,tms);
+	int tdo = pinInput(GPIO_TDO);
 	fnPulseClock();
 
 	switch(jtag_state) {
@@ -306,7 +265,7 @@ int fnOutput(int tdi, int tms)
 
 void fnResetSilent(void)
 {
-	fnOutPin(GPIO_TMS,1);
+	pinOutput(GPIO_TMS,1);
 	int i;
 	for(i=0;i<5;i++)
 		fnPulseClock();
@@ -684,15 +643,15 @@ void fnScanDevices(void)
 int main(int argc, char **argv)
 {
 	// Set up gpi pointer for direct register access
-	setup_io();
+	pinSetupIO();
 
 	// set pin directions
-	fnPinDirectionOutput(GPIO_TMS);
-	fnPinDirectionOutput(GPIO_TCK);
-	fnPinDirectionOutput(GPIO_TDI);
-	fnPinDirectionInput (GPIO_TDO);
-	fnOutPin(GPIO_TMS,1);
-	fnOutPin(GPIO_TCK,0);
+	pinSetDirectionOutput(GPIO_TMS);
+	pinSetDirectionOutput(GPIO_TCK);
+	pinSetDirectionOutput(GPIO_TDI);
+	pinSetDirectionInput (GPIO_TDO);
+	pinOutput(GPIO_TMS,1);
+	pinOutput(GPIO_TCK,0);
 
 	// tests
 //	fnScanDR();
