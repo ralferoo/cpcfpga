@@ -1,3 +1,5 @@
 *.o
-prom_dump
 scan
+prom_dump
+prom_erase
+prom_program

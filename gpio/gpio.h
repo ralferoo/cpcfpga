@@ -49,6 +49,15 @@ void hexEndOfFile();
 
 ///////////////////////////////////////////////////////////////////////////
 
+int HEX_Early( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data);
+int HEX_Null( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data);
+void hexStartFile( int (*fn)( uint8_t type, uint8_t len, uint16_t addr, uint8_t *data) );
+void hexStartLine( void );
+int hexProcessData( uint8_t** ppBuffer, int DataLength );
+void hexReadStream( int fd );
+
+///////////////////////////////////////////////////////////////////////////
+
 void promValidate(struct Device* prom);
 void promDumpBlock( int faddr, struct Device *device);
 void promDump(struct Device* prom);

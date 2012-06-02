@@ -13,14 +13,15 @@ int main(int argc, char **argv)
 		printf("No PROM found...\n");
 		exit(1);
 	}
+
+	// read the hex file from stdin
 	promValidate(prom);
 	promProgramStart(prom);
+	hexStartFile(promProgramData);
+	hexReadStream(0);
 
-	char* testdata="Hello there!";
-	int i=promProgramData( 0, strlen(testdata), 0, (uint8_t*) testdata);
-	int j=promProgramData( 1, 0, 0, (uint8_t*)"");
-
-	printf("program results: %d %d\n", i, j);
+	// force end marker
+	promProgramData( 1, 0, 0, (uint8_t*)"");
 
 	exit(0);
 }
