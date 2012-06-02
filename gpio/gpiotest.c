@@ -195,14 +195,18 @@ int fnOutput(int tdi, int tms)
 	return tdo;
 }
 
-void fnReset(void)
+void fnResetSilent(void)
 {
-	printf("RESET\n");
-
 	fnOutPin(GPIO_TMS,1);
 	int i;
 	for(i=0;i<6;i++)
 		fnPulseClock();
+}
+
+void fnReset(void)
+{
+	printf("RESET\n");
+	fnResetSilent();
 }
 
 void fnScanIR(void)
@@ -244,9 +248,89 @@ void fnScanDR(void)
 	}
 }
 
+void xxxfnScanPossibleIRLens(void)
+{
+	fnResetSilent();
+	fnOutputSilent(0,0);	// idle
+	fnOutputSilent(0,1);	// select DR
+	fnOutputSilent(0,1);	// select IR
+	fnOutputSilent(0,0);	// capture IR
+	fnOutputSilent(0,0);	// shift IR
+
+	fnResetSilent();
+	fnOutputSilent(0,0);	// idle
+	fnOutputSilent(0,1);	// select DR
+	fnOutputSilent(0,0);	// capture DR
+	fnOutputSilent(0,0);	// shift DR
+
+}
+
+void fnScanPossibleIRLens(void)
+{
+	fnResetSilent();
+	fnOutputSilent(0,0);	// idle
+	fnOutputSilent(0,1);	// select DR
+	fnOutputSilent(0,1);	// select IR
+	fnOutputSilent(0,0);	// capture IR
+	fnOutputSilent(0,0);	// shift IR
+
+	int irlen, drlen;
+	int i,j;
+	for (i=0;i<1024;i++) 
+		fnOutputSilent(1,0);	// flush zeros into IR
+	
+	for (irlen=0;irlen<1024;irlen++) 
+		if (!fnOutputSilent(0,0))	// push zeros through until 0 pops out
+			break;
+	
+	for (i=0;i<1024;i++)
+		if (fnOutputSilent(1,0))	// push ones through until 1 pops out
+			break;
+
+	if (i != irlen) {
+		printf("Length of 0 chain was %d, length of 1 chain was %d, probably a short...\n", i, irlen);
+		return;
+	}
+
+	printf("Total IR length is %d\n", irlen);
+
+	fnOutputSilent(0,1);	// exit1 IR
+	fnOutputSilent(0,1);	// update IR
+	fnOutputSilent(0,1);	// select DR
+	fnOutputSilent(0,0);	// capture DR
+	fnOutputSilent(0,0);	// shift DR
+
+	for (drlen=0;drlen<1024;drlen++) 
+		if (fnOutputSilent(1,0))	// push ones through until 1 pops out
+			break;
+
+	printf("Bypass DR length is %d (number of devices)\n", drlen);
+	
+	printf("\n");
+
+	fnResetSilent();
+	fnOutputSilent(0,0);	// idle
+	fnOutputSilent(0,1);	// select DR
+	fnOutputSilent(0,1);	// select IR
+	fnOutputSilent(0,0);	// capture IR
+	fnOutputSilent(0,0);	// shift IR
+
+	j=0;
+	for (i=0; i<irlen; i++) {
+		if (fnOutputSilent(0,0)) {
+			j=1;
+		} else if (j) {
+			j=0;
+			printf("Possible IR start at %d\n", i-1);
+		} else {
+			j=0;
+		}
+	}
+}
+
 void fnScanChain(void)
 {
-	fnReset();
+	fnResetSilent();
 	fnOutputSilent(0,0);	// idle
 	fnOutputSilent(0,1);	// select DR
 	fnOutputSilent(0,0);	// capture DR
@@ -298,7 +382,10 @@ int main(int argc, char **argv)
 	// tests
 //	fnScanDR();
 //	fnScanIR();
+	fnScanPossibleIRLens();
 	fnScanChain();
+
+	fnResetSilent();
 }
 
 
