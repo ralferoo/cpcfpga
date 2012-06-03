@@ -732,7 +732,9 @@ void jtagBoundaryScanDump(struct Device *device)
 		return;
 	}
 
-	printf("Boundary scan of %s (%d bits):\n", device->name, device->bsrlen);
+	printf("Boundary scan of %s (%d bits):\n\n", device->name, device->bsrlen);
+	printf("     01234 56789 01234 56789 01234 56789 01234 56789 01234 56789 01234 56789\n");
+	printf("     ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----");
 	jtagReset();
 	jtagSendIR(device->bsrsample, device);
 	jtagShiftDR();
@@ -744,9 +746,9 @@ void jtagBoundaryScanDump(struct Device *device)
 	int before_tms = device->bsrlen + device->tdr;
 	for (i=0; i<device->bsrlen; i++) {
 		int bit = jtagOutput(device->bsrsafe, --before_tms == 0);
-		if ( (i&63) == 0 )
+		if ( (i%60) == 0 )
 			printf("\n%3d:", i);
-		if ( (i&7) == 0)
+		if ( (i%5) == 0)
 			printf(" ");
 		printf("%d", bit);
 	}
