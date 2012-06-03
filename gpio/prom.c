@@ -28,9 +28,11 @@ void promReload(struct Device* prom)
 
 	jtagSendIR(0xee, prom);
 	jtagRunTestTCK(100);
+	jtagRunTestTCK(100000);
+	jtagReset();
 
-	jtagSendIR(0xf0, prom);
-	jtagRunTestTCK(110000);
+//	jtagSendIR(0xf0, prom);
+//	jtagRunTestTCK(110000);
 }
 
 void promDumpBlock( int faddr, struct Device *device)
@@ -50,7 +52,7 @@ void promDumpBlock( int faddr, struct Device *device)
         // read the data
         jtagShiftDR();
         for (i=0; i<device->hdr; i++)
-                jtagOutputSilent(0,0);              // ignore all data before the data we want
+                jtagOutput(0,0);              // ignore all data before the data we want
 
         uint16_t addr = faddr << 4;
         for (i=0; i<8192; i+=HEX_BLOCK_SIZE*8 ) {
@@ -59,7 +61,7 @@ void promDumpBlock( int faddr, struct Device *device)
                         uint8_t byte = 0;
                         for(bit = 0; bit<8; bit++) {
                                 byte >>= 1;
-                		if (jtagOutputSilent(0,0) )
+                		if (jtagOutput(0,0) )
                                         byte |= 0x80;
                         }
                         hexByte( byte );
@@ -230,7 +232,7 @@ next_sector:
                                         jtagSendIR( 0xed, promProgramCurrent);
                                         jtagShiftDR();
                                         for (i=0; i<promProgramCurrent->hdr; i++)
-                                                jtagOutputSilent(0,0);              // ignore all data before the data we want
+                                                jtagOutput(0,0);              // ignore all data before the data we want
                                         prom_in_block = 1;
                                 } else if (addr != prom_addr_lo) {
                                         printf("\nHEX changes sector mid sector\n");
@@ -239,19 +241,19 @@ next_sector:
                                 while( len-- ) {
                                         uint8_t b = *data++;
                                         for(i=0; i<7; i++) {
-                                                jtagOutputSilent(b&1,0);
+                                                jtagOutput(b&1,0);
                                                 b >>= 1;
                                         }                                       // send 7 bytes
                                         if( (++prom_addr_lo & 511) ) {
-                                                jtagOutputSilent(b&1,0);
+                                                jtagOutput(b&1,0);
                                         } else {
                                                 if (promProgramCurrent->tdr) {
-                                                	jtagOutputSilent(b&1,0);
+                                                	jtagOutput(b&1,0);
                                                         for(i=1; i<promProgramCurrent->tdr; i++)
-                                                		jtagOutputSilent(0,0);
-                                               		jtagOutputSilent(0,1);           // send TMS bit at end of padding
+                                                		jtagOutput(0,0);
+                                               		jtagOutput(0,1);           // send TMS bit at end of padding
                                                 } else
-                                               		jtagOutputSilent(b&1,1);         // no padding, add TMS bit on last bit
+                                               		jtagOutput(b&1,1);         // no padding, add TMS bit on last bit
 
                                                 jtagRunTestTCK(2);
 

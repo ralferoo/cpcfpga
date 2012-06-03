@@ -17,9 +17,7 @@ struct Device {
 	char *name;
 };
 
-int jtagOutputSilent(int tdi, int tms);
 int jtagOutput(int tdi, int tms);
-void jtagResetSilent(void);
 void jtagReset(void);
 void jtagIdle(void);
 void jtagSelectDR(void);

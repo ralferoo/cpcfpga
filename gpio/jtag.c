@@ -15,7 +15,7 @@
 #define GPIO_TDI 4
 #define GPIO_TDO 22
 
-int g_noisy = 1;
+int g_noisy = 0;
 
 struct Device *g_firstDevice = 0;
 
@@ -311,21 +311,21 @@ void jtagIdle(void)
 	case JTAG_STATE_RESET:
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
-		jtagOutputSilent(0,0);
+		jtagOutput(0,0);
 		break;
 
         case JTAG_STATE_SELECT_DR:
         case JTAG_STATE_SELECT_IR:
-		jtagOutputSilent(0,0);
+		jtagOutput(0,0);
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutputSilent(0,1);
-		jtagOutputSilent(0,0);
+		jtagOutput(0,1);
+		jtagOutput(0,0);
                 break;
 	}
 		
@@ -342,31 +342,31 @@ void jtagSelectDR(void)
 		jtagReset();
 
 	case JTAG_STATE_RESET:
-		jtagOutputSilent(0,0);
+		jtagOutput(0,0);
 
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
 		break;
 
         case JTAG_STATE_SELECT_DR:
 		break;
 
         case JTAG_STATE_SELECT_IR:
-		jtagOutputSilent(0,1);
-		jtagOutputSilent(0,0);
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
+		jtagOutput(0,0);
+		jtagOutput(0,1);
 		break;
 
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutputSilent(0,1);
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
+		jtagOutput(0,1);
                 break;
 	}
 		
@@ -381,7 +381,7 @@ void jtagSelectIR(void)
 	switch (jtag_state) {
 	default:
 		jtagSelectDR();
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
         case JTAG_STATE_SELECT_IR:
 		break;
 	}
@@ -395,8 +395,8 @@ void jtagSelectIR(void)
 void jtagShiftDR(void)
 {
 	jtagSelectDR();
-	jtagOutputSilent(0,0);		// capture
-	jtagOutputSilent(0,0);		// shift
+	jtagOutput(0,0);		// capture
+	jtagOutput(0,0);		// shift
 		
 	if (jtag_state != JTAG_STATE_SHIFT) {
 		printf("Invalid state transitioning to SHIFT: %s\n", get_jtag_state_name() );
@@ -407,8 +407,8 @@ void jtagShiftDR(void)
 void jtagShiftIR(void)
 {
 	jtagSelectIR();
-	jtagOutputSilent(0,0);		// capture
-	jtagOutputSilent(0,0);		// shift
+	jtagOutput(0,0);		// capture
+	jtagOutput(0,0);		// shift
 		
 	if (jtag_state != JTAG_STATE_SHIFT) {
 		printf("Invalid state transitioning to SHIFT: %s\n", get_jtag_state_name() );
@@ -418,34 +418,54 @@ void jtagShiftIR(void)
 
 uint32_t jtagShiftData( uint32_t value, int len, int header, int trailer)
 {
+	if (g_noisy)
+		printf("ShiftData(value=0x%x, len=%d, header=%d, trailer=%d)\n", value, len, header, trailer);
+
 	if (jtag_state != JTAG_STATE_SHIFT) {
 		printf("Invalid state should be in SHIFT: %s\n", get_jtag_state_name() );
 		exit(1);
 	}
 
-	uint32_t or_value = 1 << (len-1);
 	int i;
+	int bit;
+
+	if (g_noisy && header)
+		printf("Doing header of %d bits\n", header);
 
 	for (i=0; i<header;i++)
-		jtagOutputSilent(1,0);		// bypass to all in header
+		jtagOutput(1,0);		// bypass to all in header
+
+	if (g_noisy)
+		printf("Doing data of %d-1 bits\n", len);
 
 	for (i=0; i<len-1; i++) {
-		value |= (jtagOutputSilent(value&1,0) << (len-1) );
+		bit = jtagOutput(value&1,0);
 		value >>= 1;
+		value |= bit << (len-1);
 	}					// send all but last bit
 	
 	if (trailer) {
-		value |= (jtagOutputSilent(value&1,0) << (len-1) );	// last
+		if (g_noisy)
+			printf("Doing terminal bit plus trailer of %d bits\n", trailer);
+
+		bit = jtagOutput(value&1,0);
+		value >>= 1;
+		value |= bit << (len-1);
 
 		for (i=1; i<trailer; i++)
-			jtagOutputSilent(1,0);	// send all but last of trailer
+			jtagOutput(1,0);	// send all but last of trailer
 
-		jtagOutputSilent(1,1);		// last bit of trailer
+		jtagOutput(1,1);		// last bit of trailer
 	} else {
-		value |= (jtagOutputSilent(value&1,1) << (len-1) );	// last
+		if (g_noisy)
+			printf("Doing terminal bit\n");
+
+		bit = jtagOutput(value&1,1);
+		value >>= 1;
+		value |= bit << (len-1);
 	}
 
-	jtagOutputSilent(1,1);			// move from exit to update
+	jtagOutput(1,1);			// move from exit to update
 	if (jtag_state != JTAG_STATE_UPDATE) {
 		printf("Invalid state transitioning to UPDATE: %s\n", get_jtag_state_name() );
 		exit(1);
@@ -473,28 +493,28 @@ void jtagUpdateOrIdle(void)
 		jtagReset();
 
 	case JTAG_STATE_RESET:
-		jtagOutputSilent(0,0);
+		jtagOutput(0,0);
 
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
 		break;
 
         case JTAG_STATE_SELECT_DR:
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
 
         case JTAG_STATE_SELECT_IR:
-		jtagOutputSilent(0,1);
-		jtagOutputSilent(0,0);
+		jtagOutput(0,1);
+		jtagOutput(0,0);
 		break;
 
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutputSilent(0,1);
+		jtagOutput(0,1);
                 break;
 	}
 		
@@ -508,10 +528,11 @@ void jtagRunTestTCK( unsigned int i )
 {
 	jtagIdle();
 	while( i-- ) {
-		jtagOutputSilent(0,0);
+		jtagOutput(0,0);
 	}
 }
 
+/*
 void jtagScanIR(void)
 {
 	jtagReset();
@@ -543,6 +564,7 @@ void jtagScanDR(void)
 		printf("\n");
 	}
 }
+*/
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -571,20 +593,20 @@ void devScanDevices(void)
 {
 	devFreeDevices();
 
-	jtagResetSilent();
+	jtagReset();
 	jtagShiftIR();
 
 	int irlen, drlen;
 	int i,j;
 	for (i=0;i<1024;i++) 
-		jtagOutputSilent(1,0);	// flush zeros into IR
+		jtagOutput(1,0);	// flush zeros into IR
 	
 	for (irlen=0;irlen<1024;irlen++) 
-		if (!jtagOutputSilent(0,0))	// push zeros through until 0 pops out
+		if (!jtagOutput(0,0))	// push zeros through until 0 pops out
 			break;
 	
 	for (i=0;i<1024;i++)
-		if (jtagOutputSilent(1,0))	// push ones through until 1 pops out
+		if (jtagOutput(1,0))	// push ones through until 1 pops out
 			break;
 
 	if (i != irlen) {
@@ -598,7 +620,7 @@ void devScanDevices(void)
 	jtagShiftDR();
 
 	for (drlen=0;drlen<1024;drlen++) 
-		if (jtagOutputSilent(1,0))	// push ones through until 1 pops out
+		if (jtagOutput(1,0))	// push ones through until 1 pops out
 			break;
 
 #ifdef OUTPUT_LENGTHS
@@ -608,12 +630,12 @@ void devScanDevices(void)
 #endif
 
 #ifdef SCAN_POSSIBLE_IR_START_POINTS
-	jtagResetSilent();
+	jtagReset();
 	jtagShiftIR();
 
 	j=0;
 	for (i=0; i<irlen; i++) {
-		if (jtagOutputSilent(0,0)) {
+		if (jtagOutput(0,0)) {
 			j=1;
 		} else if (j) {
 			j=0;
@@ -626,7 +648,7 @@ void devScanDevices(void)
 
 	int hir=0, tir=irlen, hdr=0, tdr=drlen;
 
-	jtagResetSilent();
+	jtagReset();
 	jtagShiftDR();
 
 //	printf("\nScanChain:\n\n");
@@ -637,7 +659,7 @@ void devScanDevices(void)
 		int bit, len;
 		char* part;
 
-		bit = jtagOutputSilent(1,0);
+		bit = jtagOutput(1,0);
 		if (bit == 0) {
 			part = "unrecognised device with no IDCODE";
 		} else {
@@ -645,7 +667,7 @@ void devScanDevices(void)
 			unsigned long id = 1<<31;
 			for(j=0;j<31;j++) {
 				id >>= 1;
-				id  |= jtagOutputSilent(1,0)<<31;
+				id  |= jtagOutput(1,0)<<31;
 			}
 			part="unrecognised device";
 			if ((id&0xfff)==0x093) {
@@ -694,7 +716,7 @@ void devScanDevices(void)
 		}
 	}
 
-	jtagResetSilent();
+	jtagReset();
 
 	if (tdr != 0 || tir != 0 ) {
 		printf("Unexpected end of chain, tir=%d tdr=%d\n", tir, tdr);
@@ -717,11 +739,11 @@ void jtagBoundaryScanDump(struct Device *device)
 
 	int i;
 	for (i=0; i<device->hdr; i++)
-		jtagOutputSilent(0,0);              // ignore all data before the data we want
+		jtagOutput(0,0);              // ignore all data before the data we want
 
 	int before_tms = device->bsrlen + device->tdr;
 	for (i=0; i<device->bsrlen; i++) {
-		int bit = jtagOutputSilent(device->bsrsafe, --before_tms == 0);
+		int bit = jtagOutput(device->bsrsafe, --before_tms == 0);
 		if ( (i&63) == 0 )
 			printf("\n%3d:", i);
 		if ( (i&7) == 0)
@@ -729,7 +751,7 @@ void jtagBoundaryScanDump(struct Device *device)
 		printf("%d", bit);
 	}
 	for (i=0; i<device->tdr; i++)
-		jtagOutputSilent(0, --before_tms == 0);     // complete cycle
+		jtagOutput(0, --before_tms == 0);     // complete cycle
 	printf("\n");
 
 	jtagSendIR( (1<<device->len)-1, device);	// bypass
