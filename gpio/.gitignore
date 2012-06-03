@@ -1,4 +1,5 @@
 *.o
+bsr
 scan
 prom_dump
 prom_erase

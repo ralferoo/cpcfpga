@@ -12,6 +12,7 @@ struct Device {
 
 	unsigned long id;
 	int hir, tir, hdr, tdr, len;
+	int bsrlen, bsrsample, bsrsafe;
 
 	char *name;
 };
@@ -31,6 +32,7 @@ void jtagUpdateOrIdle(void);
 void jtagRunTestTCK( unsigned int i );
 void jtagScanIR(void);
 void jtagScanDR(void);
+void jtagBoundaryScanDump(struct Device *device);
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +40,7 @@ void devFreeDevices(void);
 struct Device* devFindDevice(unsigned long id);
 void devScanDevices(void);
 void devDump(void);
+struct Device *devGetFirstDevice(void);
 
 ///////////////////////////////////////////////////////////////////////////
 

@@ -641,6 +641,7 @@ void devScanDevices(void)
 		if (bit == 0) {
 			part = "unrecognised device with no IDCODE";
 		} else {
+			int bsrlen=0, bsrsample=0, bsrsafe=0;
 			unsigned long id = 1<<31;
 			for(j=0;j<31;j++) {
 				id >>= 1;
@@ -652,9 +653,15 @@ void devScanDevices(void)
 				if ( (id&0xffff000) == 0x5045000 ) {
 					part="Xilinx XCF02S";
 					len = 8;
+					bsrlen = 25;
+					bsrsample = 1;
+					bsrsafe = 0;
 				} else if ( (id&0xfffff000) == 0x0141c000 ) {
 					part="Xilinx XC3S400";
 					len = 6;
+					bsrlen = 815;
+					bsrsample = 1;
+					bsrsafe = 1;
 				}
 			} else if (id == 0xffffffff) {
 				//printf("%08X end of chain\n", id );
@@ -670,6 +677,9 @@ void devScanDevices(void)
 			device->tir = tir - len;
 			device->tdr = tdr - 1;
 			device->len = len;
+			device->bsrlen = bsrlen;
+			device->bsrsafe = bsrsafe;
+			device->bsrsample = bsrsample;
 			g_firstDevice = device;
 		}
 
@@ -693,6 +703,40 @@ void devScanDevices(void)
 
 ///////////////////////////////////////////////////////////////////////////
 
+void jtagBoundaryScanDump(struct Device *device)
+{
+	if (device->bsrsample <= 0 || device->bsrlen <= 0) {
+		printf("Boundary scan not supported on %s\n");
+		return;
+	}
+
+	printf("Boundary scan of %s (%d bits):\n", device->name, device->bsrlen);
+	jtagReset();
+	jtagSendIR(device->bsrsample, device);
+	jtagShiftDR();
+
+	int i;
+	for (i=0; i<device->hdr; i++)
+		jtagOutputSilent(0,0);              // ignore all data before the data we want
+
+	int before_tms = device->bsrlen + device->tdr;
+	for (i=0; i<device->bsrlen; i++) {
+		int bit = jtagOutputSilent(device->bsrsafe, --before_tms == 0);
+		if ( (i&63) == 0 )
+			printf("\n%3d:", i);
+		if ( (i&7) == 0)
+			printf(" ");
+		printf("%d", bit);
+	}
+	for (i=0; i<device->tdr; i++)
+		jtagOutputSilent(0, --before_tms == 0);     // complete cycle
+	printf("\n");
+
+	jtagSendIR( (1<<device->len)-1, device);	// bypass
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 void devDump(void)
 {
 	printf("Devices:\n");
@@ -706,6 +750,11 @@ void devDump(void)
 			device->hdr, device->tdr);
 		device = device->next;
 	}
+}
+
+struct Device *devGetFirstDevice(void)
+{
+	return g_firstDevice;
 }
 
 ///////////////////////////////////////////////////////////////////////////
