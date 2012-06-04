@@ -22643,7 +22643,7 @@ W = angled&lt;p&gt;
 <part name="R49" library="resistor" deviceset="R-EU_" device="M0805" value="2200"/>
 <part name="SUPPLY6" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY7" library="supply2" deviceset="GND" device=""/>
-<part name="R50" library="resistor" deviceset="R-EU_" device="M0805" value="2k2"/>
+<part name="R50" library="resistor" deviceset="R-EU_" device="M0805" value="0R"/>
 <part name="IC3" library="adafruit" deviceset="ATMEGA32U2" device="-TQFP"/>
 <part name="REG3.3" library="cpcfpga" deviceset="NX1117" device="" value="3.3V"/>
 <part name="C6" library="rcl" deviceset="C-EU" device="C0603" value="100nF"/>
