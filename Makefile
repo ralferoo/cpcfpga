@@ -4,6 +4,8 @@ ACTEL_TOP_NAME		= evalboard
 #XILINX_TOP_NAME		= homeboard
 XILINX_TOP_NAME		= testfpga
 
+PROM_LOADER_TARGET	= root@192.168.0.4
+
 ###########################################################################
 #
 # source files
@@ -84,7 +86,13 @@ log:
 error:
 	grep 'E:' build/$(TOP_NAME).srr
 
-program: build/$(TOP_NAME)_fp.tcl $(PDB_NAME)
+program: build/.programmed
+
+build/.programmed: build/$(XILINX_TOP_NAME).mcs
+	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase ; gpio/prom_program ; gpio/prom_reload" < build/$(XILINX_TOP_NAME).mcs
+	@touch $@
+
+actelprogram: build/$(TOP_NAME)_fp.tcl $(PDB_NAME)
 	@echo Flashing device...
 	-@rm -rf build/$(TOP_NAME)_fpro
 	$(FLASHPRO) script:$<

@@ -125,8 +125,8 @@ begin
 
             if (hpos(0) = '0') then
                 c_red   := hpos(6) & (hpos(6) and hpos(5));
-                c_green := dot & (dot and vpos(6));
-                c_blue  := vpos(5) & (vpos(5) and vpos(4));
+                c_green := vpos(5) & (vpos(5) and vpos(4));
+                c_blue := dot & (dot and vpos(6));
 
                 c_valid := local_hvalid and local_vvalid;
                 c_hsync := local_hsync;
