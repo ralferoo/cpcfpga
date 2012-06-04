@@ -19,6 +19,11 @@ entity testfpga is
 	scart_g: out std_logic_vector(1 downto 0);
 	scart_b: out std_logic_vector(1 downto 0);
 	
+	sram_a: out std_logic_vector(18 downto 0);
+	sram_d: inout std_logic_vector(7 downto 0);
+	sram_oe: out std_logic;
+	sram_we: out std_logic;
+
 	clk16: in std_logic
 );
 end testfpga;
@@ -37,6 +42,9 @@ begin
 
 	hdr_spare <= accum(21);
 
+	sram_we <= '1';
+	sram_oe <= '0';
+
 	process(clk16)
 	begin
 		if rising_edge(clk16) then
@@ -51,6 +59,9 @@ begin
 
 	-- test video
     process (clk16)
+        variable scroll : std_logic_vector (19 downto 0) := "00000000000000000000";
+	variable planes : std_logic_vector(9 downto 0) := "0000000000";
+
         variable hpos : std_logic_vector (9 downto 0) := "0000000000";
         variable vpos : std_logic_vector (9 downto 0) := "0000000000";
         variable local_vvalid, local_hvalid, local_hsync, local_vsync : std_logic := '0';
@@ -63,14 +74,39 @@ begin
         if rising_edge(clk16) then
 
 		if c_valid = '1' then
-			scart_r	<= c_red;
-			scart_g	<= c_green;
-			scart_b	<= c_blue;
+
+--			if planes(9 downto 8) = sram_d(7 downto 6) then
+--				scart_r	<= c_red;
+--				scart_g	<= c_green;
+--				scart_b	<= c_blue;
+--			else
+			if c_blue(1) = '0' then
+				if hpos(7)='1' then
+					scart_r	<= sram_d(4) & sram_d(4);
+					scart_g	<= sram_d(3) & sram_d(3);
+					scart_b	<= sram_d(2) & sram_d(2);
+				else
+					scart_r	<= sram_d(1) & sram_d(1);
+					scart_g	<= sram_d(0) & sram_d(0);
+					scart_b	<= "00";
+				end if;
+
+--				scart_r	<= sram_d(1 downto 0) and (planes(7)&planes(7));
+--				scart_g	<= sram_d(3 downto 2) and (planes(6)&planes(6));
+--				scart_b	<= sram_d(5 downto 4) and (planes(5)&planes(5));
+			else
+				scart_r	<= sram_d(7) & sram_d(7);
+				scart_g	<= sram_d(6) & sram_d(6);
+				scart_b	<= sram_d(5) & sram_d(5);
+			end if;
+--			end if;
 		else
 			scart_r	<= "00";
 			scart_g	<= "00";
 			scart_b	<= "00";
 		end if;
+
+		sram_a <= (vpos(8 downto 0) & hpos(9 downto 0)) + scroll(19 downto 1);
 
 		scart_csync <= (c_hsync and c_vsync);
 
@@ -83,6 +119,9 @@ begin
 
                 if (vpos = 311) then
                     vpos := "0000000000";
+
+		    scroll := scroll + "00000000100000000001";		-- scroll screen
+		    planes := planes + 1;
                 else
                     vpos := vpos + 1;
                 end if;
