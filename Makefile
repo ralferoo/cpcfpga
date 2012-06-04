@@ -365,7 +365,8 @@ emu:
 # xilinx rules
 
 XILINX_WRAPPER		= build/xilinx-wrapper
-INTSTYLE		= -intstyle silent 
+INTSTYLE		= 
+#INTSTYLE		= -intstyle silent 
 XST_FLAGS		= $(INTSTYLE)
 NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo -nt timestamp  # ngdbuild flags
 NGDBUILD_FLAGS   += $(if $(UCF_FILE),-uc ../$(UCF_FILE),-i)         # append the UCF file option if it is specified
