@@ -115,7 +115,7 @@ end component;
 	signal sram_ce			: std_logic;
 
 	-- evil hacky code for bootstrapping
-	component bootrom is port(
+	component bootrom_homeboard is port(
 		clk			: in std_logic;
 		addr			: in std_logic_vector(13 downto 0);
 		data			: out std_logic_vector(7 downto 0)
@@ -128,7 +128,7 @@ end component;
 	begin
 
 	-- bootstrap code
-	bootrom_0 : bootrom port map( clk=>bootrom_clk, addr=>bootrom_addr, data=>bootrom_data );
+	bootrom_0 : bootrom_homeboard port map( clk=>bootrom_clk, addr=>bootrom_addr, data=>bootrom_data );
 
 	-- PLL fake
 	nRESET <= '1';

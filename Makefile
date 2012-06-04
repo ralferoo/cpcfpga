@@ -237,7 +237,7 @@ hdl/%.vhd: codegen/%.asm codegen/makerom.py build/.dummy
 hdl/evalboard.vhd: codegen/evalboard.pl hdl/cpc.vhd hdl/bootrom.vhd
 	codegen/evalboard.pl <hdl/cpc.vhd >$@
 
-hdl/homeboard.vhd: codegen/homeboard.pl hdl/cpc.vhd hdl/bootrom.vhd
+hdl/homeboard.vhd: codegen/homeboard.pl hdl/cpc.vhd hdl/bootrom_homeboard.vhd
 	codegen/homeboard.pl <hdl/cpc.vhd >$@
 
 hdl/bench_cpc.vhd: codegen/bench_cpc.pl hdl/cpc.vhd hdl/bench_cpc_bootrom.vhd
