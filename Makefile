@@ -1,8 +1,8 @@
 TOP_NAME = cpc
 
 ACTEL_TOP_NAME		= evalboard
-#XILINX_TOP_NAME		= homeboard
-XILINX_TOP_NAME		= testfpga
+XILINX_TOP_NAME		= homeboard
+#XILINX_TOP_NAME		= testfpga
 
 PROM_LOADER_TARGET	= root@192.168.0.4
 
