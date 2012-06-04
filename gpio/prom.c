@@ -28,8 +28,8 @@ void promReload(struct Device* prom)
 
 	jtagSendIR(0xee, prom);
 	jtagRunTestTCK(100);
-	jtagRunTestTCK(100000);
-	jtagReset();
+//	jtagRunTestTCK(100000);
+//	jtagReset();
 
 //	jtagSendIR(0xf0, prom);
 //	jtagRunTestTCK(110000);
