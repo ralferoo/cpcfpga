@@ -12,7 +12,7 @@ floop:
 	out (c),d
 	inc d
 
-	ld hl,500
+	ld hl,50000
 delayloop:
 	dec hl
 	ld a,h
