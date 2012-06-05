@@ -7,6 +7,97 @@
 ; IYH = length left in srec data this line
 ; IYL = xsum within line
 
+	ld bc,#bc00
+	out (c),c
+	ld bc,#bd3f
+	out (c),c
+
+	ld bc,#bc01
+	out (c),c
+	ld bc,#bd28
+	out (c),c
+
+	ld bc,#bc02
+	out (c),c
+	ld bc,#bd2e
+	out (c),c
+
+	ld bc,#bc03
+	out (c),c
+	ld bc,#bd8e
+	out (c),c
+
+	ld bc,#bc04
+	out (c),c
+	ld bc,#bd26
+	out (c),c
+
+	ld bc,#bc05
+	out (c),c
+	ld bc,#bd00
+	out (c),c
+
+	ld bc,#bc06
+	out (c),c
+	ld bc,#bd19
+	out (c),c
+
+	ld bc,#bc07
+	out (c),c
+	ld bc,#bd1e
+	out (c),c
+
+	ld bc,#bc08
+	out (c),c
+	ld bc,#bd00
+	out (c),c
+
+	ld bc,#bc09
+	out (c),c
+	ld bc,#bd07
+	out (c),c
+
+	ld bc,#bc0a
+	out (c),c
+	ld bc,#bd00
+	out (c),c
+
+	ld bc,#bc0b
+	out (c),c
+	ld bc,#bd00
+	out (c),c
+
+	ld bc,#bc0c
+	out (c),c
+	ld bc,#bd30
+	out (c),c
+
+	ld bc,#bc0d
+	out (c),c
+	ld bc,#bd00
+	out (c),c
+
+
+	ld bc,#7f81
+	out (c),c			; mode 1
+
+	ld de,#0044
+	out (c),d
+	out (c),e			; ink 0
+
+	ld de,#014a
+	out (c),d
+	out (c),e			; ink 1
+
+	ld de,#0253
+	out (c),d
+	out (c),e			; ink 2
+
+	ld de,#034c
+	out (c),d
+	out (c),e			; ink 3
+
+
 	ld bc,#fade
 floop:
 	out (c),d
