@@ -657,7 +657,7 @@ void devScanDevices(void)
 	{
 		int ir=-1;
 		int bit, len;
-		char* part;
+		char *manuf, *part;
 
 		bit = jtagOutput(1,0);
 		if (bit == 0) {
@@ -669,17 +669,18 @@ void devScanDevices(void)
 				id >>= 1;
 				id  |= jtagOutput(1,0)<<31;
 			}
+			manuf="";
 			part="unrecognised device";
 			if ((id&0xfff)==0x093) {
-				part="Xilinx unrecognised device";
+				manuf="Xilinx ";
 				if ( (id&0xffff000) == 0x5045000 ) {
-					part="Xilinx XCF02S";
+					part="XCF02S";
 					len = 8;
 					bsrlen = 25;
 					bsrsample = 1;
 					bsrsafe = 0;
 				} else if ( (id&0xfffff000) == 0x0141c000 ) {
-					part="Xilinx XC3S400";
+					part="XC3S400";
 					len = 6;
 					bsrlen = 815;
 					bsrsample = 1;
@@ -692,6 +693,7 @@ void devScanDevices(void)
 
 			struct Device *device = malloc(sizeof(struct Device));
 			device->next = g_firstDevice;
+			device->manuf = manuf;
 			device->name = part;
 			device->id = id;
 			device->hir = hir;
@@ -764,12 +766,12 @@ void jtagBoundaryScanDump(struct Device *device)
 void devDump(void)
 {
 	printf("Devices:\n");
-	printf(" %-7s %-50s  %3s %3s %3s %3s %3s\n", "IDCODE", "Device name", "len", "hir", "tir", "hdr", "tdr");
+	printf(" %-7s %-10s%-40s  %3s %3s %3s %3s %3s\n", "IDCODE", "Manuf ", "Device name", "len", "hir", "tir", "hdr", "tdr");
 
 	struct Device *device = g_firstDevice;
 	while (device) {
-		printf("%08X %-50s %3d %3d %3d %3d %3d\n",
-			device->id, device->name, device->len,
+		printf("%08X %-10s%-40s %3d %3d %3d %3d %3d\n",
+			device->id, device->manuf, device->name, device->len,
 			device->hir, device->tir,
 			device->hdr, device->tdr);
 		device = device->next;
