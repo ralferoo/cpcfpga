@@ -14,6 +14,7 @@ struct Device {
 	unsigned long id;
 	int hir, tir, hdr, tdr, len;
 	int bsrlen, bsrsample, bsrsafe;
+	int user;
 
 	char *manuf, *name;
 };
