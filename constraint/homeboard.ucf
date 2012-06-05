@@ -1,6 +1,8 @@
 # SYSTEM
 #
 NET "CLK16"		LOC = "P56"	| IOSTANDARD = LVCMOS33;
+NET "CLK16" TNM_NET = "CLK16";
+TIMESPEC "TS_CLK16" = PERIOD "CLK16" 62.5ns HIGH 50%;
 
 ###########################################################################
 

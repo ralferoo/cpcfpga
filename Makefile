@@ -376,14 +376,18 @@ emu:
 XILINX_WRAPPER		= build/xilinx-wrapper
 INTSTYLE		= 
 #INTSTYLE		= -intstyle silent 
+MTFLAGS			= -mt on
 XST_FLAGS		= $(INTSTYLE)
 NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo -nt timestamp  # ngdbuild flags
 NGDBUILD_FLAGS   += $(if $(UCF_FILE),-uc ../$(UCF_FILE),-i)         # append the UCF file option if it is specified
 
-MAP_FLAGS        ?= $(INTSTYLE) -cm area -ir off -pr off -c 100
+EFFORT		 = std
+#EFFORT		 = high
+
+MAP_FLAGS        ?= $(INTSTYLE) -cm area -ir off -pr off -c 100 # $(MTFLAGS)
 #MAP_FLAGS        ?= $(INTSTYLE) -cm area -pr b -k 4 -c 100 -tx off
-PAR_FLAGS        ?= $(INTSTYLE) -w -ol high -t 1
-TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3
+PAR_FLAGS        ?= $(INTSTYLE) -w -ol $(EFFORT) -pl $(EFFORT) -t 1 $(MTFLAGS)
+TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3 $(MTFLAGS)
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
 PROMGEN_FLAGS    ?= -w -u 0               # flags that control the MCS/EXO file generation
 
