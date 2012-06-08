@@ -1,5 +1,6 @@
-TARGETS=scan prom_dump prom_erase prom_program prom_reload bsr
+TARGETS=scan prom_dump prom_erase prom_program prom_reload bsr pintest
 LIBOBJS=jtag.o hex.o jtag.o prom.o
+EXOBJS=$(patsubst %,%.o,$(TARGETS))
 
 all: $(TARGETS)
 
@@ -15,7 +16,12 @@ run: scan prom_dump
 
 $(LIBOBJS): $(wildcard *.h)
 
+$(EXOBJS): $(wildcard *.h)
+
 bsr: bsr.o $(LIBOBJS)
+	gcc -o $@ $^
+
+pintest: pintest.o $(LIBOBJS)
 	gcc -o $@ $^
 
 scan: scan.o $(LIBOBJS)

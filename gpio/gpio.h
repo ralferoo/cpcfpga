@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define PROM_XCF02S 0xf5045093
+#define PROM_XCF02S	0xf5045093
+#define FPGA_XC3S400	0x0141C093
 
 #define HEX_BLOCK_SIZE  16
 
@@ -13,8 +14,9 @@ struct Device {
 	unsigned long id;
 	int hir, tir, hdr, tdr, len;
 	int bsrlen, bsrsample, bsrsafe;
+	int user;
 
-	char *name;
+	char *manuf, *name;
 };
 
 int jtagOutput(int tdi, int tms);
