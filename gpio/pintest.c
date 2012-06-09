@@ -122,6 +122,35 @@ void dump_dr_stream(const char* name, char* dr_stream, int totdr)
 	printf("\n");
 }
 
+void diff_dr_stream(const char* name, char* dr_stream, char* dr2_stream, int totdr, struct Device *fpga, struct Device *prom)
+{
+	printf("%s:\n", name);
+	int d;
+	for (d=0; d<2; d++) {
+		struct Device* device = d ? fpga : prom;
+		struct BoundaryScan* cells = d ? XC3S400_TQ144_BSCAN : XCF02S_VO20_BSCAN;
+
+		for (;cells->cellnum >= 0; cells++) {
+			int pos=device->user + cells->cellnum;
+			if (dr_stream[pos] != dr2_stream[pos] ) {
+				char* port = cells->port ? cells->port : "???";
+
+				char* type = "???";
+				switch(cells->function) {
+					case BC_F_INTERNAL: type="internal";	break;
+					case BC_F_INPUT	  : type="input";	break;
+					case BC_F_OUTPUT3 : type="output3";	break;
+					case BC_F_CONTROLR: type="controlr";	continue; //break;
+				}
+				printf("%10s %3d %-8s (%3d) %20s %d %d\n", device->name, cells->cellnum, type, pos, port,
+					dr_stream[pos], dr2_stream[pos] );
+
+			}
+		}
+	}
+	printf("\n");
+}
+
 void copy_safe_bits(char* safe_dr, int totdr, struct Device *device, struct BoundaryScan *cells)
 {
 	if (device->user + device->bsrlen > totdr) {
@@ -234,6 +263,8 @@ void pintest(void)
 
 	send_dr_stream(safe_dr, totdr, test2_dr);
 	dump_dr_stream("test2_dr during safe", test2_dr, totdr);
+
+	diff_dr_stream("differences from test_dr and test2_dr", test_dr, test2_dr, totdr, fpga, prom);
 
 	send_dr_stream(initial_dr, totdr, test_dr);
 	dump_dr_stream("test_dr after safe", test_dr, totdr);
