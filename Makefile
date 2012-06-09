@@ -393,7 +393,7 @@ PROMGEN_FLAGS    ?= -w -u 0               # flags that control the MCS/EXO file 
 
 xilinx: build/$(XILINX_TOP_NAME).mcs
 
-build/$(XILINX_TOP_NAME).ngc: $(XILINX_VHD_FILES) build/$(XILINX_TOP_NAME).xst $(XILINX_WRAPPER)
+build/$(XILINX_TOP_NAME).ngc: $(XILINX_VHD_FILES) build/$(XILINX_TOP_NAME).xst $(XILINX_WRAPPER) build/$(XILINX_TOP_NAME).prj
 	$(XILINX_WRAPPER) xst $(XST_FLAGS) -ifn $(XILINX_TOP_NAME).xst -ofn $(XILINX_TOP_NAME).syr
 	
 build/%.ngd: build/%.ngc $(UCF_FILE)

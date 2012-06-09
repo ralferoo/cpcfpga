@@ -98,12 +98,34 @@
 	out (c),e			; ink 3
 
 
-	ld bc,#fade
-floop:
-	out (c),d
-	inc d
+	ld hl,#c000
+	ld e,0
+	exx
 
-	ld hl,50000
+floop:
+	ld bc,#fade
+	inc de
+	out (c),d
+
+	dec c
+	dec c
+	out (c),d
+
+	exx
+	ld (hl),e
+	inc hl
+	inc e
+	ld a,h
+	or l
+	jr nz,resetscr
+
+	ld hl,#c000
+	inc e
+resetscr:
+	exx 
+
+
+	ld hl,200 ;50000/256
 delayloop:
 	dec hl
 	ld a,h
@@ -111,6 +133,7 @@ delayloop:
 	jr nz,delayloop
 	
 	jr floop
+
 
         ld de,#0307                             ; D=READ
         ld hl,#c000                             ; EHL = transfer address

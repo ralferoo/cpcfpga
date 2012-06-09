@@ -9,6 +9,8 @@ entity homeboard is
 		fl_hold			: out  std_logic;
 		fl_wp			: out  std_logic;
 		clk16			: in  std_logic;
+		rxd			: in  std_logic;
+		txd			: out std_logic;
 		leds			: out std_logic_vector(3 downto 0);
 		ps2_clock		: inout std_logic;
 		ps2_data		: inout std_logic;
@@ -68,9 +70,6 @@ end component;
 	signal pushsw			: std_logic_vector(3 downto 0);
 	signal dipsw			: std_logic_vector(7 downto 0);
 
-	signal rxd			: std_logic;
-	signal txd			: std_logic;
-
 	signal tape_out			: std_logic;
 	signal tape_motor		: std_logic;
 
@@ -97,7 +96,6 @@ end component;
 	clklock <= '1';
 	pushsw <= "1111";
 	dipsw <= "11111111";
-	rxd <= '1';
 
 	fl_hold <= '1';
 	fl_wp <= '1';

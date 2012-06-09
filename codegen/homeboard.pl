@@ -72,8 +72,6 @@ HEADER
 		next if /nRESET/;
 		next if /pushsw/;
 		next if /dipsw/;
-		next if /rxd/;
-		next if /txd/;
 		next if /tape_out/;
 		next if /tape_motor/;
 		next if /dummy/;
@@ -106,9 +104,6 @@ end component;
 	signal pushsw			: std_logic_vector(3 downto 0);
 	signal dipsw			: std_logic_vector(7 downto 0);
 
-	signal rxd			: std_logic;
-	signal txd			: std_logic;
-
 	signal tape_out			: std_logic;
 	signal tape_motor		: std_logic;
 
@@ -135,7 +130,6 @@ end component;
 	clklock <= '1';
 	pushsw <= "1111";
 	dipsw <= "11111111";
-	rxd <= '1';
 
 	fl_hold <= '1';
 	fl_wp <= '1';
