@@ -94,9 +94,21 @@ void sample_dr_stream(char* dr_stream, int totdr)
 	}
 }
 
+void send_dr_stream(char* dr_stream, int totdr, char* result_stream)
+{
+	int i, bit;
+	jtagShiftDR();						// enter shift DR phase
+
+	for (i=0; i<totdr; i++) {
+		result_stream[i] = jtagOutput(dr_stream[i], i==(totdr-1));  // output the DR stream, setting TMS at the end
+	}
+
+	jtagSelectDR();						// force progression through update DR
+}
+
 void dump_dr_stream(const char* name, char* dr_stream, int totdr)
 {
-	printf("DR stream for %s:\n", name);
+	printf("\nDR stream for %s:\n", name);
 	printf("     01234 56789 01234 56789 01234 56789 01234 56789 01234 56789 01234 56789\n");
 	printf("     ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----");
 	int i;
@@ -108,6 +120,43 @@ void dump_dr_stream(const char* name, char* dr_stream, int totdr)
 		printf("%d", dr_stream[i]);
 	}
 	printf("\n");
+}
+
+void copy_safe_bits(char* safe_dr, int totdr, struct Device *device, struct BoundaryScan *cells)
+{
+	if (device->user + device->bsrlen > totdr) {
+		printf("copy_safe_bits: BSR bits for %s go beyond end of DR stream (start %d, len %d, end %d, totdr %d)\n",
+			device->name, device->user, device->bsrlen, device->user + device->bsrlen, totdr);
+		jtagReset();
+		exit(1);
+	}
+
+	int cellsdone = 0;
+	while (cells->cellnum >= 0) {
+		int pos = cells->cellnum + device->user;
+
+		if (pos >= totdr) {
+			printf("copy_safe_bits: cellNum %d out of range on device %s (%d)\n", cells->cellnum, device->name, pos);
+			jtagReset();
+			exit(1);
+		}
+		safe_dr[pos] = cells->safe;
+
+		cells++;
+		cellsdone++;
+	}
+
+	printf("Copied %d cells from %s to safe bits to postion %d\n", cellsdone, device->name, device->user);
+}
+
+void make_safe_dr_stream(char* safe_dr, int totdr, struct Device *fpga, struct Device *prom)
+{
+	int i;
+	for (i=0; i<totdr; i++)
+		safe_dr[i]=1;				// initialise to all ones
+
+	copy_safe_bits(safe_dr, totdr, fpga, XC3S400_TQ144_BSCAN);
+	copy_safe_bits(safe_dr, totdr, prom, XCF02S_VO20_BSCAN);
 }
 
 void pintest(void)
@@ -144,6 +193,8 @@ void pintest(void)
 				second->tir, second->tdr,
 				totir, totdr);
 
+	//printf("FPGA data start at %d, PROM data bits start at %d\n", fpga->user, prom->user);
+
 	if (second->hir != (first->hir + first->len + mir) ) {
 		printf("Calculation error: second hir is %d but should be %d+%d+%d = %d\n", 
 			second->hir, first->hir, first->len, mir, first->hir + first->len + mir );
@@ -160,9 +211,10 @@ void pintest(void)
 	char *exload_ir	 = (char*) malloc( totir );
 	char *bypass_ir	 = (char*) malloc( totir );
 
-//	char *safe_dr	 = (char*) malloc( totdr );
+	char *safe_dr	 = (char*) malloc( totdr );
 	char *initial_dr = (char*) malloc( totdr );
 	char *test_dr	 = (char*) malloc( totdr );
+	char *test2_dr	 = (char*) malloc( totdr );
 
 	make_ir_stream(sample_ir, first, second, mir, first->bsrsample, second->bsrsample);
 	make_ir_stream(exload_ir, first, second, mir, 0, 0);
@@ -170,8 +222,21 @@ void pintest(void)
 
 	send_ir_stream(sample_ir, totir);
 	sample_dr_stream(initial_dr, totdr);
+	make_safe_dr_stream(safe_dr, totdr, fpga, prom);
 
 	dump_dr_stream("initial_dr", initial_dr, totdr);
+	dump_dr_stream("safe_dr", safe_dr, totdr);
+
+	send_ir_stream(exload_ir, totir);
+
+	send_dr_stream(safe_dr, totdr, test_dr);
+	dump_dr_stream("test_dr during safe", test_dr, totdr);
+
+	send_dr_stream(safe_dr, totdr, test2_dr);
+	dump_dr_stream("test2_dr during safe", test2_dr, totdr);
+
+	send_dr_stream(initial_dr, totdr, test_dr);
+	dump_dr_stream("test_dr after safe", test_dr, totdr);
 
 	send_ir_stream(bypass_ir, totir);
 
@@ -179,9 +244,10 @@ void pintest(void)
 	free(exload_ir);
 	free(bypass_ir);
 
-//	free(safe_dr);
+	free(safe_dr);
 	free(initial_dr);
 	free(test_dr);
+	free(test2_dr);
 
 /*
 	// output the BSR command on both prom and fpga
@@ -197,6 +263,8 @@ int main(int argc, char **argv)
 	devDump();
 	printf("\n");
 	pintest();
+
+	jtagReset();
 
 /*
 //	g_noisy = 1;
