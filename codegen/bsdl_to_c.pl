@@ -17,6 +17,8 @@ while(<>) {
 			$pin=~s/^"\*"$/0/;
 
 			$ctype=~tr/[a-z]/[A-Z]/;
+			$ctype=~s/^/BC_F_/;
+
 			$safe=~s/X/1/;
 
 			$ctrl=~s/^$/-1/;

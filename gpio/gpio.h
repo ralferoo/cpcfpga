@@ -19,6 +19,21 @@ struct Device {
 	char *manuf, *name;
 };
 
+#define BC_1		0x101
+#define BC_2		0x102
+
+#define BC_F_INTERNAL	0x201
+#define BC_F_INPUT	0x202
+#define BC_F_OUTPUT3	0x203
+#define BC_F_CONTROLR	0x204
+
+struct BoundaryScan {
+	int cellnum, type;
+	char* port;
+	int function, safe;
+	int control, disable_control, disable_result;
+}; 
+
 int jtagOutput(int tdi, int tms);
 void jtagReset(void);
 void jtagIdle(void);
