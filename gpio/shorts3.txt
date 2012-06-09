@@ -13,15 +13,15 @@ DR stream for initial_dr:
   0: 10101 01010 11101 10100 00101 11111 11101 10110 11011 01101 10110 11011
  60: 01101 10110 11011 01101 10110 11011 11111 11110 11011 01101 10110 11111
 120: 01101 10110 11011 01101 10110 11111 01101 10110 11011 01101 10110 11011
-180: 01101 10110 11011 01101 10110 11011 01101 10110 11011 01101 10110 11000
-240: 01111 01101 10110 11011 01100 11011 01100 00110 00000 01101 10110 00110
-300: 11011 01101 10110 11011 01101 10000 00000 00111 10110 11011 01101 10110
-360: 11011 01100 11000 11010 01101 11110 10010 01111 10110 11011 01101 10110
-420: 11000 00110 00110 11011 01101 10110 11011 01101 10110 11011 01101 10110
+180: 01101 10110 11011 01101 10110 11011 01101 10110 11011 01101 10110 11011
+240: 00011 01101 10110 11011 01100 00000 01100 00110 00000 01101 10000 11110
+300: 11011 01101 10110 11011 01101 10000 00000 00001 10110 11011 01101 10110
+360: 11011 01100 00011 10011 11001 11110 11011 01101 10110 11011 01101 10110
+420: 11001 10000 00110 11011 01101 10110 11011 01101 10110 11011 01101 10110
 480: 11011 01101 10110 11011 01101 10110 11011 01101 10110 11001 10001 10000
-540: 11100 01101 10000 01111 01101 10110 11000 01101 10110 11011 01101 10110
+540: 11000 01101 10000 00011 01101 10110 11001 11101 10110 11011 01101 10110
 600: 11011 01101 10110 11011 01101 10110 11000 00000 11101 11111 01101 10110
-660: 11011 01101 10110 11011 00110 00011 01111 00110 11011 01111 01101 10110
+660: 11011 01101 10110 11011 00110 00011 01111 00110 11000 00011 01101 10110
 720: 11011 01101 10110 11011 01101 10110 11011 01101 10110 11011 01101 10110
 780: 11011 01101 10110 11011 11111 11111 11011 01101 10110 11011 01101 11111
 
@@ -49,52 +49,49 @@ DR stream for test_dr during safe:
   0: 10101 01010 11101 10100 00101 11111 11101 10110 11011 01101 10110 11011
  60: 01101 10110 11011 01101 10110 11011 11111 11110 11011 01101 10110 11111
 120: 01101 10110 11011 01101 10110 11111 01101 10110 11011 01101 10110 11011
-180: 01101 10110 11011 01101 10110 11011 01101 10110 11011 01101 10110 11000
-240: 01111 01101 10110 11011 01100 11011 01100 00110 00000 01101 10110 00110
-300: 11011 01101 10110 11011 01101 10000 00000 00111 10110 11011 01101 10110
-360: 11011 01100 11000 11010 01111 11111 10110 11111 10110 11011 01101 10110
-420: 11000 00110 00110 11011 01101 10110 11011 01101 10110 11011 01101 10110
+180: 01101 10110 11011 01101 10110 11011 01101 10110 11011 01101 10110 11011
+240: 00011 01101 10110 11011 01100 00000 01100 00110 00000 01101 10000 11110
+300: 11011 01101 10110 11011 01101 10000 00000 00001 10110 11011 01101 10110
+360: 11011 01100 00011 10011 11001 11111 11111 01111 10110 11011 01101 10110
+420: 11001 10000 00110 11011 01101 10110 11011 01101 10110 11011 01101 10110
 480: 11011 01101 10110 11011 01101 10110 11011 01101 10110 11001 10001 10000
-540: 11000 01101 10000 01111 01101 10110 11000 01101 10110 11011 01101 10110
+540: 11100 01101 10000 00011 01101 10110 11001 11101 10110 11011 01101 10110
 600: 11011 01101 10110 11011 01101 10110 11000 00000 11101 11111 01101 10110
-660: 11011 01101 10110 11011 00110 00011 01111 00110 11011 01111 01101 10110
+660: 11011 01101 10110 11011 00110 00011 01111 00110 11000 00011 01101 10110
 720: 11011 01101 10110 11011 01101 10110 11011 01101 10110 11011 01101 10110
 780: 11011 01101 10110 11011 11111 11111 11011 01101 10110 11011 01101 11111
 Differences from test_dr and test2_dr:
-   XC3S400 213 output3  (238)                IO_P1 0 1
-   XC3S400 241 input    (266)                IO_P4 1 0
-   XC3S400 244 input    (269)                IO_P5 1 0
+   XC3S400 216 output3  (241)                IO_P2 0 1
+   XC3S400 240 output3  (265)                IO_P4 0 1
+   XC3S400 243 output3  (268)                IO_P5 0 1
    XC3S400 249 output3  (274)                IO_P7 0 1
    XC3S400 255 output3  (280)               IO_P10 0 1
    XC3S400 258 output3  (283)               IO_P11 0 1
    XC3S400 262 input    (287)               IO_P12 1 0
-   XC3S400 265 input    (290)               IO_P13 1 0
-   XC3S400 268 input    (293)               IO_P14 1 0
-   XC3S400 270 output3  (295)               IO_P15 0 1
+   XC3S400 267 output3  (292)               IO_P14 0 1
+   XC3S400 271 input    (296)               IO_P15 1 0
    XC3S400 303 output3  (328)               IO_P17 0 1
    XC3S400 306 output3  (331)               IO_P18 0 1
    XC3S400 309 output3  (334)               IO_P20 0 1
-   XC3S400 313 input    (338)               IO_P21 1 0
-   XC3S400 346 input    (371)               IO_P23 1 0
-   XC3S400 348 output3  (373)               IO_P24 0 1
-   XC3S400 354 output3  (379)               IO_P26 0 1
-   XC3S400 358 input    (383)               IO_P27 1 0
+   XC3S400 312 output3  (337)               IO_P21 0 1
+   XC3S400 345 output3  (370)               IO_P23 0 1
+   XC3S400 349 input    (374)               IO_P24 1 0
+   XC3S400 351 output3  (376)               IO_P25 0 1
+   XC3S400 355 input    (380)               IO_P26 1 0
+   XC3S400 357 output3  (382)               IO_P27 0 1
    XC3S400 361 input    (386)               IO_P28 1 0
    XC3S400 364 input    (389)               IO_P30 1 0
-   XC3S400 366 output3  (391)               IO_P31 0 1
    XC3S400 367 input    (392)               IO_P31 1 0
-   XC3S400 369 output3  (394)               IO_P32 0 1
-   XC3S400 370 input    (395)               IO_P32 1 0
    XC3S400 373 input    (398)               IO_P33 1 0
-   XC3S400 399 output3  (424)               IO_P35 0 1
-   XC3S400 403 input    (428)               IO_P36 1 0
+   XC3S400 400 input    (425)               IO_P35 1 0
+   XC3S400 402 output3  (427)               IO_P36 0 1
    XC3S400 505 input    (530)               IO_P52 1 0
    XC3S400 507 output3  (532)               IO_P53 0 1
    XC3S400 513 output3  (538)               IO_P55 0 1
    XC3S400 519 output3  (544)               IO_P57 0 1
    XC3S400 528 output3  (553)               IO_P59 0 1
-   XC3S400 532 input    (557)               IO_P60 1 0
-   XC3S400 549 output3  (574)               IO_P63 0 1
+   XC3S400 531 output3  (556)               IO_P60 0 1
+   XC3S400 550 input    (575)               IO_P63 1 0
    XC3S400 609 output3  (634)               IO_P68 0 1
    XC3S400 612 output3  (637)               IO_P69 0 1
    XC3S400 616 input    (641)               IO_P70 1 0
@@ -103,10 +100,15 @@ Differences from test_dr and test2_dr:
    XC3S400 660 output3  (685)               IO_P79 0 1
    XC3S400 664 input    (689)               IO_P80 1 0
    XC3S400 667 input    (692)               IO_P82 1 0
+   XC3S400 678 output3  (703)               IO_P86 0 1
+   XC3S400 679 input    (704)               IO_P86 0 1
+   XC3S400 681 output3  (706)               IO_P87 0 1
+   XC3S400 682 input    (707)               IO_P87 0 1
 Differences from test2_dr and test3_dr:
-   XC3S400 217 input    (242)                IO_P2 1 0
+   XC3S400 214 input    (239)                IO_P1 1 0
    XC3S400 247 input    (272)                IO_P6 1 0
    XC3S400 253 input    (278)                IO_P8 1 0
+   XC3S400 265 input    (290)               IO_P13 1 0
 Differences from test3_dr and test4_dr:
 Candidates for output pin tests:
     XCF02S   4 (  4) control   3 (  3 ) DISABLED                   D0 1
@@ -132,10 +134,10 @@ Candidates for output pin tests:
    XC3S400 145 (170) control 144 (169 ) DISABLED              IO_P137 1
    XC3S400 202 (227) control 201 (226 ) DISABLED              IO_P140 1
    XC3S400 205 (230) control 204 (229 ) DISABLED              IO_P141 1
-   XC3S400 213 (238) control 212 (237 ) OUTPUT                  IO_P1 0
-   XC3S400 216 (241) control 215 (240 ) OUTPUT                  IO_P2 1
-   XC3S400 240 (265) control 239 (264 ) OUTPUT                  IO_P4 1
-   XC3S400 243 (268) control 242 (267 ) OUTPUT                  IO_P5 1
+   XC3S400 213 (238) control 212 (237 ) OUTPUT                  IO_P1 1
+   XC3S400 216 (241) control 215 (240 ) OUTPUT                  IO_P2 0
+   XC3S400 240 (265) control 239 (264 ) OUTPUT                  IO_P4 0
+   XC3S400 243 (268) control 242 (267 ) OUTPUT                  IO_P5 0
    XC3S400 246 (271) control 245 (270 ) OUTPUT                  IO_P6 1
    XC3S400 249 (274) control 248 (273 ) OUTPUT                  IO_P7 0
    XC3S400 252 (277) control 251 (276 ) OUTPUT                  IO_P8 1
@@ -143,24 +145,24 @@ Candidates for output pin tests:
    XC3S400 258 (283) control 257 (282 ) OUTPUT                 IO_P11 0
    XC3S400 261 (286) control 260 (285 ) OUTPUT                 IO_P12 1
    XC3S400 264 (289) control 263 (288 ) OUTPUT                 IO_P13 1
-   XC3S400 267 (292) control 266 (291 ) OUTPUT                 IO_P14 1
-   XC3S400 270 (295) control 269 (294 ) OUTPUT                 IO_P15 0
+   XC3S400 267 (292) control 266 (291 ) OUTPUT                 IO_P14 0
+   XC3S400 270 (295) control 269 (294 ) OUTPUT                 IO_P15 1
    XC3S400 303 (328) control 302 (327 ) OUTPUT                 IO_P17 0
    XC3S400 306 (331) control 305 (330 ) OUTPUT                 IO_P18 0
    XC3S400 309 (334) control 308 (333 ) OUTPUT                 IO_P20 0
-   XC3S400 312 (337) control 311 (336 ) OUTPUT                 IO_P21 1
-   XC3S400 345 (370) control 344 (369 ) OUTPUT                 IO_P23 1
-   XC3S400 348 (373) control 347 (372 ) OUTPUT                 IO_P24 0
-   XC3S400 351 (376) control 350 (375 ) DISABLED               IO_P25 1
-   XC3S400 354 (379) control 353 (378 ) DISABLED               IO_P26 0
-   XC3S400 357 (382) control 356 (381 ) DISABLED               IO_P27 1
+   XC3S400 312 (337) control 311 (336 ) OUTPUT                 IO_P21 0
+   XC3S400 345 (370) control 344 (369 ) OUTPUT                 IO_P23 0
+   XC3S400 348 (373) control 347 (372 ) OUTPUT                 IO_P24 1
+   XC3S400 351 (376) control 350 (375 ) DISABLED               IO_P25 0
+   XC3S400 354 (379) control 353 (378 ) DISABLED               IO_P26 1
+   XC3S400 357 (382) control 356 (381 ) DISABLED               IO_P27 0
    XC3S400 360 (385) control 359 (384 ) DISABLED               IO_P28 1
    XC3S400 363 (388) control 362 (387 ) DISABLED               IO_P30 1
-   XC3S400 366 (391) control 365 (390 ) DISABLED               IO_P31 0
-   XC3S400 369 (394) control 368 (393 ) DISABLED               IO_P32 0
+   XC3S400 366 (391) control 365 (390 ) DISABLED               IO_P31 1
+   XC3S400 369 (394) control 368 (393 ) DISABLED               IO_P32 1
    XC3S400 372 (397) control 371 (396 ) DISABLED               IO_P33 1
-   XC3S400 399 (424) control 398 (423 ) OUTPUT                 IO_P35 0
-   XC3S400 402 (427) control 401 (426 ) OUTPUT                 IO_P36 1
+   XC3S400 399 (424) control 398 (423 ) OUTPUT                 IO_P35 1
+   XC3S400 402 (427) control 401 (426 ) OUTPUT                 IO_P36 0
    XC3S400 408 (433) control 407 (432 ) DISABLED               IO_P40 1
    XC3S400 411 (436) control 410 (435 ) DISABLED               IO_P41 1
    XC3S400 471 (496) control 470 (495 ) DISABLED               IO_P44 1
@@ -175,8 +177,8 @@ Candidates for output pin tests:
    XC3S400 519 (544) control 518 (543 ) OUTPUT                 IO_P57 0
    XC3S400 522 (547) control 521 (546 ) DISABLED               IO_P58 1
    XC3S400 528 (553) control 527 (552 ) OUTPUT                 IO_P59 0
-   XC3S400 531 (556) control 530 (555 ) OUTPUT                 IO_P60 1
-   XC3S400 549 (574) control 548 (573 ) OUTPUT                 IO_P63 0
+   XC3S400 531 (556) control 530 (555 ) OUTPUT                 IO_P60 0
+   XC3S400 549 (574) control 548 (573 ) OUTPUT                 IO_P63 1
    XC3S400 552 (577) control 551 (576 ) DISABLED               IO_P65 1
    XC3S400 609 (634) control 608 (633 ) OUTPUT                 IO_P68 0
    XC3S400 612 (637) control 611 (636 ) OUTPUT                 IO_P69 0
@@ -194,8 +196,8 @@ Candidates for output pin tests:
    XC3S400 669 (694) control 668 (693 ) DISABLED               IO_P83 1
    XC3S400 672 (697) control 671 (696 ) OUTPUT                 IO_P84 1
    XC3S400 675 (700) control 674 (699 ) OUTPUT                 IO_P85 1
-   XC3S400 678 (703) control 677 (702 ) OUTPUT                 IO_P86 1
-   XC3S400 681 (706) control 680 (705 ) OUTPUT                 IO_P87 1
+   XC3S400 678 (703) control 677 (702 ) OUTPUT                 IO_P86 0
+   XC3S400 681 (706) control 680 (705 ) OUTPUT                 IO_P87 0
    XC3S400 714 (739) control 713 (738 ) DISABLED               IO_P89 1
    XC3S400 717 (742) control 716 (741 ) DISABLED               IO_P90 1
    XC3S400 720 (745) control 719 (744 ) DISABLED               IO_P92 1
@@ -214,19 +216,25 @@ Candidates for output pin tests:
    XC3S400 813 (838) control 812 (837 ) DISABLED              IO_P108 1
 
 Testing pin IO_P5 on XC3S400, 243 (268) control 242 (267) DC=1:
-   XC3S400 367 input    (392)               IO_P31 0 1
-   XC3S400 370 input    (395)               IO_P32 0 1
-   XC3S400 658 input    (683)               IO_P78 0 1
+   XC3S400 355 input    (380)               IO_P26 1 0
+   XC3S400 358 input    (383)               IO_P27 0 1
+   XC3S400 361 input    (386)               IO_P28 0 1
+   XC3S400 364 input    (389)               IO_P30 0 1
    XC3S400 667 input    (692)               IO_P82 0 1
-   XC3S400 241 input    (266)                IO_P4 1 0
+   XC3S400 253 input    (278)                IO_P8 1 0
    XC3S400 262 input    (287)               IO_P12 1 0
    XC3S400 265 input    (290)               IO_P13 1 0
-   XC3S400 268 input    (293)               IO_P14 1 0
+   XC3S400 271 input    (296)               IO_P15 1 0
+   XC3S400 352 input    (377)               IO_P25 0 1
    XC3S400 616 input    (641)               IO_P70 1 0
+   XC3S400 658 input    (683)               IO_P78 1 0
    XC3S400 664 input    (689)               IO_P80 1 0
-   XC3S400 217 input    (242)                IO_P2 0 1
+   XC3S400 214 input    (239)                IO_P1 0 1
    XC3S400 247 input    (272)                IO_P6 0 1
-   XC3S400 253 input    (278)                IO_P8 0 1
+   XC3S400 349 input    (374)               IO_P24 0 1
+   XC3S400 352 input    (377)               IO_P25 0 1
+   XC3S400 355 input    (380)               IO_P26 0 1
+   XC3S400 367 input    (392)               IO_P31 1 0
 Testing pin IO_P24 on XC3S400, 348 (373) control 347 (372) DC=1:
    XC3S400 244 input    (269)                IO_P5 1 0
 Testing pin IO_P23 on XC3S400, 345 (370) control 344 (369) DC=1:
@@ -257,7 +265,7 @@ Testing pin IO_P8 on XC3S400, 252 (277) control 251 (276) DC=1:
 Testing pin IO_P11 on XC3S400, 258 (283) control 257 (282) DC=1:
    XC3S400 253 input    (278)                IO_P8 0 1
 Testing pin IO_P7 on XC3S400, 249 (274) control 248 (273) DC=1:
-   XC3S400 259 input    (284)               IO_P11 1 0
+   XC3S400 259 input    (284)               IO_P11 0 1
 Testing pin IO_P10 on XC3S400, 255 (280) control 254 (279) DC=1:
 Testing pin IO_P36 on XC3S400, 402 (427) control 401 (426) DC=1:
    XC3S400 256 input    (281)               IO_P10 1 0
@@ -306,6 +314,10 @@ Testing pin IO_P77 on XC3S400, 654 (679) control 653 (678) DC=1:
 Testing pin IO_P137 on XC3S400, 145 (170) control 144 (169) DC=1:
 Testing pin IO_P135 on XC3S400, 142 (167) control 141 (166) DC=1:
 Testing pin IO_P132 on XC3S400, 124 (149) control 123 (148) DC=1:
+   XC3S400 122 input    (147)              IO_P131 1 0
+   XC3S400 122 input    (147)              IO_P131 1 0
+   XC3S400 122 input    (147)              IO_P131 1 0
+   XC3S400 122 input    (147)              IO_P131 1 0
 Testing pin IO_P130 on XC3S400, 115 (140) control 114 (139) DC=1:
 Testing pin IO_P129 on XC3S400, 112 (137) control 111 (136) DC=1:
 Testing pin IO_P127 on XC3S400, 106 (131) control 105 (130) DC=1:

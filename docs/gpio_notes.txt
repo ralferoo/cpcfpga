@@ -1,0 +1,3 @@
+prom clock is 100ns each half, 200ns for cycle = 5MHz
+prom is 2Mbits long, so takes 0.4seconds for all data
+Z
