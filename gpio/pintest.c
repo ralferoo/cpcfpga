@@ -244,6 +244,8 @@ void pintest(void)
 	char *initial_dr = (char*) malloc( totdr );
 	char *test_dr	 = (char*) malloc( totdr );
 	char *test2_dr	 = (char*) malloc( totdr );
+	char *test3_dr	 = (char*) malloc( totdr );
+	char *test4_dr	 = (char*) malloc( totdr );
 
 	make_ir_stream(sample_ir, first, second, mir, first->bsrsample, second->bsrsample);
 	make_ir_stream(exload_ir, first, second, mir, 0, 0);
@@ -258,16 +260,31 @@ void pintest(void)
 
 	send_ir_stream(exload_ir, totir);
 
+	nsleep(1000);
 	send_dr_stream(safe_dr, totdr, test_dr);
 	dump_dr_stream("test_dr during safe", test_dr, totdr);
 
+	nsleep(1000);
 	send_dr_stream(safe_dr, totdr, test2_dr);
-	dump_dr_stream("test2_dr during safe", test2_dr, totdr);
+//	dump_dr_stream("test2_dr during safe", test2_dr, totdr);
 
 	diff_dr_stream("differences from test_dr and test2_dr", test_dr, test2_dr, totdr, fpga, prom);
 
+	nsleep(1000);
+	send_dr_stream(safe_dr, totdr, test3_dr);
+//	dump_dr_stream("test3_dr during safe", test3_dr, totdr);
+
+	diff_dr_stream("differences from test2_dr and test3_dr", test2_dr, test3_dr, totdr, fpga, prom);
+
+	nsleep(1000);
+	send_dr_stream(safe_dr, totdr, test4_dr);
+//	dump_dr_stream("test4_dr during safe", test4_dr, totdr);
+
+	diff_dr_stream("differences from test3_dr and test4_dr", test3_dr, test4_dr, totdr, fpga, prom);
+
+	nsleep(1000);
 	send_dr_stream(initial_dr, totdr, test_dr);
-	dump_dr_stream("test_dr after safe", test_dr, totdr);
+//	dump_dr_stream("test_dr after safe", test_dr, totdr);
 
 	send_ir_stream(bypass_ir, totir);
 
@@ -279,6 +296,8 @@ void pintest(void)
 	free(initial_dr);
 	free(test_dr);
 	free(test2_dr);
+	free(test3_dr);
+	free(test4_dr);
 
 /*
 	// output the BSR command on both prom and fpga

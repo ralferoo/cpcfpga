@@ -176,10 +176,10 @@ inline int pinInput(int i)
 
 unsigned long long tot_nanos = 0;
 
-inline void nsleep(long nanos)
+void nsleep(long nanos)
 {
 	tot_nanos += nanos;
-#if 0
+#if 1
 	usleep(nanos);
 
 	struct timespec tv;
