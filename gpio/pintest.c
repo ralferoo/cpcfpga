@@ -188,6 +188,35 @@ void make_safe_dr_stream(char* safe_dr, int totdr, struct Device *fpga, struct D
 	copy_safe_bits(safe_dr, totdr, prom, XCF02S_VO20_BSCAN);
 }
 
+void test_candidate_pins(char* safe_dr, int totdr, struct Device *fpga, struct Device *prom)
+{
+	printf("Candidates for output pin tests:\n");
+	int d;
+	for (d=0; d<2; d++) {
+		struct Device* device = d ? fpga : prom;
+		struct BoundaryScan* cells = d ? XC3S400_TQ144_BSCAN : XCF02S_VO20_BSCAN;
+
+		for (;cells->cellnum >= 0; cells++) {
+			int pos=device->user + cells->cellnum;
+			char* port = cells->port ? cells->port : "???";
+
+			if( cells->function == BC_F_OUTPUT3 ) {
+				int ctrl = cells->control >= 0 ? cells->control + device->user : -1;
+
+				int test = ctrl >=0 ? safe_dr[ctrl] : -1;
+				int disabled = ctrl >= 0 ? (safe_dr[ctrl]==cells->disable_control) : 2;
+
+				printf("%10s %3d (%3d) control %3d (%3d ) %-8s %20s %d\n",
+					device->name, cells->cellnum, pos,
+					cells->control, ctrl, 
+					disabled ? "DISABLED" : "OUTPUT",
+					port, safe_dr[pos] );
+			}
+		}
+	}
+	printf("\n");
+}
+
 void pintest(void)
 {
 	struct Device *fpga = devFindDevice(FPGA_XC3S400);
@@ -268,23 +297,27 @@ void pintest(void)
 	send_dr_stream(safe_dr, totdr, test2_dr);
 //	dump_dr_stream("test2_dr during safe", test2_dr, totdr);
 
-	diff_dr_stream("differences from test_dr and test2_dr", test_dr, test2_dr, totdr, fpga, prom);
+	diff_dr_stream("Differences from test_dr and test2_dr", test_dr, test2_dr, totdr, fpga, prom);
 
 	nsleep(1000);
 	send_dr_stream(safe_dr, totdr, test3_dr);
 //	dump_dr_stream("test3_dr during safe", test3_dr, totdr);
 
-	diff_dr_stream("differences from test2_dr and test3_dr", test2_dr, test3_dr, totdr, fpga, prom);
+	diff_dr_stream("Differences from test2_dr and test3_dr", test2_dr, test3_dr, totdr, fpga, prom);
 
 	nsleep(1000);
 	send_dr_stream(safe_dr, totdr, test4_dr);
 //	dump_dr_stream("test4_dr during safe", test4_dr, totdr);
 
-	diff_dr_stream("differences from test3_dr and test4_dr", test3_dr, test4_dr, totdr, fpga, prom);
+	diff_dr_stream("Differences from test3_dr and test4_dr", test3_dr, test4_dr, totdr, fpga, prom);
 
 	nsleep(1000);
 	send_dr_stream(initial_dr, totdr, test_dr);
 //	dump_dr_stream("test_dr after safe", test_dr, totdr);
+
+	test_candidate_pins(initial_dr, totdr, fpga, prom);
+
+//	test_pin( fpga, "IO_P1", safe_dr, test_dr, test2_dr, test3_dr, fpga, prom );
 
 	send_ir_stream(bypass_ir, totir);
 
