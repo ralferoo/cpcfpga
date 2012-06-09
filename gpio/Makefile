@@ -18,6 +18,11 @@ $(LIBOBJS): $(wildcard *.h)
 
 $(EXOBJS): $(wildcard *.h)
 
+pintest.o: xc3s400_tq144_1532.h xcf02s_vo20.h
+
+%.h: ../docs/%.bsd ../codegen/bsdl_to_c.pl
+	../codegen/bsdl_to_c.pl <$< >$@
+
 bsr: bsr.o $(LIBOBJS)
 	gcc -o $@ $^
 
