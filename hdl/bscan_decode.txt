@@ -1,0 +1,93 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity bscan_decode is
+	port (
+		address		: out std_logic_vector(31 downto 0);
+
+		ram_rd_rq	: out std_logic;
+		ram_rd_strobe	: in  std_logic;
+		ram_wr_strobe	: out std_logic;
+
+		data_out	: out std_logic_vector(31 downto 0);		-- outputs the data code
+		data_in		: in  std_logic_vector(31 downto 0)		-- data in
+	);
+end bscan_decode;
+
+architecture impl of bscan_user is
+	component bscan_user port (
+		inst		: out std_logic_vector(7 downto 0);		-- outputs the instruction code
+		inst_strobe	: out std_logic;				-- asserted when instruction updated
+		inst_width	: in  std_logic_vector(1 downto 0);		-- application decodes to data width
+
+		data_out	: out std_logic_vector(31 downto 0);		-- outputs the data code
+		data_strobe	: out std_logic;				-- asserted when data updated
+		data_in		: in  std_logic_vector(31 downto 0) 		-- data in
+		);
+	end component;
+
+	signal r_address	: std_logic_vector(31 downto 0);
+
+	signal r_inst_strobe	: std_logic;
+	signal r_data_strobe	: std_logic;
+
+	signal r_inst 		: std_logic_vector(7 downto 0);
+	signal r_inst_width	: std_logic_vector(1 downto 0);
+
+	signal r_data_in 	: std_logic_vector(31 downto 0);
+	signal r_data_out	: std_logic_vector(31 downto 0);
+
+	signal bsr_inst 	: std_logic_vector(7 downto 0);
+	signal bsr_data 	: std_logic_vector(31 downto 0);
+
+	signal inst_address 	: std_logic_vector := '0';
+	signal inst_read 	: std_logic_vector := '0';
+	signal inst_write 	: std_logic_vector := '0';
+
+begin
+	bscan_user_1 : bscan_user port map (
+		inst => r_inst, inst_strobe => r_inst_strobe, inst_width => r_inst_width,
+		data_in => r_data_in, data_strobe => r_data_strobe, data_out => r_data_out );
+
+	-- decode instruction
+	process_inst : process(r_inst_strobe)
+	begin
+						inst_address	<= '0';
+						inst_read	<= '0';
+						inst_write	<= '0';
+
+		case r_inst(7 downto 0) is
+			when "0000001"	=>	inst_width	<= "11";		-- 01 = set address (32 bit)
+						inst_address	<= '1';
+						
+			when "0000010"	=>	inst_width	<= "01";		-- 02 = read byte
+						inst_read	<= '1';
+						
+			when "0000011"	=>	inst_width	<= "01";		-- 03 = write byte
+						inst_write	<= '1';
+						
+			when others	=>	inst_width	<= "00";		-- bypass
+		end case;
+	end process;
+	inst <= r_inst;
+	inst_strobe <= r_inst_strobe;
+
+	-- provide data to jtag
+	process_data_in : process(inst_address, inst_read, inst_write, inst_rd_strobe)
+	begin
+		if inst_address'event and inst_address = '1' then
+			r_data_in	<= address;
+
+		elsif inst_rd_strobe'event and inst_rd_strobe='1' and inst_read = '1' then
+			r_data_in	<= data_in;
+
+		elsif inst_write'event and inst_write='1' then
+			r_data_in	<= r_data_out;
+	end process;
+	data_out <= r_data_out;
+	data_strobe <= r_data_strobe;
+
+end impl;
+
+
