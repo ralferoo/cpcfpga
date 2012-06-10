@@ -1,6 +1,10 @@
 
 	org #0000
 
+	ld bc,#fab6
+	ld a,#7f
+	out (c),a			; disable upper rom, 
+	
 ; BC=FADD throughout
 ; IXH = errors over file
 ; IXL = lines within file
@@ -113,7 +117,7 @@ floop:
 	or l
 	jr nz,floop
 
-;	ld h,#c0
+	ld h,#c0
 	inc de
 	jr floop
 
