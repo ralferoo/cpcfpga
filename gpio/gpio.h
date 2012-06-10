@@ -111,6 +111,8 @@ void real_test_pin( struct Device *device, struct BoundaryScan* cells,
 		struct Device *fpga, struct Device *prom);
 void test_pin( struct Device *device, char* pin, char* safe_dr, int totdr, char* test_dr, char* test2_dr, char* test3_dr,
 		struct Device *fpga, struct Device *prom);
+void find_pin( struct Device *device, char* pin, struct Device *fpga, struct Device *prom,
+		int *read_pin, int *write_pin, int *control_pin, int *control_disable);
 
 ///////////////////////////////////////////////////////////////////////////
 

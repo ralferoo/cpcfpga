@@ -1,4 +1,4 @@
-TARGETS=scan prom_dump prom_erase prom_program prom_reload bsr pintest
+TARGETS=scan prom_dump prom_erase prom_program prom_reload bsr pintest sramtest
 LIBOBJS=jtag.o hex.o jtag.o prom.o pinhelpers.o
 EXOBJS=$(patsubst %,%.o,$(TARGETS))
 
@@ -18,12 +18,15 @@ $(LIBOBJS): $(wildcard *.h)
 
 $(EXOBJS): $(wildcard *.h)
 
-pintest.o: xc3s400_tq144_1532.h xcf02s_vo20.h
+pinhelpers.o: xc3s400_tq144_1532.h xcf02s_vo20.h
 
 %.h: ../docs/%.bsd ../codegen/bsdl_to_c.pl
 	../codegen/bsdl_to_c.pl <$< >$@
 
 bsr: bsr.o $(LIBOBJS)
+	gcc -o $@ $^
+
+sramtest: sramtest.o $(LIBOBJS)
 	gcc -o $@ $^
 
 pintest: pintest.o $(LIBOBJS)

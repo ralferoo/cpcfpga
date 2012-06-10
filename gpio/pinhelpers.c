@@ -284,3 +284,39 @@ void test_pin( struct Device *device, char* pin, char* safe_dr, int totdr, char*
 
 	printf("Can't find output pin %s to test in device %s!\n", pin, device->name);
 }
+
+void find_pin( struct Device *device, char* pin, struct Device *fpga, struct Device *prom,
+		int *read_pin, int *write_pin, int *control_pin, int *control_disable)
+{
+	struct BoundaryScan* cells;
+	if (device == prom)
+		cells = XCF02S_VO20_BSCAN;
+	else if (device == fpga)
+		cells = XC3S400_TQ144_BSCAN;
+	else {
+		printf("Can't test pin %s as device isn't FPGA or PROM!\n", pin);
+		return;
+	}
+
+	*read_pin = *write_pin = *control_pin = -1;
+	*control_disable = 0;
+
+	for (;cells->cellnum >= 0; cells++) {
+		if( cells->port && strcmp(cells->port, pin)==0 ) {
+			switch (cells->function) {
+			case BC_F_OUTPUT3:
+				*write_pin	 = device->user + cells->cellnum;
+				*control_pin	 = device->user + cells->control;
+				*control_disable = cells->disable_control;
+				break;
+			case BC_F_INPUT:
+				*read_pin	 = device->user + cells->cellnum;
+				break;
+			}
+		}
+	}
+
+	if (*read_pin == -1 && *write_pin == -1 && *control_pin == -1) {
+		printf("Can't find pin %s to test in device %s!\n", pin, device->name);
+	}
+}
