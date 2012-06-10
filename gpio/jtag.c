@@ -13,7 +13,7 @@
 #define GPIO_TMS 21
 #define GPIO_TCK 17
 #define GPIO_TDI 4
-#define GPIO_TDO 22
+#define GPIO_TDO 18 //22
 
 int g_noisy = 0;
 
