@@ -316,7 +316,7 @@ void sramtest(void)
 	int addr;
 	printf("Writing dummy data\n");
 	char* data = "This is test data...";
-	for (addr=0xc000;addr<0x10000;addr++) {
+	for (addr=0xfe00;addr<0x10000;addr++) {
 		if ( (addr&0x1ff)==0 )
 			printf("Addr: %05x\n", addr);
 
@@ -341,6 +341,51 @@ void sramtest(void)
 					read_oe, write_oe, control_oe, control_disable_oe);
 	
 //		printf(" read byte at %05x is %02x\n", addr, byte);
+	}
+
+	printf("Testing low bits:\n");
+
+	for (addr=0; addr<255; addr++) {
+		int obyte = (addr * 17) & 255;
+		int byte = write_sram_byte(safe_dr, totdr, addr, obyte,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+	}
+	for (addr=0; addr<255; addr++) {
+		int obyte = (addr * 17) & 255;
+		int byte = read_sram_byte(safe_dr, totdr, addr, 
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		if (byte != obyte)
+			printf("Byte at %05x was %02x not %02x\n", addr, byte, obyte);
+	}
+
+	printf("Testing high bits:\n");
+
+	for (addr=0; addr< (1<<19); addr+=256) {
+		int obyte = (addr>>8)*5 + (addr>>16)*11;
+		int byte = write_sram_byte(safe_dr, totdr, addr, obyte,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+	}
+
+	for (addr=0; addr< (1<<19); addr+=256) {
+		int obyte = (addr>>8)*5 + (addr>>16)*11;
+		int byte = read_sram_byte(safe_dr, totdr, addr, 
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		if (byte != (obyte&0xff))
+			printf("Byte at %05x was %02x not %02x\n", addr, byte, obyte);
 	}
 
 	// flash
