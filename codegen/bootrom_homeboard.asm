@@ -102,10 +102,20 @@
 	ld e,0
 	exx
 
+	ld hl,#c000
 floop:
 	ld bc,#fade
+	out (c),e
+
+	ld (hl),e
+	inc hl
+	ld a,h
+	or l
+	jr nz,floop
+
+;	ld h,#c0
 	inc de
-	out (c),d
+	jr floop
 
 	dec c
 	dec c

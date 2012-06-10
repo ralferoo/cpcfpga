@@ -90,7 +90,7 @@ error:
 program: build/.programmed
 
 build/.programmed: build/$(XILINX_TOP_NAME).mcs
-	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase ; gpio/prom_program ; gpio/prom_reload" < build/$(XILINX_TOP_NAME).mcs
+	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase && gpio/prom_program && gpio/prom_reload" < build/$(XILINX_TOP_NAME).mcs
 	@touch $@
 
 actelprogram: build/$(TOP_NAME)_fp.tcl $(PDB_NAME)
