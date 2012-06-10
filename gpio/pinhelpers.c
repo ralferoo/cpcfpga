@@ -1,7 +1,5 @@
 #include "gpio.h"
 
-#include <string.h>
-
 #include "xc3s400_tq144_1532.h"
 #include "xcf02s_vo20.h"
 

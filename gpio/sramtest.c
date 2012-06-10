@@ -1,5 +1,141 @@
 #include "gpio.h"
 
+void dump_bits(char *bits, int read, int write, int control, int control_disable)
+{
+	printf("%d%c%d ", bits[read], bits[control]==control_disable ? 'R' : 'W', bits[write]);
+}
+
+int dump_sram_bits(char *bits,
+			int *read_a, int *write_a, int *control_a, int *control_disable_a,
+			int *read_d, int *write_d, int *control_d, int *control_disable_d,
+			int read_we, int write_we, int control_we, int control_disable_we,
+			int read_oe, int write_oe, int control_oe, int control_disable_oe)
+{
+	int i;
+	printf("A: ");
+	for (i=18; i>=0; i--)
+		dump_bits(bits, read_a[i], write_a[i], control_a[i], control_disable_a[i]);
+	printf("\nD: ");
+	for (i=7; i>=0; i--)
+		dump_bits(bits, read_d[i], write_d[i], control_d[i], control_disable_d[i]);
+	printf("    WE: ");
+	dump_bits(bits, read_we, write_we, control_we, control_disable_we);
+	printf("OE: ");
+	dump_bits(bits, read_oe, write_oe, control_oe, control_disable_oe);
+	printf("\n");
+}
+
+int read_sram_byte(char *safe_dr, int totdr, int addr,
+			int *read_a, int *write_a, int *control_a, int *control_disable_a,
+			int *read_d, int *write_d, int *control_d, int *control_disable_d,
+			int read_we, int write_we, int control_we, int control_disable_we,
+			int read_oe, int write_oe, int control_oe, int control_disable_oe)
+{
+	char *out_dr	= (char*) malloc( totdr );
+	char *result_dr	= (char*) malloc( totdr );
+
+	memcpy(out_dr, safe_dr, totdr);
+
+	int i;
+	for (i=0; i<19; i++) {
+		out_dr[   write_a[i] ] = (addr>>i)&1;
+		out_dr[ control_a[i] ] = 1-control_disable_a[i];	// output
+	}
+	for (i=0; i<8; i++) {
+		out_dr[ control_d[i] ] =   control_disable_d[i];	// input
+	}
+
+	out_dr[   write_oe ] = 0;
+	out_dr[ control_oe ] = 1-control_disable_a[i];	// output
+
+	out_dr[   write_we ] = 1;
+	out_dr[ control_we ] = 1-control_disable_a[i];	// output
+
+	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
+	nsleep(50);							// wait for read
+
+	out_dr[   write_oe ] = 1;					// disable output
+	send_dr_stream(safe_dr, totdr, result_dr);			// get data from chip
+
+#if 0
+//	dump_dr_stream("bits after read", result_dr, totdr);
+	dump_sram_bits(result_dr,
+			read_a, write_a, control_a, control_disable_a,
+			read_d, write_d, control_d, control_disable_d,
+			read_we, write_we, control_we, control_disable_we,
+			read_oe, write_oe, control_oe, control_disable_oe);
+#endif
+
+	int byte = 0;
+	for (i=0; i<8; i++) {
+		if (result_dr[ read_d[i] ])
+			byte |= 1<<i;
+	}
+
+	free(out_dr);
+	free(result_dr);
+
+	return byte;
+}
+
+int write_sram_byte(char *safe_dr, int totdr, int addr, int byte,
+			int *read_a, int *write_a, int *control_a, int *control_disable_a,
+			int *read_d, int *write_d, int *control_d, int *control_disable_d,
+			int read_we, int write_we, int control_we, int control_disable_we,
+			int read_oe, int write_oe, int control_oe, int control_disable_oe)
+{
+	char *out_dr	= (char*) malloc( totdr );
+	char *result_dr	= (char*) malloc( totdr );
+
+	memcpy(out_dr, safe_dr, totdr);
+
+	int i;
+	for (i=0; i<19; i++) {
+		out_dr[   write_a[i] ] = (addr>>i)&1;
+		out_dr[ control_a[i] ] = 1-control_disable_a[i];	// output
+	}
+	for (i=0; i<8; i++) {
+		out_dr[   write_d[i] ] = (byte>>i)&1;
+		out_dr[ control_d[i] ] = 1-control_disable_d[i];	// output
+	}
+
+	out_dr[   write_oe ] = 1;
+	out_dr[ control_oe ] = 1-control_disable_a[i];	// output
+
+	out_dr[   write_we ] = 0;
+	out_dr[ control_we ] = 1-control_disable_a[i];	// output
+
+	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
+	nsleep(50);							// wait for read
+
+	out_dr[   write_oe ] = 0;					//  enable output
+	out_dr[   write_we ] = 1;					// disable write
+	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
+//	nsleep(5);							// wait for read
+
+	send_dr_stream(safe_dr, totdr, result_dr);			// get data from chip
+
+#if 0
+//	dump_dr_stream("bits after read", result_dr, totdr);
+	dump_sram_bits(result_dr,
+			read_a, write_a, control_a, control_disable_a,
+			read_d, write_d, control_d, control_disable_d,
+			read_we, write_we, control_we, control_disable_we,
+			read_oe, write_oe, control_oe, control_disable_oe);
+#endif
+
+	byte = 0;
+	for (i=0; i<8; i++) {
+		if (result_dr[ read_d[i] ])
+			byte |= 1<<i;
+	}
+
+	free(out_dr);
+	free(result_dr);
+
+	return byte;
+}
+
 void sramtest(void)
 {
 	struct Device *fpga = devFindDevice(FPGA_XC3S400);
@@ -173,6 +309,38 @@ void sramtest(void)
 			printf(" %3d", k);
 		}
 		printf("\n");
+	}
+	printf("WE: rd=%3d wr=%3d con=%3d dis=%d\n", read_we, write_we, control_we, control_disable_we);
+	printf("OE: rd=%3d wr=%3d con=%3d dis=%d\n", read_oe, write_oe, control_oe, control_disable_oe);
+
+	int addr;
+	printf("Writing dummy data\n");
+	char* data = "This is test data...";
+	for (addr=0xc000;addr<0x10000;addr++) {
+		if ( (addr&0x1ff)==0 )
+			printf("Addr: %05x\n", addr);
+
+//	for (;*data;addr++,data++) {
+		int obyte = *data;
+		if (obyte) data++; 
+		else obyte = addr + (addr>>11) + (addr>>16);
+		int byte = write_sram_byte(safe_dr, totdr, addr, obyte,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+	
+//		printf("write byte at %05x is %02x (should be %02x)\n", addr, byte, obyte);
+	}
+
+	for (addr=0; addr<48; addr++) {
+		int byte = read_sram_byte(safe_dr, totdr, addr,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+	
+//		printf(" read byte at %05x is %02x\n", addr, byte);
 	}
 
 	// flash
