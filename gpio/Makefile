@@ -1,5 +1,5 @@
 TARGETS=scan prom_dump prom_erase prom_program prom_reload bsr pintest
-LIBOBJS=jtag.o hex.o jtag.o prom.o
+LIBOBJS=jtag.o hex.o jtag.o prom.o pinhelpers.o
 EXOBJS=$(patsubst %,%.o,$(TARGETS))
 
 all: $(TARGETS)

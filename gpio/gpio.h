@@ -95,3 +95,23 @@ void promReload(struct Device* prom);
 void jtagInit(void);
 
 ///////////////////////////////////////////////////////////////////////////
+
+void make_ir_stream(char* sample, struct Device *first, struct Device *second, int mir, 
+		 int first_cmd, int second_cmd);
+void send_ir_stream(char* ir_stream, int totir);
+void sample_dr_stream(char* dr_stream, int totdr);
+void send_dr_stream(char* dr_stream, int totdr, char* result_stream);
+void dump_dr_stream(const char* name, char* dr_stream, int totdr);
+void diff_dr_stream(const char* name, const char* ignore, char* dr_stream, char* dr2_stream, int totdr, struct Device *fpga, struct Device *prom);
+void copy_safe_bits(char* safe_dr, int totdr, struct Device *device, struct BoundaryScan *cells);
+void make_safe_dr_stream(char* safe_dr, int totdr, struct Device *fpga, struct Device *prom);
+void test_candidate_pins(char* safe_dr, int totdr, struct Device *fpga, struct Device *prom);
+void real_test_pin( struct Device *device, struct BoundaryScan* cells,
+		char* safe_dr, int totdr, char* test_dr, char* test2_dr, char* test3_dr,
+		struct Device *fpga, struct Device *prom);
+void test_pin( struct Device *device, char* pin, char* safe_dr, int totdr, char* test_dr, char* test2_dr, char* test3_dr,
+		struct Device *fpga, struct Device *prom);
+
+///////////////////////////////////////////////////////////////////////////
+
+
