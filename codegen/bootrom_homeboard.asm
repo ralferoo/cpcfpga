@@ -91,14 +91,25 @@
 	out (c),d
 	out (c),e			; ink 0
 
+	ld de,#014a
+	out (c),d
+	out (c),e			; ink 1
+
+	ld de,#0253
+	out (c),d
+	out (c),e			; ink 2
+
+	ld de,#034c
+	out (c),d
+	out (c),e			; ink 3
+
 ;	ld de,#1042
 ;	out (c),d
 ;;	out (c),e			; border
 
-	ld hl,0
+	ld hl,#c000
 aloop:
 	nop
-	inc hl
 	ld a,h
 	rra
 	rra
@@ -113,7 +124,15 @@ aloop:
 	out (c),c
 	out (c),a
 
-	ld (hl),l
+	ld (hl),e
+	inc hl
+
+	ld a,h
+	or l
+	jr nz, aloop
+	nop
+	ld h,#c0
+	inc e
 	jr aloop
 
 
