@@ -1,6 +1,8 @@
 
 	org #0000
 
+	di
+
 	ld bc,#fab6
 	ld a,#7f
 	out (c),a			; disable upper rom, 
@@ -89,6 +91,39 @@
 	out (c),d
 	out (c),e			; ink 0
 
+;	ld de,#1042
+;	out (c),d
+;;	out (c),e			; border
+
+	ld hl,0
+aloop:
+	nop
+	inc hl
+	ld a,h
+	rra
+	rra
+	rra
+	ld bc,#fade
+	out (c),a
+
+	ld a,l
+	and #1f
+	or #40
+	ld bc,#7f10
+	out (c),c
+	out (c),a
+
+	ld (hl),l
+	jr aloop
+
+
+	end
+
+
+	ld de,#0044
+	out (c),d
+	out (c),e			; ink 0
+
 	ld de,#014a
 	out (c),d
 	out (c),e			; ink 1
@@ -127,13 +162,6 @@ qqq:
 ;	inc e
 
 	ld (hl),h
-
-aloop:
-	inc a
-	and #3f
-	or #40
-	out (c),a
-	jr aloop
 
 
 
