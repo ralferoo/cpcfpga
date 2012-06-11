@@ -59,8 +59,9 @@ XILINX_VOLTAGE		= 1.2
 XILINX_IOSTD		= LVTTL
 
 #XILINX_INSTALL_DIR	= /home/xilinx/ISE_DS
+#XILINX_SETTINGS_FILE	= settings32.sh
 XILINX_INSTALL_DIR	= /opt/Xilinx/14.1/ISE_DS
-XILINX_SETTINGS_FILE	= settings32.sh
+XILINX_SETTINGS_FILE	= settings64.sh
 
 ###########################################################################
 #
@@ -89,11 +90,7 @@ log:
 error:
 	grep 'E:' build/$(TOP_NAME).srr
 
-program: build/.programmed
-
-build/.programmed: build/$(XILINX_TOP_NAME)_rom.mcs
-	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase && gpio/prom_program && gpio/prom_reload" < build/$(XILINX_TOP_NAME)_rom.mcs
-	@touch $@
+program: build/.xilinxprogrammed
 
 actelprogram: build/$(TOP_NAME)_fp.tcl $(PDB_NAME)
 	@echo Flashing device...
@@ -376,8 +373,9 @@ emu:
 #
 # xilinx rules
 
-BUILD_BMM_FILE	= $(if ($BMM_FILE),build/$(BMM_FILE),)
+BUILD_BMM_FILE	= $(if $(BMM_FILE),build/$(BMM_FILE),)
 BUILD_BMM_BD_FILE = $(patsubst %.bmm,%_bd.bmm,$(BUILD_BMM_FILE))
+XILINX_MCS_FILE	= $(XILINX_TOP_NAME)$(if $(BMM_FILE),_rom,).mcs
 
 XILINX_WRAPPER		= build/xilinx-wrapper
 INTSTYLE		= 
@@ -398,7 +396,11 @@ TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3 $(MTFLAGS)
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
 PROMGEN_FLAGS    ?= -w -u 0               # flags that control the MCS/EXO file generation
 
-xilinx: build/$(XILINX_TOP_NAME)_rom.mcs build/$(XILINX_TOP_NAME).bit
+build/.xilinxprogrammed: build/$(XILINX_MCS_FILE)
+	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase && gpio/prom_program && gpio/prom_reload" < build/$(XILINX_MCS_FILE)
+	@touch $@
+
+xilinx: build/$(XILINX_MCS_FILE) build/$(XILINX_TOP_NAME).bit
 
 build/$(XILINX_TOP_NAME).ngc: $(XILINX_VHD_FILES) build/$(XILINX_TOP_NAME).xst $(XILINX_WRAPPER) build/$(XILINX_TOP_NAME).prj
 	$(XILINX_WRAPPER) xst $(XST_FLAGS) -ifn $(XILINX_TOP_NAME).xst -ofn $(XILINX_TOP_NAME).syr
