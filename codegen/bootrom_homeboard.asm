@@ -111,7 +111,22 @@ floop:
 	ld bc,#fade
 	out (c),e
 
-	ld (hl),e
+	ld a,e
+	add a,l
+	add a,h
+
+	ld c,d
+	ld a,e
+
+	rr c
+	rra
+	rr c
+	rra
+	rr c
+	rra
+
+
+	ld (hl),a
 	inc hl
 	ld a,h
 	or l

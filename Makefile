@@ -21,6 +21,7 @@ XILINX_VHD_FILES = $(sort hdl/$(XILINX_TOP_NAME).vhd $(VHD_FILES))
 PDC_FILES =constraint/$(ACTEL_TOP_NAME)_pins.pdc
 SDC_FILES =$(wildcard constraint/$(ACTEL_TOP_NAME)_sdc.sdc)
 UCF_FILE  = constraint/$(XILINX_TOP_NAME).ucf
+#BMM_FILE  = constraint/$(XILINX_TOP_NAME).bmm
 
 ###########################################################################
 #
@@ -58,7 +59,7 @@ XILINX_VOLTAGE		= 1.2
 XILINX_IOSTD		= LVTTL
 
 XILINX_INSTALL_DIR	= /home/xilinx/ISE_DS
-XILINX_SETTINGS_FILE	= settings64.sh
+XILINX_SETTINGS_FILE	= settings32.sh
 
 ###########################################################################
 #
@@ -237,7 +238,8 @@ hdl/%.vhd: codegen/%.asm codegen/makerom.py build/.dummy
 hdl/evalboard.vhd: codegen/evalboard.pl hdl/cpc.vhd hdl/bootrom.vhd
 	codegen/evalboard.pl <hdl/cpc.vhd >$@
 
-hdl/homeboard.vhd: codegen/homeboard.pl hdl/cpc.vhd hdl/bootrom_homeboard.vhd
+# hdl/bootrom_homeboard.vhd replaced by bootrom_bram.vhd
+hdl/homeboard.vhd: codegen/homeboard.pl hdl/cpc.vhd
 	codegen/homeboard.pl <hdl/cpc.vhd >$@
 
 hdl/bench_cpc.vhd: codegen/bench_cpc.pl hdl/cpc.vhd hdl/bench_cpc_bootrom.vhd
@@ -380,6 +382,7 @@ MTFLAGS			= -mt on
 XST_FLAGS		= $(INTSTYLE)
 NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo -nt timestamp  # ngdbuild flags
 NGDBUILD_FLAGS   += $(if $(UCF_FILE),-uc ../$(UCF_FILE),-i)         # append the UCF file option if it is specified
+NGDBUILD_FLAGS   += $(if $(BMM_FILE),-bm ../$(BMM_FILE),)           # append the BMM file option if it is specified
 
 EFFORT		 = std
 #EFFORT		 = high
@@ -396,7 +399,7 @@ xilinx: build/$(XILINX_TOP_NAME).mcs
 build/$(XILINX_TOP_NAME).ngc: $(XILINX_VHD_FILES) build/$(XILINX_TOP_NAME).xst $(XILINX_WRAPPER) build/$(XILINX_TOP_NAME).prj
 	$(XILINX_WRAPPER) xst $(XST_FLAGS) -ifn $(XILINX_TOP_NAME).xst -ofn $(XILINX_TOP_NAME).syr
 	
-build/%.ngd: build/%.ngc $(UCF_FILE)
+build/%.ngd: build/%.ngc $(UCF_FILE) $(BMM_FILE)
 	$(XILINX_WRAPPER) ngdbuild $(NGDBUILD_FLAGS) -p $(XILINX_PART) $*.ngc $*.ngd
 
 build/%_map.ncd build/%.pcf: build/%.ngd
@@ -522,6 +525,14 @@ build/$(XILINX_TOP_NAME).ut: build/.dummy
 	@echo -g DonePipe:No >>$@
 	@echo -g DriveDone:No >>$@
 
+# useful source: http://home.mnet-online.de/al/BRAM_Bitstreams.html
+#
+# this requires srecord package, see http://srecord.sourceforge.net/
+build/%.mem: build/%.pad
+	srec_cat $< -binary -o $@ -vmem 8
+
+build/%.pad: build/%.bin
+	dd if=$< of=$@ bs=2048 conv=sync
 
 ##############################################################################
 #
