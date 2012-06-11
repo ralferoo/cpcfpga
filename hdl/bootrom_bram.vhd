@@ -45,7 +45,7 @@ begin
 
 	bootrom_u0 : RAMB16_S9 port map (
 		DI => (others=>'0'), DIP => "0",
-		ADDR => addr(10 downto 0), EN => '1', WE => '0', SSR => '1',
+		ADDR => addr(10 downto 0), EN => '1', WE => '0', SSR => '0',
 		CLK => clk, DO => dout, DOP => doutp);
 
 	data <= dout when addr(13)='1' else (others=>doutp(0));

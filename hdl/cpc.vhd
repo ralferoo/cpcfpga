@@ -383,7 +383,7 @@ architecture impl of cpc is
                               A=>z80_A, DI=>z80_DI, DO=>z80_DO );
 	z80_IORD_n <= z80_IORQ_n OR z80_RD_n;
 	z80_IOWR_n <= z80_IORQ_n OR z80_WR_n;
-	bootrom_clk <= z80_clk;
+	bootrom_clk <= clk16; --z80_clk;
 
         z80_INT_n <=   ga_INT_n;
 --	process(reset_n,ga_INT_n,z80_a,z80_rd_n,z80_mreq_n,z80_m1_n,z80_iorq_n)

@@ -21,7 +21,7 @@ XILINX_VHD_FILES = $(sort hdl/$(XILINX_TOP_NAME).vhd $(VHD_FILES))
 PDC_FILES =constraint/$(ACTEL_TOP_NAME)_pins.pdc
 SDC_FILES =$(wildcard constraint/$(ACTEL_TOP_NAME)_sdc.sdc)
 UCF_FILE  = constraint/$(XILINX_TOP_NAME).ucf
-#BMM_FILE  = constraint/$(XILINX_TOP_NAME).bmm
+BMM_FILE  = $(XILINX_TOP_NAME).bmm
 
 ###########################################################################
 #
@@ -58,7 +58,8 @@ XILINX_SPEED		= STD
 XILINX_VOLTAGE		= 1.2
 XILINX_IOSTD		= LVTTL
 
-XILINX_INSTALL_DIR	= /home/xilinx/ISE_DS
+#XILINX_INSTALL_DIR	= /home/xilinx/ISE_DS
+XILINX_INSTALL_DIR	= /opt/Xilinx/14.1/ISE_DS
 XILINX_SETTINGS_FILE	= settings32.sh
 
 ###########################################################################
@@ -90,8 +91,8 @@ error:
 
 program: build/.programmed
 
-build/.programmed: build/$(XILINX_TOP_NAME).mcs
-	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase && gpio/prom_program && gpio/prom_reload" < build/$(XILINX_TOP_NAME).mcs
+build/.programmed: build/$(XILINX_TOP_NAME)_rom.mcs
+	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase && gpio/prom_program && gpio/prom_reload" < build/$(XILINX_TOP_NAME)_rom.mcs
 	@touch $@
 
 actelprogram: build/$(TOP_NAME)_fp.tcl $(PDB_NAME)
@@ -375,6 +376,9 @@ emu:
 #
 # xilinx rules
 
+BUILD_BMM_FILE	= $(if ($BMM_FILE),build/$(BMM_FILE),)
+BUILD_BMM_BD_FILE = $(patsubst %.bmm,%_bd.bmm,$(BUILD_BMM_FILE))
+
 XILINX_WRAPPER		= build/xilinx-wrapper
 INTSTYLE		= 
 #INTSTYLE		= -intstyle silent 
@@ -382,7 +386,7 @@ MTFLAGS			= -mt on
 XST_FLAGS		= $(INTSTYLE)
 NGDBUILD_FLAGS   ?= $(INTSTYLE) -dd _ngo -nt timestamp  # ngdbuild flags
 NGDBUILD_FLAGS   += $(if $(UCF_FILE),-uc ../$(UCF_FILE),-i)         # append the UCF file option if it is specified
-NGDBUILD_FLAGS   += $(if $(BMM_FILE),-bm ../$(BMM_FILE),)           # append the BMM file option if it is specified
+NGDBUILD_FLAGS   += $(if $(BMM_FILE),-bm $(BMM_FILE),)           # append the BMM file option if it is specified
 
 EFFORT		 = std
 #EFFORT		 = high
@@ -394,12 +398,12 @@ TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3 $(MTFLAGS)
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
 PROMGEN_FLAGS    ?= -w -u 0               # flags that control the MCS/EXO file generation
 
-xilinx: build/$(XILINX_TOP_NAME).mcs
+xilinx: build/$(XILINX_TOP_NAME)_rom.mcs build/$(XILINX_TOP_NAME).bit
 
 build/$(XILINX_TOP_NAME).ngc: $(XILINX_VHD_FILES) build/$(XILINX_TOP_NAME).xst $(XILINX_WRAPPER) build/$(XILINX_TOP_NAME).prj
 	$(XILINX_WRAPPER) xst $(XST_FLAGS) -ifn $(XILINX_TOP_NAME).xst -ofn $(XILINX_TOP_NAME).syr
 	
-build/%.ngd: build/%.ngc $(UCF_FILE) $(BMM_FILE)
+build/%.ngd: build/%.ngc $(UCF_FILE) $(BUILD_BMM_FILE)
 	$(XILINX_WRAPPER) ngdbuild $(NGDBUILD_FLAGS) -p $(XILINX_PART) $*.ngc $*.ngd
 
 build/%_map.ncd build/%.pcf: build/%.ngd
@@ -408,12 +412,18 @@ build/%_map.ncd build/%.pcf: build/%.ngd
 build/%.ncd: build/%_map.ncd build/%.pcf
 	$(XILINX_WRAPPER) par $(PAR_FLAGS) $*_map.ncd $*.ncd $*.pcf
 
-build/%.bit: build/%.ncd build/$(XILINX_TOP_NAME).ut
+build/%.bit build/%_bd.bmm: build/%.ncd build/$(XILINX_TOP_NAME).ut
 	$(XILINX_WRAPPER) bitgen $(BITGEN_FLAGS) -f $(XILINX_TOP_NAME).ut $*.ncd
+
+build/%_rom.bit: build/%.bit build/bootrom_%.mem build/%_bd.bmm
+	$(XILINX_WRAPPER) data2mem -bm $*_bd.bmm -bd bootrom_$*.mem -bt $*.bit -o b $*_rom.bit
 
 build/%.mcs: build/%.bit
 	$(XILINX_WRAPPER) promgen $(PROMGEN_FLAGS) $*.bit -p mcs
 	
+build/%.bmm: constraint/%.bmm
+	@cp $< $@
+
 $(XILINX_WRAPPER): build/.dummy
 	@echo '#!/bin/bash' >$@
 	@echo source $(XILINX_INSTALL_DIR)/$(XILINX_SETTINGS_FILE) $(XILINX_INSTALL_DIR) '>/dev/null' >>$@

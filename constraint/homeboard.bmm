@@ -22,7 +22,8 @@
 
 //        ADDRESS_RANGE RAMB16
             BUS_BLOCK
-                homeboard/bootrom_0/bootrom_u0 [7:0];
+                bootrom_0/bootrom_u0 [7:0];
+//                homeboard/bootrom_0/bootrom_u0 [7:0];
 //                homeboard/bootrom_0/bootrom_ramb16_s9 [7:0];
 //		bootrom_u0 [7:0];
             END_BUS_BLOCK;

@@ -83,7 +83,7 @@
 
 
 	ld bc,#7f81
-	out (c),c			; mode 1
+;	out (c),c			; mode 1
 
 	ld de,#0044
 	out (c),d
@@ -101,8 +101,57 @@
 	out (c),d
 	out (c),e			; ink 3
 
+	ld de,#1042
+	out (c),d
+	out (c),e			; border
 
+	ld hl,#c010
+	ld a,0
+qqq:
+	inc de
+	ld a,d
+	and #3f
+	or #40
+	ld d,a
+	out (c),d
+
+	ld (hl),d
+	inc hl
+	jr qqq
+
+;	ld bc,#fade
+;	out (c),e
+;	ld a,h
+;	or l
+;	jr nz, qqq
+;	inc e
+
+	ld (hl),h
+
+aloop:
+	inc a
+	and #3f
+	or #40
+	out (c),a
+	jr aloop
+
+
+
+	ld e,0
 	ld hl,#c000
+gloop:
+	ld (hl),e
+	inc hl
+
+	ld a,l
+	or h
+	jr nz,gloop
+	
+	inc e
+	ld h,#c0
+	jr gloop
+
+
 	ld e,0
 	exx
 
