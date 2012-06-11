@@ -41,12 +41,16 @@ architecture impl of bootrom_bram is
 	signal dout	: std_logic_vector(7 downto 0);
 	signal doutp	: std_logic_vector(0 downto 0);
 
+	signal not_clk	: std_logic;
+
 begin
 
 	bootrom_u0 : RAMB16_S9 port map (
 		DI => (others=>'0'), DIP => "0",
 		ADDR => addr(10 downto 0), EN => '1', WE => '0', SSR => '0',
-		CLK => clk, DO => dout, DOP => doutp);
+		CLK => not_clk, DO => dout, DOP => doutp);
+
+	not_clk <= clk;
 
 	data <= dout when addr(13)='1' else (others=>doutp(0));
 

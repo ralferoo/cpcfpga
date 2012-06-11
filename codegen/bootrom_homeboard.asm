@@ -107,9 +107,26 @@
 ;	out (c),d
 ;;	out (c),e			; border
 
+	
+	ld de,#4000
+	ld hl,src
+	ld bc,2048
+	ldir
+
+;	jp #4000
+
+	nop
+
+src:
+	nop
+
 	ld hl,#c000
 aloop:
+;	nop
+	dec e
+
 	nop
+
 	ld a,h
 	rra
 	rra
@@ -134,6 +151,10 @@ aloop:
 	ld h,#c0
 	inc e
 	jr aloop
+
+	nop
+
+	inc hl
 
 
 	end
