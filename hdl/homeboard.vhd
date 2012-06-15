@@ -85,11 +85,13 @@ end component;
 	signal bootrom_data		: std_logic_vector(7 downto 0);
 	signal bootrom_addr		: std_logic_vector(13 downto 0);
 	signal bootrom_clk		: std_logic;
+	signal clk16_180		: std_logic;
 
 	begin
 
 	-- bootstrap code
-	bootrom_0 : bootrom_bram port map( clk=>bootrom_clk, addr=>bootrom_addr, data=>bootrom_data );
+	bootrom_0 : bootrom_bram port map( clk=>clk16_180, addr=>bootrom_addr, data=>bootrom_data );
+	clk16_180 <= not clk16;
 
 	-- PLL fake
 	nRESET <= '1';

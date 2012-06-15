@@ -123,9 +123,9 @@ src:
 	ld hl,#c000
 aloop:
 ;	nop
-	dec e
+;	dec e
 
-	nop
+;	nop
 
 	ld a,h
 	rra
@@ -147,12 +147,12 @@ aloop:
 	ld a,h
 	or l
 	jr nz, aloop
-	nop
+;	nop
 	ld h,#c0
 	inc e
 	jr aloop
 
-	nop
+;	nop
 
 	inc hl
 
