@@ -11,5 +11,6 @@ while (<>) {
 	}
 
 while ($a=pop @b) {
-	printf "%s\n", $a;
+	print pack "H*", $a;
+#	printf "%s\n", $a;
 }
