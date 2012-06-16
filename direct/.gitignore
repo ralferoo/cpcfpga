@@ -1,0 +1,5 @@
+*.hex
+*.bin
+load.mcs
+load.svf
+load.svf-content
