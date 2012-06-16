@@ -122,7 +122,34 @@ qqq:
 	out (c),c
 	out (c),a
 	inc l
-;	jr qqq
+;;	jr qqq
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	ld bc,#feff
+	out (c),c			; turn off flash, clock high
+
+	out (c),b			; turn on flash
+	inc b
+	ld hl,#ab			; wake up
+	out (c),l
+	out (c),h
+	out (c),h
+	out (c),h			; read manufacturer
+	in a,(c)
+
+	ld hl,#c04c
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+
+	dec b
+	out (c),c			; turn off flash
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
