@@ -124,10 +124,136 @@ qqq:
 	inc l
 ;	jr qqq
 
-	ld e,#12
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	ld bc,#feff
+	out (c),c			; turn off flash, clock high
+
+	out (c),b			; turn on flash
+	inc b
+	ld hl,#90
+	out (c),l
+	out (c),h
+	out (c),h
+	out (c),h			; read manufacturer
+	in a,(c)
+
+	ld hl,#c006
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+
+	dec b
+	out (c),c			; turn off flash
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	ld bc,#feff
+	out (c),c			; turn off flash, clock high
+
+	out (c),b			; turn on flash
+	inc b
+	ld hl,#9f
+	out (c),l
+	out (c),h
+	out (c),h
+	out (c),h			; read jedec
+	in a,(c)
+
+	ld hl,#c010
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+
+	dec b
+	out (c),c			; turn off flash
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	ld bc,#feff
+	out (c),c			; turn off flash, clock high
+
+	out (c),b			; turn on flash
+	inc b
+	ld hl,#4b
+	out (c),l
+	out (c),h
+	out (c),h
+	out (c),h			; read serial number
+	in a,(c)
+
+	ld hl,#c01e
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	in a,(c)
+	call hex2digits
+
+	dec b
+	out (c),c			; turn off flash
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+	ld e,0
 
 bloop:
-	ld hl,#c004
+	ld hl,#c050
 	inc e
 aloop:
 
@@ -154,7 +280,7 @@ aloop:
 	ld a,h
 	and 7
 	jr nz, aloop
-	ld l,4
+	ld l,80
 	or h
 	jr nz, aloop
 	ld h,#c0
@@ -184,6 +310,7 @@ hexdigit:			; a[7:4] -> screen (hl)
 	push af
 	push hl
 	push ix
+	push bc
 
 	ld ix,numbers
 	and #f0
@@ -261,6 +388,7 @@ hexdigit:			; a[7:4] -> screen (hl)
 	ld (hl),a
 	dec hl
 
+	pop bc
 	pop ix
 	pop hl
 	pop af
