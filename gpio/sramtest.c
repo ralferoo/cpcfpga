@@ -207,35 +207,6 @@ void sramtest(void)
 //	dump_dr_stream("safe_dr", safe_dr, totdr);
 
 	send_ir_stream(exload_ir, totir);
-/*
-	nsleep(1000);
-	send_dr_stream(safe_dr, totdr, test_dr);
-	dump_dr_stream("test_dr during safe", test_dr, totdr);
-
-	nsleep(1000);
-	send_dr_stream(safe_dr, totdr, test2_dr);
-//	dump_dr_stream("test2_dr during safe", test2_dr, totdr);
-
-	diff_dr_stream("Differences from test_dr and test2_dr", 0, test_dr, test2_dr, totdr, fpga, prom);
-
-	nsleep(1000);
-	send_dr_stream(safe_dr, totdr, test3_dr);
-//	dump_dr_stream("test3_dr during safe", test3_dr, totdr);
-
-	diff_dr_stream("Differences from test2_dr and test3_dr", 0, test2_dr, test3_dr, totdr, fpga, prom);
-
-	nsleep(1000);
-	send_dr_stream(safe_dr, totdr, test4_dr);
-//	dump_dr_stream("test4_dr during safe", test4_dr, totdr);
-
-	diff_dr_stream("Differences from test3_dr and test4_dr", 0, test3_dr, test4_dr, totdr, fpga, prom);
-
-	nsleep(1000);
-	send_dr_stream(initial_dr, totdr, test_dr);
-//	dump_dr_stream("test_dr after safe", test_dr, totdr);
-
-	test_candidate_pins(initial_dr, totdr, fpga, prom);
-*/
 
 	int read_d[19], write_d[19], control_d[19], control_disable_d[19];
 	int read_a[19], write_a[19], control_a[19], control_disable_a[19];
