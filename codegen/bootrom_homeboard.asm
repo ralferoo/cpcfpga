@@ -2,6 +2,7 @@
 	org #0000
 
 	di
+	ld sp,#bfff
 
 	ld bc,#fab6
 	ld a,#7f
@@ -158,105 +159,112 @@ aloop:
 	jr nz, aloop
 	ld h,#c0
 
-	ld ix,numbers
 	ld a,e
+	ld hl,#c000
+	call hex2digits
+
+	ld a,0
+
+	jr bloop
+
+hex2digits:
+	push af
+	inc hl
+	inc hl
+	add a,a
+	add a,a
+	add a,a
+	add a,a
+	call hexdigit
+	dec hl
+	dec hl
+	pop af
+
+hexdigit:			; a[7:4] -> screen (hl)
+	push af
+	push hl
+	push ix
+
+	ld ix,numbers
 	and #f0
 	ld c,a
 	ld b,0
 	add ix,bc
 
 	ld a,(ix+0)
-	ld (#c000),a
+	ld (hl),a
 	ld a,(ix+1)
-	ld (#c001),a
+	inc hl
+	ld (hl),a
+	dec hl
+
+	set 3,h			;0800
 
 	ld a,(ix+2)
-	ld (#c800),a
+	ld (hl),a
 	ld a,(ix+3)
-	ld (#c801),a
+	inc hl
+	ld (hl),a
+	dec hl
 
-	ld a,(ix+4)
-	ld (#d000),a
-	ld a,(ix+5)
-	ld (#d001),a
+	set 4,h			;1800
 
 	ld a,(ix+6)
-	ld (#d800),a
+	ld (hl),a
 	ld a,(ix+7)
-	ld (#d801),a
+	inc hl
+	ld (hl),a
+	dec hl
 
-	ld a,(ix+8)
-	ld (#e000),a
-	ld a,(ix+9)
-	ld (#e001),a
-
-	ld a,(ix+10)
-	ld (#e800),a
-	ld a,(ix+11)
-	ld (#e801),a
-
-	ld a,(ix+12)
-	ld (#f000),a
-	ld a,(ix+13)
-	ld (#f001),a
-
-	ld a,(ix+14)
-	ld (#f800),a
-	ld a,(ix+15)
-	ld (#f801),a
-
-	ld ix,numbers
-	ld a,e
-	add a,a
-	add a,a
-	add a,a
-	add a,a
-	and #f0
-	ld c,a
-	ld b,0
-	add ix,bc
-
-	ld a,(ix+0)
-	ld (#c002),a
-	ld a,(ix+1)
-	ld (#c003),a
-
-	ld a,(ix+2)
-	ld (#c802),a
-	ld a,(ix+3)
-	ld (#c803),a
+	res 3,h			;1000
 
 	ld a,(ix+4)
-	ld (#d002),a
+	ld (hl),a
 	ld a,(ix+5)
-	ld (#d003),a
+	inc hl
+	ld (hl),a
+	dec hl
 
-	ld a,(ix+6)
-	ld (#d802),a
-	ld a,(ix+7)
-	ld (#d803),a
-
-	ld a,(ix+8)
-	ld (#e002),a
-	ld a,(ix+9)
-	ld (#e003),a
-
-	ld a,(ix+10)
-	ld (#e802),a
-	ld a,(ix+11)
-	ld (#e803),a
+	set 5,h			;3000
 
 	ld a,(ix+12)
-	ld (#f002),a
+	ld (hl),a
 	ld a,(ix+13)
-	ld (#f003),a
+	inc hl
+	ld (hl),a
+	dec hl
+
+	set 3,h			;3800
 
 	ld a,(ix+14)
-	ld (#f802),a
+	ld (hl),a
 	ld a,(ix+15)
-	ld (#f803),a
+	inc hl
+	ld (hl),a
+	dec hl
 
-	jp bloop
+	res 4,h			;2800
+
+	ld a,(ix+10)
+	ld (hl),a
+	ld a,(ix+11)
+	inc hl
+	ld (hl),a
+	dec hl
+
+	res 3,h			;2000
+
+	ld a,(ix+8)
+	ld (hl),a
+	ld a,(ix+9)
+	inc hl
+	ld (hl),a
+	dec hl
+
+	pop ix
+	pop hl
+	pop af
+	ret
 
 ;	nop
 
