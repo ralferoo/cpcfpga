@@ -158,11 +158,8 @@ qqq:
 
 	out (c),b			; turn on flash
 	inc b
-	ld hl,#9f
-	out (c),l
-	out (c),h
-	out (c),h
-	out (c),h			; read jedec
+	ld a,#9f
+	out (c),a			; read jedec
 	in a,(c)
 
 	ld hl,#c010
