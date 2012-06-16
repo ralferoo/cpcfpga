@@ -150,6 +150,9 @@ aloop:
 	ld a,l
 	or a
 	jr nz, aloop
+	ld a,h
+	and 7
+	jr nz, aloop
 	ld l,4
 	or h
 	jr nz, aloop
