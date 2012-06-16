@@ -120,7 +120,7 @@ void dump_dr_stream(const char* name, char* dr_stream, int totdr)
 	printf("\n");
 }
 
-void diff_dr_stream(const char* name, const char* ignore, char* dr_stream, char* dr2_stream, int totdr, struct Device *fpga, struct Device *prom)
+void diff_dr_stream(const char* name, const char* ignore, char* dr_stream, char* dr2_stream, int totdr, struct Device *fpga, struct Device *prom, int dbgid)
 {
 	if (name)
 		printf("%s:\n", name);
@@ -142,7 +142,7 @@ void diff_dr_stream(const char* name, const char* ignore, char* dr_stream, char*
 						case BC_F_OUTPUT3 : type="output3";	break;
 						case BC_F_CONTROLR: type="controlr";	continue; //break;
 					}
-					printf("%10s %3d %-8s (%3d) %20s %d %d\n",
+					printf("[%2d] %10s %3d %-8s (%3d) %20s %d %d\n", dbgid,
 						device->name, cells->cellnum, type, pos, port,
 						dr_stream[pos], dr2_stream[pos] );
 				}
@@ -240,10 +240,12 @@ void real_test_pin( struct Device *device, struct BoundaryScan* cells,
 	nsleep(1000);
 	send_dr_stream(test_dr, totdr, test3_dr);			// send it again just to be sure
 	nsleep(1000);
+	send_dr_stream(test_dr, totdr, test2_dr);			// send it again just to be sure
+	nsleep(1000);
 	send_dr_stream(test_dr, totdr, test3_dr);			// send it again just to be sure
 
 	int i;
-	for (i=0; i<8; i++) {
+	for (i=0; i<16; i++) {
 		if (i&2) {
 			test_dr[pos] = 1;
 		} else {
@@ -256,7 +258,7 @@ void real_test_pin( struct Device *device, struct BoundaryScan* cells,
 		else
 			send_dr_stream(test_dr, totdr, test2_dr);
 
-		diff_dr_stream(0, cells->port, test2_dr, test3_dr, totdr, fpga, prom);
+		diff_dr_stream(0, cells->port, test2_dr, test3_dr, totdr, fpga, prom, i);
 	}
 }
 

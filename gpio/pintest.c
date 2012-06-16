@@ -80,19 +80,19 @@ void pintest(void)
 	send_dr_stream(safe_dr, totdr, test2_dr);
 //	dump_dr_stream("test2_dr during safe", test2_dr, totdr);
 
-	diff_dr_stream("Differences from test_dr and test2_dr", 0, test_dr, test2_dr, totdr, fpga, prom);
+	diff_dr_stream("Differences from test_dr and test2_dr", 0, test_dr, test2_dr, totdr, fpga, prom,0);
 
 	nsleep(1000);
 	send_dr_stream(safe_dr, totdr, test3_dr);
 //	dump_dr_stream("test3_dr during safe", test3_dr, totdr);
 
-	diff_dr_stream("Differences from test2_dr and test3_dr", 0, test2_dr, test3_dr, totdr, fpga, prom);
+	diff_dr_stream("Differences from test2_dr and test3_dr", 0, test2_dr, test3_dr, totdr, fpga, prom,0);
 
 	nsleep(1000);
 	send_dr_stream(safe_dr, totdr, test4_dr);
 //	dump_dr_stream("test4_dr during safe", test4_dr, totdr);
 
-	diff_dr_stream("Differences from test3_dr and test4_dr", 0, test3_dr, test4_dr, totdr, fpga, prom);
+	diff_dr_stream("Differences from test3_dr and test4_dr", 0, test3_dr, test4_dr, totdr, fpga, prom,0);
 
 	nsleep(1000);
 	send_dr_stream(initial_dr, totdr, test_dr);
@@ -189,7 +189,7 @@ void pintest(void)
 
 	// ps2
 	test_pin( fpga, "IO_P46", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
-	test_pin( fpga, "IO_P45", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
+	test_pin( fpga, "IO_P44", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
 
 	// extclk
 	test_pin( fpga, "IO_P100", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
@@ -224,6 +224,9 @@ void pintest(void)
 	//	P59, P57 (video, ok)
 	//	P53, P55 (video, ok)
 	//	P60, P63 (video, ok)
+
+	// second board:
+	//	P60&P63, P53&P55, P57&P59 (video)
 
 	send_ir_stream(bypass_ir, totir);
 

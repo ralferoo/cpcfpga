@@ -52,10 +52,11 @@ int read_sram_byte(char *safe_dr, int totdr, int addr,
 	out_dr[ control_we ] = 1-control_disable_a[i];	// output
 
 	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
-	nsleep(50);							// wait for read
+	nsleep(100);							// wait for read
 
 	out_dr[   write_oe ] = 1;					// disable output
 	send_dr_stream(safe_dr, totdr, result_dr);			// get data from chip
+	nsleep(100);							// wait for read
 
 #if 0
 //	dump_dr_stream("bits after read", result_dr, totdr);
@@ -106,12 +107,13 @@ int write_sram_byte(char *safe_dr, int totdr, int addr, int byte,
 	out_dr[ control_we ] = 1-control_disable_a[i];	// output
 
 	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
-	nsleep(50);							// wait for read
+	nsleep(100);							// wait for read
 
 	out_dr[   write_oe ] = 0;					//  enable output
 	out_dr[   write_we ] = 1;					// disable write
 	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
 //	nsleep(5);							// wait for read
+	nsleep(100);							// wait for read
 
 	send_dr_stream(safe_dr, totdr, result_dr);			// get data from chip
 
@@ -314,26 +316,110 @@ void sramtest(void)
 //		printf(" read byte at %05x is %02x\n", addr, byte);
 	}
 
-	printf("Testing low bits:\n");
+	int lastfail = 0, addr2;
 
-	for (addr=0; addr<255; addr++) {
-		int obyte = (addr * 17) & 255;
-		int byte = write_sram_byte(safe_dr, totdr, addr, obyte,
+	printf("Testing bytes:\n");
+
+	addr2 = 0;
+	for (addr=0; addr<512; addr++) {
+		int data = addr & 255;
+		int byte = write_sram_byte(safe_dr, totdr, addr2, data,
 					read_a, write_a, control_a, control_disable_a,
 					read_d, write_d, control_d, control_disable_d,
 					read_we, write_we, control_we, control_disable_we,
 					read_oe, write_oe, control_oe, control_disable_oe);
 	}
-	for (addr=0; addr<255; addr++) {
-		int obyte = (addr * 17) & 255;
+	for (addr=0; addr<512; addr++) {
+		int data = addr & 255;
+		int byte = read_sram_byte(safe_dr, totdr, addr2, 
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		printf("%c%02x%c%c",
+			byte == data ? ' ' : '[',
+			byte,
+			byte == data ? ' ' : ']',
+			(addr&15)!=15 ? ' ' : '\n' );
+	}
+
+
+	printf("Testing low bits sequential:\n");
+
+	for (addr=0; addr<512; addr++) {
+		int data = addr & 255;
+		int byte = write_sram_byte(safe_dr, totdr, addr, data,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+	}
+	for (addr=0; addr<512; addr++) {
+		int data = addr & 255;
 		int byte = read_sram_byte(safe_dr, totdr, addr, 
 					read_a, write_a, control_a, control_disable_a,
 					read_d, write_d, control_d, control_disable_d,
 					read_we, write_we, control_we, control_disable_we,
 					read_oe, write_oe, control_oe, control_disable_oe);
 
-		if (byte != obyte)
-			printf("Byte at %05x was %02x not %02x\n", addr, byte, obyte);
+		printf("%c%02x%c%c",
+			byte == data ? ' ' : '[',
+			byte,
+			byte == data ? ' ' : ']',
+			(addr&15)!=15 ? ' ' : '\n' );
+	}
+
+
+	printf("Testing low bits inverted:\n");
+
+	for (addr=0; addr<512; addr++) {
+		int data = (addr ^ 255) & 255;
+		int byte = write_sram_byte(safe_dr, totdr, addr, data,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+	}
+	for (addr=0; addr<512; addr++) {
+		int data = (addr ^ 255) & 255;
+		int byte = read_sram_byte(safe_dr, totdr, addr, 
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		printf("%c%02x%c%c",
+			byte == data ? ' ' : '[',
+			byte,
+			byte == data ? ' ' : ']',
+			(addr&15)!=15 ? ' ' : '\n' );
+	}
+
+
+	printf("Testing low bits pattern:\n");
+
+	for (addr=0; addr<512; addr++) {
+		int obyte = (addr * 17) & 255;
+		int byte = write_sram_byte(safe_dr, totdr, addr, obyte,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		for (addr2=lastfail; addr2<=addr; addr2++) {
+			int tbyte = (addr2 * 17) & 255;
+			int ibyte = read_sram_byte(safe_dr, totdr, addr2, 
+						read_a, write_a, control_a, control_disable_a,
+						read_d, write_d, control_d, control_disable_d,
+						read_we, write_we, control_we, control_disable_we,
+						read_oe, write_oe, control_oe, control_disable_oe);
+	
+			if (ibyte != tbyte) {
+				printf("Writing %02x to %05x, byte at %05x was %02x not %02x\n", byte, addr, addr2, ibyte, tbyte);
+				lastfail = addr2;
+			}
+		}
 	}
 
 	printf("Testing high bits:\n");

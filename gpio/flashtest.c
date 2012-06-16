@@ -1,13 +1,13 @@
 #include "gpio.h"
 
-int inout( int ibyte, char* out_dr, int totdr, char* test_dr, int write_sclk, int write_do, int read_di )
+int inout( int ibyte, char* out_dr, int totdr, char* test_dr, int write_sclk, int write_di, int read_do )
 {
 	int obyte = 0;
 
 	int i;
 	for (i=0; i<8; i++) {
 		out_dr[ write_sclk ] = 0;				// clock falling edge
-		out_dr[ write_do   ] = ibyte&0x80 ? 1 : 0;		// data out on falling edge
+		out_dr[ write_di   ] = ibyte&0x80 ? 1 : 0;		// data out on falling edge
 		send_dr_stream(out_dr, totdr, test_dr);			// send data to chip
 		nsleep(50);						// send initial state
 
@@ -15,8 +15,10 @@ int inout( int ibyte, char* out_dr, int totdr, char* test_dr, int write_sclk, in
 		send_dr_stream(out_dr, totdr, test_dr);			// send data to chip
 		nsleep(50);						// send initial state
 
+		ibyte <<= 1;
+
 		obyte <<= 1;
-		obyte |= test_dr[ read_di ] ? 1 : 0;			// data in on rising edge
+		obyte |= test_dr[ read_do ] ? 1 : 0;			// data in on rising edge
 	}
 
 	return obyte;
@@ -119,15 +121,17 @@ void sramtest(void)
 	printf("hold: rd=%3d wr=%3d con=%3d dis=%d\n", read_hold, write_hold, control_hold, control_disable_hold);
 
 	make_safe_dr_stream(out_dr, totdr, fpga, prom);
-	out_dr[ control_di   ] =   control_disable_di  ; //  input
-	out_dr[ control_do   ] = 1-control_disable_do  ; // output
+	out_dr[ control_do   ] =   control_disable_di  ; //  input
+	out_dr[ control_di   ] = 1-control_disable_do  ; // output
 	out_dr[ control_sclk ] = 1-control_disable_sclk; // output
 	out_dr[ control_sel  ] = 1-control_disable_sel ; // output
 	out_dr[ control_wp   ] = 1-control_disable_wp  ; // output
 	out_dr[ control_hold ] = 1-control_disable_hold; // output
 
-	out_dr[ write_do   ] = 0;
-	out_dr[ write_sclk ] = 0;
+	out_dr[ write_di   ] = 0;
+	out_dr[ write_sclk ] = 1;
+	out_dr[ write_hold ] = 1;
+	out_dr[ write_wp   ] = 1;
 	out_dr[ write_sel  ] = 1;					// initial data
 
 	dump_dr_stream("out_dr", out_dr, totdr);
@@ -141,10 +145,27 @@ void sramtest(void)
 	send_dr_stream(out_dr, totdr, test_dr);				// send data to chip
 	nsleep(50);							// send initial state
 	
-	inout( 0x9f, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
+	inout( 0xab, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
 
 	for (i=0;i<4;i++) {
-		int j= inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
+		int j= inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
+		printf("wake byte %d: %02x\n", i, j);
+	}
+
+	out_dr[ write_sel  ] = 1;					// disable chip
+	send_dr_stream(out_dr, totdr, test_dr);				// send data to chip
+	nsleep(50);							// send initial state
+
+	////////////////
+
+	out_dr[ write_sel  ] = 0;					// select chip
+	send_dr_stream(out_dr, totdr, test_dr);				// send data to chip
+	nsleep(50);							// send initial state
+	
+	inout( 0x9f, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
+
+	for (i=0;i<4;i++) {
+		int j= inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
 		printf("jedec byte %d: %02x\n", i, j);
 	}
 
@@ -158,13 +179,13 @@ void sramtest(void)
 	send_dr_stream(out_dr, totdr, test_dr);				// send data to chip
 	nsleep(50);							// send initial state
 	
-	inout( 0x90, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
-	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
-	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
-	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
+	inout( 0x90, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
+	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
+	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
+	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
 
 	for (i=0;i<4;i++) {
-		int j= inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
+		int j= inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
 		printf("devid byte %d: %02x\n", i, j);
 	}
 
@@ -178,13 +199,13 @@ void sramtest(void)
 	send_dr_stream(out_dr, totdr, test_dr);				// send data to chip
 	nsleep(50);							// send initial state
 	
-	inout( 0x4b, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
-	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
-	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
-	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
+	inout( 0x4b, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
+	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
+	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
+	inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
 
 	for (i=0;i<8;i++) {
-		int j= inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_do, read_di );
+		int j= inout( 0x00, out_dr, totdr, test_dr, write_sclk, write_di, read_do );
 		printf("serial byte %d: %02x\n", i, j);
 	}
 
