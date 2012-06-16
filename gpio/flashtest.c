@@ -208,48 +208,29 @@ void sramtest(void)
 
 	send_ir_stream(exload_ir, totir);
 
-	int read[6], write[6], control[6], control_disable[6];
+	int read_di  , write_di  , control_di  , control_disable_di  ;
+	int read_do  , write_do  , control_do  , control_disable_do  ;
+	int read_hold, write_hold, control_hold, control_disable_hold;
+	int read_sclk, write_sclk, control_sclk, control_disable_sclk;
+	int read_sel , write_sel , control_sel , control_disable_sel ;
+	int read_wp  , write_wp  , control_wp  , control_disable_wp  ;
 	char* names[] = {"DI","DO","HOLD","SCLK","SEL","WP"};
 
 	// spi control data lines
-	find_pin( fpga, "IO_P79", fpga, prom, &read[ 0], &write[ 0], &control[ 0], &control_disable[ 0] ); // DI
-	find_pin( fpga, "IO_P73", fpga, prom, &read[ 1], &write[ 1], &control[ 1], &control_disable[ 1] ); // DO
-	find_pin( fpga, "IO_P82", fpga, prom, &read[ 2], &write[ 2], &control[ 2], &control_disable[ 2] ); // HOLD
-	find_pin( fpga, "IO_P80", fpga, prom, &read[ 3], &write[ 3], &control[ 3], &control_disable[ 3] ); // SCLK
-	find_pin( fpga, "IO_P70", fpga, prom, &read[ 4], &write[ 4], &control[ 4], &control_disable[ 4] ); // SEL
-	find_pin( fpga, "IO_P78", fpga, prom, &read[ 5], &write[ 5], &control[ 5], &control_disable[ 5] ); // WP
+	find_pin( fpga, "IO_P79", fpga, prom, &read_di  , &write_di  , &control_di  , &control_disable_di   ); // DI
+	find_pin( fpga, "IO_P73", fpga, prom, &read_do  , &write_do  , &control_do  , &control_disable_do   ); // DO
+	find_pin( fpga, "IO_P82", fpga, prom, &read_hold, &write_hold, &control_hold, &control_disable_hold ); // HOLD
+	find_pin( fpga, "IO_P80", fpga, prom, &read_sclk, &write_sclk, &control_sclk, &control_disable_sclk ); // SCLK 
+	find_pin( fpga, "IO_P70", fpga, prom, &read_sel , &write_sel , &control_sel , &control_disable_sel  ); // SEL
+	find_pin( fpga, "IO_P78", fpga, prom, &read_wp  , &write_wp  , &control_wp  , &control_disable_wp   ); // WP
 
-	int i,j;
-	for (j=0; j<5; j++) {
-		int* data;
-		switch(j) {
-		case 0: printf("%-4s", "");
-			break;
-		case 1: 
-			printf("%4s", "rd");
-			data = read;
-			break;
-		case 2: 
-			printf("%4s", "wr");
-			data = write;
-			break;
-		case 3: 
-			printf("%4s", "con");
-			data = control;
-			break;
-		case 4: 
-			printf("%4s", "dis");
-			data = control_disable;
-			break;
-		}
-		for (i=0; i < 6 ;i++) {
-			if (j)
-				printf(" %4d", *data++);
-			else
-				printf(" %4s", names[i]);
-		}
-		printf("\n");
-	}
+	printf("di  : rd=%3d wr=%3d con=%3d dis=%d\n", read_di  , write_di  , control_di  , control_disable_di  );
+	printf("do  : rd=%3d wr=%3d con=%3d dis=%d\n", read_do  , write_do  , control_do  , control_disable_do  );
+	printf("sclk: rd=%3d wr=%3d con=%3d dis=%d\n", read_sclk, write_sclk, control_sclk, control_disable_sclk);
+	printf("sel : rd=%3d wr=%3d con=%3d dis=%d\n", read_sel , write_sel , control_sel , control_disable_sel );
+	printf("wp  : rd=%3d wr=%3d con=%3d dis=%d\n", read_wp  , write_wp  , control_wp  , control_disable_wp  );
+	printf("hold: rd=%3d wr=%3d con=%3d dis=%d\n", read_hold, write_hold, control_hold, control_disable_hold);
+
 /*
 	int addr;
 	printf("Writing dummy data\n");
