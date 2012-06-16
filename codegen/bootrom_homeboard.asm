@@ -85,7 +85,7 @@
 
 
 	ld bc,#7f81
-;	out (c),c			; mode 1
+	out (c),c			; mode 1
 
 	ld de,#0044
 	out (c),d
@@ -108,24 +108,27 @@
 ;;	out (c),e			; border
 
 	
-	ld de,#4000
-	ld hl,src
-	ld bc,2048
+	ld hl,0
+	ld de,#c000
+	ld bc,16384
 	ldir
 
-;	jp #4000
+qqq:
+	ld a,l
+	and #1f
+	or #40
+	ld bc,#7f10
+	out (c),c
+	out (c),a
+	inc l
+;	jr qqq
 
-	nop
+	ld e,#12
 
-src:
-	nop
-
-	ld hl,#c000
+bloop:
+	ld hl,#c004
+	inc e
 aloop:
-;	nop
-;	dec e
-
-;	nop
 
 	ld a,h
 	rra
@@ -144,18 +147,263 @@ aloop:
 	ld (hl),e
 	inc hl
 
-	ld a,h
-	or l
+	ld a,l
+	or a
 	jr nz, aloop
-;	nop
+	ld l,4
+	or h
+	jr nz, aloop
 	ld h,#c0
-	inc e
-	jr aloop
+
+	ld ix,numbers
+	ld a,e
+	and #f0
+	ld c,a
+	ld b,0
+	add ix,bc
+
+	ld a,(ix+0)
+	ld (#c000),a
+	ld a,(ix+1)
+	ld (#c001),a
+
+	ld a,(ix+2)
+	ld (#c800),a
+	ld a,(ix+3)
+	ld (#c801),a
+
+	ld a,(ix+4)
+	ld (#d000),a
+	ld a,(ix+5)
+	ld (#d001),a
+
+	ld a,(ix+6)
+	ld (#d800),a
+	ld a,(ix+7)
+	ld (#d801),a
+
+	ld a,(ix+8)
+	ld (#e000),a
+	ld a,(ix+9)
+	ld (#e001),a
+
+	ld a,(ix+10)
+	ld (#e800),a
+	ld a,(ix+11)
+	ld (#e801),a
+
+	ld a,(ix+12)
+	ld (#f000),a
+	ld a,(ix+13)
+	ld (#f001),a
+
+	ld a,(ix+14)
+	ld (#f800),a
+	ld a,(ix+15)
+	ld (#f801),a
+
+	ld ix,numbers
+	ld a,e
+	add a,a
+	add a,a
+	add a,a
+	add a,a
+	and #f0
+	ld c,a
+	ld b,0
+	add ix,bc
+
+	ld a,(ix+0)
+	ld (#c002),a
+	ld a,(ix+1)
+	ld (#c003),a
+
+	ld a,(ix+2)
+	ld (#c802),a
+	ld a,(ix+3)
+	ld (#c803),a
+
+	ld a,(ix+4)
+	ld (#d002),a
+	ld a,(ix+5)
+	ld (#d003),a
+
+	ld a,(ix+6)
+	ld (#d802),a
+	ld a,(ix+7)
+	ld (#d803),a
+
+	ld a,(ix+8)
+	ld (#e002),a
+	ld a,(ix+9)
+	ld (#e003),a
+
+	ld a,(ix+10)
+	ld (#e802),a
+	ld a,(ix+11)
+	ld (#e803),a
+
+	ld a,(ix+12)
+	ld (#f002),a
+	ld a,(ix+13)
+	ld (#f003),a
+
+	ld a,(ix+14)
+	ld (#f802),a
+	ld a,(ix+15)
+	ld (#f803),a
+
+	jp bloop
 
 ;	nop
 
 	inc hl
 
+
+numbers:
+	defb %0111,%1100		; 0
+	defb %1100,%0110
+	defb %1100,%1110
+	defb %1101,%0110
+	defb %1110,%0110
+	defb %1100,%0110
+	defb %0111,%1100
+	defb %0000,%0000
+
+	defb %0001,%1000		; 1
+	defb %0011,%1000
+	defb %0001,%1000
+	defb %0001,%1000
+	defb %0001,%1000
+	defb %0001,%1000
+	defb %0111,%1110
+	defb %0000,%0000
+
+	defb %0011,%1100		; 2
+	defb %0110,%0110
+	defb %0000,%0110
+	defb %0011,%1100
+	defb %0110,%0000
+	defb %0110,%0110
+	defb %0111,%1110
+	defb %0000,%0000
+
+	defb %0011,%1100		; 3
+	defb %0110,%0110
+	defb %0000,%0110
+	defb %0001,%1100
+	defb %0000,%0110
+	defb %0110,%0110
+	defb %0011,%1100
+	defb %0000,%0000
+
+	defb %0001,%1100		; 4
+	defb %0011,%1100
+	defb %0110,%1100
+	defb %1100,%1100
+	defb %1111,%1110
+	defb %0000,%1100
+	defb %0001,%1110
+	defb %0000,%0000
+
+	defb %0111,%1110		; 5
+	defb %0110,%0010
+	defb %0110,%0000
+	defb %0111,%1100
+	defb %0000,%0110
+	defb %0110,%0110
+	defb %0011,%1100
+	defb %0000,%0000
+
+	defb %0011,%1100		; 6
+	defb %0110,%0110
+	defb %0110,%0000
+	defb %0111,%1100
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0011,%1100
+	defb %0000,%0000
+
+	defb %0111,%1110		; 7
+	defb %0100,%0110
+	defb %0000,%0110
+	defb %0000,%1100
+	defb %0001,%1000
+	defb %0001,%1000
+	defb %0001,%1000
+	defb %0000,%0000
+
+	defb %0011,%1100		; 8
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0011,%1100
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0011,%1100
+	defb %0000,%0000
+
+	defb %0011,%1100		; 9
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0011,%1110
+	defb %0000,%0110
+	defb %0110,%0110
+	defb %0011,%1100
+	defb %0000,%0000
+
+	defb %0001,%1000		; a
+	defb %0011,%1100
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0111,%1110
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0000,%0000
+
+	defb %1111,%1100		; b
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0111,%1100
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %1111,%1100
+	defb %0000,%0000
+
+	defb %0011,%1100		; c
+	defb %0110,%0110
+	defb %1100,%0000
+	defb %1100,%0000
+	defb %1100,%0000
+	defb %0110,%0110
+	defb %0011,%1100
+	defb %0000,%0000
+
+	defb %1111,%1000		; d
+	defb %0110,%1100
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0110,%0110
+	defb %0110,%1100
+	defb %1111,%1000
+	defb %0000,%0000
+
+	defb %1111,%1110		; e
+	defb %0110,%0010
+	defb %0110,%1000
+	defb %0111,%1000
+	defb %0110,%1000
+	defb %0110,%0010
+	defb %1111,%1110
+	defb %0000,%0000
+
+	defb %1111,%1110		; f
+	defb %0110,%0010
+	defb %0110,%1000
+	defb %0111,%1000
+	defb %0110,%1000
+	defb %0110,%0000
+	defb %1111,%0000
+	defb %0000,%0000
 
 	end
 

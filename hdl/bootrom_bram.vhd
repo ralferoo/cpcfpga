@@ -52,6 +52,6 @@ begin
 
 	not_clk <= clk;
 
-	data <= dout when addr(13)='1' else (others=>doutp(0));
+	data <= dout when addr(13)='0' else (others=>doutp(0));
 
 end impl;

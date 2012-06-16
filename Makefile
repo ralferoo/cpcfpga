@@ -420,6 +420,10 @@ build/%.bit build/%_bd.bmm: build/%.ncd build/$(XILINX_TOP_NAME).ut
 build/%_rom.bit: build/%.bit build/bootrom_%.mem build/%_bd.bmm
 	$(XILINX_WRAPPER) data2mem -bm $*_bd.bmm -bd bootrom_$*.mem -bt $*.bit -o b $*_rom.bit
 
+build/extracted_%.mem/.do: build/%.bit build/bootrom_%.mem build/%_bd.bmm
+	@mkdir -p build/extracted_$*.mem
+	$(XILINX_WRAPPER) data2mem -bm $*_bd.bmm -bd bootrom_$*.mem -bt $*.bit -bx extracted_$*.mem
+
 build/%.mcs: build/%.bit
 	$(XILINX_WRAPPER) promgen $(PROMGEN_FLAGS) $*.bit -p mcs
 	
