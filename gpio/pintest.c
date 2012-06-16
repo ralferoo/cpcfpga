@@ -228,6 +228,10 @@ void pintest(void)
 	// second board:
 	//	P60&P63, P53&P55, P57&P59 (video)
 
+	// third board
+	//	P140 & P131
+	//	P125 & P124
+
 	send_ir_stream(bypass_ir, totir);
 
 	free(sample_ir);
