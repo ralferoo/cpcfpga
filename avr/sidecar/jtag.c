@@ -14,7 +14,8 @@ void JTAG_Init(void)
 	JTAG_DDR  &= ~(JTAG_TDO | JTAG_MISO);
 
 	JTAG_PORT |=  (JTAG_TMS);
-	JTAG_PORT &= ~(JTAG_TCK | JTAG_TDI);
+	JTAG_PORT |=  (JTAG_TCK | JTAG_TDI);
+//	JTAG_PORT &= ~(JTAG_TCK | JTAG_TDI);
 }
 
 void JTAG_Reset(void)
@@ -247,6 +248,35 @@ int JTAG_ChainLen(void)
 {
 	int i;
 
+	WriteString("\nreset\n");
+	JTAG_Reset();
+	JTAG_SelectDR();
+	WriteString("\nshiftout\n");
+	for(i=0; i<100; i++)
+		JTAG_SendClock(0);
+
+	WriteString("\nreset\n");
+	JTAG_Reset();
+	JTAG_SelectIR();
+	WriteString("\nshiftout\n");
+	for(i=0; i<100; i++)
+		JTAG_SendClock(0);
+	WriteString("\nones\n");
+	for(i=0; i<5; i++)
+		JTAG_SendClock(1);
+	WriteString("\ntwos\n");
+	for(i=0; i<50; i++) {
+		JTAG_SendClock(0);
+		JTAG_SendClock(1);
+	}
+	WriteString("\nthrees\n");
+	for(i=0; i<50; i++) {
+		JTAG_SendClock(0);
+		JTAG_SendClock(0);
+		JTAG_SendClock(1);
+	}
+	WriteString("\ndone\n");
+
 	JTAG_Reset();
 	JTAG_SelectIR();
 	JTAG_SendClock(0);
@@ -260,6 +290,20 @@ int JTAG_ChainLen(void)
 	JTAG_SendClock(0);
 	JTAG_SendClock(0);			// move to shift-DR
 
+	WriteString("\npattern \"10\" x 50\n");
+	for (i=0; i<50; i++) {
+		JTAG_SendClock(1);
+		JTAG_SendClock(0);		// shift through pattern
+	}
+
+	WriteString("\npattern \"10\" x 50\n");
+	for (i=0; i<50; i++) {
+		JTAG_SendClock(1);
+		JTAG_SendClock(1);
+		JTAG_SendClock(0);		// shift through pattern
+	}
+
+	WriteString("\npattern \"10\" x 50\n");
 	for (i=0; i<50; i++) {
 		JTAG_SendClock(1);
 		JTAG_SendClock(0);		// shift through pattern
