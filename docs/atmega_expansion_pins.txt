@@ -1,0 +1,34 @@
+name		wire colour	raspberry pi pin
+
+TDO_PROM	WHITE		GPIO 18 (IN) [seem to have broken 22]
+TMS		GREY		GPIO 21
+TCK		PURPLE		GPIO 17
+TDI_FPGA	BLUE		GPIO 4
+
+
+fpga	atmel	header left	header right	atmel
+
+	PD7	EMER_BOOT	AT_RESET
+		VCC		VCC
+		GND		GND
+	PB7	TDI_FPGA	TDO_EXP		PC6
+	PB5	TCK		TDO_PROM	PB6
+P87		HDR_SPARE	TMS		PB4
+P86		HDR_SEL		SPI_SEL		PB0
+P85		HDR_MISO	SPI_MISO	PB3
+P84		HDR_SCLK	SPI_SCLK	PB1
+P83		HDR_MOSI	SPI_MOSI	PB2
+
+P99	PC4
+P125	PC5
+P124	PC7 / CLK0
+P97	PD0
+P96	PD1
+P95	PD2	RXD
+P93	PD3	TXD
+P92	PD4
+P90	PD5
+89	PD6	RTS
+
+oops, CTS should have been exposed to FPGA too
+
