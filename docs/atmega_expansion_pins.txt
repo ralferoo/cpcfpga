@@ -1,3 +1,4 @@
+name		wire colour	raspberry pi pin
 
 TDO_PROM	WHITE		GPIO 18 (IN) [seem to have broken 22]
 TMS		GREY		GPIO 21
@@ -5,6 +6,7 @@ TCK		PURPLE		GPIO 17
 TDI_FPGA	BLUE		GPIO 4
 
 
+fpga	atmel	header left	header right	atmel
 
 	PD7	EMER_BOOT	AT_RESET
 		VCC		VCC
