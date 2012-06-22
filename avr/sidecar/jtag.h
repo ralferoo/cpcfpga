@@ -49,54 +49,8 @@ extern enum JTAG_STATE jtag_state;
 
 extern void Sleep(void);
 
-inline int JTAG_ClockWithTMS(int tdi,int tms,int read)
-{
-	// get the TDO value from the previous cycle
-	int previous;
-	int miso;
-	if (read) {
-		previous = (JTAG_PIN & JTAG_TDO)?1:0;
-	} else {
-		previous = (JTAG_PIN & JTAG_TDO)?1:0;
-		//previous = 0;
-	}
-	miso = (JTAG_PIN & JTAG_MISO)?1:0;
+int JTAG_ClockWithTMS(int tdi,int tms,int read);
 
-//	Sleep();
-
-	// update the output data
-	if(tms)
-		JTAG_PORT |= JTAG_TMS;
-	else
-		JTAG_PORT &= ~JTAG_TMS;
-
-	if(tdi)
-		JTAG_PORT |= JTAG_TDI;
-	else
-		JTAG_PORT &= ~JTAG_TDI;
-
-	char str[30];
-	//sprintf_P(str, tms?PSTR("[%d:%d TMS %d]\r\n"):PSTR("[%d:%d-%d]"), tdi?1:0, previous, miso );
-	//sprintf_P(str, tms?PSTR("[%d:%d TMS]\r\n"):PSTR("[%d:%d]"), tdi?1:0, previous );
-	sprintf_P(str, tms?PSTR("[%d TMS]\r\n"):PSTR("[%d]"), /*tdi?1:0,*/ previous );
-	WriteString(str);
-//	Endpoint_ClearIN();
-//	Endpoint_WaitUntilReady();
-//	USB_USBTask();
-/*
-*/
-
-	// output data is set up, pulse the clock and back again
-	int wait;
-	for (wait=0; wait<300; wait++)
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
-	JTAG_PORT |= JTAG_TCK;
-	for (wait=0; wait<300; wait++)
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
-	JTAG_PORT &= ~JTAG_TCK;
-
-	return ((previous & JTAG_TDO) == JTAG_TDO)?1:0;
-}
 inline int JTAG_Clock(int tdi) { return JTAG_ClockWithTMS(tdi,0,1); }
 inline int JTAG_ClockTMS(int tdi) { return JTAG_ClockWithTMS(tdi,1,1); }
 
