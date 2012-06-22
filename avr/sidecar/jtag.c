@@ -7,6 +7,59 @@ enum JTAG_STATE jtag_state = JTAG_STATE_UNKNOWN;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+int JTAG_ClockWithTMS(int tdi,int tms,int read)
+{
+	// get the TDO value from the previous cycle
+	int previous;
+	int miso;
+	if (read) {
+		previous = (JTAG_PIN & JTAG_TDO)?1:0;
+	} else {
+		previous = (JTAG_PIN & JTAG_TDO)?1:0;
+		//previous = 0;
+	}
+	miso = (JTAG_PIN & JTAG_MISO)?1:0;
+
+//	Sleep();
+
+	// update the output data
+	if(tms)
+		JTAG_PORT |= JTAG_TMS;
+	else
+		JTAG_PORT &= ~JTAG_TMS;
+
+	if(tdi)
+		JTAG_PORT |= JTAG_TDI;
+	else
+		JTAG_PORT &= ~JTAG_TDI;
+
+/*
+	char str[30];
+	//sprintf_P(str, tms?PSTR("[%d:%d TMS %d]\r\n"):PSTR("[%d:%d-%d]"), tdi?1:0, previous, miso );
+	sprintf_P(str, tms?PSTR("[%d:%d TMS]\r\n"):PSTR("[%d:%d]"), tdi?1:0, previous );
+	WriteString(str);
+	Endpoint_ClearIN();
+	Endpoint_WaitUntilReady();
+	USB_USBTask();
+*/
+
+	// output data is set up, pulse the clock and back again
+	int wait;
+//	for (wait=0; wait<300; wait++)
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+	JTAG_PORT |= JTAG_TCK;
+//	for (wait=0; wait<300; wait++)
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+	JTAG_PORT &= ~JTAG_TCK;
+//	for (wait=0; wait<300; wait++)
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+
+	return previous;
+}
+
+
+
+
 void JTAG_Init(void)
 {
 //	JTAG_DDR =0;
@@ -248,35 +301,44 @@ int JTAG_ChainLen(void)
 {
 	int i;
 
-	WriteString("\nreset\n");
+/*
+//	WriteStringConst(PSTR("\nreset\n"));
 	JTAG_Reset();
 	JTAG_SelectDR();
-	WriteString("\nshiftout\n");
+//	WriteStringConst(PSTR("\nshiftout\n"));
 	for(i=0; i<100; i++)
 		JTAG_SendClock(0);
+*/
 
-	WriteString("\nreset\n");
+/*
+//	WriteStringConst(PSTR("\nreset\n"));
 	JTAG_Reset();
 	JTAG_SelectIR();
-	WriteString("\nshiftout\n");
+//	WriteStringConst(PSTR("\nshiftout\n"));
 	for(i=0; i<100; i++)
 		JTAG_SendClock(0);
-	WriteString("\nones\n");
-	for(i=0; i<5; i++)
+	WriteStringConst(PSTR("\nones\n"));
+	for(i=0; i<50; i++)
 		JTAG_SendClock(1);
-	WriteString("\ntwos\n");
+	WriteStringConst(PSTR("\nzeros\n"));
+	for(i=0; i<50; i++)
+		JTAG_SendClock(0);
+	WriteStringConst(PSTR("\nones\n"));
+	for(i=0; i<50; i++)
+		JTAG_SendClock(1);
+	WriteStringConst(PSTR("\ntwos\n"));
 	for(i=0; i<50; i++) {
 		JTAG_SendClock(0);
 		JTAG_SendClock(1);
 	}
-	WriteString("\nthrees\n");
+	WriteStringConst(PSTR("\nthrees\n"));
 	for(i=0; i<50; i++) {
 		JTAG_SendClock(0);
 		JTAG_SendClock(0);
 		JTAG_SendClock(1);
 	}
-	WriteString("\ndone\n");
-
+	WriteStringConst(PSTR("\ndone\n"));
+*/
 	JTAG_Reset();
 	JTAG_SelectIR();
 	JTAG_SendClock(0);
@@ -290,24 +352,27 @@ int JTAG_ChainLen(void)
 	JTAG_SendClock(0);
 	JTAG_SendClock(0);			// move to shift-DR
 
-	WriteString("\npattern \"10\" x 50\n");
+/*
+	WriteStringConst(PSTR("\npattern \"10\" x 50\n"));
 	for (i=0; i<50; i++) {
 		JTAG_SendClock(1);
 		JTAG_SendClock(0);		// shift through pattern
 	}
 
-	WriteString("\npattern \"10\" x 50\n");
+	WriteStringConst(PSTR("\npattern \"110\" x 50\n"));
 	for (i=0; i<50; i++) {
 		JTAG_SendClock(1);
 		JTAG_SendClock(1);
 		JTAG_SendClock(0);		// shift through pattern
 	}
 
-	WriteString("\npattern \"10\" x 50\n");
-	for (i=0; i<50; i++) {
-		JTAG_SendClock(1);
-		JTAG_SendClock(0);		// shift through pattern
-	}
+//	WriteStringConst(PSTR("\npattern \"1100\" x 50\n"));
+//	for (i=0; i<50; i++) {
+//		JTAG_SendClock(1);
+//		JTAG_SendClock(1);
+//		JTAG_SendClock(0);
+//		JTAG_SendClock(0);		// shift through pattern
+//	}
 
 //	for (i=0; i<50; i++) {
 //		JTAG_SendClock(1);
@@ -315,17 +380,23 @@ int JTAG_ChainLen(void)
 //		JTAG_SendClock(0);		// shift through pattern
 //	}
 
+	WriteStringConst(PSTR("\npattern \"100\" x 50\n"));
 	for (i=0; i<50; i++) {
 		JTAG_SendClock(1);
 		JTAG_SendClock(0);
 		JTAG_SendClock(0);		// shift through pattern
 	}
+*/
 
 	for (i=0; i<1024; i++)
 		JTAG_SendClock(0);		// shift through lots of zero bits
 
-	for (i=0; i<1024; i++)
-		if( JTAG_Clock(1)) break;	// shift through ones until we find out
+	for (i=0; i<1024; i++) {
+		if( JTAG_Clock(1))  {
+//			WriteStringConst( PSTR("Found high bit\r\n"));
+			break;	// shift through ones until we find out
+		}
+	}
 
 	JTAG_Reset();
 
