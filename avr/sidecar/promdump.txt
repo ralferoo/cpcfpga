@@ -1,0 +1,42 @@
+# JTAG chain scan, 2 devices, IR len=14
+# F5045093 Xilinx XCF02S, hir=0, tir=6, hdr=0, tdr=1
+# 0141C093 Xilinx XC3S400, hir=8, tir=0, hdr=0, tdr=0
+# FFFFFFFF end of chain
+
+# PROM dump
+# idcode=F5045093 - XCF02S
+# protect=F5 - unreadable
+-----------------
+# PROM write
+# idcode=00000000 - wrong chip
+
+# high word 0000................................................................
+# high word 0001................................................................
+# high word 0002................................................................
+# high word 0003...............
+# padding with 88 bytes.
+# end of HEX data
+# finished writing prom data
+
+# JTAG chain scan, 2 devices, IR len=14
+# F5045093 Xilinx XCF02S, hir=0, tir=6, hdr=0, tdr=1
+# 0141C093 Xilinx XC3S400, hir=8, tir=0, hdr=0, tdr=0
+# FFFFFFFF end of chain
+
+# PROM dump
+# idcode=F5045093 - XCF02S
+# protect=F5 - unreadable
+# PROM erase start
+# idcode=00000000 - wrong chip
+# PROM erase finished
+# PROM dump
+# idcode=00000000 - wrong chip
+# JTAG chain scan, 2 devices, IR len=14
+# F5045093 Xilinx XCF02S, hir=0, tir=6, hdr=0, tdr=1
+# 0141C093 Xilinx XC3S400, hir=8, tir=0, hdr=0, tdr=0
+# FFFFFFFF end of chain
+
+# PROM erase start
+# idcode=F5045093 - XCF02S
+# protect=F5 - unwritable
+# PROM erase finished
