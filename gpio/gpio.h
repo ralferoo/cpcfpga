@@ -12,7 +12,7 @@
 struct Device {
 	struct Device *next;
 
-	unsigned long id;
+	unsigned int id; //long
 	int hir, tir, hdr, tdr, len;
 	int bsrlen, bsrsample, bsrsafe;
 	int user;

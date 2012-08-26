@@ -1,14 +1,9 @@
-//
-//  How to access GPIO registers from C-code on the Raspberry-Pi
-//  Example program
-//  15-January-2012
-//  Dom and Gert
-//
-
 #include <time.h>
 #include <errno.h>
 
 #include "gpio.h"
+
+#define MAX_CHAIN_LEN 50
 
 int g_noisy = 0;
 
@@ -464,14 +459,14 @@ void devScanDevices(void)
 
 	int irlen, drlen;
 	int i,j;
-	for (i=0;i<1024;i++) 
+	for (i=0;i<MAX_CHAIN_LEN;i++) 
 		jtagOutput(1,0);	// flush zeros into IR
 	
-	for (irlen=0;irlen<1024;irlen++) 
+	for (irlen=0;irlen<MAX_CHAIN_LEN;irlen++) 
 		if (!jtagOutput(0,0))	// push zeros through until 0 pops out
 			break;
 	
-	for (i=0;i<1024;i++)
+	for (i=0;i<MAX_CHAIN_LEN;i++)
 		if (jtagOutput(1,0))	// push ones through until 1 pops out
 			break;
 
@@ -485,7 +480,7 @@ void devScanDevices(void)
 
 	jtagShiftDR();
 
-	for (drlen=0;drlen<1024;drlen++) 
+	for (drlen=0;drlen<MAX_CHAIN_LEN;drlen++) 
 		if (jtagOutput(1,0))	// push ones through until 1 pops out
 			break;
 
@@ -519,7 +514,7 @@ void devScanDevices(void)
 
 //	printf("\nScanChain:\n\n");
 
-	for( i=0; i<100; i++ )
+	for( i=0; i<MAX_CHAIN_LEN; i++ )
 	{
 		int ir=-1;
 		int bit, len;
@@ -530,13 +525,17 @@ void devScanDevices(void)
 			part = "unrecognised device with no IDCODE";
 		} else {
 			int bsrlen=0, bsrsample=0, bsrsafe=0;
-			unsigned long id = 1<<31;
+			unsigned long id = 0x80000000UL; //1U<<31;
 			for(j=0;j<31;j++) {
 				id >>= 1;
-				id  |= jtagOutput(1,0)<<31;
+				//id  |= jtagOutput(1,0)<<31;
+				if (jtagOutput(1,0))
+					id |= 0x80000000UL;
+//				printf("id now %lx\n", id);
 			}
 			manuf="";
 			part="unrecognised device";
+			len = 0;
 			if ((id&0xfff)==0x093) {
 				manuf="Xilinx ";
 				if ( (id&0xffff000) == 0x5045000 ) {
@@ -596,7 +595,7 @@ void devScanDevices(void)
 void jtagBoundaryScanDump(struct Device *device)
 {
 	if (device->bsrsample <= 0 || device->bsrlen <= 0) {
-		printf("Boundary scan not supported on %s\n");
+		printf("Boundary scan not supported on %s\n", device->name);
 		return;
 	}
 

@@ -223,6 +223,7 @@ void EVENT_USB_Device_ControlRequest(void)
 			char tdo = (char) JTAG_ClockWithTMS( i&1, i&0x80, 1);
 			Endpoint_Write_Control_Stream_LE(&tdo, 1);
 			Endpoint_ClearOUT();
+			Endpoint_ClearOUT();
 			return;
 		}
 

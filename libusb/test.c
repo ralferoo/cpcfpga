@@ -24,7 +24,7 @@ int main(int argc,char **argv[])
 		bytes = usb_control_msg(handle, 0xc0, 'j', 0x80, 0, &tdo, 1, 500);
 		printf("Read %d bytes, tdo=%d\n", bytes, tdo);
 
-		usb_close(handle);
+//		usb_close(handle);
 	}
 }
 
