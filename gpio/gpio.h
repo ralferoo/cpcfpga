@@ -39,6 +39,9 @@ struct BoundaryScan {
 
 void nsleep(long nanos);
 
+void jtagInit(void);
+int jtagLowlevelClock(int tdi, int tms);
+
 ///////////////////////////////////////////////////////////////////////////
 
 int jtagOutput(int tdi, int tms);
@@ -90,10 +93,6 @@ void promErase(struct Device* prom);
 void promProgramStart(struct Device *prom);
 int promProgramData(uint8_t type, uint8_t len, uint16_t addr, uint8_t *data);
 void promReload(struct Device* prom);
-
-///////////////////////////////////////////////////////////////////////////
-
-void jtagInit(void);
 
 ///////////////////////////////////////////////////////////////////////////
 
