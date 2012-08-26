@@ -216,8 +216,17 @@ void EVENT_USB_Device_ControlRequest(void)
 	else if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_VENDOR | REQREC_DEVICE))
 	{
 		static int count=0;
-		count++;
 		Endpoint_ClearSETUP();
+
+		if (USB_ControlRequest.bRequest == 'j' ) {
+			int i = USB_ControlRequest.wValue;
+			char tdo = (char) JTAG_ClockWithTMS( i&1, i&0x80, 1);
+			Endpoint_Write_Control_Stream_LE(&tdo, 1);
+			Endpoint_ClearOUT();
+			return;
+		}
+
+		count++;
 		if (USB_ControlRequest.wLength)
 		{
 			Endpoint_Write_Control_Stream_LE(&count, USB_ControlRequest.wLength);
