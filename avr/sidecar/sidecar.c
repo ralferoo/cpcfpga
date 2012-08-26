@@ -176,33 +176,32 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 void EVENT_USB_Device_ControlRequest(void)
 {
 	/* Process CDC specific control requests */
-	switch (USB_ControlRequest.bRequest)
+	if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE))
 	{
-		case CDC_REQ_GetLineEncoding:
-			if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
+		switch (USB_ControlRequest.bRequest)
+		{
+			case CDC_REQ_GetLineEncoding:
 				Endpoint_ClearSETUP();
 
 				/* Write the line coding data to the control endpoint */
 				Endpoint_Write_Control_Stream_LE(&LineEncoding, sizeof(CDC_LineEncoding_t));
 				Endpoint_ClearOUT();
-			}
 
-			break;
-		case CDC_REQ_SetLineEncoding:
-			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
+				break;
+		}
+	}
+	else if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
+	{
+		switch (USB_ControlRequest.bRequest)
+		{
+			case CDC_REQ_SetLineEncoding:
 				Endpoint_ClearSETUP();
 
 				/* Read the line coding data in from the host into the global struct */
 				Endpoint_Read_Control_Stream_LE(&LineEncoding, sizeof(CDC_LineEncoding_t));
 				Endpoint_ClearIN();
-			}
-
-			break;
-		case CDC_REQ_SetControlLineState:
-			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
+				break;
+			case CDC_REQ_SetControlLineState:
 				Endpoint_ClearSETUP();
 				Endpoint_ClearStatusStage();
 
@@ -210,9 +209,46 @@ void EVENT_USB_Device_ControlRequest(void)
 				         lines. The mask is read in from the wValue parameter in USB_ControlRequest, and can be masked against the
 						 CONTROL_LINE_OUT_* masks to determine the RTS and DTR line states using the following code:
 				*/
-			}
 
-			break;
+				break;
+		}
+	}
+	else if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_VENDOR | REQREC_DEVICE))
+	{
+		static int count=0;
+		count++;
+		Endpoint_ClearSETUP();
+		if (USB_ControlRequest.wLength)
+		{
+			Endpoint_Write_Control_Stream_LE(&count, USB_ControlRequest.wLength);
+			Endpoint_ClearOUT();
+		}
+		else {
+			Endpoint_ClearStatusStage();
+		}
+/**/
+		Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+		uint8_t buffer[48];
+		sprintf_P((char*)buffer, PSTR("[D>H %02x %02x %04x %04x %04x count=%d]\r\n"),
+			USB_ControlRequest.bmRequestType, USB_ControlRequest.bRequest,
+			USB_ControlRequest.wValue, USB_ControlRequest.wIndex, USB_ControlRequest.wLength, count);
+		Endpoint_Write_Stream_LE(buffer, strlen((char*)buffer), NULL);
+		Endpoint_ClearIN();
+/**/
+	}
+	else if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_VENDOR | REQREC_DEVICE))
+	{
+		Endpoint_ClearSETUP();
+		Endpoint_ClearStatusStage();
+/**/
+		Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+		uint8_t buffer[32];
+		sprintf_P((char*)buffer, PSTR("[H>D %02x %02x %04x %04x %04x]\r\n"),
+			USB_ControlRequest.bmRequestType, USB_ControlRequest.bRequest,
+			USB_ControlRequest.wValue, USB_ControlRequest.wIndex, USB_ControlRequest.wLength);
+		Endpoint_Write_Stream_LE(buffer, strlen((char*)buffer), NULL);
+		Endpoint_ClearIN();
+/**/
 	}
 }
 

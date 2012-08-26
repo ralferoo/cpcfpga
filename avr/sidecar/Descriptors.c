@@ -88,6 +88,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
 
 			.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
+//			.TotalInterfaces        = 3,
 			.TotalInterfaces        = 2,
 
 			.ConfigurationNumber    = 1,
@@ -183,7 +184,44 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
 			.EndpointSize           = CDC_TXRX_EPSIZE,
 			.PollingIntervalMS      = 0x01
+		},
+
+/*
+	.Raw_Interface =
+		{
+			.Header                 = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
+
+			.InterfaceNumber        = 2,
+			.AlternateSetting       = 0,
+
+			.TotalEndpoints         = 2,
+
+			.Class                  = 0xff,
+			.SubClass               = 0xff,
+			.Protocol               = 0xff,
+
+			.InterfaceStrIndex      = NO_DESCRIPTOR
+		},
+
+	.Raw_DataOutEndpoint =
+		{
+			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
+			.EndpointAddress        = (ENDPOINT_DIR_OUT | RAW_RX_EPNUM),
+			.Attributes             = (EP_TYPE_CONTROL | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+			.EndpointSize           = RAW_TXRX_EPSIZE,
+			.PollingIntervalMS      = 0x01
+		},
+
+	.Raw_DataInEndpoint =
+		{
+			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
+
+			.EndpointAddress        = (ENDPOINT_DIR_IN | RAW_TX_EPNUM),
+			.Attributes             = (EP_TYPE_CONTROL | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+			.EndpointSize           = RAW_TXRX_EPSIZE,
+			.PollingIntervalMS      = 0x01
 		}
+*/
 };
 
 /** Language descriptor structure. This descriptor, located in FLASH memory, is returned when the host requests

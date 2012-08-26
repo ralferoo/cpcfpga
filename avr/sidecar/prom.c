@@ -318,6 +318,7 @@ void PROM_Dump( void )
 {
 	int hir_len = prom_hir_len, hdr_len = prom_hdr_len, tir_len = prom_tir_len, tdr_len = prom_tdr_len;
 
+	JTAG_Reset();
 	// idcode
 	JTAG_SendIR( 0xfe, 8, hir_len, tir_len );
 	uint32_t idcode = JTAG_SendDR( 0, 32, hdr_len, tdr_len );
