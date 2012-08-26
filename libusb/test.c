@@ -34,8 +34,45 @@ usb_dev_handle *find_cpc2012(void)
 		for (dev=bus->devices; dev; dev=dev->next) {
 //			printf("found %04x:%04x\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
 			if (dev->descriptor.idVendor == 0x16c0 && dev->descriptor.idProduct == 0x05e1) {
-				printf("Found CPC2012 device %04x:%04x\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
-				return usb_open(dev);
+				printf("Found possible CPC2012 device %04x:%04x, manuf #%02x product #%02x serial #%02x\n",
+					dev->descriptor.idVendor, dev->descriptor.idProduct,
+					dev->descriptor.iManufacturer, dev->descriptor.iProduct,
+					dev->descriptor.iSerialNumber );
+
+				device_handle = usb_open(dev);
+
+				char nbuffer[65];
+				int len,i;
+
+				for(i=0;i<3; i++) {
+					int desc;
+					switch (i) {
+						default:
+							desc=dev->descriptor.iManufacturer;
+							break;
+						case 1:
+							desc=dev->descriptor.iProduct;
+							break;
+						case 2:
+							desc=dev->descriptor.iSerialNumber;
+							break;
+					}
+					len = usb_get_string_simple(device_handle, desc, nbuffer, sizeof(nbuffer) );
+					if (len>=0) {
+						printf("#%02x %s (len %d)\n", desc, nbuffer, len );
+					}
+
+					if ( desc == dev->descriptor.iManufacturer )
+					{
+						if (strcmp(nbuffer,"cpcfpga.com")) {
+							usb_close(device_handle);
+							device_handle = NULL;
+							break;
+						}
+					}
+				}
+
+				return device_handle;
 			}
 		}
 	}
