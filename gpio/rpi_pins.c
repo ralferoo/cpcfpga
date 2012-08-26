@@ -150,3 +150,13 @@ int jtagLowlevelClock(int tdi, int tms)
 
 	return tdo;
 }
+
+///////////////////////////////////////////////////////////////////////////
+
+void jtagRunTestTCK( unsigned int i )
+{
+	jtagIdle();
+	while( i-- ) {
+		jtagOutput(0,0);
+	}
+}

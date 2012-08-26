@@ -385,14 +385,6 @@ void jtagUpdateOrIdle(void)
 	}
 }
 
-void jtagRunTestTCK( unsigned int i )
-{
-	jtagIdle();
-	while( i-- ) {
-		jtagOutput(0,0);
-	}
-}
-
 /*
 void jtagScanIR(void)
 {
