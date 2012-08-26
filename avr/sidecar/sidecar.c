@@ -220,10 +220,25 @@ void EVENT_USB_Device_ControlRequest(void)
 
 		if (USB_ControlRequest.bRequest == 'j' ) {
 			int i = USB_ControlRequest.wValue;
-			char tdo = (char) JTAG_ClockWithTMS( i&1, i&0x80, 1);
+//			char tdo = (char) JTAG_ClockWithTMS( i&1, i&0x80, 1);
+
+			if(i&0x80)
+				JTAG_PORT |= JTAG_TMS;
+			else
+				JTAG_PORT &= ~JTAG_TMS;
+
+			if(i&1)
+				JTAG_PORT |= JTAG_TDI;
+			else
+				JTAG_PORT &= ~JTAG_TDI;
+
+			char tdo = (JTAG_PIN & JTAG_TDO)?1:0;
+			JTAG_PORT |= JTAG_TCK;
+
 			Endpoint_Write_Control_Stream_LE(&tdo, 1);
 			Endpoint_ClearOUT();
-			Endpoint_ClearOUT();
+
+			JTAG_PORT &= ~JTAG_TCK;
 			return;
 		}
 
