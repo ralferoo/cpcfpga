@@ -18,7 +18,7 @@ int JTAG_ClockWithTMS(int tdi,int tms,int read)
 		previous = (JTAG_PIN & JTAG_TDO)?1:0;
 		//previous = 0;
 	}
-	miso = (JTAG_PIN & JTAG_MISO)?1:0;
+//	miso = (JTAG_PIN & JTAG_MISO)?1:0;
 
 //	Sleep();
 
@@ -53,6 +53,23 @@ int JTAG_ClockWithTMS(int tdi,int tms,int read)
 	JTAG_PORT &= ~JTAG_TCK;
 //	for (wait=0; wait<300; wait++)
 		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+
+	/*
+	char c='a';
+	if(tdi) c+=1;
+	if(tms) c+=2;
+	if(previous) c-=32;
+	Endpoint_Write_Stream_LE( (uint8_t*) &c, 1, NULL);
+	*/
+
+	char c[2];
+	if (tdi) {
+		c[0] = tms ? '+':'-';
+	} else {
+		c[0] = tms ? '|':' ';
+	}
+	c[1]=previous?'1':'0';
+	Endpoint_Write_Stream_LE( (uint8_t*) &c, 2, NULL);
 
 	return previous;
 }
@@ -290,6 +307,7 @@ void JTAG_ChainInfo(void)
 				hir = tir = -1;
 			}
 		}
+		hdr++;
 	}
 	if( tdr )
 		WriteStringConst( PSTR("# Didn't reach end of chain with tdr=0!\r\n"));

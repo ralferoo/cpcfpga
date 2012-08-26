@@ -535,7 +535,12 @@ flip: $(TARGET).hex
 	batchisp -hardware usb -device $(MCU) -operation loadbuffer $(TARGET).hex program
 	batchisp -hardware usb -device $(MCU) -operation start reset 0
 
-dfu: $(TARGET).16.hex
+dfu8: $(TARGET).8.hex
+	dfu-programmer $(DFUMCU) erase
+	dfu-programmer $(DFUMCU) flash $(TARGET).8.hex
+	dfu-programmer $(DFUMCU) reset
+
+dfu16: $(TARGET).16.hex
 	dfu-programmer $(DFUMCU) erase
 	dfu-programmer $(DFUMCU) flash $(TARGET).16.hex
 	dfu-programmer $(DFUMCU) reset

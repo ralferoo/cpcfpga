@@ -54,6 +54,11 @@
 		/** Size in bytes of the CDC device-to-host notification IN endpoint. */
 		#define CDC_NOTIFICATION_EPSIZE        8
 
+//		// endpoints for control messages
+//		#define RAW_RX_EPNUM			5
+//		#define RAW_TX_EPNUM			6
+//		#define RAW_TXRX_EPSIZE			64
+
 		/** Size in bytes of the CDC data IN and OUT endpoints. */
 		#define CDC_TXRX_EPSIZE                16
 
@@ -77,6 +82,11 @@
 			USB_Descriptor_Interface_t               CDC_DCI_Interface;
 			USB_Descriptor_Endpoint_t                CDC_DataOutEndpoint;
 			USB_Descriptor_Endpoint_t                CDC_DataInEndpoint;
+
+//			// raw control Data Interface
+//			USB_Descriptor_Interface_t               Raw_Interface;
+//			USB_Descriptor_Endpoint_t                Raw_DataOutEndpoint;
+//			USB_Descriptor_Endpoint_t                Raw_DataInEndpoint;
 		} USB_Descriptor_Configuration_t;
 
 	/* Function Prototypes: */
