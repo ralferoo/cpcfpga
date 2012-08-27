@@ -202,10 +202,16 @@ void jtagLowlevelClockRO(int tdi, int tms)
 
 ///////////////////////////////////////////////////////////////////////////
 
-void jtagRunTestTCK( unsigned int i )
+void jtagRunTestTCK( unsigned int len )
 {
 	jtagIdle();
-//	while( i-- ) {
-//		jtagOutput(0,0);
-//	}
+	while (len>0) {
+		int num = len>500 ? 500 : len;
+		int bytes = usb_control_msg(libusb_handle, 0x40, 'Z', num, 0, "", 0, 500);
+		if (bytes != 0) {
+			printf("Wrote %d bytes, expecting %d\n", bytes, 0);
+			exit(5);
+		}
+		len -= num;
+	}
 }

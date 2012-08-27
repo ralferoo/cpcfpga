@@ -169,6 +169,18 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
 }
 
+void PulseClockLine(int wValue)
+{
+	JTAG_PORT &= ~JTAG_TMS;				// don't leave the idle state
+	while (wValue-- > 0) {
+		JTAG_PORT |=  JTAG_TCK;			// high clock
+		__asm__("nop;nop;nop;nop;");
+		JTAG_PORT &= ~JTAG_TCK;			// low clock
+		__asm__("nop;nop;nop;nop;");
+		wValue--;
+	}
+}
+
 unsigned char jtag_buffer[65];
 
 void RawJTAG(unsigned char tms_at_end, int num_bits)
@@ -337,6 +349,12 @@ void EVENT_USB_Device_ControlRequest(void)
 			Endpoint_Read_Control_Stream_LE(jtag_buffer, USB_ControlRequest.wLength);
 			RawJTAG((unsigned char)USB_ControlRequest.wValue, USB_ControlRequest.wIndex);
 			Endpoint_ClearIN();
+			return;
+		}
+		else if (USB_ControlRequest.bRequest == 'Z' ) {
+			Endpoint_ClearSETUP();
+			PulseClockLine(USB_ControlRequest.wValue);
+			Endpoint_ClearStatusStage();
 			return;
 		}
 
