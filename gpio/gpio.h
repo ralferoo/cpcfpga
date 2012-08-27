@@ -43,6 +43,7 @@ void nsleep(long nanos);
 
 void jtagInit(void);
 int jtagLowlevelClock(int tdi, int tms);
+void jtagLowlevelClockRO(int tdi, int tms);
 
 ///////////////////////////////////////////////////////////////////////////
 

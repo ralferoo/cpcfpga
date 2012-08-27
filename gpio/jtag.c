@@ -129,6 +129,12 @@ int jtagOutputSilent(int tdi, int tms)
 	return tdo;
 }
 
+void jtagOutputSilentRO(int tdi, int tms)
+{
+	jtagLowlevelClockRO(tdi, tms);
+	jtagChangeState(tms);
+}
+
 int jtagOutput(int tdi, int tms)
 {
 	char* pstate;
@@ -146,12 +152,27 @@ int jtagOutput(int tdi, int tms)
 	return tdo;
 }
 
+void jtagOutputRO(int tdi, int tms)
+{
+	char* pstate;
+	if (g_noisy)
+		pstate = get_jtag_state_name();
+
+	jtagOutputSilentRO(tdi,tms);
+
+	if (g_noisy) {
+		char* nstate = get_jtag_state_name();
+
+		printf("TDI: %d TMS: %d (%s->%s)\n", tdi, tms, pstate, nstate);
+	}
+}
+
 void jtagResetSilent(void)
 {
 //	pinOutput(GPIO_TMS,1);
 	int i;
 	for(i=0;i<5;i++) {
-		jtagLowlevelClock(1,1);
+		jtagLowlevelClockRO(1,1);
 		//jtagPulseClock();
 	}
 
@@ -175,21 +196,21 @@ void jtagIdle(void)
 	case JTAG_STATE_RESET:
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
-		jtagOutput(0,0);
+		jtagOutputRO(0,0);
 		break;
 
         case JTAG_STATE_SELECT_DR:
         case JTAG_STATE_SELECT_IR:
-		jtagOutput(0,0);
+		jtagOutputRO(0,0);
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutput(0,1);
-		jtagOutput(0,0);
+		jtagOutputRO(0,1);
+		jtagOutputRO(0,0);
                 break;
 	}
 		
@@ -206,31 +227,31 @@ void jtagSelectDR(void)
 		jtagReset();
 
 	case JTAG_STATE_RESET:
-		jtagOutput(0,0);
+		jtagOutputRO(0,0);
 
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 		break;
 
         case JTAG_STATE_SELECT_DR:
 		break;
 
         case JTAG_STATE_SELECT_IR:
-		jtagOutput(0,1);
-		jtagOutput(0,0);
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
+		jtagOutputRO(0,0);
+		jtagOutputRO(0,1);
 		break;
 
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutput(0,1);
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
+		jtagOutputRO(0,1);
                 break;
 	}
 		
@@ -245,7 +266,7 @@ void jtagSelectIR(void)
 	switch (jtag_state) {
 	default:
 		jtagSelectDR();
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
         case JTAG_STATE_SELECT_IR:
 		break;
 	}
@@ -259,8 +280,8 @@ void jtagSelectIR(void)
 void jtagShiftDR(void)
 {
 	jtagSelectDR();
-	jtagOutput(0,0);		// capture
-	jtagOutput(0,0);		// shift
+	jtagOutputRO(0,0);		// capture
+	jtagOutputRO(0,0);		// shift
 		
 	if (jtag_state != JTAG_STATE_SHIFT) {
 		printf("Invalid state transitioning to SHIFT: %s\n", get_jtag_state_name() );
@@ -271,8 +292,8 @@ void jtagShiftDR(void)
 void jtagShiftIR(void)
 {
 	jtagSelectIR();
-	jtagOutput(0,0);		// capture
-	jtagOutput(0,0);		// shift
+	jtagOutputRO(0,0);		// capture
+	jtagOutputRO(0,0);		// shift
 		
 	if (jtag_state != JTAG_STATE_SHIFT) {
 		printf("Invalid state transitioning to SHIFT: %s\n", get_jtag_state_name() );
@@ -382,28 +403,28 @@ void jtagUpdateOrIdle(void)
 		jtagReset();
 
 	case JTAG_STATE_RESET:
-		jtagOutput(0,0);
+		jtagOutputRO(0,0);
 
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
 		break;
 
         case JTAG_STATE_SELECT_DR:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 
         case JTAG_STATE_SELECT_IR:
-		jtagOutput(0,1);
-		jtagOutput(0,0);
+		jtagOutputRO(0,1);
+		jtagOutputRO(0,0);
 		break;
 
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
                 break;
 	}
 		
@@ -480,7 +501,7 @@ void devScanDevices(void)
 	int irlen, drlen;
 	int i,j;
 	for (i=0;i<MAX_CHAIN_LEN;i++) 
-		jtagOutput(1,0);	// flush zeros into IR
+		jtagOutputRO(1,0);	// flush zeros into IR
 	
 	for (irlen=0;irlen<MAX_CHAIN_LEN;irlen++) 
 		if (!jtagOutput(0,0))	// push zeros through until 0 pops out
@@ -628,7 +649,7 @@ void jtagBoundaryScanDump(struct Device *device)
 
 	int i;
 	for (i=0; i<device->hdr; i++)
-		jtagOutput(0,0);              // ignore all data before the data we want
+		jtagOutputRO(0,0);              // ignore all data before the data we want
 
 	int before_tms = device->bsrlen + device->tdr;
 	for (i=0; i<device->bsrlen; i++) {
@@ -640,7 +661,7 @@ void jtagBoundaryScanDump(struct Device *device)
 		printf("%d", bit);
 	}
 	for (i=0; i<device->tdr; i++)
-		jtagOutput(0, --before_tms == 0);     // complete cycle
+		jtagOutputRO(0, --before_tms == 0);     // complete cycle
 	printf("\n");
 
 	jtagSendIR( (1<<device->len)-1, device);	// bypass

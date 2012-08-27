@@ -175,6 +175,12 @@ int jtagLowlevelClock(int tdi, int tms)
 	jtagSendAndReceiveBits(tms, 1, &byte, &byte);
 	return byte&1;
 }
+
+void jtagLowlevelClockRO(int tdi, int tms)
+{
+	char byte = tdi ? 1 : 0;
+	jtagSendAndReceiveBits(tms, 1, &byte, NULL);
+}
 #else
 int jtagLowlevelClock(int tdi, int tms)
 {
@@ -186,6 +192,11 @@ int jtagLowlevelClock(int tdi, int tms)
 		exit(5);
 	}
 	return tdo?1:0;
+}
+
+void jtagLowlevelClockRO(int tdi, int tms)
+{
+	jtagLowlevelClockRO(tdi,tms);
 }
 #endif // USB_SPEEDUP
 
