@@ -51,10 +51,33 @@ void promDumpBlock( int faddr, struct Device *device)
 
         // read the data
         jtagShiftDR();
+#ifdef USB_SPEEDUP
+	unsigned char bytes[64];
+	if( device->hdr ) {
+		memset(bytes, 0, (device->hdr+7)>>3 );
+		jtagSendAndReceiveBits(0, device->hdr, &bytes, NULL);
+	}
+#else
         for (i=0; i<device->hdr; i++)
                 jtagOutput(0,0);              // ignore all data before the data we want
+#endif
 
         uint16_t addr = faddr << 4;
+#ifdef USB_SPEEDUP
+        for (i=0; i<8192; i+=64*8 ) {
+		memset(bytes, 0, 64);
+		jtagSendAndReceiveBits(0, 64*8, &bytes, &bytes);
+		int k,jj;
+        	for (k=jj=0; k<64*8; k+=HEX_BLOCK_SIZE*8 ) {
+                	hexStart( 0, addr, HEX_BLOCK_SIZE );
+	                for(j=0; j<HEX_BLOCK_SIZE; j++,jj++ ) {
+        	                hexByte( bytes[jj] );
+			}
+                        addr+=HEX_BLOCK_SIZE;
+	                hexEndLine();
+		}
+        }
+#else
         for (i=0; i<8192; i+=HEX_BLOCK_SIZE*8 ) {
                 hexStart( 0, addr, HEX_BLOCK_SIZE );
                 for(j=0; j<HEX_BLOCK_SIZE; j++ ) {
@@ -69,6 +92,7 @@ void promDumpBlock( int faddr, struct Device *device)
                 }
                 hexEndLine();
         }
+#endif
 
 	jtagUpdateOrIdle();
 }
