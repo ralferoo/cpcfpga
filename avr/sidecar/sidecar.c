@@ -174,9 +174,9 @@ void PulseClockLine(int wValue)
 	JTAG_PORT &= ~JTAG_TMS;				// don't leave the idle state
 	while (wValue-- > 0) {
 		JTAG_PORT |=  JTAG_TCK;			// high clock
-		__asm__("nop;nop;nop;nop;");
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 		JTAG_PORT &= ~JTAG_TCK;			// low clock
-		__asm__("nop;nop;nop;nop;");
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 		wValue--;
 	}
 }
@@ -355,6 +355,13 @@ void EVENT_USB_Device_ControlRequest(void)
 			Endpoint_ClearSETUP();
 			PulseClockLine(USB_ControlRequest.wValue);
 			Endpoint_ClearStatusStage();
+
+//			Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+//			uint8_t buffer[32];
+//			sprintf_P((char*)buffer, PSTR("[Z %d]"),
+//				USB_ControlRequest.wValue);
+//			Endpoint_Write_Stream_LE(buffer, strlen((char*)buffer), NULL);
+//			Endpoint_ClearIN();
 			return;
 		}
 

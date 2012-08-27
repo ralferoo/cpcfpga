@@ -105,7 +105,7 @@ void jtagInit(void)
 
 ///////////////////////////////////////////////////////////////////////////
 
-//#define DO_LOG
+// #define DO_LOG
 
 #ifdef USB_SPEEDUP
 void jtagSendAndReceiveBits(int tms_at_end, int num_bits, unsigned char* send, unsigned char* recv)
@@ -205,8 +205,10 @@ void jtagLowlevelClockRO(int tdi, int tms)
 void jtagRunTestTCK( unsigned int len )
 {
 	jtagIdle();
+//	printf("TCK %d", len);
 	while (len>0) {
 		int num = len>500 ? 500 : len;
+//		printf(".");
 		int bytes = usb_control_msg(libusb_handle, 0x40, 'Z', num, 0, "", 0, 500);
 		if (bytes != 0) {
 			printf("Wrote %d bytes, expecting %d\n", bytes, 0);
@@ -214,4 +216,5 @@ void jtagRunTestTCK( unsigned int len )
 		}
 		len -= num;
 	}
+//	printf("\n");
 }
