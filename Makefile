@@ -383,6 +383,13 @@ scan:
 
 ###########################################################################
 #
+# my flash program
+
+gpio/%: gpio/%.c
+	(cd gpio ; make $*)
+
+###########################################################################
+#
 # xilinx rules
 
 BUILD_BMM_FILE	= $(if $(BMM_FILE),build/$(BMM_FILE),)
@@ -408,9 +415,12 @@ TRCE_FLAGS       ?= $(INTSTYLE) -e 3 -l 3 $(MTFLAGS)
 BITGEN_FLAGS     ?= $(INTSTYLE)           # most bitgen flags are specified in the .ut file
 PROMGEN_FLAGS    ?= -w -u 0               # flags that control the MCS/EXO file generation
 
-build/.xilinxprogrammed: build/$(XILINX_MCS_FILE)
-	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase && gpio/prom_program && gpio/prom_reload" < build/$(XILINX_MCS_FILE)
+build/.xilinxprogrammed: build/$(XILINX_MCS_FILE) gpio/prom_erase gpio/prom_program gpio/prom_reload
+	gpio/prom_erase
+	gpio/prom_program < build/$(XILINX_MCS_FILE)
+	gpio/prom_reload
 	@touch $@
+#	ssh $(PROM_LOADER_TARGET) "gpio/prom_erase && gpio/prom_program && gpio/prom_reload" < build/$(XILINX_MCS_FILE)
 
 xilinx: build/$(XILINX_MCS_FILE) build/$(XILINX_TOP_NAME).bit
 
