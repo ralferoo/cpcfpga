@@ -105,8 +105,12 @@ void jtagInit(void)
 
 ///////////////////////////////////////////////////////////////////////////
 
+//#define DO_LOG
+
+#ifdef USB_SPEEDUP
 void jtagSendAndReceiveBits(int tms_at_end, int num_bits, unsigned char* send, unsigned char* recv)
 {
+//	printf("num_bits=%d\n", num_bits);
 	while (num_bits>64*8) {
 		int bytes = usb_control_msg(libusb_handle, 0x40, 'J', 0 /*wValue=send_tms=0*/, 64*8, send, 64, 500);
 		if (bytes != 64) {
@@ -126,31 +130,53 @@ void jtagSendAndReceiveBits(int tms_at_end, int num_bits, unsigned char* send, u
 	}
 	int obytes = (num_bits+7) >> 3;
 	int bytes = usb_control_msg(libusb_handle, 0x40, 'J', tms_at_end?1:0 /*wValue=send_tms*/, num_bits, send, obytes, 500);
+//	printf("Wrote %d bytes, expecting %d\n", bytes, obytes);
 	if (bytes != obytes) {
 		printf("Wrote %d bytes, expecting %d\n", bytes, obytes);
 		exit(5);
 	}
+
+#ifdef DO_LOG
+	printf("[%3d]", num_bits);
+	int i;
+	for (i=0; i<bytes; i++)
+		printf(" %02X", send[i]);
+	if(tms_at_end)
+		printf(" TMS");
+#endif
+
 	if (recv) {
 		bytes = usb_control_msg(libusb_handle, 0xc0, 'O', 0, num_bits, recv, obytes, 500);
+//		printf("Read %d bytes, expecting %d\n", bytes, obytes);
 		if (bytes != obytes) {
 			printf("Read %d bytes, expecting %d\n", bytes, obytes);
 			exit(5);
 		}
+#ifdef DO_LOG
+		printf(" -");
+		int i;
+		for (i=0; i<bytes; i++)
+			printf(" %02X", recv[i]);
+#endif
 	}
+
+#ifdef DO_LOG
+	printf("\n");
+#endif
 }
+#endif //USB_SPEEDUP
 
 ///////////////////////////////////////////////////////////////////////////
 
+#ifdef USB_SPEEDUP
 int jtagLowlevelClock(int tdi, int tms)
 {
-	char byte = tdi ? 0x80 : 0;
+	char byte = tdi ? 1 : 0;
 	jtagSendAndReceiveBits(tms, 1, &byte, &byte);
-	return (byte&0x80)?1:0;
+	return byte&1;
 }
-
-///////////////////////////////////////////////////////////////////////////
-
-int old_jtagLowlevelClock(int tdi, int tms)
+#else
+int jtagLowlevelClock(int tdi, int tms)
 {
 	char byte=(tdi?1:0) | (tms?0x80:0);
 	char tdo;
@@ -161,6 +187,7 @@ int old_jtagLowlevelClock(int tdi, int tms)
 	}
 	return tdo?1:0;
 }
+#endif // USB_SPEEDUP
 
 ///////////////////////////////////////////////////////////////////////////
 

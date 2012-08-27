@@ -77,10 +77,8 @@ void nsleep(long nanos)
 
 ///////////////////////////////////////////////////////////////////////////
 
-int jtagOutputSilent(int tdi, int tms)
+void jtagChangeState(int tms)
 {
-	int tdo = jtagLowlevelClock(tdi, tms);
-
 	switch(jtag_state) {
 	case JTAG_STATE_RESET:
 		jtag_state = tms ? JTAG_STATE_RESET : JTAG_STATE_IDLE;
@@ -122,7 +120,12 @@ int jtagOutputSilent(int tdi, int tms)
 	default:
 		jtag_state = JTAG_STATE_UNKNOWN;
 	}
+}
 
+int jtagOutputSilent(int tdi, int tms)
+{
+	int tdo = jtagLowlevelClock(tdi, tms);
+	jtagChangeState(tms);
 	return tdo;
 }
 
@@ -287,6 +290,30 @@ uint32_t jtagShiftData( uint32_t value, int len, int header, int trailer)
 		exit(1);
 	}
 
+#ifdef USB_SPEEDUP
+	unsigned char bytes[64];
+	if( header) {
+		memset(bytes, 0xff, (header+7)>>3 );
+		jtagSendAndReceiveBits(0, header, &bytes, NULL);
+	}
+	
+	unsigned char obytes[4];
+	obytes[0] =  value        & 0xff;
+	obytes[1] = (value >>  8) & 0xff;
+	obytes[2] = (value >> 16) & 0xff;
+	obytes[3] = (value >> 24) & 0xff;
+
+	unsigned char ibytes[4];
+	jtagSendAndReceiveBits(trailer==0, len, &obytes, &ibytes);
+
+	value = ibytes[0] | (ibytes[1]<<8) | (ibytes[2]<<16) | (ibytes[3]<<24);
+	
+	if (trailer) {
+		memset(bytes, 0xff, (trailer+7)>>3 );
+		jtagSendAndReceiveBits(1, trailer, &bytes, NULL);
+	}
+	jtagChangeState(1);
+#else
 	int i;
 	int bit;
 
@@ -325,6 +352,7 @@ uint32_t jtagShiftData( uint32_t value, int len, int header, int trailer)
 		value >>= 1;
 		value |= bit << (len-1);
 	}
+#endif
 
 	jtagOutput(1,1);			// move from exit to update
 	if (jtag_state != JTAG_STATE_UPDATE) {

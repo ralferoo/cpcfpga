@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define USB_SPEEDUP
+
 #define PROM_XCF02S	0xf5045093
 #define FPGA_XC3S400	0x0141C093
 

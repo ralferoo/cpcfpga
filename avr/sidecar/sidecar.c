@@ -181,7 +181,7 @@ void RawJTAG(unsigned char tms_at_end, int num_bits)
 	unsigned char *p = jtag_buffer;
 	unsigned char idata = *p;
 	unsigned char odata = 0;
-	unsigned char mask = 0x80;
+	unsigned char mask = 0x01;
 
 	JTAG_PORT &= ~JTAG_TMS;			// no TMS for most of the bits
 
@@ -196,11 +196,12 @@ void RawJTAG(unsigned char tms_at_end, int num_bits)
 
 		JTAG_PORT |=  JTAG_TCK;			// high clock
 
-		mask = mask >> 1;
+		mask = mask << 1;
 		if( mask==0) {
 			*p++ = odata;
 			odata = 0;
 			idata = *p;
+			mask = 0x01;
 		}
 		JTAG_PORT &= ~JTAG_TCK;			// low clock
 
