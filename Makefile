@@ -375,6 +375,9 @@ emu:
 dfu8:
 	( cd avr/sidecar ; make dfu8 )
 
+dump:
+	( cd gpio ; make prom_dump && ./prom_dump )
+
 scan:
 	( cd gpio ; make scan && ./scan )
 

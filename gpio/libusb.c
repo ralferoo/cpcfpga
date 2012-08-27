@@ -10,6 +10,25 @@ usb_dev_handle *libusb_handle;
 
 usb_dev_handle *find_cpc2012(void);
 
+/*****************************************************************************
+ *
+ * usb_control_msg(libusb_handle, 0xc0, cmd, value, index, data_addr, data_len, timeout);
+ *
+ * Possible states = Shift, Update, Pause, Reset, Idle
+ *
+ * '?' GetVersion ()
+ * 'J' RawJTAG (tms_at_end, length_in_bits)
+ * 'O' GetOutput ()
+ * 'I' ShiftIR (endstate, length_in_bits)
+ * 'D' ShiftDR (endstate, length_in_bits)
+ * 'Z' Idle (clocks)
+ * 'R' Reset ()
+ *
+ * JTAG start state, end state
+ * length_in_bits
+ *
+ *****************************************************************************/
+
 usb_dev_handle *find_cpc2012(void)
 {
         struct usb_bus *bus;
@@ -58,6 +77,8 @@ usb_dev_handle *find_cpc2012(void)
 					}
 				}
 
+//				len = usb_control_msg(libusb_handle, 0xc0, '?', 0, 0, &byte, 8, 500);
+
 				return device_handle;
 			}
 		}
@@ -84,7 +105,52 @@ void jtagInit(void)
 
 ///////////////////////////////////////////////////////////////////////////
 
+void jtagSendAndReceiveBits(int tms_at_end, int num_bits, unsigned char* send, unsigned char* recv)
+{
+	while (num_bits>64*8) {
+		int bytes = usb_control_msg(libusb_handle, 0x40, 'J', 0 /*wValue=send_tms=0*/, 64*8, send, 64, 500);
+		if (bytes != 64) {
+			printf("Wrote %d bytes, expecting %d\n", bytes, 64);
+			exit(5);
+		}
+		send += 64;
+		if (recv) {
+			bytes = usb_control_msg(libusb_handle, 0xc0, 'O', 0, 64*8, recv, 64, 500);
+			if (bytes != 64) {
+				printf("Read %d bytes, expecting %d\n", bytes, 64);
+				exit(5);
+			}
+			recv += 64;
+		}
+		num_bits -= 64*8;
+	}
+	int obytes = (num_bits+7) >> 3;
+	int bytes = usb_control_msg(libusb_handle, 0x40, 'J', tms_at_end?1:0 /*wValue=send_tms*/, num_bits, send, obytes, 500);
+	if (bytes != obytes) {
+		printf("Wrote %d bytes, expecting %d\n", bytes, obytes);
+		exit(5);
+	}
+	if (recv) {
+		bytes = usb_control_msg(libusb_handle, 0xc0, 'O', 0, num_bits, recv, obytes, 500);
+		if (bytes != obytes) {
+			printf("Read %d bytes, expecting %d\n", bytes, obytes);
+			exit(5);
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 int jtagLowlevelClock(int tdi, int tms)
+{
+	char byte = tdi ? 0x80 : 0;
+	jtagSendAndReceiveBits(tms, 1, &byte, &byte);
+	return (byte&0x80)?1:0;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+int old_jtagLowlevelClock(int tdi, int tms)
 {
 	char byte=(tdi?1:0) | (tms?0x80:0);
 	char tdo;
