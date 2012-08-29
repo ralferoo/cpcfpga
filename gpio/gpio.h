@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define USB_SPEEDUP
+
 #define PROM_XCF02S	0xf5045093
 #define FPGA_XC3S400	0x0141C093
 
@@ -12,7 +14,7 @@
 struct Device {
 	struct Device *next;
 
-	unsigned long id;
+	unsigned int id; //long
 	int hir, tir, hdr, tdr, len;
 	int bsrlen, bsrsample, bsrsafe;
 	int user;
@@ -38,6 +40,10 @@ struct BoundaryScan {
 ///////////////////////////////////////////////////////////////////////////
 
 void nsleep(long nanos);
+
+void jtagInit(void);
+int jtagLowlevelClock(int tdi, int tms);
+void jtagLowlevelClockRO(int tdi, int tms);
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -90,10 +96,6 @@ void promErase(struct Device* prom);
 void promProgramStart(struct Device *prom);
 int promProgramData(uint8_t type, uint8_t len, uint16_t addr, uint8_t *data);
 void promReload(struct Device* prom);
-
-///////////////////////////////////////////////////////////////////////////
-
-void jtagInit(void);
 
 ///////////////////////////////////////////////////////////////////////////
 

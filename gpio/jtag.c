@@ -1,19 +1,9 @@
-//
-//  How to access GPIO registers from C-code on the Raspberry-Pi
-//  Example program
-//  15-January-2012
-//  Dom and Gert
-//
-
 #include <time.h>
 #include <errno.h>
 
 #include "gpio.h"
 
-#define GPIO_TMS 21
-#define GPIO_TCK 17
-#define GPIO_TDI 4
-#define GPIO_TDO 18 //22
+#define MAX_CHAIN_LEN 50
 
 int g_noisy = 0;
 
@@ -62,116 +52,6 @@ inline char* get_jtag_state_name(void)
 
 #include <unistd.h>
 
-// Access from ARM Running Linux
-
-#define BCM2708_PERI_BASE        0x20000000
-#define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
-
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <fcntl.h>
-#include <assert.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <unistd.h>
-
-#define PAGE_SIZE (4*1024)
-#define BLOCK_SIZE (4*1024)
-
-int  mem_fd;
-char *gpio_mem, *gpio_map;
-char *spi0_mem, *spi0_map;
-
-
-// I/O access
-volatile unsigned *gpio;
-
-
-// GPIO setup macros. Always use INP_GPIO(x) before using OUT_GPIO(x) or SET_GPIO_ALT(x,y)
-#define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
-#define OUT_GPIO(g) *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
-#define SET_GPIO_ALT(g,a) *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
-
-#define GPIO_SET *(gpio+7)  // sets   bits which are 1 ignores bits which are 0
-#define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
-#define GPIO_LEV *(gpio+13) // gets levels of bits
-
-void pinSetupIO();
-
-//
-// Set up a memory regions to access GPIO
-//
-void pinSetupIO()
-{
-
-   /* open /dev/mem */
-   if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
-      printf("can't open /dev/mem \n");
-      exit (-1);
-   }
-
-   /* mmap GPIO */
-
-   // Allocate MAP block
-   if ((gpio_mem = malloc(BLOCK_SIZE + (PAGE_SIZE-1))) == NULL) {
-      printf("allocation error \n");
-      exit (-1);
-   }
-
-   // Make sure pointer is on 4K boundary
-   if ((unsigned long)gpio_mem % PAGE_SIZE)
-     gpio_mem += PAGE_SIZE - ((unsigned long)gpio_mem % PAGE_SIZE);
-
-   // Now map it
-   gpio_map = (unsigned char *)mmap(
-      (caddr_t)gpio_mem,
-      BLOCK_SIZE,
-      PROT_READ|PROT_WRITE,
-      MAP_SHARED|MAP_FIXED,
-      mem_fd,
-      GPIO_BASE
-   );
-
-   if ((long)gpio_map < 0) {
-      printf("mmap error %d\n", (int)gpio_map);
-      exit (-1);
-   }
-
-   // Always use volatile pointer!
-   gpio = (volatile unsigned *)gpio_map;
-
-
-} // pinSetupIO
-
-inline void pinSetDirectionInput(int i)
-{
-    INP_GPIO(i);
-}
-
-inline void pinSetDirectionOutput(int i)
-{
-    INP_GPIO(i); // must use INP_GPIO before we can use OUT_GPIO
-    OUT_GPIO(i);
-}
-
-inline void pinOutput(int i, int v)
-{
-	if(v)
-		GPIO_SET = 1<<i;
-	else
-		GPIO_CLR = 1<<i;
-}
-
-inline int pinInput(int i)
-{
-	return ( GPIO_LEV & (1<<i) ) ? 1 : 0;
-}
-
 ///////////////////////////////////////////////////////////////////////////
 
 unsigned long long tot_nanos = 0;
@@ -197,31 +77,8 @@ void nsleep(long nanos)
 
 ///////////////////////////////////////////////////////////////////////////
 
-inline void jtagPulseClock(void)
+void jtagChangeState(int tms)
 {
-//	usleep(100);		// 100 nsec = .1 us -> 10MHz
-
-	// these timings are pretty weird. if more nops are put here then
-	// the jtag also stops working, almost like a lot of extra nops get
-	// optimised out, but less don't...
-
-	asm("nop;nop;nop");		// 3/750 ms = 4ns
-	//nsleep(20);
-	pinOutput(GPIO_TCK,1);
-	asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
-	//nsleep(50);
-	pinOutput(GPIO_TCK,0);
-	asm("nop;nop;nop");		// 3/750 ms = 4ns
-	//nsleep(30);
-}
-
-int jtagOutputSilent(int tdi, int tms)
-{
-	pinOutput(GPIO_TDI,tdi);
-	pinOutput(GPIO_TMS,tms);
-	int tdo = pinInput(GPIO_TDO);
-	jtagPulseClock();
-
 	switch(jtag_state) {
 	case JTAG_STATE_RESET:
 		jtag_state = tms ? JTAG_STATE_RESET : JTAG_STATE_IDLE;
@@ -263,8 +120,19 @@ int jtagOutputSilent(int tdi, int tms)
 	default:
 		jtag_state = JTAG_STATE_UNKNOWN;
 	}
+}
 
+int jtagOutputSilent(int tdi, int tms)
+{
+	int tdo = jtagLowlevelClock(tdi, tms);
+	jtagChangeState(tms);
 	return tdo;
+}
+
+void jtagOutputSilentRO(int tdi, int tms)
+{
+	jtagLowlevelClockRO(tdi, tms);
+	jtagChangeState(tms);
 }
 
 int jtagOutput(int tdi, int tms)
@@ -284,12 +152,29 @@ int jtagOutput(int tdi, int tms)
 	return tdo;
 }
 
+void jtagOutputRO(int tdi, int tms)
+{
+	char* pstate;
+	if (g_noisy)
+		pstate = get_jtag_state_name();
+
+	jtagOutputSilentRO(tdi,tms);
+
+	if (g_noisy) {
+		char* nstate = get_jtag_state_name();
+
+		printf("TDI: %d TMS: %d (%s->%s)\n", tdi, tms, pstate, nstate);
+	}
+}
+
 void jtagResetSilent(void)
 {
-	pinOutput(GPIO_TMS,1);
+//	pinOutput(GPIO_TMS,1);
 	int i;
-	for(i=0;i<5;i++)
-		jtagPulseClock();
+	for(i=0;i<5;i++) {
+		jtagLowlevelClockRO(1,1);
+		//jtagPulseClock();
+	}
 
 	jtag_state = JTAG_STATE_RESET;
 }
@@ -311,21 +196,21 @@ void jtagIdle(void)
 	case JTAG_STATE_RESET:
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
-		jtagOutput(0,0);
+		jtagOutputRO(0,0);
 		break;
 
         case JTAG_STATE_SELECT_DR:
         case JTAG_STATE_SELECT_IR:
-		jtagOutput(0,0);
+		jtagOutputRO(0,0);
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutput(0,1);
-		jtagOutput(0,0);
+		jtagOutputRO(0,1);
+		jtagOutputRO(0,0);
                 break;
 	}
 		
@@ -342,31 +227,31 @@ void jtagSelectDR(void)
 		jtagReset();
 
 	case JTAG_STATE_RESET:
-		jtagOutput(0,0);
+		jtagOutputRO(0,0);
 
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 		break;
 
         case JTAG_STATE_SELECT_DR:
 		break;
 
         case JTAG_STATE_SELECT_IR:
-		jtagOutput(0,1);
-		jtagOutput(0,0);
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
+		jtagOutputRO(0,0);
+		jtagOutputRO(0,1);
 		break;
 
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutput(0,1);
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
+		jtagOutputRO(0,1);
                 break;
 	}
 		
@@ -381,7 +266,7 @@ void jtagSelectIR(void)
 	switch (jtag_state) {
 	default:
 		jtagSelectDR();
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
         case JTAG_STATE_SELECT_IR:
 		break;
 	}
@@ -395,8 +280,8 @@ void jtagSelectIR(void)
 void jtagShiftDR(void)
 {
 	jtagSelectDR();
-	jtagOutput(0,0);		// capture
-	jtagOutput(0,0);		// shift
+	jtagOutputRO(0,0);		// capture
+	jtagOutputRO(0,0);		// shift
 		
 	if (jtag_state != JTAG_STATE_SHIFT) {
 		printf("Invalid state transitioning to SHIFT: %s\n", get_jtag_state_name() );
@@ -407,8 +292,8 @@ void jtagShiftDR(void)
 void jtagShiftIR(void)
 {
 	jtagSelectIR();
-	jtagOutput(0,0);		// capture
-	jtagOutput(0,0);		// shift
+	jtagOutputRO(0,0);		// capture
+	jtagOutputRO(0,0);		// shift
 		
 	if (jtag_state != JTAG_STATE_SHIFT) {
 		printf("Invalid state transitioning to SHIFT: %s\n", get_jtag_state_name() );
@@ -426,6 +311,30 @@ uint32_t jtagShiftData( uint32_t value, int len, int header, int trailer)
 		exit(1);
 	}
 
+#ifdef USB_SPEEDUP
+	unsigned char bytes[64];
+	if( header) {
+		memset(bytes, 0xff, (header+7)>>3 );
+		jtagSendAndReceiveBits(0, header, &bytes, NULL);
+	}
+	
+	unsigned char obytes[4];
+	obytes[0] =  value        & 0xff;
+	obytes[1] = (value >>  8) & 0xff;
+	obytes[2] = (value >> 16) & 0xff;
+	obytes[3] = (value >> 24) & 0xff;
+
+	unsigned char ibytes[4];
+	jtagSendAndReceiveBits(trailer==0, len, &obytes, &ibytes);
+
+	value = ibytes[0] | (ibytes[1]<<8) | (ibytes[2]<<16) | (ibytes[3]<<24);
+	
+	if (trailer) {
+		memset(bytes, 0xff, (trailer+7)>>3 );
+		jtagSendAndReceiveBits(1, trailer, &bytes, NULL);
+	}
+	jtagChangeState(1);
+#else
 	int i;
 	int bit;
 
@@ -464,6 +373,7 @@ uint32_t jtagShiftData( uint32_t value, int len, int header, int trailer)
 		value >>= 1;
 		value |= bit << (len-1);
 	}
+#endif
 
 	jtagOutput(1,1);			// move from exit to update
 	if (jtag_state != JTAG_STATE_UPDATE) {
@@ -493,42 +403,34 @@ void jtagUpdateOrIdle(void)
 		jtagReset();
 
 	case JTAG_STATE_RESET:
-		jtagOutput(0,0);
+		jtagOutputRO(0,0);
 
         case JTAG_STATE_UPDATE:
         case JTAG_STATE_IDLE:
 		break;
 
         case JTAG_STATE_SELECT_DR:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 
         case JTAG_STATE_SELECT_IR:
-		jtagOutput(0,1);
-		jtagOutput(0,0);
+		jtagOutputRO(0,1);
+		jtagOutputRO(0,0);
 		break;
 
         case JTAG_STATE_CAPTURE:
         case JTAG_STATE_SHIFT:
         case JTAG_STATE_PAUSE:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
 
         case JTAG_STATE_EXIT1:
         case JTAG_STATE_EXIT2:
-		jtagOutput(0,1);
+		jtagOutputRO(0,1);
                 break;
 	}
 		
 	if (jtag_state != JTAG_STATE_UPDATE && jtag_state != JTAG_STATE_IDLE) {
 		printf("Invalid state transitioning to IDLE or UPDATE: %s\n", get_jtag_state_name() );
 		exit(1);
-	}
-}
-
-void jtagRunTestTCK( unsigned int i )
-{
-	jtagIdle();
-	while( i-- ) {
-		jtagOutput(0,0);
 	}
 }
 
@@ -598,14 +500,14 @@ void devScanDevices(void)
 
 	int irlen, drlen;
 	int i,j;
-	for (i=0;i<1024;i++) 
-		jtagOutput(1,0);	// flush zeros into IR
+	for (i=0;i<MAX_CHAIN_LEN;i++) 
+		jtagOutputRO(1,0);	// flush zeros into IR
 	
-	for (irlen=0;irlen<1024;irlen++) 
+	for (irlen=0;irlen<MAX_CHAIN_LEN;irlen++) 
 		if (!jtagOutput(0,0))	// push zeros through until 0 pops out
 			break;
 	
-	for (i=0;i<1024;i++)
+	for (i=0;i<MAX_CHAIN_LEN;i++)
 		if (jtagOutput(1,0))	// push ones through until 1 pops out
 			break;
 
@@ -619,7 +521,7 @@ void devScanDevices(void)
 
 	jtagShiftDR();
 
-	for (drlen=0;drlen<1024;drlen++) 
+	for (drlen=0;drlen<MAX_CHAIN_LEN;drlen++) 
 		if (jtagOutput(1,0))	// push ones through until 1 pops out
 			break;
 
@@ -653,7 +555,7 @@ void devScanDevices(void)
 
 //	printf("\nScanChain:\n\n");
 
-	for( i=0; i<100; i++ )
+	for( i=0; i<MAX_CHAIN_LEN; i++ )
 	{
 		int ir=-1;
 		int bit, len;
@@ -664,13 +566,17 @@ void devScanDevices(void)
 			part = "unrecognised device with no IDCODE";
 		} else {
 			int bsrlen=0, bsrsample=0, bsrsafe=0;
-			unsigned long id = 1<<31;
+			unsigned long id = 0x80000000UL; //1U<<31;
 			for(j=0;j<31;j++) {
 				id >>= 1;
-				id  |= jtagOutput(1,0)<<31;
+				//id  |= jtagOutput(1,0)<<31;
+				if (jtagOutput(1,0))
+					id |= 0x80000000UL;
+//				printf("id now %lx\n", id);
 			}
 			manuf="";
 			part="unrecognised device";
+			len = 0;
 			if ((id&0xfff)==0x093) {
 				manuf="Xilinx ";
 				if ( (id&0xffff000) == 0x5045000 ) {
@@ -730,7 +636,7 @@ void devScanDevices(void)
 void jtagBoundaryScanDump(struct Device *device)
 {
 	if (device->bsrsample <= 0 || device->bsrlen <= 0) {
-		printf("Boundary scan not supported on %s\n");
+		printf("Boundary scan not supported on %s\n", device->name);
 		return;
 	}
 
@@ -743,7 +649,7 @@ void jtagBoundaryScanDump(struct Device *device)
 
 	int i;
 	for (i=0; i<device->hdr; i++)
-		jtagOutput(0,0);              // ignore all data before the data we want
+		jtagOutputRO(0,0);              // ignore all data before the data we want
 
 	int before_tms = device->bsrlen + device->tdr;
 	for (i=0; i<device->bsrlen; i++) {
@@ -755,7 +661,7 @@ void jtagBoundaryScanDump(struct Device *device)
 		printf("%d", bit);
 	}
 	for (i=0; i<device->tdr; i++)
-		jtagOutput(0, --before_tms == 0);     // complete cycle
+		jtagOutputRO(0, --before_tms == 0);     // complete cycle
 	printf("\n");
 
 	jtagSendIR( (1<<device->len)-1, device);	// bypass
@@ -781,22 +687,6 @@ void devDump(void)
 struct Device *devGetFirstDevice(void)
 {
 	return g_firstDevice;
-}
-
-///////////////////////////////////////////////////////////////////////////
-
-void jtagInit(void)
-{
-	// Set up gpi pointer for direct register access
-	pinSetupIO();
-
-	// set pin directions
-	pinSetDirectionOutput(GPIO_TMS);
-	pinSetDirectionOutput(GPIO_TCK);
-	pinSetDirectionOutput(GPIO_TDI);
-	pinSetDirectionInput (GPIO_TDO);
-	pinOutput(GPIO_TMS,1);
-	pinOutput(GPIO_TCK,0);
 }
 
 ///////////////////////////////////////////////////////////////////////////

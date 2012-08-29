@@ -487,12 +487,12 @@ build: elf hex eep lss sym $(TARGET).16.bin $(TARGET).8.bin
 #build: lib
 
 
-elf: $(TARGET).16.elf
-hex: $(TARGET).16.hex
-eep: $(TARGET).16.eep
-lss: $(TARGET).16.lss
-sym: $(TARGET).16.sym
-LIBNAME=lib$(TARGET).16.a
+elf: $(TARGET).8.elf
+hex: $(TARGET).8.hex
+eep: $(TARGET).8.eep
+lss: $(TARGET).8.lss
+sym: $(TARGET).8.sym
+LIBNAME=lib$(TARGET).8.a
 lib: $(LIBNAME)
 
 

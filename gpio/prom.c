@@ -51,10 +51,33 @@ void promDumpBlock( int faddr, struct Device *device)
 
         // read the data
         jtagShiftDR();
+#ifdef USB_SPEEDUP
+	unsigned char bytes[64];
+	if( device->hdr ) {
+		memset(bytes, 0, (device->hdr+7)>>3 );
+		jtagSendAndReceiveBits(0, device->hdr, &bytes, NULL);
+	}
+#else
         for (i=0; i<device->hdr; i++)
                 jtagOutput(0,0);              // ignore all data before the data we want
+#endif
 
         uint16_t addr = faddr << 4;
+#ifdef USB_SPEEDUP
+        for (i=0; i<8192; i+=64*8 ) {
+		memset(bytes, 0, 64);
+		jtagSendAndReceiveBits(0, 64*8, &bytes, &bytes);
+		int k,jj;
+        	for (k=jj=0; k<64*8; k+=HEX_BLOCK_SIZE*8 ) {
+                	hexStart( 0, addr, HEX_BLOCK_SIZE );
+	                for(j=0; j<HEX_BLOCK_SIZE; j++,jj++ ) {
+        	                hexByte( bytes[jj] );
+			}
+                        addr+=HEX_BLOCK_SIZE;
+	                hexEndLine();
+		}
+        }
+#else
         for (i=0; i<8192; i+=HEX_BLOCK_SIZE*8 ) {
                 hexStart( 0, addr, HEX_BLOCK_SIZE );
                 for(j=0; j<HEX_BLOCK_SIZE; j++ ) {
@@ -69,6 +92,7 @@ void promDumpBlock( int faddr, struct Device *device)
                 }
                 hexEndLine();
         }
+#endif
 
 	jtagUpdateOrIdle();
 }
@@ -238,6 +262,149 @@ next_sector:
                                         printf("\nHEX changes sector mid sector\n");
                                         return -1;
                                 }
+
+#ifdef USB_SPEEDUPxxx
+				while( len ) {
+					int bytes_to_go = 512 - (prom_addr_lo & 511);
+					if (bytes_to_go > len)
+						bytes_to_go = len;
+					if (bytes_to_go > 64)
+						bytes_to_go = 64;		// choose minimum useful size
+
+					int end_offset_in_sector = (prom_addr_lo + bytes_to_go)&511;
+					int do_tms = (end_offset_in_sector || promProgramCurrent->tdr)?0:1;
+
+					printf("btg=%d, len=%d, eois=%d, tms=%d, pal=$%x\n", bytes_to_go, len, end_offset_in_sector, do_tms, prom_addr_lo);
+
+					jtagSendAndReceiveBits(do_tms, bytes_to_go*8, data, NULL);
+					data += bytes_to_go;
+					len -= bytes_to_go;
+					prom_addr_lo += bytes_to_go;
+
+					if (end_offset_in_sector == 0) {
+						if( promProgramCurrent->tdr ) {
+							unsigned char bytes[64];
+							memset(bytes, 0, (promProgramCurrent->tdr+7)>>3 );
+							jtagSendAndReceiveBits(1, promProgramCurrent->tdr, &bytes, NULL);
+						}
+
+						jtagRunTestTCK(2);
+
+						uint16_t prom_faddr = (prom_addr_hi<<12) | (prom_addr_lo_start>>4);
+						static int slowdown;
+						if( (++slowdown&15) == 0 ) { //prom_addr_lo & 4096) {
+							static int display;
+							printf("\b%c", "|/-\\"[display++&3]);
+							fflush(stdout);
+						}
+
+						// ISC_ADDRESS_SHIFT faddr instruction
+						jtagSendIR( 0xeb, promProgramCurrent);
+						jtagSendDR( prom_faddr, 16, promProgramCurrent);
+						jtagRunTestTCK(2);
+					
+						// ISC_PROGRAM fpgm instruction
+						jtagSendIR( 0xea, promProgramCurrent);
+						jtagIdle();
+						jtagRunTestTCK(14000);
+					
+						// ISC_DISABLE conld instruction
+						jtagSendIR( 0xf0, promProgramCurrent);
+						jtagRunTestTCK(110000);
+                                                
+						prom_in_block = 0;
+						if (len)
+							goto next_sector;
+					}
+				}
+#elif defined( USB_SPEEDUPsddsds )
+                                while( len-- ) {
+                                        if( (++prom_addr_lo & 511) ) {
+						jtagSendAndReceiveBits(0, 8, data++, NULL);
+                                        } else {
+                                                if (promProgramCurrent->tdr) {
+							jtagSendAndReceiveBits(0, 8, data++, NULL);
+                                                        for(i=1; i<promProgramCurrent->tdr; i++)
+                                                		jtagOutput(0,0);
+                                               		jtagOutput(0,1);           // send TMS bit at end of padding
+                                                } else
+							jtagSendAndReceiveBits(1, 8, data++, NULL);         // no padding, add TMS bit on last bit
+
+                                                jtagRunTestTCK(20);
+
+                                                uint16_t prom_faddr = (prom_addr_hi<<12) | (prom_addr_lo_start>>4);
+						static int slowdown;
+                                                if( (++slowdown&15) == 0 ) { //prom_addr_lo & 4096) {
+							static int display;
+							printf("\b%c", "|/-\\"[display++&3]);
+							fflush(stdout);
+						}
+
+                                                // ISC_ADDRESS_SHIFT faddr instruction
+                                                jtagSendIR( 0xeb, promProgramCurrent);
+                                                jtagSendDR( prom_faddr, 16, promProgramCurrent);
+                                                jtagRunTestTCK(20);
+                                                
+                                                // ISC_PROGRAM fpgm instruction
+                                                jtagSendIR( 0xea, promProgramCurrent);
+                                                jtagIdle();
+                                                jtagRunTestTCK(14000);
+
+                                                prom_in_block = 0;
+                                                if (len)
+                                                        goto next_sector;
+                                        }
+                                }
+#elif defined( USB_SPEEDUP )
+                                while( len ) {
+					int bytes_to_go = 512 - (prom_addr_lo & 511);
+					if (bytes_to_go > len)
+						bytes_to_go = len;
+					if (bytes_to_go > 16)
+						bytes_to_go = 16;		// choose minimum useful size
+
+					prom_addr_lo += bytes_to_go;
+                                        if( prom_addr_lo & 511 ) {
+						jtagSendAndReceiveBits(0, bytes_to_go*8, data, NULL);
+						data += bytes_to_go;
+						len -= bytes_to_go;
+                                        } else {
+                                                if (promProgramCurrent->tdr) {
+							jtagSendAndReceiveBits(0, bytes_to_go*8, data, NULL);
+                                                        for(i=1; i<promProgramCurrent->tdr; i++)
+                                                		jtagOutput(0,0);
+                                               		jtagOutput(0,1);           // send TMS bit at end of padding
+                                                } else
+							jtagSendAndReceiveBits(1, bytes_to_go*8, data, NULL);         // no padding, add TMS bit on last bit
+						data += bytes_to_go;
+						len -= bytes_to_go;
+
+                                                jtagRunTestTCK(20);
+
+                                                uint16_t prom_faddr = (prom_addr_hi<<12) | (prom_addr_lo_start>>4);
+						static int slowdown;
+                                                if( (++slowdown&15) == 0 ) { //prom_addr_lo & 4096) {
+							static int display;
+							printf("\b%c", "|/-\\"[display++&3]);
+							fflush(stdout);
+						}
+
+                                                // ISC_ADDRESS_SHIFT faddr instruction
+                                                jtagSendIR( 0xeb, promProgramCurrent);
+                                                jtagSendDR( prom_faddr, 16, promProgramCurrent);
+                                                jtagRunTestTCK(20);
+                                                
+                                                // ISC_PROGRAM fpgm instruction
+                                                jtagSendIR( 0xea, promProgramCurrent);
+                                                jtagIdle();
+                                                jtagRunTestTCK(14000);
+
+                                                prom_in_block = 0;
+                                                if (len)
+                                                        goto next_sector;
+                                        }
+                                }
+#else
                                 while( len-- ) {
                                         uint8_t b = *data++;
                                         for(i=0; i<7; i++) {
@@ -255,7 +422,7 @@ next_sector:
                                                 } else
                                                		jtagOutput(b&1,1);         // no padding, add TMS bit on last bit
 
-                                                jtagRunTestTCK(2);
+                                                jtagRunTestTCK(20);
 
                                                 uint16_t prom_faddr = (prom_addr_hi<<12) | (prom_addr_lo_start>>4);
 						static int slowdown;
@@ -268,7 +435,7 @@ next_sector:
                                                 // ISC_ADDRESS_SHIFT faddr instruction
                                                 jtagSendIR( 0xeb, promProgramCurrent);
                                                 jtagSendDR( prom_faddr, 16, promProgramCurrent);
-                                                jtagRunTestTCK(2);
+                                                jtagRunTestTCK(20);
                                                 
                                                 // ISC_PROGRAM fpgm instruction
                                                 jtagSendIR( 0xea, promProgramCurrent);
@@ -280,6 +447,7 @@ next_sector:
                                                         goto next_sector;
                                         }
                                 }
+#endif
                 }
         }
 
