@@ -131,15 +131,20 @@ LUFA_OPTS += -D FIXED_NUM_CONFIGURATIONS=1
 #LUFA_OPTS += -D USE_FLASH_DESCRIPTORS
 LUFA_OPTS += -D USE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
 
+# LUFA_OPTS += -D DEVICE_STATE_AS_GPIOR=0
+# LUFA_OPTS += -D ORDERED_EP_CONFIG
+# LUFA_OPTS += -D INTERRUPT_CONTROL_ENDPOINT
+
 
 # Create the LUFA source path variables by including the LUFA root makefile
 include $(LUFA_PATH)/LUFA/makefile
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(wildcard *.c) \
+SRC = USBtoSerial.c jtag.c Descriptors.c	\
 	  $(LUFA_SRC_USB)                                             \
 	  $(LUFA_SRC_USBCLASS)
+#$(wildcard *.c) \
 #	$(TARGET).c                                                 \
 #	  Descriptors.c                                               \
 #	  jtag.c						\

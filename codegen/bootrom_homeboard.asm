@@ -279,6 +279,9 @@ qqq:
 bloop:
 	ld hl,#c050
 	inc e
+
+	ld bc,#fadc
+	out (c),e
 aloop:
 
 	ld a,h

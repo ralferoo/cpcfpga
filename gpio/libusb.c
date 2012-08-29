@@ -90,7 +90,7 @@ usb_dev_handle *find_cpc2012(void)
 void jtagInit(void)
 {
 	usb_init();
-//	usb_set_debug(2);
+	usb_set_debug(0);
 	usb_find_busses();
 	usb_find_devices();
 

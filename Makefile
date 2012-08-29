@@ -6,6 +6,8 @@ XILINX_TOP_NAME		= homeboard
 
 PROM_LOADER_TARGET	= root@192.168.0.4
 
+SERIAL_DEVICE		= /dev/ttyACM0
+
 ###########################################################################
 #
 # source files
@@ -332,20 +334,21 @@ build/hyper-7000.bin: roms/hyper-headerless.bin
 	dd if=roms/hyper-headerless.bin of=build/hyper-7000.bin bs=1 skip=24576
 	
 %.run: image/%.srec
-#	stty 19200 cs8 -parenb -icrnl onlcr </dev/ttyUSB0
-#	stty 19200 cs8 -parenb </dev/ttyUSB0
-	stty 19200 cs8 -parenb onlcr </dev/ttyUSB0
-#	bin/splat <$< >/dev/ttyUSB0
-	echo | perl -ne '{s/\n/\n\n\n\n\n/g;print;}' >/dev/ttyUSB0
-#	perl -ne '{s/\n/\n\n\n\n\n\n\n\n\n\n\n\n\n/g;print;}' <$< >/dev/ttyUSB0
-	perl -ne '{s/\n/\n\n\n/g;print;}' <$< |bin/splat >/dev/ttyUSB0
-	echo | perl -ne '{s/\n/\n\n\n\n\n/g;print;}' >/dev/ttyUSB0
+#	stty 19200 cs8 -parenb -icrnl onlcr <$(SERIAL_DEVICE)
+#	stty 19200 cs8 -parenb <$(SERIAL_DEVICE)
+#	stty 9600 cs8 -parenb onlcr <$(SERIAL_DEVICE)
+	stty 19200 cs8 -parenb onlcr <$(SERIAL_DEVICE)
+#	bin/splat <$< >$(SERIAL_DEVICE)
+	echo | perl -ne '{s/\n/\n\n\n\n\n/g;print;}' >$(SERIAL_DEVICE)
+#	perl -ne '{s/\n/\n\n\n\n\n\n\n\n\n\n\n\n\n/g;print;}' <$< >$(SERIAL_DEVICE)
+	perl -ne '{s/\n/\n\n\n/g;print;}' <$< |bin/splat >$(SERIAL_DEVICE)
+	echo | perl -ne '{s/\n/\n\n\n\n\n/g;print;}' >$(SERIAL_DEVICE)
 
 serial:
-#	stty 19200 cs8 -parenb -icrnl onlcr </dev/ttyUSB0
-#	stty 19200 cs8 -parenb </dev/ttyUSB0
-	stty 19200 cs8 -parenb -icrnl </dev/ttyUSB0
-	cat /dev/ttyUSB0
+#	stty 19200 cs8 -parenb -icrnl onlcr <$(SERIAL_DEVICE)
+#	stty 19200 cs8 -parenb <$(SERIAL_DEVICE)
+	stty 19200 cs8 -parenb -icrnl <$(SERIAL_DEVICE)
+	cat $(SERIAL_DEVICE)
 
 emu:
 	wine ../wincpc/WinCPC.exe &

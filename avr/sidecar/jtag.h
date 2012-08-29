@@ -74,6 +74,8 @@ uint32_t JTAG_SendIR( uint32_t reg_value, int reg_len, int hir_len, int tir_len 
 void JTAG_ShiftIR(void);
 void JTAG_ShiftDR(void);
 
+void JTAG_Device_ProcessControlRequest(void);
+
 ///////////////////////////////////////////////////////////////////////////////
 
 #endif // _RALF_JTAG_H

@@ -3,6 +3,8 @@
 #include "server.h"
 #include <string.h>
 
+#include "Descriptors.h"
+
 enum JTAG_STATE jtag_state = JTAG_STATE_UNKNOWN;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -538,4 +540,142 @@ void JTAG_RunTestTCK( uint32_t i )
 		JTAG_SendClock( 0 );			// keep sending clocks in the idle state
 }
 
+
+void PulseClockLine(int wValue)
+{
+	JTAG_PORT &= ~JTAG_TMS;				// don't leave the idle state
+	while (wValue-- > 0) {
+		JTAG_PORT |=  JTAG_TCK;			// high clock
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		JTAG_PORT &= ~JTAG_TCK;			// low clock
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		wValue--;
+	}
+}
+
+unsigned char jtag_buffer[65];
+
+void RawJTAG(unsigned char tms_at_end, int num_bits)
+{
+	if (tms_at_end) {
+		if (--num_bits < 0)
+			return;
+	}
+
+	unsigned char *p = jtag_buffer;
+	unsigned char idata = *p;
+	unsigned char odata = 0;
+	unsigned char mask = 0x01;
+
+	JTAG_PORT &= ~JTAG_TMS;			// no TMS for most of the bits
+
+	while (num_bits) {
+		if (idata & mask)
+			JTAG_PORT |= JTAG_TDI;
+		else
+			JTAG_PORT &= ~JTAG_TDI;		// set output bit
+
+		if (JTAG_PIN & JTAG_TDO)
+			odata |= mask;			// read input bit
+
+		JTAG_PORT |=  JTAG_TCK;			// high clock
+
+		mask = mask << 1;
+		if( mask==0) {
+			*p++ = odata;
+			odata = 0;
+			idata = *p;
+			mask = 0x01;
+		}
+		JTAG_PORT &= ~JTAG_TCK;			// low clock
+
+		num_bits--;
+	}
+
+	if (tms_at_end) {
+		JTAG_PORT |= JTAG_TMS;			// TMS for last bit
+		if (idata & mask)
+			JTAG_PORT |= JTAG_TDI;
+		else
+			JTAG_PORT &= ~JTAG_TDI;		// set output bit
+
+		if (JTAG_PIN & JTAG_TDO)
+			odata |= mask;			// read input bit
+
+		JTAG_PORT |=  JTAG_TCK;			// high clock
+	}
+
+	*p = odata;
+	JTAG_PORT &= ~JTAG_TCK;				// low clock
+}
+
+
+void JTAG_Device_ProcessControlRequest(void)
+{
+	// useful to read this: https://groups.google.com/forum/#!msg/lufa-support/MQh2NR9BMgY/83hUkflfqQYJ
+
+	if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_VENDOR | REQREC_DEVICE))
+	{
+		if (USB_ControlRequest.bRequest == 'O' ) {
+			Endpoint_ClearSETUP();
+			Endpoint_Write_Control_Stream_LE(jtag_buffer, USB_ControlRequest.wLength);
+			Endpoint_ClearOUT();
+
+//			Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+//			Endpoint_Write_Control_Stream_LE(&USB_ControlRequest.bRequest, 1);
+//			Endpoint_ClearIN();
+			return;
+		}
+
+/*
+		if (USB_ControlRequest.bRequest == 'j' ) {
+			Endpoint_ClearSETUP();
+			int i = USB_ControlRequest.wValue;
+
+			if(i&0x80)
+				JTAG_PORT |= JTAG_TMS;
+			else
+				JTAG_PORT &= ~JTAG_TMS;
+
+			if(i&1)
+				JTAG_PORT |= JTAG_TDI;
+			else
+				JTAG_PORT &= ~JTAG_TDI;
+
+			char tdo = (JTAG_PIN & JTAG_TDO)?1:0;
+			JTAG_PORT |= JTAG_TCK;
+
+			Endpoint_Write_Control_Stream_LE(&tdo, 1);
+			Endpoint_ClearOUT();
+
+			JTAG_PORT &= ~JTAG_TCK;
+			return;
+		}
+*/
+	}
+	else if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_VENDOR | REQREC_DEVICE))
+	{
+		if (USB_ControlRequest.bRequest == 'J' ) {
+			Endpoint_ClearSETUP();
+			Endpoint_Read_Control_Stream_LE(jtag_buffer, USB_ControlRequest.wLength);
+			RawJTAG((unsigned char)USB_ControlRequest.wValue, USB_ControlRequest.wIndex);
+			Endpoint_ClearIN();
+
+//			Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+//			Endpoint_Write_Control_Stream_LE(&USB_ControlRequest.bRequest, 1);
+//			Endpoint_ClearIN();
+			return;
+		}
+		else if (USB_ControlRequest.bRequest == 'Z' ) {
+			Endpoint_ClearSETUP();
+			PulseClockLine(USB_ControlRequest.wValue);
+			Endpoint_ClearStatusStage();
+
+//			Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+//			Endpoint_Write_Control_Stream_LE(&USB_ControlRequest.bRequest, 1);
+//			Endpoint_ClearIN();
+			return;
+		}
+	}
+}
 
