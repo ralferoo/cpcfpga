@@ -1,6 +1,5 @@
 #include <LUFA/Drivers/USB/USB.h>
 #include "jtag.h"
-#include "server.h"
 #include <string.h>
 
 #include "Descriptors.h"
@@ -13,16 +12,11 @@ int JTAG_ClockWithTMS(int tdi,int tms,int read)
 {
 	// get the TDO value from the previous cycle
 	int previous;
-	int miso;
 	if (read) {
 		previous = (JTAG_PIN & JTAG_TDO)?1:0;
 	} else {
 		previous = (JTAG_PIN & JTAG_TDO)?1:0;
-		//previous = 0;
 	}
-//	miso = (JTAG_PIN & JTAG_MISO)?1:0;
-
-//	Sleep();
 
 	// update the output data
 	if(tms)
@@ -46,23 +40,11 @@ int JTAG_ClockWithTMS(int tdi,int tms,int read)
 */
 
 	// output data is set up, pulse the clock and back again
-	int wait;
-//	for (wait=0; wait<300; wait++)
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 	JTAG_PORT |= JTAG_TCK;
-//	for (wait=0; wait<300; wait++)
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 	JTAG_PORT &= ~JTAG_TCK;
-//	for (wait=0; wait<300; wait++)
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
-
-	/*
-	char c='a';
-	if(tdi) c+=1;
-	if(tms) c+=2;
-	if(previous) c-=32;
-	Endpoint_Write_Stream_LE( (uint8_t*) &c, 1, NULL);
-	*/
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 
 	char c[2];
 	if (tdi) {

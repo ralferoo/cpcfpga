@@ -730,15 +730,17 @@ clean: begin clean_list end
 clean_list :
 	@echo
 	@echo $(MSG_CLEANING)
-	$(REMOVE) $(TARGET).hex
-	$(REMOVE) $(TARGET).bin
-	$(REMOVE) $(TARGET).eep
-	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
-	$(REMOVE) $(TARGET).map
-	$(REMOVE) $(TARGET).sym
-	$(REMOVE) $(TARGET).lss
+	$(REMOVE) $(TARGET).8.hex $(TARGET).16.hex
+	$(REMOVE) $(TARGET).8.bin $(TARGET).16.bin
+	$(REMOVE) $(TARGET).8.eep $(TARGET).16.eep
+	$(REMOVE) $(TARGET).8.cof $(TARGET).16.cof
+	$(REMOVE) $(TARGET).8.elf $(TARGET).16.elf
+	$(REMOVE) $(TARGET).8.map $(TARGET).16.map
+	$(REMOVE) $(TARGET).8.sym $(TARGET).16.sym
+	$(REMOVE) $(TARGET).8.lss $(TARGET).16.lss
 	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o)
+	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.8.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.8.o) $(ASRC:%.S=$(OBJDIR)/%.8.o)
+	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.16.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.16.o) $(ASRC:%.S=$(OBJDIR)/%.16.o)
 	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst)
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
