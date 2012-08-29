@@ -131,15 +131,20 @@ LUFA_OPTS += -D FIXED_NUM_CONFIGURATIONS=1
 #LUFA_OPTS += -D USE_FLASH_DESCRIPTORS
 LUFA_OPTS += -D USE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
 
+# LUFA_OPTS += -D DEVICE_STATE_AS_GPIOR=0
+# LUFA_OPTS += -D ORDERED_EP_CONFIG
+# LUFA_OPTS += -D INTERRUPT_CONTROL_ENDPOINT
+
 
 # Create the LUFA source path variables by including the LUFA root makefile
 include $(LUFA_PATH)/LUFA/makefile
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(wildcard *.c) \
+SRC = USBtoSerial.c jtag.c Descriptors.c	\
 	  $(LUFA_SRC_USB)                                             \
 	  $(LUFA_SRC_USBCLASS)
+#$(wildcard *.c) \
 #	$(TARGET).c                                                 \
 #	  Descriptors.c                                               \
 #	  jtag.c						\
@@ -188,24 +193,26 @@ EXTRAINCDIRS = $(LUFA_PATH)/
 #     gnu99 = c99 plus GCC extensions
 CSTANDARD = -std=c99
 
+OPTS16 = -DF_CPU=16000000UL -DF_USB=16000000UL
+OPTS8  =  -DF_CPU=8000000UL  -DF_USB=8000000UL
 
 # Place -D or -U options here for C sources
-CDEFS  = -DF_CPU=$(F_CPU)UL
-CDEFS += -DF_USB=$(F_USB)UL
-CDEFS += -DBOARD=BOARD_$(BOARD) -DARCH=ARCH_$(ARCH)
+#CDEFS  = -DF_CPU=$(F_CPU)UL
+#CDEFS += -DF_USB=$(F_USB)UL
+CDEFS = -DBOARD=BOARD_$(BOARD) -DARCH=ARCH_$(ARCH)
 CDEFS += $(LUFA_OPTS)
 
 
 # Place -D or -U options here for ASM sources
-ADEFS  = -DF_CPU=$(F_CPU)
-ADEFS += -DF_USB=$(F_USB)UL
-ADEFS += -DBOARD=BOARD_$(BOARD) -DARCH=ARCH_$(ARCH)
+#ADEFS  = -DF_CPU=$(F_CPU)
+#ADEFS += -DF_USB=$(F_USB)UL
+ADEFS = -DBOARD=BOARD_$(BOARD) -DARCH=ARCH_$(ARCH)
 ADEFS += $(LUFA_OPTS)
 
 # Place -D or -U options here for C++ sources
-CPPDEFS  = -DF_CPU=$(F_CPU)UL
-CPPDEFS += -DF_USB=$(F_USB)UL
-CPPDEFS += -DBOARD=BOARD_$(BOARD) -DARCH=ARCH_$(ARCH)
+#CPPDEFS  = -DF_CPU=$(F_CPU)UL
+#CPPDEFS += -DF_USB=$(F_USB)UL
+CPPDEFS = -DBOARD=BOARD_$(BOARD) -DARCH=ARCH_$(ARCH)
 CPPDEFS += $(LUFA_OPTS)
 #CPPDEFS += -D__STDC_LIMIT_MACROS
 #CPPDEFS += -D__STDC_CONSTANT_MACROS
@@ -451,7 +458,8 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o)
+OBJ16 = $(SRC:%.c=$(OBJDIR)/%.16.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.16.o) $(ASRC:%.S=$(OBJDIR)/%.16.o)
+OBJ8 = $(SRC:%.c=$(OBJDIR)/%.8.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.8.o) $(ASRC:%.S=$(OBJDIR)/%.8.o)
 
 # Define all listing files.
 LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst)
@@ -475,16 +483,16 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 all: begin gccversion sizebefore build sizeafter end
 
 # Change the build target to build a HEX file or a library.
-build: elf hex eep lss sym $(TARGET).bin
+build: elf hex eep lss sym $(TARGET).16.bin $(TARGET).8.bin
 #build: lib
 
 
-elf: $(TARGET).elf
-hex: $(TARGET).hex
-eep: $(TARGET).eep
-lss: $(TARGET).lss
-sym: $(TARGET).sym
-LIBNAME=lib$(TARGET).a
+elf: $(TARGET).16.elf
+hex: $(TARGET).16.hex
+eep: $(TARGET).16.eep
+lss: $(TARGET).16.lss
+sym: $(TARGET).16.sym
+LIBNAME=lib$(TARGET).16.a
 lib: $(LIBNAME)
 
 
@@ -532,9 +540,14 @@ flip: $(TARGET).hex
 	batchisp -hardware usb -device $(MCU) -operation loadbuffer $(TARGET).hex program
 	batchisp -hardware usb -device $(MCU) -operation start reset 0
 
-dfu: $(TARGET).hex
+dfu8: $(TARGET).8.hex
 	dfu-programmer $(DFUMCU) erase
-	dfu-programmer $(DFUMCU) flash $(TARGET).hex
+	dfu-programmer $(DFUMCU) flash $(TARGET).8.hex
+	dfu-programmer $(DFUMCU) reset
+
+dfu16: $(TARGET).16.hex
+	dfu-programmer $(DFUMCU) erase
+	dfu-programmer $(DFUMCU) flash $(TARGET).16.hex
 	dfu-programmer $(DFUMCU) reset
 
 flip-ee: $(TARGET).hex $(TARGET).eep
@@ -635,35 +648,54 @@ extcoff: $(TARGET).elf
 
 # Create library from object files.
 .SECONDARY : $(TARGET).a
-.PRECIOUS : $(OBJ)
-%.a: $(OBJ)
+.PRECIOUS : $(OBJ8) $(OBJ16)
+%.8.a: $(OBJ8)
 	@echo
 	@echo $(MSG_CREATING_LIBRARY) $@
-	$(AR) $@ $(OBJ)
+	$(AR) $@ $(OBJ8)
+
+%.16.a: $(OBJ16)
+	@echo
+	@echo $(MSG_CREATING_LIBRARY) $@
+	$(AR) $@ $(OBJ16)
 
 
 # Link: create ELF output file from object files.
 .SECONDARY : $(TARGET).elf
-.PRECIOUS : $(OBJ)
-%.elf: $(OBJ)
+.PRECIOUS : $(OBJ8) $(OBJ16)
+%.8.elf: $(OBJ8)
+	@echo
+	@echo $(MSG_LINKING) $@
+	$(CC) $(ALL_CFLAGS) $^ --output $@ $(LDFLAGS)
+
+%.16.elf: $(OBJ16)
 	@echo
 	@echo $(MSG_LINKING) $@
 	$(CC) $(ALL_CFLAGS) $^ --output $@ $(LDFLAGS)
 
 
 # Compile: create object files from C source files.
-$(OBJDIR)/%.o : %.c
+$(OBJDIR)/%.8.o : %.c
 	@echo
 	@echo $(MSG_COMPILING) $<
-	$(CC) -c $(ALL_CFLAGS) $< -o $@
+	$(CC) -c $(OPTS8) $(ALL_CFLAGS) $< -o $@
+
+$(OBJDIR)/%.16.o : %.c
+	@echo
+	@echo $(MSG_COMPILING) $<
+	$(CC) -c $(OPTS16) $(ALL_CFLAGS) $< -o $@
 
 
 # Compile: create object files from C++ source files.
-$(OBJDIR)/%.o : %.cpp
+$(OBJDIR)/%.8.o : %.cpp
 	@echo
 	@echo $(MSG_COMPILING_CPP) $<
-	$(CC) -c $(ALL_CPPFLAGS) $< -o $@
+	$(CC) -c $(OPTS8) $(ALL_CPPFLAGS) $< -o $@
 
+$(OBJDIR)/%.16.o : %.cpp
+	@echo
+	@echo $(MSG_COMPILING_CPP) $<
+	$(CC) -c $(OPTS16) $(ALL_CPPFLAGS) $< -o $@
 
 # Compile: create assembler files from C source files.
 %.s : %.c
@@ -676,10 +708,15 @@ $(OBJDIR)/%.o : %.cpp
 
 
 # Assemble: create object files from assembler source files.
-$(OBJDIR)/%.o : %.S
+$(OBJDIR)/%.8.o : %.S
 	@echo
 	@echo $(MSG_ASSEMBLING) $<
-	$(CC) -c $(ALL_ASFLAGS) $< -o $@
+	$(CC) -c $(OPTS8) $(ALL_ASFLAGS) $< -o $@
+
+$(OBJDIR)/%.16.o : %.S
+	@echo
+	@echo $(MSG_ASSEMBLING) $<
+	$(CC) -c $(OPTS16) $(ALL_ASFLAGS) $< -o $@
 
 
 # Create preprocessed source for use in sending a bug report.
@@ -693,15 +730,17 @@ clean: begin clean_list end
 clean_list :
 	@echo
 	@echo $(MSG_CLEANING)
-	$(REMOVE) $(TARGET).hex
-	$(REMOVE) $(TARGET).bin
-	$(REMOVE) $(TARGET).eep
-	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
-	$(REMOVE) $(TARGET).map
-	$(REMOVE) $(TARGET).sym
-	$(REMOVE) $(TARGET).lss
+	$(REMOVE) $(TARGET).8.hex $(TARGET).16.hex
+	$(REMOVE) $(TARGET).8.bin $(TARGET).16.bin
+	$(REMOVE) $(TARGET).8.eep $(TARGET).16.eep
+	$(REMOVE) $(TARGET).8.cof $(TARGET).16.cof
+	$(REMOVE) $(TARGET).8.elf $(TARGET).16.elf
+	$(REMOVE) $(TARGET).8.map $(TARGET).16.map
+	$(REMOVE) $(TARGET).8.sym $(TARGET).16.sym
+	$(REMOVE) $(TARGET).8.lss $(TARGET).16.lss
 	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o)
+	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.8.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.8.o) $(ASRC:%.S=$(OBJDIR)/%.8.o)
+	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.16.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.16.o) $(ASRC:%.S=$(OBJDIR)/%.16.o)
 	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst)
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)

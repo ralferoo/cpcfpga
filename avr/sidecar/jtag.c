@@ -1,7 +1,8 @@
 #include <LUFA/Drivers/USB/USB.h>
 #include "jtag.h"
-#include "server.h"
 #include <string.h>
+
+#include "Descriptors.h"
 
 enum JTAG_STATE jtag_state = JTAG_STATE_UNKNOWN;
 
@@ -11,16 +12,11 @@ int JTAG_ClockWithTMS(int tdi,int tms,int read)
 {
 	// get the TDO value from the previous cycle
 	int previous;
-	int miso;
 	if (read) {
 		previous = (JTAG_PIN & JTAG_TDO)?1:0;
 	} else {
 		previous = (JTAG_PIN & JTAG_TDO)?1:0;
-		//previous = 0;
 	}
-	miso = (JTAG_PIN & JTAG_MISO)?1:0;
-
-//	Sleep();
 
 	// update the output data
 	if(tms)
@@ -44,15 +40,20 @@ int JTAG_ClockWithTMS(int tdi,int tms,int read)
 */
 
 	// output data is set up, pulse the clock and back again
-	int wait;
-//	for (wait=0; wait<300; wait++)
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 	JTAG_PORT |= JTAG_TCK;
-//	for (wait=0; wait<300; wait++)
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 	JTAG_PORT &= ~JTAG_TCK;
-//	for (wait=0; wait<300; wait++)
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+
+	char c[2];
+	if (tdi) {
+		c[0] = tms ? '+':'-';
+	} else {
+		c[0] = tms ? '|':' ';
+	}
+	c[1]=previous?'1':'0';
+	Endpoint_Write_Stream_LE( (uint8_t*) &c, 2, NULL);
 
 	return previous;
 }
@@ -290,6 +291,7 @@ void JTAG_ChainInfo(void)
 				hir = tir = -1;
 			}
 		}
+		hdr++;
 	}
 	if( tdr )
 		WriteStringConst( PSTR("# Didn't reach end of chain with tdr=0!\r\n"));
@@ -520,4 +522,142 @@ void JTAG_RunTestTCK( uint32_t i )
 		JTAG_SendClock( 0 );			// keep sending clocks in the idle state
 }
 
+
+void PulseClockLine(int wValue)
+{
+	JTAG_PORT &= ~JTAG_TMS;				// don't leave the idle state
+	while (wValue-- > 0) {
+		JTAG_PORT |=  JTAG_TCK;			// high clock
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		JTAG_PORT &= ~JTAG_TCK;			// low clock
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		wValue--;
+	}
+}
+
+unsigned char jtag_buffer[65];
+
+void RawJTAG(unsigned char tms_at_end, int num_bits)
+{
+	if (tms_at_end) {
+		if (--num_bits < 0)
+			return;
+	}
+
+	unsigned char *p = jtag_buffer;
+	unsigned char idata = *p;
+	unsigned char odata = 0;
+	unsigned char mask = 0x01;
+
+	JTAG_PORT &= ~JTAG_TMS;			// no TMS for most of the bits
+
+	while (num_bits) {
+		if (idata & mask)
+			JTAG_PORT |= JTAG_TDI;
+		else
+			JTAG_PORT &= ~JTAG_TDI;		// set output bit
+
+		if (JTAG_PIN & JTAG_TDO)
+			odata |= mask;			// read input bit
+
+		JTAG_PORT |=  JTAG_TCK;			// high clock
+
+		mask = mask << 1;
+		if( mask==0) {
+			*p++ = odata;
+			odata = 0;
+			idata = *p;
+			mask = 0x01;
+		}
+		JTAG_PORT &= ~JTAG_TCK;			// low clock
+
+		num_bits--;
+	}
+
+	if (tms_at_end) {
+		JTAG_PORT |= JTAG_TMS;			// TMS for last bit
+		if (idata & mask)
+			JTAG_PORT |= JTAG_TDI;
+		else
+			JTAG_PORT &= ~JTAG_TDI;		// set output bit
+
+		if (JTAG_PIN & JTAG_TDO)
+			odata |= mask;			// read input bit
+
+		JTAG_PORT |=  JTAG_TCK;			// high clock
+	}
+
+	*p = odata;
+	JTAG_PORT &= ~JTAG_TCK;				// low clock
+}
+
+
+void JTAG_Device_ProcessControlRequest(void)
+{
+	// useful to read this: https://groups.google.com/forum/#!msg/lufa-support/MQh2NR9BMgY/83hUkflfqQYJ
+
+	if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_VENDOR | REQREC_DEVICE))
+	{
+		if (USB_ControlRequest.bRequest == 'O' ) {
+			Endpoint_ClearSETUP();
+			Endpoint_Write_Control_Stream_LE(jtag_buffer, USB_ControlRequest.wLength);
+			Endpoint_ClearOUT();
+
+//			Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+//			Endpoint_Write_Control_Stream_LE(&USB_ControlRequest.bRequest, 1);
+//			Endpoint_ClearIN();
+			return;
+		}
+
+/*
+		if (USB_ControlRequest.bRequest == 'j' ) {
+			Endpoint_ClearSETUP();
+			int i = USB_ControlRequest.wValue;
+
+			if(i&0x80)
+				JTAG_PORT |= JTAG_TMS;
+			else
+				JTAG_PORT &= ~JTAG_TMS;
+
+			if(i&1)
+				JTAG_PORT |= JTAG_TDI;
+			else
+				JTAG_PORT &= ~JTAG_TDI;
+
+			char tdo = (JTAG_PIN & JTAG_TDO)?1:0;
+			JTAG_PORT |= JTAG_TCK;
+
+			Endpoint_Write_Control_Stream_LE(&tdo, 1);
+			Endpoint_ClearOUT();
+
+			JTAG_PORT &= ~JTAG_TCK;
+			return;
+		}
+*/
+	}
+	else if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_VENDOR | REQREC_DEVICE))
+	{
+		if (USB_ControlRequest.bRequest == 'J' ) {
+			Endpoint_ClearSETUP();
+			Endpoint_Read_Control_Stream_LE(jtag_buffer, USB_ControlRequest.wLength);
+			RawJTAG((unsigned char)USB_ControlRequest.wValue, USB_ControlRequest.wIndex);
+			Endpoint_ClearIN();
+
+//			Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+//			Endpoint_Write_Control_Stream_LE(&USB_ControlRequest.bRequest, 1);
+//			Endpoint_ClearIN();
+			return;
+		}
+		else if (USB_ControlRequest.bRequest == 'Z' ) {
+			Endpoint_ClearSETUP();
+			PulseClockLine(USB_ControlRequest.wValue);
+			Endpoint_ClearStatusStage();
+
+//			Endpoint_SelectEndpoint(CDC_TX_EPNUM);
+//			Endpoint_Write_Control_Stream_LE(&USB_ControlRequest.bRequest, 1);
+//			Endpoint_ClearIN();
+			return;
+		}
+	}
+}
 
