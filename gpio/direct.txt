@@ -7,7 +7,7 @@ b0000000	0000000d  DESYNC
 8001000c	30008001  CMD write packet header
 eafa0000	00005f57  CRC value
 8000000c	30000001  CRC write packet header
-00000000	00000000  CTL write packet data
+00000000	00000000  CTL write packet data     - RW OK, no persist, active low
 8005000c	3000a001  CTL write packet header
 a0000000	00000005  START
 8001000c	30008001  CMD write packet header
@@ -17,32 +17,32 @@ c0000000	00000003  DGHIGH/LFRM
 50000000	0000000a  GRESTORE
 8001000c	30008001  CMD write packet header
 
-b1010000	????
+b1010000	????	  auto CRC word
 00000000
 
 00000000	00000000 .....
 
-00f3000a	5000cf00  FDRI packet header (type 2)
+00f3000a	5000cf00  FDRI packet header (type 2)	52992 frames = 211968 b
 0002000c	30004000  FDRI packet header (type 1)
 80000000	00000001  CMD write packet data (WCFG)
 8001000c	30008001, CMD write packet header
-00000000	00000000  FAR write packet data
+00000000	00000000  FAR write packet data		- frame adress 0
 8004000c	30002001  FAR write packet header
 90000000	00000009  CMD write packet data (Switch CCLK)
 8001000c	30008001, CMD write packet header
-00000000	00000000  MASK write packet header
+00000000	00000000  MASK write packet header	- no bits writable
 8003000c	3000c001  MASK write packet header
 c9038280	0141c093  IDCODE write packet header (chip value)
 8003800c	3001c001  IDCODE write packet header
-a7fc8042	42013fe5  COR write packet data (what is this value?)
+a7fc8042	42013fe5  COR write packet data - 3MHz?
 8004800c	30012001  COR write packet data
 22000000	00000044  FLR write packet data (from xapp)
 8006800c	30016001  FLR write packet
 e0000000	00000007  Reset CRC
 8001000c	30008001, CMD write packet header
 66aa9955	aa995566 sync
+ffffffff	ffffffff  Dummy	<< start of PROM data
 
-ffffffff	ffffffff  Dummy
 00000000	00000000  ??
 00000000	00000000  ??
 10000000	00000008  Assert GHIGH_B Signal 
