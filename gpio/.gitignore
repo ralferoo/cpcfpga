@@ -1,0 +1,10 @@
+*.o
+bsr
+scan
+pintest
+prom_dump
+prom_erase
+prom_program
+prom_reload
+sramtest
+flashtest
