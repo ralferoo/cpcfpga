@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <usb.h>
 
+//#define DO_LOG
+
 usb_dev_handle *libusb_handle;
 
 usb_dev_handle *find_cpc2012(void);
@@ -48,23 +50,27 @@ usb_dev_handle *find_cpc2012(void)
 
 				char nbuffer[65];
 				int len,i;
+				char *strname="";
 
 				for(i=0;i<3; i++) {
 					int desc;
 					switch (i) {
 						default:
 							desc=dev->descriptor.iManufacturer;
+							strname="manufacturer";
 							break;
 						case 1:
 							desc=dev->descriptor.iProduct;
+							strname="product";
 							break;
 						case 2:
 							desc=dev->descriptor.iSerialNumber;
+							strname="serial no";
 							break;
 					}
 					len = usb_get_string_simple(device_handle, desc, nbuffer, sizeof(nbuffer) );
 					if (len>=0) {
-						printf("#%02x %s (len %d)\n", desc, nbuffer, len );
+						printf("#%02x %-12s %s (len %d)\n", desc, strname, nbuffer, len );
 					}
 
 					if ( desc == dev->descriptor.iManufacturer )
@@ -129,6 +135,7 @@ void jtagSendAndReceiveBits(int tms_at_end, int num_bits, unsigned char* send, u
 		num_bits -= 64*8;
 	}
 	int obytes = (num_bits+7) >> 3;
+//	printf("Writing %d bytes\n", obytes);
 	int bytes = usb_control_msg(libusb_handle, 0x40, 'J', tms_at_end?1:0 /*wValue=send_tms*/, num_bits, send, obytes, 500);
 //	printf("Wrote %d bytes, expecting %d\n", bytes, obytes);
 	if (bytes != obytes) {

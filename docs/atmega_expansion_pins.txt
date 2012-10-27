@@ -5,6 +5,10 @@ TMS		GREY		GPIO 21
 TCK		PURPLE		GPIO 17
 TDI_FPGA	BLUE		GPIO 4
 
+reset control:
+AT_RESET  WHITE=RHS -> button near red leds
+EMER_BOOT BLACK=LHS -> button near green led
+GND	  GREY=RHS-1
 
 fpga	atmel	header left	header right	atmel
 

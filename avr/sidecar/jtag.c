@@ -639,7 +639,7 @@ void JTAG_Device_ProcessControlRequest(void)
 	{
 		if (USB_ControlRequest.bRequest == 'J' ) {
 			Endpoint_ClearSETUP();
-			Endpoint_Read_Control_Stream_LE(jtag_buffer, USB_ControlRequest.wLength);
+			Endpoint_Read_Control_Stream_LE(jtag_buffer, (USB_ControlRequest.wIndex+7)>>3);
 			RawJTAG((unsigned char)USB_ControlRequest.wValue, USB_ControlRequest.wIndex);
 			Endpoint_ClearIN();
 

@@ -54,3 +54,6 @@ prom_program: prom_program.o $(LIBOBJS)
 
 prom_reload: prom_reload.o $(LIBOBJS)
 	gcc -o $@ $^ $(LIBS)
+
+prom_direct_load: prom_direct_load.o $(LIBOBJS)
+	gcc -o $@ $^ $(LIBS)

@@ -89,14 +89,19 @@ int main(void)
 
 	for (;;)
 	{
+//		goto blah;
+
 		/* Only try to read in bytes from the CDC interface if the transmit buffer is not full */
 		if (!(RingBuffer_IsFull(&USBtoUSART_Buffer)))
 		{
-			int16_t ReceivedByte = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
+//			if (Endpoint_IsINReady())
+			{
+				int16_t ReceivedByte = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 
-			/* Read bytes from the USB OUT endpoint into the USART transmit buffer */
-			if (!(ReceivedByte < 0))
-			  RingBuffer_Insert(&USBtoUSART_Buffer, ReceivedByte);
+				/* Read bytes from the USB OUT endpoint into the USART transmit buffer */
+				if (!(ReceivedByte < 0))
+				  RingBuffer_Insert(&USBtoUSART_Buffer, ReceivedByte);
+			}
 		}
 
 		/* Check if the UART receive buffer flush timer has expired or the buffer is nearly full */
@@ -106,25 +111,31 @@ int main(void)
 			/* Clear flush timer expiry flag */
 			TIFR0 |= (1 << TOV0);
 
-			/* Read bytes from the USART receive buffer into the USB IN endpoint */
-			while (BufferCount--)
-			{
-				/* Try to send the next byte of data to the host, abort if there is an error without dequeuing */
-				if (CDC_Device_SendByte(&VirtualSerial_CDC_Interface,
-				                        RingBuffer_Peek(&USARTtoUSB_Buffer)) != ENDPOINT_READYWAIT_NoError)
-				{
-					break;
-				}
+//			Endpoint_SelectEndpoint(VirtualSerial_CDC_Interface.Config.DataOUTEndpointNumber);
+//			if (Endpoint_IsReadWriteAllowed())
 
-				/* Dequeue the already sent byte from the buffer now we have confirmed that no transmission error occurred */
-				RingBuffer_Remove(&USARTtoUSB_Buffer);
+	//		if (Endpoint_IsOUTReady())
+			{
+				/* Read bytes from the USART receive buffer into the USB IN endpoint */
+				while (BufferCount--)
+				{
+					/* Try to send the next byte of data to the host, abort if there is an error without dequeuing */
+					if (CDC_Device_SendByte(&VirtualSerial_CDC_Interface,
+				                        RingBuffer_Peek(&USARTtoUSB_Buffer)) != ENDPOINT_READYWAIT_NoError)
+					{
+						break;
+					}
+
+					/* Dequeue the already sent byte from the buffer now we have confirmed that no transmission error occurred */
+					RingBuffer_Remove(&USARTtoUSB_Buffer);
+				}
 			}
 		}
 
 		/* Load the next byte from the USART transmit buffer into the USART */
 		if (!(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
 		  Serial_SendByte(RingBuffer_Remove(&USBtoUSART_Buffer));
-
+//blah:
 		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
 		USB_USBTask();
 	}
@@ -174,8 +185,10 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 /** Event handler for the library USB Control Request reception event. */
 void EVENT_USB_Device_ControlRequest(void)
 {
-	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
-	JTAG_Device_ProcessControlRequest();
+	if (Endpoint_IsSETUPReceived())
+		JTAG_Device_ProcessControlRequest();
+	if (Endpoint_IsSETUPReceived())
+		CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
 
 /** ISR to manage the reception of data from the serial port, placing received bytes into a circular buffer

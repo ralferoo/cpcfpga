@@ -1,3 +1,5 @@
+#define OUTPUT_LENGTHS
+
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
