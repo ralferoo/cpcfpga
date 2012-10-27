@@ -2,3 +2,4 @@ Find out why some of my new flash chips don't work
 Find out why some of the boards have bad RAM
 Get SD card access working
 Move joystick back onto 1 port, have more GPIO instead
+Sort out github stuff
