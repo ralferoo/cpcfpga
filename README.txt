@@ -26,6 +26,11 @@ If you make derivative works, you must license under a compatible licence
 and include the following text:
 Portions of this project are derived from CPC FPGA, (c) 2011-2013 Ranulf Doswell
 
+Other than including the above attribution, you should rename the derivative
+work so that it cannot be confused with the original CPC FPGA project, nor
+can you refer to CPC FPGA in a manner that suggests the derivative work is
+endorsed by CPC FGPA or used by CPC FPGA.
+
 Any VHDL code is currently not open sourced unless explicitly mentioned.
 The scope of the project is solely the hardware design and software for the
 support chip.
