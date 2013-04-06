@@ -1,0 +1,8 @@
+Schematic and board layout are currently licensed under the Creative
+Commons Attribution-Share Alike 3.0.
+Please see http://creativecommons.org/licenses/by-sa/3.0/ for more information.
+
+If you make derivative works, you must license under a compatible licence
+and include the following text:
+
+Portions of this project are derived from CPC FPGA, (c) 2011-2013 Ranulf Doswell
