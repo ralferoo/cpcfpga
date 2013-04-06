@@ -29,3 +29,6 @@ Portions of this project are derived from CPC FPGA, (c) 2011-2013 Ranulf Doswell
 Any VHDL code is currently not open sourced unless explicitly mentioned.
 The scope of the project is solely the hardware design and software for the
 support chip.
+
+If you need a commercial licence for the hardware portion of this project,
+please contact licensing@ranulf.net for more information.
