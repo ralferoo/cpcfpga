@@ -44,7 +44,7 @@ int JTAG_ClockWithTMS(int tdi,int tms,int read)
 	JTAG_PORT |= JTAG_TCK;
 	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 	JTAG_PORT &= ~JTAG_TCK;
-	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+//	__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 
 	char c[2];
 	if (tdi) {
@@ -571,7 +571,8 @@ void RawJTAG(unsigned char tms_at_end, int num_bits)
 			odata |= mask;			// read input bit
 
 		JTAG_PORT |=  JTAG_TCK;			// high clock
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		//__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		__asm__("nop;nop;nop;nop;");
 		//delay();
 
 		mask = mask << 1;
@@ -582,13 +583,13 @@ void RawJTAG(unsigned char tms_at_end, int num_bits)
 			mask = 0x01;
 		}
 		JTAG_PORT &= ~JTAG_TCK;			// low clock
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 		//delay();
 
 		num_bits--;
 	}
 
 	if (tms_at_end) {
+//		__asm__("nop;nop;nop;");
 		JTAG_PORT |= JTAG_TMS;			// TMS for last bit
 		if (idata & mask)
 			JTAG_PORT |= JTAG_TDI;
@@ -599,9 +600,9 @@ void RawJTAG(unsigned char tms_at_end, int num_bits)
 			odata |= mask;			// read input bit
 
 		JTAG_PORT |=  JTAG_TCK;			// high clock
-		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
 		//delay();
 	}
+//	__asm__("nop;nop;");
 
 	*p = odata;
 	JTAG_PORT &= ~JTAG_TCK;				// low clock
