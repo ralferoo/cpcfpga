@@ -5,23 +5,19 @@
 
 #include <avr/io.h>          // include I/O definitions (port names, pin names, etc)
 
-#define JTAG_BIT_TDI 7
-#define JTAG_BIT_TDO 6
+#define JTAG_BIT_TDO 4
 #define JTAG_BIT_TCK 5
-#define JTAG_BIT_TMS 4
-
-#define JTAG_BIT_MISO 3
+#define JTAG_BIT_TMS 6
+#define JTAG_BIT_TDI 7
 
 #define JTAG_TDI (1<<JTAG_BIT_TDI)
 #define JTAG_TDO (1<<JTAG_BIT_TDO)
 #define JTAG_TCK (1<<JTAG_BIT_TCK)
 #define JTAG_TMS (1<<JTAG_BIT_TMS)
 
-#define JTAG_MISO (1<<JTAG_BIT_MISO)
-
-#define JTAG_PIN  PINB
-#define JTAG_PORT PORTB
-#define JTAG_DDR  DDRB
+#define JTAG_PIN  PINC
+#define JTAG_PORT PORTC
+#define JTAG_DDR  DDRC
 
 enum JTAG_STATE {
 	JTAG_STATE_UNKNOWN = 0,

@@ -65,8 +65,13 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 
 	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
 
-	.VendorID               = 0x16C0,
-	.ProductID              = 1505,
+// I now have some VID/PID pairs from openmoko.org:
+// | 0x1d50 || 0x6063 || [http://cpcfpga.com/ CPC FPGA]
+// | 0x1d50 || 0x6064 || [http://cpcfpga.com/ CPC FPGA (DFU)]
+// | 0x1d50 || 0x6065 || [http://cpcfpga.com/ CPC FPGA (serial)]
+
+	.VendorID               = 0x1d50, //0x16C0,
+	.ProductID              = 0x6063, //1505,
 	.ReleaseNumber          = VERSION_BCD(00.01),
 
 	.ManufacturerStrIndex   = 0x01,
@@ -254,7 +259,7 @@ const USB_Descriptor_String_t PROGMEM ProductString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(13), .Type = DTYPE_String},
 
-	.UnicodeString          = L"CPC2012 rev 0"
+	.UnicodeString          = L"CPC2013 rev 2"
 };
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"

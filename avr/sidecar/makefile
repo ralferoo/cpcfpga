@@ -87,7 +87,7 @@ BOARD = USER
 #     does not *change* the processor frequency - it should merely be updated to
 #     reflect the processor speed set externally so that the code can use accurate
 #     software delays.
-F_CPU = 16000000
+#F_CPU = 16000000
 #F_CPU = 2000000
 
 
@@ -102,7 +102,7 @@ F_CPU = 16000000
 #
 #     If no clock division is performed on the input clock inside the AVR (via the
 #     CPU clock adjust registers or the clock division fuses), this will be equal to F_CPU.
-F_USB = $(F_CPU)
+#F_USB = $(F_CPU)
 #F_USB = 8000000
 
 
@@ -131,6 +131,8 @@ LUFA_OPTS += -D FIXED_NUM_CONFIGURATIONS=1
 #LUFA_OPTS += -D USE_FLASH_DESCRIPTORS
 LUFA_OPTS += -D USE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
 
+LUFA_OPTS += -D USB_STREAM_TIMEOUT_MS=0
+
 # LUFA_OPTS += -D DEVICE_STATE_AS_GPIOR=0
 # LUFA_OPTS += -D ORDERED_EP_CONFIG
 # LUFA_OPTS += -D INTERRUPT_CONTROL_ENDPOINT
@@ -142,6 +144,7 @@ include $(LUFA_PATH)/LUFA/makefile
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = USBtoSerial.c jtag.c Descriptors.c	\
+	disk.c \
 	  $(LUFA_SRC_USB)                                             \
 	  $(LUFA_SRC_USBCLASS)
 #$(wildcard *.c) \

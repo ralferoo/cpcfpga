@@ -65,7 +65,7 @@ void JTAG_Init(void)
 {
 //	JTAG_DDR =0;
 	JTAG_DDR  |= JTAG_TDI | JTAG_TCK | JTAG_TMS;
-	JTAG_DDR  &= ~(JTAG_TDO | JTAG_MISO);
+	JTAG_DDR  &= ~(JTAG_TDO); // | JTAG_MISO);
 
 	JTAG_PORT |=  (JTAG_TMS);
 	JTAG_PORT |=  (JTAG_TCK | JTAG_TDI);
@@ -537,6 +537,16 @@ void PulseClockLine(int wValue)
 
 unsigned char jtag_buffer[65];
 
+/*
+void delay()
+{
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+}
+*/
+
 void RawJTAG(unsigned char tms_at_end, int num_bits)
 {
 	if (tms_at_end) {
@@ -561,6 +571,8 @@ void RawJTAG(unsigned char tms_at_end, int num_bits)
 			odata |= mask;			// read input bit
 
 		JTAG_PORT |=  JTAG_TCK;			// high clock
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		//delay();
 
 		mask = mask << 1;
 		if( mask==0) {
@@ -570,6 +582,8 @@ void RawJTAG(unsigned char tms_at_end, int num_bits)
 			mask = 0x01;
 		}
 		JTAG_PORT &= ~JTAG_TCK;			// low clock
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		//delay();
 
 		num_bits--;
 	}
@@ -585,6 +599,8 @@ void RawJTAG(unsigned char tms_at_end, int num_bits)
 			odata |= mask;			// read input bit
 
 		JTAG_PORT |=  JTAG_TCK;			// high clock
+		__asm__("nop;nop;nop;nop;nop;nop;nop;nop;");
+		//delay();
 	}
 
 	*p = odata;
@@ -639,7 +655,7 @@ void JTAG_Device_ProcessControlRequest(void)
 	{
 		if (USB_ControlRequest.bRequest == 'J' ) {
 			Endpoint_ClearSETUP();
-			Endpoint_Read_Control_Stream_LE(jtag_buffer, USB_ControlRequest.wLength);
+			Endpoint_Read_Control_Stream_LE(jtag_buffer, (USB_ControlRequest.wIndex+7)>>3);
 			RawJTAG((unsigned char)USB_ControlRequest.wValue, USB_ControlRequest.wIndex);
 			Endpoint_ClearIN();
 
