@@ -1,0 +1,1 @@
+void DISK_Init();

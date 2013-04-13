@@ -1,4 +1,5 @@
 lufa
+*.map
 .dep
 *.lst
 *.o
