@@ -1,3 +1,5 @@
+#define OUTPUT_LENGTHS
+
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -8,6 +10,8 @@
 
 #define PROM_XCF02S	0xf5045093
 #define FPGA_XC3S400	0x0141C093
+
+#define FPGA_USERCODE	0x4350433F
 
 #define HEX_BLOCK_SIZE  16
 
@@ -119,4 +123,9 @@ void find_pin( struct Device *device, char* pin, struct Device *fpga, struct Dev
 
 ///////////////////////////////////////////////////////////////////////////
 
+uint32_t fpgaUserCode(struct Device* fpga);
+void fpgaValidate(struct Device* fpga);
+
+void cpcSetCommand(struct Device* fpga, unsigned char command);
+uint32_t cpcTransferData(struct Device* fpga, uint32_t value);
 

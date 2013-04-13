@@ -3,6 +3,8 @@
 #include "xc3s400_tq144_1532.h"
 #include "xcf02s_vo20.h"
 
+char temp_buffer[1024];
+
 void make_ir_stream(char* sample, struct Device *first, struct Device *second, int mir, 
 		 int first_cmd, int second_cmd)
 {
@@ -52,9 +54,13 @@ void sample_dr_stream(char* dr_stream, int totdr)
 	int i, bit;
 	jtagShiftDR();						// enter shift DR phase
 
+/*
 	for (i=0; i<totdr; i++)
+//		jtagOutput(dr_stream[i], 0);			// output the DR stream
 		dr_stream[i] = jtagOutput(1, 0);		// sample the DR stream, writing out 1s
+*/
 
+/*
 	for (i=0; i<totdr; i++) {
 		bit = jtagOutput(0, 0);				// output a stream of 0s, checking for expected 1s
 		if (bit != 1) {
@@ -72,7 +78,8 @@ void sample_dr_stream(char* dr_stream, int totdr)
 			exit(1);
 		}
 	}
-
+*/
+/*
 	for (i=0; i<totdr; i++) {
 		bit = jtagOutput(dr_stream[i], 0);		// output the DR stream, checking for expected 1s
 		if (bit != 1) {
@@ -81,14 +88,17 @@ void sample_dr_stream(char* dr_stream, int totdr)
 			exit(1);
 		}
 	}
+*/
 
 	for (i=0; i<totdr; i++) {
 		bit = jtagOutput(dr_stream[i], i==(totdr-1));	// output the DR stream again, setting TMS at the end
+/*
 		if (bit != dr_stream[i]) {		// this time making sure it's correct
-			printf("sample_dr_stream: didn't find expected bit %d\n", i);
+			printf("sample_dr_stream: didn't find expected bit %d: %d not %d\n", i, bit, dr_stream[i]);
 			jtagReset();
 			exit(1);
 		}
+*/
 	}
 }
 
@@ -97,9 +107,26 @@ void send_dr_stream(char* dr_stream, int totdr, char* result_stream)
 	int i, bit;
 	jtagShiftDR();						// enter shift DR phase
 
-	for (i=0; i<totdr; i++) {
-		result_stream[i] = jtagOutput(dr_stream[i], i==(totdr-1));  // output the DR stream, setting TMS at the end
-	}
+        int buflen=0;
+        unsigned char mask=0x1,byte=0;
+        for (i=0; i<totdr; i++) {
+                if (dr_stream[i]) byte|=mask;
+                if (mask==0x80) {
+                        temp_buffer[buflen++]=byte;
+                        byte=0;
+                        mask=1;
+                } else  mask<<=1;
+        }
+        temp_buffer[buflen] = byte;
+        jtagSendAndReceiveBits(1,totdr,temp_buffer,temp_buffer);                // output the DR stream with TMS at end
+        for (i=0; i<totdr; i++) {
+                bit = (temp_buffer[i>>3] & (1<<(i&7)) );
+                result_stream[i] = bit;
+        }
+
+//	for (i=0; i<totdr; i++) {
+//		result_stream[i] = jtagOutput(dr_stream[i], i==(totdr-1));  // output the DR stream, setting TMS at the end
+//	}
 
 	jtagSelectDR();						// force progression through update DR
 }

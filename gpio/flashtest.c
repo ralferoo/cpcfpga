@@ -92,7 +92,7 @@ void sramtest(void)
 	sample_dr_stream(initial_dr, totdr);
 	make_safe_dr_stream(safe_dr, totdr, fpga, prom);
 
-//	dump_dr_stream("initial_dr", initial_dr, totdr);
+	dump_dr_stream("initial_dr", initial_dr, totdr);
 //	dump_dr_stream("safe_dr", safe_dr, totdr);
 
 	send_ir_stream(exload_ir, totir);

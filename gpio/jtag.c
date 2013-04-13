@@ -122,6 +122,12 @@ void jtagChangeState(int tms)
 	}
 }
 
+void jtagChangeStates(int count,int tms)
+{
+	while (count)
+		jtagChangeState(count--?tms:0);
+}
+
 int jtagOutputSilent(int tdi, int tms)
 {
 	int tdo = jtagLowlevelClock(tdi, tms);
@@ -171,7 +177,7 @@ void jtagResetSilent(void)
 {
 //	pinOutput(GPIO_TMS,1);
 	int i;
-	for(i=0;i<5;i++) {
+	for(i=0;i<7;i++) {
 		jtagLowlevelClockRO(1,1);
 		//jtagPulseClock();
 	}
@@ -495,25 +501,36 @@ void devScanDevices(void)
 {
 	devFreeDevices();
 
+	int retry=2;
+	int irlen, drlen;
+	int i,j;
+	for (;;) {
+
 	jtagReset();
 	jtagShiftIR();
 
-	int irlen, drlen;
-	int i,j;
 	for (i=0;i<MAX_CHAIN_LEN;i++) 
-		jtagOutputRO(1,0);	// flush zeros into IR
+		jtagOutputRO(1,0);	// flush ones into IR
+//	printf("Outputted %d 1s\n", i);
 	
 	for (irlen=0;irlen<MAX_CHAIN_LEN;irlen++) 
 		if (!jtagOutput(0,0))	// push zeros through until 0 pops out
 			break;
+//	printf("Outputted %d 0s\n", irlen);
 	
 	for (i=0;i<MAX_CHAIN_LEN;i++)
 		if (jtagOutput(1,0))	// push ones through until 1 pops out
 			break;
+//	printf("Outputted %d 1s\n", i);
 
 	if (i != irlen) {
 		printf("Length of 0 chain was %d, length of 1 chain was %d, probably a short...\n", i, irlen);
+		if (retry--) 
+			continue;
 		return;
+	}
+
+	break;
 	}
 
 	// as we've left all IRs in bypass mode, we might as well scan 

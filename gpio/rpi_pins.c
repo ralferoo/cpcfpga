@@ -1,12 +1,19 @@
+#define DUMP_ALL_JTAG_TRAFFIC
+
 #include <time.h>
 #include <errno.h>
 
 #include "gpio.h"
 
-#define GPIO_TMS 21
-#define GPIO_TCK 17
-#define GPIO_TDI 4
-#define GPIO_TDO 18 //22
+//#define GPIO_TMS 21
+//#define GPIO_TCK 17
+//#define GPIO_TDI 4
+//#define GPIO_TDO 18 //22
+
+#define GPIO_TMS 8
+#define GPIO_TCK 25
+#define GPIO_TDI 23
+#define GPIO_TDO 24
 
 #include <unistd.h>
 
@@ -48,6 +55,72 @@ volatile unsigned *gpio;
 #define GPIO_LEV *(gpio+13) // gets levels of bits
 
 void pinSetupIO();
+
+
+#ifdef DUMP_ALL_JTAG_TRAFFIC
+int dumper_fd = -1;
+unsigned char dumper_buffer[10000];
+int dumper_bufptr = 0;
+int dumper_total = 0;
+#endif
+
+void TrafficDumpExit(void)
+{
+#ifdef DUMP_ALL_JTAG_TRAFFIC
+	if (dumper_fd >= 0) {
+//		printf("TrafficDumpExit flush\n");
+		dumper_buffer[ dumper_bufptr++ ] = '\n';
+		if (dumper_bufptr) {
+			int wlen = write(dumper_fd, dumper_buffer, dumper_bufptr);
+			if (dumper_bufptr != wlen)
+				printf("Error flushing final jtag buffer wrote %d instead of %d bytes\n", wlen, dumper_bufptr);
+		}
+		close(dumper_fd);
+		dumper_fd = -1;
+		dumper_bufptr = 0;
+	}
+#endif
+}
+
+void TrafficDumpBit(int tms, int tdi, int tdo)
+{
+#ifdef DUMP_ALL_JTAG_TRAFFIC
+	unsigned char out = tdi ?         '1' : '0';		//    1=TDI (from us to JTAG)
+	if (tdo)		out |=    2;			//    2=TDO (from JTAG to us) 
+	if (tms)		out |= 0x4;			// 0x8=TMS (JTAG transition)
+
+	if ( (dumper_bufptr+4) > sizeof(dumper_buffer)) {
+//		printf("TrafficDumpBit flush\n");
+		if (dumper_fd >= 0) {
+			int wlen = write(dumper_fd, dumper_buffer, dumper_bufptr);
+			if (dumper_bufptr != wlen)
+				printf("Error flushing jtag buffer wrote %d instead of %d bytes\n", wlen, dumper_bufptr);
+		}
+		dumper_bufptr = 0;
+	}
+
+	dumper_buffer[ dumper_bufptr++ ] = out;
+	dumper_total++;
+	if ((dumper_total&0x3f) == 0)
+		dumper_buffer[ dumper_bufptr++ ] = '\n';
+#endif
+}
+
+void TrafficDumpInit(void)
+{
+#ifdef DUMP_ALL_JTAG_TRAFFIC
+	if (dumper_fd < 0) {
+		char path_buffer[128];
+		sprintf(path_buffer, "/jtaglogs/jtag-%ld.log", time(0) );
+		dumper_fd = open(path_buffer, O_WRONLY | O_CREAT, 0777);
+		dumper_bufptr = 0;
+		dumper_total = 0;
+
+		atexit(TrafficDumpExit);
+	}
+#endif
+}
+
 
 //
 // Set up a memory regions to access GPIO
@@ -91,6 +164,10 @@ void pinSetupIO()
    // Always use volatile pointer!
    gpio = (volatile unsigned *)gpio_map;
 
+#ifdef DUMP_ALL_JTAG_TRAFFIC
+	TrafficDumpInit();
+#endif
+
 
 } // pinSetupIO
 
@@ -126,29 +203,66 @@ void jtagInit(void)
 	pinSetupIO();
 
 	// set pin directions
+	pinOutput(GPIO_TMS,1);
+	pinOutput(GPIO_TCK,0);
 	pinSetDirectionOutput(GPIO_TMS);
 	pinSetDirectionOutput(GPIO_TCK);
 	pinSetDirectionOutput(GPIO_TDI);
 	pinSetDirectionInput (GPIO_TDO);
-	pinOutput(GPIO_TMS,1);
-	pinOutput(GPIO_TCK,0);
+
+	int i;
+	for (i=0;i<20;i++)
+		asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
 int jtagLowlevelClock(int tdi, int tms)
 {
+	int i;
+
 	pinOutput(GPIO_TDI,tdi);
 	pinOutput(GPIO_TMS,tms);
 	int tdo = pinInput(GPIO_TDO);
 
-	asm("nop;nop;nop");		// 3/750 ms = 4ns
-	pinOutput(GPIO_TCK,1);
 	asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
-	pinOutput(GPIO_TCK,0);
-	asm("nop;nop;nop");		// 3/750 ms = 4ns
+	asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
 
+	pinOutput(GPIO_TCK,1);
+
+//	asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+//	asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+
+	for (i=0;i<20;i++)
+		asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+
+	if (tms)
+		for (i=0;i<50;i++)
+			asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+
+	pinOutput(GPIO_TCK,0);
+
+	for (i=0;i<20;i++)
+		asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+
+	if (tms)
+		for (i=0;i<50;i++)
+			asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+
+//	asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+//	asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+
+//	printf("%d/%d -> %d\n", tdi,tms, tdo);
+
+#ifdef DUMP_ALL_JTAG_TRAFFIC
+	TrafficDumpBit(tms, tdi, tdo);
+#endif
 	return tdo;
+}
+
+void jtagLowlevelClockRO(int tdi, int tms)
+{
+	jtagLowlevelClock(tdi,tms);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -157,6 +271,39 @@ void jtagRunTestTCK( unsigned int i )
 {
 	jtagIdle();
 	while( i-- ) {
-		jtagOutput(0,0);
+		jtagOutput(1,0);	// changed to 1 in case in shift IR
+	}
+
+	for (i=0;i<20;i++)
+		asm("nop;nop;nop;nop;nop;nop");	// 6/750 ms = 8ns
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+void jtagSendAndReceiveBits(int tms_at_end, int num_bits, unsigned char* send, unsigned char* recv)
+{
+	int offset = 0;
+	unsigned char data = 0, rdata = 0;
+	while (num_bits--) {
+		if ( (offset&7)==0 ) {
+			data = send[offset>>3];
+		}
+		unsigned char mask = 1<<(offset&7);
+
+		int tdi = (data&mask) ? 1 : 0;
+		int tdo = jtagLowlevelClock(tdi,num_bits==0 && tms_at_end);
+
+		if (tdo) rdata |= mask;
+
+		if ( (offset&7)==7 && recv ) {
+			recv[offset>>3] = rdata;
+			rdata = 0;
+		}
+		offset++;
+	}
+
+	if ( (offset&7) && recv ) {
+		recv[offset>>3] = rdata;
 	}
 }
+

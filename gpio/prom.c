@@ -1,5 +1,8 @@
 #include "gpio.h"
 
+//#define CONSTANT_110000 110000
+#define CONSTANT_110000 30000
+
 void promValidate(struct Device* prom)
 {
 	// idcode
@@ -12,9 +15,13 @@ void promValidate(struct Device* prom)
 
 	// ISC_DISABLE conld
 	jtagSendIR(0xf0, prom);
-	jtagRunTestTCK(110000);
+	jtagRunTestTCK(CONSTANT_110000);
 
 	int protect = (int) jtagSendIR(0xff, prom);
+
+	jtagIdle();
+	jtagReset();
+
 	if ( (protect&7) != 1 ) {
 		printf("IR status register not as expected: %02x\n", protect);
 		exit(1);
@@ -32,7 +39,11 @@ void promReload(struct Device* prom)
 //	jtagReset();
 
 //	jtagSendIR(0xf0, prom);
-//	jtagRunTestTCK(110000);
+//	jtagRunTestTCK(CONSTANT_110000);
+
+	jtagIdle();
+	jtagReset();
+
 }
 
 void promDumpBlock( int faddr, struct Device *device)
@@ -108,7 +119,7 @@ void promDump(struct Device* prom)
         jtagSendDR( 0x34, 6, prom);
         // ISC_DISABLE conld instruction
         jtagSendIR( 0xf0, prom);
-        jtagRunTestTCK(110000);
+        jtagRunTestTCK(CONSTANT_110000);
         // ISC_ENABLE ispen instruction
         jtagSendIR( 0xe8, prom);
         jtagSendDR( 0x34, 6, prom);
@@ -128,7 +139,15 @@ void promDump(struct Device* prom)
 
 	// ISC_DISABLE conld
 	jtagSendIR(0xf0, prom);
-	jtagRunTestTCK(110000);
+	jtagRunTestTCK(CONSTANT_110000);
+
+        // bypass instruction
+        jtagSendIR( 0xff, prom);
+	jtagRunTestTCK(CONSTANT_110000);
+
+	jtagIdle();
+	jtagReset();
+
 }
 
 void promErase(struct Device* prom)
@@ -152,16 +171,27 @@ void promErase(struct Device* prom)
 	printf("Waiting for erase to complete...  ");
 
 	int i;
-	for(i=0; i<128; i++) {
+	for(i=0; i<25; i++) {
+//		int bit;
+//		bit = jtagOutput(0,0);
+//		printf("\b%d%c", bit, "|/-\\"[i&3]);
 		printf("\b%c", "|/-\\"[i&3]);
 		fflush(stdout);
-		jtagRunTestTCK(15000000/128);
+		jtagRunTestTCK(1500000/25);
 	}
 	printf("\n");
 
         // ISC_DISABLE conld instruction
         jtagSendIR( 0xf0, prom);
-        jtagRunTestTCK(110000);
+        jtagRunTestTCK(CONSTANT_110000);
+
+        // bypass instruction
+        jtagSendIR( 0xff, prom);
+	jtagRunTestTCK(CONSTANT_110000);
+
+	jtagIdle();
+	jtagReset();
+
 }
 
 static struct Device* promProgramCurrent = 0;
@@ -178,7 +208,7 @@ void promProgramStart(struct Device *prom)
 
         // ISC_DISABLE conld instruction
         jtagSendIR( 0xf0, prom);
-        jtagRunTestTCK(110000);
+        jtagRunTestTCK(CONSTANT_110000);
 
         // ISC_ENABLE ispen instruction
         jtagSendIR( 0xe8, prom);
@@ -215,18 +245,23 @@ int promProgramData(uint8_t type, uint8_t len, uint16_t addr, uint8_t *data)
                                 jtagSendIR( 0xeb, promProgramCurrent);
                                 jtagSendDR( 1, 16, promProgramCurrent);
                                 jtagIdle();
-                                jtagRunTestTCK(1);
+                                jtagRunTestTCK(2);
                                                 
                                 // ISC_SERASE instruction
                                 jtagSendIR( 0x0a, promProgramCurrent);
                                 jtagIdle();
-                                jtagRunTestTCK(37000);
+                                //jtagRunTestTCK(37000);
+                                jtagRunTestTCK(9000);
                                                 
                                 // ISC_DISABLE conld instruction
                                 jtagSendIR( 0xf0, promProgramCurrent);
-                                jtagRunTestTCK(110000);
-				printf("\nFinished programming PROM\n");
+                                jtagRunTestTCK(CONSTANT_110000);
 
+			        // bypass instruction
+			        jtagSendIR( 0xff, promProgramCurrent);
+				jtagRunTestTCK(CONSTANT_110000);
+
+				printf("\nFinished programming PROM\n");
 				promProgramCurrent = 0;
 				return 1;
 
@@ -306,11 +341,12 @@ next_sector:
 						// ISC_PROGRAM fpgm instruction
 						jtagSendIR( 0xea, promProgramCurrent);
 						jtagIdle();
-						jtagRunTestTCK(14000);
+						//jtagRunTestTCK(14000);
+						jtagRunTestTCK(9000);
 					
 						// ISC_DISABLE conld instruction
 						jtagSendIR( 0xf0, promProgramCurrent);
-						jtagRunTestTCK(110000);
+						jtagRunTestTCK(CONSTANT_110000);
                                                 
 						prom_in_block = 0;
 						if (len)
@@ -348,7 +384,8 @@ next_sector:
                                                 // ISC_PROGRAM fpgm instruction
                                                 jtagSendIR( 0xea, promProgramCurrent);
                                                 jtagIdle();
-                                                jtagRunTestTCK(14000);
+						//jtagRunTestTCK(14000);
+						jtagRunTestTCK(9000);
 
                                                 prom_in_block = 0;
                                                 if (len)
@@ -397,7 +434,8 @@ next_sector:
                                                 // ISC_PROGRAM fpgm instruction
                                                 jtagSendIR( 0xea, promProgramCurrent);
                                                 jtagIdle();
-                                                jtagRunTestTCK(14000);
+						//jtagRunTestTCK(14000);
+						jtagRunTestTCK(9000);
 
                                                 prom_in_block = 0;
                                                 if (len)
@@ -440,7 +478,8 @@ next_sector:
                                                 // ISC_PROGRAM fpgm instruction
                                                 jtagSendIR( 0xea, promProgramCurrent);
                                                 jtagIdle();
-                                                jtagRunTestTCK(14000);
+						//jtagRunTestTCK(14000);
+						jtagRunTestTCK(9000);
 
                                                 prom_in_block = 0;
                                                 if (len)
