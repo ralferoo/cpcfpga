@@ -84,7 +84,7 @@ void TrafficDumpInit(void)
 
 usb_dev_handle *libusb_handle;
 
-usb_dev_handle *find_cpc2012(void);
+usb_dev_handle *find_cpc2013(void);
 
 /*****************************************************************************
  *
@@ -105,7 +105,7 @@ usb_dev_handle *find_cpc2012(void);
  *
  *****************************************************************************/
 
-usb_dev_handle *find_cpc2012(void)
+usb_dev_handle *find_cpc2013(void)
 {
         struct usb_bus *bus;
         struct usb_device *dev;
@@ -114,8 +114,8 @@ usb_dev_handle *find_cpc2012(void)
 	for (bus=usb_busses; bus; bus=bus->next) {
 		for (dev=bus->devices; dev; dev=dev->next) {
 //			printf("found %04x:%04x\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
-			if (dev->descriptor.idVendor == 0x16c0 && dev->descriptor.idProduct == 0x05e1) {
-				printf("Found possible CPC2012 device %04x:%04x, manuf #%02x product #%02x serial #%02x\n",
+			if (dev->descriptor.idVendor == 0x1d50 && dev->descriptor.idProduct == 0x6063) {
+				printf("Found possible CPC2013 device %04x:%04x, manuf #%02x product #%02x serial #%02x\n",
 					dev->descriptor.idVendor, dev->descriptor.idProduct,
 					dev->descriptor.iManufacturer, dev->descriptor.iProduct,
 					dev->descriptor.iSerialNumber );
@@ -176,9 +176,9 @@ void jtagInit(void)
 
 	usb_set_debug(3);		// logging
 
-	libusb_handle = find_cpc2012();
+	libusb_handle = find_cpc2013();
 	if (libusb_handle == NULL) {
-		printf("No cpc2012 device found, aborting...\n");
+		printf("No cpc2013 device found, aborting...\n");
 		exit(10);
 	}
 
