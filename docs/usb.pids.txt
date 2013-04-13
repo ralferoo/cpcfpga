@@ -1,0 +1,21 @@
+Hi Ranulf,
+
+I've added the following allocations to the wiki page:
+
+|-
+| 0x1d50 || 0x6063 || [http://cpcfpga.com/ CPC FPGA]
+|-
+| 0x1d50 || 0x6064 || [http://cpcfpga.com/ CPC FPGA (DFU)]
+|-
+| 0x1d50 || 0x6065 || [http://cpcfpga.com/ CPC FPGA (serial)]
+
+
+All the best with your project!
+
+-- 
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
+
+

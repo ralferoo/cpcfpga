@@ -1,0 +1,16 @@
+Atmega PC7 is connected to TDI, would be more useful as CLKO
+
+KEYCOL4..KEYCOL7 don't have pull-ups
+JOY1_{FIRE,LEFT,RIGHT,SPARE} has double pull-ups
+
+HDMI SCL,SDA,CEC don't have pull-ups
+TFP410PAP SCL,SDA don't have pull-ups
+
+PS/2 level conversion still has 2 different implementations, one works with
+the squishy keyboards only, the other with the clicky keyboards only. WHY?
+
+HDMI connector holes should be through plated so they can be soldered downm
+
+Mini USB locator pins are too close
+
+VCC and GND traces are only 0.4mm, next revision make these at least 0.6mm
