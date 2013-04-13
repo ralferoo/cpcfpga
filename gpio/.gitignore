@@ -8,3 +8,6 @@ prom_program
 prom_reload
 sramtest
 flashtest
+fpga_usercode
+prom_erase_program
+
