@@ -194,7 +194,7 @@ void jtagSendAndReceiveBitsRaw(int tms_at_end, int num_bits, unsigned char* send
 {
 	unsigned char recv_tmp[64];
 #ifdef BIGLOG
-	printf("num_bits=%d tms=%d, send=%p, recv=%p\n", num_bits, tms_at_end, send, recv);
+	printf("num_bits=%d tms=%d, send=%p, recv=%p\n", num_bits, tms_at_end, send, recv_real);
 #endif
 
 	while (num_bits>64*8) {
@@ -309,7 +309,8 @@ void jtagSendAndReceiveBits(int tms_at_end, int num_bits, unsigned char* send, u
 		collect_count=0;
 	}
 
-	return jtagSendAndReceiveBitsRaw(tms_at_end, num_bits, send, recv);
+	jtagSendAndReceiveBitsRaw(tms_at_end, num_bits, send, recv);
+	jtagChangeState(tms_at_end);
 }
 
 int jtagLowlevelClock(int tdi, int tms)

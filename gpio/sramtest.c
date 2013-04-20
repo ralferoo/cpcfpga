@@ -106,19 +106,22 @@ int write_sram_byte(char *safe_dr, int totdr, int addr, int byte,
 	out_dr[   write_we ] = 0;
 	out_dr[ control_we ] = 1-control_disable_a[i];	// output
 
+//	printf("SEND 1\n");
 	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
 	nsleep(100);							// wait for read
 
 	out_dr[   write_oe ] = 0;					//  enable output
 	out_dr[   write_we ] = 1;					// disable write
+//	printf("SEND 2\n");
 	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
 //	nsleep(5);							// wait for read
 	nsleep(100);							// wait for read
 
+//	printf("SEND 3\n");
 	send_dr_stream(safe_dr, totdr, result_dr);			// get data from chip
 
 #if 0
-//	dump_dr_stream("bits after read", result_dr, totdr);
+	dump_dr_stream("bits after read", result_dr, totdr);
 	dump_sram_bits(result_dr,
 			read_a, write_a, control_a, control_disable_a,
 			read_d, write_d, control_d, control_disable_d,
@@ -220,6 +223,7 @@ void sramtest(void)
 	find_pin( fpga, "IO_P6",  fpga, prom, &read_we, &write_we, &control_we, &control_disable_we );
 
 	// ram data lines
+#if 1
 	find_pin( fpga, "IO_P25", fpga, prom, &read_d[ 0], &write_d[ 0], &control_d[ 0], &control_disable_d[ 0] );
 	find_pin( fpga, "IO_P26", fpga, prom, &read_d[ 1], &write_d[ 1], &control_d[ 1], &control_disable_d[ 1] );
 	find_pin( fpga, "IO_P27", fpga, prom, &read_d[ 2], &write_d[ 2], &control_d[ 2], &control_disable_d[ 2] );
@@ -228,7 +232,16 @@ void sramtest(void)
 	find_pin( fpga, "IO_P31", fpga, prom, &read_d[ 5], &write_d[ 5], &control_d[ 5], &control_disable_d[ 5] );
 	find_pin( fpga, "IO_P32", fpga, prom, &read_d[ 6], &write_d[ 6], &control_d[ 6], &control_disable_d[ 6] );
 	find_pin( fpga, "IO_P33", fpga, prom, &read_d[ 7], &write_d[ 7], &control_d[ 7], &control_disable_d[ 7] );
-
+#else
+	find_pin( fpga, "IO_P33", fpga, prom, &read_d[ 0], &write_d[ 0], &control_d[ 0], &control_disable_d[ 0] );
+	find_pin( fpga, "IO_P32", fpga, prom, &read_d[ 1], &write_d[ 1], &control_d[ 1], &control_disable_d[ 1] );
+	find_pin( fpga, "IO_P31", fpga, prom, &read_d[ 2], &write_d[ 2], &control_d[ 2], &control_disable_d[ 2] );
+	find_pin( fpga, "IO_P30", fpga, prom, &read_d[ 3], &write_d[ 3], &control_d[ 3], &control_disable_d[ 3] );
+	find_pin( fpga, "IO_P28", fpga, prom, &read_d[ 4], &write_d[ 4], &control_d[ 4], &control_disable_d[ 4] );
+	find_pin( fpga, "IO_P27", fpga, prom, &read_d[ 5], &write_d[ 5], &control_d[ 5], &control_disable_d[ 5] );
+	find_pin( fpga, "IO_P26", fpga, prom, &read_d[ 6], &write_d[ 6], &control_d[ 6], &control_disable_d[ 6] );
+	find_pin( fpga, "IO_P25", fpga, prom, &read_d[ 7], &write_d[ 7], &control_d[ 7], &control_disable_d[ 7] );
+#endif
 	// ram address lines
 	find_pin( fpga, "IO_P24", fpga, prom, &read_a[ 0], &write_a[ 0], &control_a[ 0], &control_disable_a[ 0] );
 	find_pin( fpga, "IO_P23", fpga, prom, &read_a[ 1], &write_a[ 1], &control_a[ 1], &control_disable_a[ 1] );
@@ -287,10 +300,83 @@ void sramtest(void)
 	printf("OE: rd=%3d wr=%3d con=%3d dis=%d\n", read_oe, write_oe, control_oe, control_disable_oe);
 
 	int addr;
-	printf("Writing dummy data\n");
+
+	printf("\nLow data\n");
+	for (addr=0; addr<256; addr++)
+	{
+		int obyte = addr&255;
+		int byte = write_sram_byte(safe_dr, totdr, addr, obyte,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		printf("write byte at %05x is %02x (should be %02x)%c", addr, byte, obyte, byte!=obyte?'\n':'\r');
+
+		byte = read_sram_byte(safe_dr, totdr, addr,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+		printf("check byte at %05x is %02x (should be %02x)%c", addr, byte, obyte, byte!=obyte?'\n':'\r');
+		fflush(stdout);
+	}
+
+	printf("\nChecking low data\n");
+	for (addr=0; addr<256; addr++)
+	{
+		int obyte = addr&255;
+		int byte = read_sram_byte(safe_dr, totdr, addr,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+		printf("read byte at %05x is %02x (should be %02x)%c", addr, byte, obyte, byte!=obyte?'\n':'\r');
+		fflush(stdout);
+	}
+
+	printf("\nIndividual address lines\n");
+	for (addr=1; addr<<(32-19); addr<<=1)
+	{
+		int q = (addr>>8)*5 + (addr>>16)*11 + addr*7;
+		int obyte = (q&255) ^ ((q>>8)&255) ^ ((q>>16)&255);
+		int byte = write_sram_byte(safe_dr, totdr, addr, obyte,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		printf("write byte at %05x is %02x (should be %02x)%c", addr, byte, obyte, byte!=obyte?'\n':'\r');
+
+		byte = read_sram_byte(safe_dr, totdr, addr,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+		printf("check byte at %05x is %02x (should be %02x)%c", addr, byte, obyte, byte!=obyte?'\n':'\r');
+		fflush(stdout);
+	}
+
+	printf("\nChecking Individual address lines\n");
+	for (addr=1; addr<<(32-19); addr<<=1)
+	{
+		int q = (addr>>8)*5 + (addr>>16)*11 + addr*7;
+		int obyte = (q&255) ^ ((q>>8)&255) ^ ((q>>16)&255);
+		int byte = read_sram_byte(safe_dr, totdr, addr,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		printf("read byte at %05x is %02x (should be %02x)%c", addr, byte, obyte, byte!=obyte?'\n':'\r');
+		fflush(stdout);
+	}
+
+/*
+	printf("\nWriting dummy data\n");
 	char* data = "This is test data...";
 	for (addr=0xfe00;addr<0x10000;addr++) {
-		if ( (addr&0x1ff)==0 )
+		if ( (addr&0x7)==0 )
 			printf("Addr: %05x\n", addr);
 
 //	for (;*data;addr++,data++) {
@@ -315,15 +401,15 @@ void sramtest(void)
 	
 //		printf(" read byte at %05x is %02x\n", addr, byte);
 	}
-
+*/
 	int lastfail = 0, addr2;
 
-	printf("Testing bytes:\n");
+	printf("\nTesting bytes:\n");
 
 	addr2 = 0;
 	for (addr=0; addr<512; addr++) {
 		int data = addr & 255;
-		int byte = write_sram_byte(safe_dr, totdr, addr2, data,
+		int byte = write_sram_byte(safe_dr, totdr, addr, data,
 					read_a, write_a, control_a, control_disable_a,
 					read_d, write_d, control_d, control_disable_d,
 					read_we, write_we, control_we, control_disable_we,
@@ -331,7 +417,7 @@ void sramtest(void)
 	}
 	for (addr=0; addr<512; addr++) {
 		int data = addr & 255;
-		int byte = read_sram_byte(safe_dr, totdr, addr2, 
+		int byte = read_sram_byte(safe_dr, totdr, addr, 
 					read_a, write_a, control_a, control_disable_a,
 					read_d, write_d, control_d, control_disable_d,
 					read_we, write_we, control_we, control_disable_we,

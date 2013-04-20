@@ -107,6 +107,7 @@ void send_dr_stream(char* dr_stream, int totdr, char* result_stream)
 	int i, bit;
 	jtagShiftDR();						// enter shift DR phase
 
+#if 1
         int buflen=0;
         unsigned char mask=0x1,byte=0;
         for (i=0; i<totdr; i++) {
@@ -120,13 +121,20 @@ void send_dr_stream(char* dr_stream, int totdr, char* result_stream)
         temp_buffer[buflen] = byte;
         jtagSendAndReceiveBits(1,totdr,temp_buffer,temp_buffer);                // output the DR stream with TMS at end
         for (i=0; i<totdr; i++) {
-                bit = (temp_buffer[i>>3] & (1<<(i&7)) );
+                bit = (temp_buffer[i>>3] & (1<<(i&7)) ) ? 1 : 0;
                 result_stream[i] = bit;
-        }
 
-//	for (i=0; i<totdr; i++) {
-//		result_stream[i] = jtagOutput(dr_stream[i], i==(totdr-1));  // output the DR stream, setting TMS at the end
-//	}
+		//printf("%d/%d/%x/%d\n",i>>3,1<<(i&7), temp_buffer[i>>3], bit);
+//		printf("%d", bit);
+        }
+//	printf("\n");
+#else
+	for (i=0; i<totdr; i++) {
+		result_stream[i] = jtagOutput(dr_stream[i], i==(totdr-1));  // output the DR stream, setting TMS at the end
+//		printf("%d", result_stream[i]);
+	}
+//	printf("\n");
+#endif
 
 	jtagSelectDR();						// force progression through update DR
 }

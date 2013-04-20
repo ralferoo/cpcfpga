@@ -339,7 +339,7 @@ uint32_t jtagShiftData( uint32_t value, int len, int header, int trailer)
 		memset(bytes, 0xff, (trailer+7)>>3 );
 		jtagSendAndReceiveBits(1, trailer, &bytes, NULL);
 	}
-	jtagChangeState(1);
+//	jtagChangeState(1);
 #else
 	int i;
 	int bit;
