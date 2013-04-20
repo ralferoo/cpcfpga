@@ -65,7 +65,7 @@
 	/* Public Interface - May be used in end-application: */
 		/* Macros: */
 			/** LED mask for the first LED on the board. */
-			#define LEDS_LED1        (1 << 6)
+			#define LEDS_LED1        (1 << 2) // PC2 is LED
 
 			/** LED mask for the second LED on the board. */
 			#define LEDS_LED2        0
