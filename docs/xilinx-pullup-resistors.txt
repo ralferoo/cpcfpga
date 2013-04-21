@@ -1,0 +1,12 @@
+Mostly relevant to boundary scan, but generally interesting:
+	http://www.xjtag.com/app-note-16.php
+
+Xilinx Spartan 3 – a special case!
+
+   With the original Xilinx Spartan 3 family of FPGAs (not the subsequent
+   Spartan 3A or Spartan 3E families), configuring the FPGA with all pins
+   set to "Float" has been found to significantly increase the device's
+   current consumption.  Therefore, to get the best test coverage whilst
+   avoiding this problem, the 'blank' FPGA image for these devices should
+   float pins that are connected to external pull resistors but enable the
+   internal pull resistors on all other pins.
