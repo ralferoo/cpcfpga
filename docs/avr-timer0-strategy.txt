@@ -50,4 +50,17 @@ Maybe it'd be simpler to just do 10 cycles of work in that routine...
 
 21 $0028 TIMER0 COMPB Timer/Counter0 Compare match B
 
+Note the addresses on page 64 seem to be word addresses, so they need to
+be doubled compare to avr-objdump.
+
+So:
+
+12 $0016 USB General USB General Interrupt request
+      2c:       7c c3           rjmp    .+1784          ; 0x726 <__vector_11>
+      2e:       00 00           nop
+
+24 $002E USART1 RX USART1 Rx Complete
+      5c:       61 c1           rjmp    .+706           ; 0x320 <__vector_23>
+      5e:       00 00           nop
+
 
