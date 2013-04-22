@@ -1,0 +1,53 @@
+Background
+----------
+
+We want to operate the SD card at 400kHz (so clock low and high every 20 cycles
+if running at 8MHz).
+
+10 cycles is barely enough time to deal properly with the interrupts:
+	2 cycles to push PC to stack
+	3 cycles to jump to interrupt routine
+	...
+	5 cycles for RETI
+
+However, doing AVR stuff via interrupts might be good so we can also do other
+things.
+
+Using timer0:
+
+Set OCR0A to 255-11
+Set WGM0[2:0]=2
+Set TCNT0 to 255-21 this will trigger OCR0A interrupt 10 cycles later
+
+When TCNT0 = 255-11, it will reset to 0 and then re-trigger interrupt 244
+cycles later, but that's fine.
+
+20 $0026 TIMER0 COMPA Timer/Counter0 Compare Match A
+
+This is called at least 10 cycles after the initial routine, but can safely
+be much later.
+
+SD_CLK=low
+Set TCNT to 255-10, as this will trigger an overflow before OCR0A
+RETI
+
+Now, hopefully we'll receive the next interrupt about 10 cycles later:
+
+22 $002A TIMER0 OVF Timer/Counter0 Overflow
+
+process SD data
+SD_CLK=high
+
+Set TCND to 255-20
+Set TIFR0=(1<<OCF0A)|(1<<TOV0) to make sure we have at least 10 clocks
+RETI
+
+In worst case, we'll have 2 OCR0A interrupts in a row without having serviced
+to OVF interrupt. In this case, we'll waste 10 cycles in OCR0 interrupt but
+the proceed directly to the OCF interrupt.
+
+Maybe it'd be simpler to just do 10 cycles of work in that routine...
+
+21 $0028 TIMER0 COMPB Timer/Counter0 Compare match B
+
+
