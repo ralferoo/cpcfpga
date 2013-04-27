@@ -14,3 +14,6 @@ HDMI connector holes should be through plated so they can be soldered downm
 Mini USB locator pins are too close
 
 VCC and GND traces are only 0.4mm, next revision make these at least 0.6mm
+
+TAPE_IN should have pull up resistors
+arguably all the GPIO pins should too
