@@ -68,3 +68,9 @@ prom_direct_load: prom_direct_load.o $(LIBOBJS)
 
 fpga_usercode: fpga_usercode.o $(LIBOBJS)
 	gcc -o $@ $^ $(LIBS)
+
+bootloader: bootloader.o $(LIBOBJS)
+	gcc -o $@ $^ $(LIBS)
+
+sdtest: sdtest.o $(LIBOBJS)
+	gcc -o $@ $^ $(LIBS)

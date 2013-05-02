@@ -190,6 +190,8 @@ void EVENT_USB_Device_ControlRequest(void)
 	if (Endpoint_IsSETUPReceived())
 		JTAG_Device_ProcessControlRequest();
 	if (Endpoint_IsSETUPReceived())
+		DISK_Device_ProcessControlRequest();
+	if (Endpoint_IsSETUPReceived())
 		CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
 

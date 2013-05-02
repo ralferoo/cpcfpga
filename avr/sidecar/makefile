@@ -144,7 +144,7 @@ include $(LUFA_PATH)/LUFA/makefile
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = USBtoSerial.c jtag.c Descriptors.c	\
-	disk.c \
+	disk.c JumpToBootloader.c \
 	  $(LUFA_SRC_USB)                                             \
 	  $(LUFA_SRC_USBCLASS)
 #$(wildcard *.c) \
@@ -166,7 +166,8 @@ CPPSRC =
 #     Even though the DOS/Win* filesystem matches both .s and .S the same,
 #     it will preserve the spelling of the filenames, and gcc itself does
 #     care about how the name is spelled on its command-line.
-ASRC =
+#ASRC = sdcard.S
+ASRC = 
 
 
 # Optimization level, can be [0, 1, 2, 3, s].
@@ -704,7 +705,7 @@ $(OBJDIR)/%.16.o : %.cpp
 
 # Compile: create assembler files from C source files.
 %.s : %.c
-	$(CC) -S $(ALL_CFLAGS) $< -o $@
+	$(CC) -S $(OPTS8) $(ALL_CFLAGS) $< -o $@
 
 
 # Compile: create assembler files from C++ source files.

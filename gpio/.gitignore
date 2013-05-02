@@ -10,4 +10,6 @@ sramtest
 flashtest
 fpga_usercode
 prom_erase_program
-
+bootloader
+prom_direct_load
+sdtest

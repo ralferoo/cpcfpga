@@ -163,6 +163,32 @@ usb_dev_handle *find_cpc2013(void)
 			}
 		}
 	}
+	return NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+usb_dev_handle *find_dfu(void)
+{
+        struct usb_bus *bus;
+        struct usb_device *dev;
+        usb_dev_handle *device_handle = 0;
+
+	for (bus=usb_busses; bus; bus=bus->next) {
+		for (dev=bus->devices; dev; dev=dev->next) {
+//			printf("found %04x:%04x\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
+			if (dev->descriptor.idVendor == 0x3eb && dev->descriptor.idProduct == 0x2ff0) {
+				printf("Found possible CPC2013 DFU device %04x:%04x, manuf #%02x product #%02x serial #%02x\n",
+					dev->descriptor.idVendor, dev->descriptor.idProduct,
+					dev->descriptor.iManufacturer, dev->descriptor.iProduct,
+					dev->descriptor.iSerialNumber );
+
+				device_handle = usb_open(dev);
+				return device_handle;
+			}
+		}
+	}
+	return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -400,4 +426,41 @@ void jtagRunTestTCK( unsigned int len )
 
 	}
 //	printf("\n");
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+int atmegaReboot( void )
+{
+	int bytes = usbControlMessage(0x40, 'B', 0, 0, "", 0, 500);
+//	if (bytes != 0) {
+//		printf("Wrote %d bytes, expecting %d\n", bytes, 0);
+//	}
+
+	int i;
+	for (i=0; i<10; i++)
+	{
+		usb_init();
+		usb_set_debug(0);
+		usb_find_busses();
+		usb_find_devices();
+
+		usb_dev_handle *handle = find_dfu();
+		if (handle != NULL) {
+//			printf("Found DFU!\n");
+			usb_close(handle);
+			return 1;
+		}
+		usleep(500000);
+		write(1,".",1);
+	}
+	write(1,"\n",1);
+	return 0;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+int usbControlMessage( int requesttype, int request, int value, int index, char *bytes, int size, int timeout)
+{
+	return usb_control_msg(libusb_handle, requesttype, request, value, index, bytes, size, timeout);
 }

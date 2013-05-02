@@ -129,3 +129,10 @@ void fpgaValidate(struct Device* fpga);
 void cpcSetCommand(struct Device* fpga, unsigned char command);
 uint32_t cpcTransferData(struct Device* fpga, uint32_t value);
 
+///////////////////////////////////////////////////////////////////////////
+
+int atmegaReboot( void );
+
+///////////////////////////////////////////////////////////////////////////
+
+int usbControlMessage( int requesttype, int request, int value, int index, char *bytes, int size, int timeout);

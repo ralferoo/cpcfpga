@@ -327,11 +327,11 @@ next_sector:
 
 						uint16_t prom_faddr = (prom_addr_hi<<12) | (prom_addr_lo_start>>4);
 						static int slowdown;
-						if( (++slowdown&15) == 0 ) { //prom_addr_lo & 4096) {
+//						if( (++slowdown&3) == 0 ) { //prom_addr_lo & 4096) {
 							static int display;
-							printf("\b%c", "|/-\\"[display++&3]);
+							printf("\b\b\b\b\b\b%04x %c",prom_faddr, "|/-\\"[display++&3]);
 							fflush(stdout);
-						}
+//						}
 
 						// ISC_ADDRESS_SHIFT faddr instruction
 						jtagSendIR( 0xeb, promProgramCurrent);

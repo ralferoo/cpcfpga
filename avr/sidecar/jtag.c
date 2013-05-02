@@ -675,6 +675,17 @@ void JTAG_Device_ProcessControlRequest(void)
 //			Endpoint_ClearIN();
 			return;
 		}
+		else if (USB_ControlRequest.bRequest == 'B' ) {
+//			Endpoint_ClearSETUP();
+//			Endpoint_ClearStatusStage();
+
+			Endpoint_ClearIN();
+			Endpoint_WaitUntilReady();
+			Endpoint_ClearIN();
+			USB_USBTask();
+			Jump_To_Bootloader();
+			return;
+		}
 	}
 }
 
