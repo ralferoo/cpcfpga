@@ -1,3 +1,12 @@
+
+PLEASE NOTE THAT THIS IS ONLY A PARTIAL REPOSITORY DUMP WHILE I TRY TO
+SEPARATE PUBLIC AND PRIVATE PARTS...
+
+-------------------------------------------------------------------------------
+
+Contents
+--------
+
 This is the CPC FPGA project - a modern reimplementation of the Amstrad CPC
 on an FPGA.
 
@@ -6,12 +15,50 @@ used for almost any 8-bit system. Alternatively, it could be used as a
 cheap FPGA development board that includes a SCART socket, RAM, flash ROM,
 PS/2 keyboard, twin joystick ports, tape input, etc...
 
-This repo is a partial snapshot of my private repo, and currently only
-contains the schematic and board layout for revision 1 of the board along
-with the code required for the Atmega controller.
+The project is structured in these subdirectories:
 
-I am currently working on a newer revision of the board, which will be
-made public once I'm satisfed that it works well and has no major bugs.
+bitstreams	Contains FPGA images that can be loaded from SD card
+client		Contains Linux utilities to communicate with the board
+datasheets	Miscellaneous datasheets (obtained publically, but are NOT
+		part of this project)
+docs		Various snippets of documentation I've written at various times
+hardware/case	The case for revision 2 of CPC FPGA, for laser cutter use
+hardware/eagle	The eagle schematic and circuit design for:
+			homeboard30  (revision 1)
+			homeboard99r (revision 2)
+hardware/spice	Various spice analysis snippets
+library/hdl	VHDL files that can be used in projects hosted on CPC FPGA
+projects	Contains FPGA projects to be run on the CPC FPGA.
+sidecar2	The firmware for the CPC FPGA suport chip
+stuff		Old bits and bobs, to be deleted
+Makefile	Used to build the system
+README.txt	This file
+
+-------------------------------------------------------------------------------
+
+Building the CPC FPGA project
+-----------------------------
+
+The user part of CPC FPGA program can be built simply by running "make".
+
+Other build targets:
+
+all		Rebuild client and bitstreams
+clean		Clean all build files, excluding final targets
+bitstreams	Rebuild all the FPGA bitstream files
+
+scan		Check to see if the CPC FPGA board is present
+log		Keep an eye on the diagnostic log from the CPC FPGA board
+dump		Dump the CPC FPGA image stored in the PROM
+reload		Reload the CPC FPGA image stored in the PROM
+xxx.load	Reload the CPC FPGA image for project xxx
+xxx.program	Programs the CPC FPGA's PROM with the image for project xxx
+
+sidecar2	Rebuild just the firmware
+dfu		Install the firmware
+reset		Resets the firmware
+
+-------------------------------------------------------------------------------
 
 LICENCES
 
