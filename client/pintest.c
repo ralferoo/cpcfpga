@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "lib/sidecar.h"
 
 void pintest(void)
 {
@@ -154,8 +154,8 @@ void pintest(void)
 	test_pin( fpga, "IO_P132", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
 	test_pin( fpga, "IO_P130", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
 	test_pin( fpga, "IO_P129", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
-//	test_pin( fpga, "IO_P127", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
-	test_pin( fpga, "IO_P128", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
+	test_pin( fpga, "IO_P127", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
+//	test_pin( fpga, "IO_P128", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
 	test_pin( fpga, "IO_P123", safe_dr, totdr, test_dr, test2_dr, test3_dr, fpga, prom );
 
 	// leds

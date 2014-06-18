@@ -1,5 +1,4 @@
-#include "gpio.h"
-#include <usb.h>
+#include "lib/sidecar.h"
 
 extern int g_noisy;
 
@@ -16,6 +15,7 @@ int main(int argc, char **argv)
 
 	if (argc!=4) {
 		printf("Usage: %s track head sect\n", argv[0]);
+		jtagExit();
 		exit(1);
 	}
 	
@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 		}
 		printf("\n");
 	}
+	jtagExit();
 	exit(0);
 }
 

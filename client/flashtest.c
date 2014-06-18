@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "lib/sidecar.h"
 
 int inout( int ibyte, char* out_dr, int totdr, char* test_dr, int write_sclk, int write_di, int read_do )
 {
@@ -31,6 +31,7 @@ void sramtest(void)
 
 	if (fpga==0 || prom==0) {
 		printf("Can't find suitable PROM and FPGA.\n");
+		jtagExit();
 		exit(1);
 	}
 
@@ -63,12 +64,14 @@ void sramtest(void)
 	if (second->hir != (first->hir + first->len + mir) ) {
 		printf("Calculation error: second hir is %d but should be %d+%d+%d = %d\n", 
 			second->hir, first->hir, first->len, mir, first->hir + first->len + mir );
+		jtagExit();
 		exit(1);
 	}
 
 	if (totir != (second->hir + second->len + second->tir) ) {
 		printf("Calculation error: totir is %d but should be %d+%d+%d = %d\n", 
 			totir, second->hir, second->len, second->tir, second->hir + second->len + second->tir );
+		jtagExit();
 		exit(1);
 	}
 
@@ -237,5 +240,6 @@ int main(int argc, char **argv)
 	sramtest();
 
 	jtagReset();
+	jtagExit();
 	exit(0);
 }

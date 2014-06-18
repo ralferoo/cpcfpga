@@ -1,5 +1,5 @@
 #include <string.h>
-#include "gpio.h"
+#include "lib/sidecar.h"
 
 int main(int argc, char **argv)
 {
@@ -13,6 +13,8 @@ int main(int argc, char **argv)
 		printf("No PROM found...\n");
 		exit(1);
 	}
+
+	promBoot(0);
 
 	promValidate(prom);
 	promReload(prom);

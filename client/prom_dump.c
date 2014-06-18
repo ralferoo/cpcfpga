@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "lib/sidecar.h"
 
 extern int g_noisy;
 
@@ -17,6 +17,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 	promValidate(prom);
+
 	promDump(prom);
 
 	exit(0);

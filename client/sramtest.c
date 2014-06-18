@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "lib/sidecar.h"
 
 void dump_bits(char *bits, int read, int write, int control, int control_disable)
 {
@@ -52,11 +52,11 @@ int read_sram_byte(char *safe_dr, int totdr, int addr,
 	out_dr[ control_we ] = 1-control_disable_a[i];	// output
 
 	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
-	nsleep(100);							// wait for read
+	jtagRunTestTCK(100);							// wait for read
 
 	out_dr[   write_oe ] = 1;					// disable output
 	send_dr_stream(safe_dr, totdr, result_dr);			// get data from chip
-	nsleep(100);							// wait for read
+	jtagRunTestTCK(100);							// wait for read
 
 #if 0
 //	dump_dr_stream("bits after read", result_dr, totdr);
@@ -108,17 +108,18 @@ int write_sram_byte(char *safe_dr, int totdr, int addr, int byte,
 
 //	printf("SEND 1\n");
 	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
-	nsleep(100);							// wait for read
+	jtagRunTestTCK(100);							// wait for read
 
 	out_dr[   write_oe ] = 0;					//  enable output
 	out_dr[   write_we ] = 1;					// disable write
 //	printf("SEND 2\n");
 	send_dr_stream(out_dr, totdr, result_dr);			// send data to chip
-//	nsleep(5);							// wait for read
-	nsleep(100);							// wait for read
+//	jtagRunTestTCK(100)						// wait for read
+	jtagRunTestTCK(100);							// wait for read
 
 //	printf("SEND 3\n");
 	send_dr_stream(safe_dr, totdr, result_dr);			// get data from chip
+	jtagRunTestTCK(100);							// wait for read
 
 #if 0
 	dump_dr_stream("bits after read", result_dr, totdr);
@@ -148,6 +149,7 @@ void sramtest(void)
 
 	if (fpga==0 || prom==0) {
 		printf("Can't find suitable PROM and FPGA.\n");
+		jtagExit();
 		exit(1);
 	}
 
@@ -180,12 +182,14 @@ void sramtest(void)
 	if (second->hir != (first->hir + first->len + mir) ) {
 		printf("Calculation error: second hir is %d but should be %d+%d+%d = %d\n", 
 			second->hir, first->hir, first->len, mir, first->hir + first->len + mir );
+		jtagExit();
 		exit(1);
 	}
 
 	if (totir != (second->hir + second->len + second->tir) ) {
 		printf("Calculation error: totir is %d but should be %d+%d+%d = %d\n", 
 			totir, second->hir, second->len, second->tir, second->hir + second->len + second->tir );
+		jtagExit();
 		exit(1);
 	}
 
@@ -300,6 +304,27 @@ void sramtest(void)
 	printf("OE: rd=%3d wr=%3d con=%3d dis=%d\n", read_oe, write_oe, control_oe, control_disable_oe);
 
 	int addr;
+
+	printf("\nData lines\n");
+	for (addr=0; addr<256; addr++)
+	{
+		int obyte = addr&255;
+		int byte = write_sram_byte(safe_dr, totdr, 0, obyte,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+		printf("write byte at %05x is %02x (should be %02x)%c", 0, byte, obyte, byte!=obyte?'\n':'\r');
+
+		byte = read_sram_byte(safe_dr, totdr, 0,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+		printf("check byte at %05x is %02x (should be %02x)%c", 0, byte, obyte, byte!=obyte?'\n':'\r');
+		fflush(stdout);
+	}
 
 	printf("\nLow data\n");
 	for (addr=0; addr<256; addr++)
@@ -502,7 +527,25 @@ void sramtest(void)
 						read_oe, write_oe, control_oe, control_disable_oe);
 	
 			if (ibyte != tbyte) {
-				printf("Writing %02x to %05x, byte at %05x was %02x not %02x\n", byte, addr, addr2, ibyte, tbyte);
+				int ibyte2 = read_sram_byte(safe_dr, totdr, addr2, 
+						read_a, write_a, control_a, control_disable_a,
+						read_d, write_d, control_d, control_disable_d,
+						read_we, write_we, control_we, control_disable_we,
+						read_oe, write_oe, control_oe, control_disable_oe);
+	
+				write_sram_byte(safe_dr, totdr, addr, tbyte,
+					read_a, write_a, control_a, control_disable_a,
+					read_d, write_d, control_d, control_disable_d,
+					read_we, write_we, control_we, control_disable_we,
+					read_oe, write_oe, control_oe, control_disable_oe);
+
+				int ibyte3 = read_sram_byte(safe_dr, totdr, addr2, 
+						read_a, write_a, control_a, control_disable_a,
+						read_d, write_d, control_d, control_disable_d,
+						read_we, write_we, control_we, control_disable_we,
+						read_oe, write_oe, control_oe, control_disable_oe);
+	
+				printf("Writing %02x to %05x, byte at %05x was %02x not %02x, re-read %02x, rewrite/reread %02x\n", byte, addr, addr2, ibyte, tbyte, ibyte2, ibyte3);
 				lastfail = addr2;
 			}
 		}
@@ -562,5 +605,6 @@ int main(int argc, char **argv)
 	sramtest();
 
 	jtagReset();
+	jtagExit();
 	exit(0);
 }

@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "lib/sidecar.h"
 
 extern int g_noisy;
 
@@ -25,6 +25,7 @@ int main(int argc, char **argv)
 #ifdef REPEAT
 	}
 #endif
+	jtagExit();
 	exit(0);
 }
 

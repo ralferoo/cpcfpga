@@ -1,76 +1,38 @@
-#VERSION=rpi_pins
-#LIBS=
+LIBS=-lusb-1.0
+INCS=-I/usr/include/libusb-1.0
 
-VERSION=libusb
-LIBS=-lusb
-
-TARGETS=scan prom_dump prom_erase prom_program prom_reload bsr pintest sramtest flashtest prom_erase_program fpga_usercode
-LIBOBJS=jtag.o hex.o jtag.o prom.o pinhelpers.o $(VERSION).o fpga.o
-EXOBJS=$(patsubst %,%.o,$(TARGETS))
+TARGETS=$(patsubst %.c,%,$(wildcard *.c))
+LIBOBJS=$(patsubst %.c,%.o,$(wildcard lib/*.c))
+LIBA=sidecar.a
 
 all: $(TARGETS)
 
-serial:
-	stty raw 19200 cs8 -parenb -icrnl -crtscts -echo </dev/ttyAMA0
-	cat /dev/ttyAMA0
-
 clean:
-	rm -f *.o $(TARGETS)
+	rm -f *.o $(TARGETS) $(LIBOBJS)
 
-edit:
-	gvim -p *.[ch]&
+%.go: %
+	./$<
 
-run: scan prom_dump
-	./scan
-	./prom_dump
+$(LIBOBJS): $(wildcard lib/*.h)
 
-$(LIBOBJS): $(wildcard *.h)
+$(LIBA): $(LIBOBJS)
+	ar r $(LIBA) $(LIBOBJS)
 
-$(EXOBJS): $(wildcard *.h)
+lib/pinhelpers.o: lib/xc3s400_tq144_1532.h lib/xcf02s_vo20.h
 
-pinhelpers.o: xc3s400_tq144_1532.h xcf02s_vo20.h
-
-%.h: ../docs/%.bsd ../codegen/bsdl_to_c.pl
+lib/%.h: ../docs/%.bsd ../codegen/bsdl_to_c.pl
 	../codegen/bsdl_to_c.pl <$< >$@
 
-bsr: bsr.o $(LIBOBJS)
+# stop implicit rule
+%: %.c
+
+%: %.o $(LIBA)
 	gcc -o $@ $^ $(LIBS)
 
-flashtest: flashtest.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
+%.o: %.c
+	gcc -c $(INCS) -ggdb -o $@ $<
 
-sramtest: sramtest.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-pintest: pintest.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-scan: scan.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-prom_dump: prom_dump.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-prom_erase: prom_erase.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-prom_erase_program: prom_erase_program.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-prom_program: prom_program.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-prom_reload: prom_reload.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-prom_direct_load: prom_direct_load.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-fpga_usercode: fpga_usercode.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-bootloader: bootloader.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
-
-sdtest: sdtest.o $(LIBOBJS)
-	gcc -o $@ $^ $(LIBS)
+l:
+	@echo $(LIBOBJS)
+	@echo $(TARGETS)
+	@echo $(LIBA)

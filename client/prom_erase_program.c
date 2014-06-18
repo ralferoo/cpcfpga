@@ -1,5 +1,5 @@
 #include <string.h>
-#include "gpio.h"
+#include "lib/sidecar.h"
 
 int main(int argc, char **argv)
 {
@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 	// force end marker
 	promProgramData( 1, 0, 0, (uint8_t*)"");
 
+	promBoot(0);
 	promValidate(prom);
 	promReload(prom);
 

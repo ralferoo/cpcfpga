@@ -18,19 +18,27 @@ int main(int argc, char **argv)
 	uint32_t usercode = fpgaUserCode(fpga);
 	printf("\nFPGA user code is %0X\n", usercode);
 
+	int st=0x400, end=0x1000;
+	if (argc>1) sscanf(argv[1], "%d", &st);
+	if (argc>2) sscanf(argv[2], "%d", &end);
+
 	uint32_t i,j,k;
-	for (i=0; i<256; i+=13) {
-		cpcSetCommand(fpga, i);
-		j=i*i;
-		k=cpcTransferData(fpga, j);
-		printf("Command %02x sent %08x recv %08x\n", i, j, k);
+	for (i=st; i<end; i++) {
+		uint32_t result = fpga_user_get(fpga, i);
+
+		if( (i&15)==0) {
+			if (i) printf("\n");
+			printf("%04x: ", i);
+		} else if ((i&3)==0)
+			printf(" ");
+		printf("%04x", result & 0xffff);
+		if (i==0x41f)
+			i=0x7ff;
 	}
+	printf("\n");
 
 	jtagReset();
 
 	jtagExit();
 	exit(0);
 }
-
-
-

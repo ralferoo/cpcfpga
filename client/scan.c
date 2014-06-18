@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "lib/sidecar.h"
 
 extern int g_noisy;
 
@@ -10,6 +10,7 @@ int main(int argc, char **argv)
 	devScanDevices();
 	devDump();
 
+	jtagExit();
 	exit(0);
 }
 
